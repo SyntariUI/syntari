@@ -2,7 +2,7 @@ export default async page => {
  const results=[],errors=[];page.on('pageerror',e=>errors.push(e.message));
  const check=(value,label)=>{if(!value)throw Error(label);results.push(label)};
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.goto('http://127.0.0.1:4318/');
+ await page.goto('http://127.0.0.1:4318/gallery.html');
  await page.getByRole('button',{name:'Replay motion',exact:true}).click();
  check(await page.evaluate(()=>document.getAnimations().some(a=>a.effect.target.classList.contains('specimen'))),'Replay animates visible specimens');
  await page.locator('[data-category="Navigation"]').click();
@@ -59,9 +59,9 @@ export default async page => {
  await page.setViewportSize({width:1440,height:1080});
  await page.getByRole('button',{name:'Light theme',exact:true}).click();
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.getByRole('searchbox').fill('dock');
+ await page.getByRole('searchbox',{name:'Find a component'}).fill('dock');
  await page.screenshot({path:'test-results/motion-patterns-preview.png'});
- await page.getByRole('searchbox').fill('');
+ await page.getByRole('searchbox',{name:'Find a component'}).fill('');
  check(errors.length===0,'No motion runtime errors');
  return results;
 }

@@ -1,6 +1,6 @@
 export default async page=>{
  const results=[],errors=[];page.on('pageerror',e=>errors.push(e.message));const check=(ok,label)=>{if(!ok)throw Error(label);results.push(label)};
- await page.goto('http://127.0.0.1:4318/');
+ await page.goto('http://127.0.0.1:4318/gallery.html');
  const table=page.locator('[data-attribution]');
  await table.getByRole('button',{name:'Automatic table updates'}).click();
  check(await table.locator('tbody tr').count()===7,'Ranked table renders seven stable rows');

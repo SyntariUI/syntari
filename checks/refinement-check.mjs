@@ -1,6 +1,6 @@
 export default async page=>{
  const checks=[],check=(ok,label)=>{if(!ok)throw Error(label);checks.push(label)};
- await page.goto('http://127.0.0.1:4318/');
+ await page.goto('http://127.0.0.1:4318/gallery.html');
  await page.locator('[data-category="Form controls"]').click();
  const checkbox=page.getByRole('checkbox',{name:'Include all team members'});await checkbox.uncheck();await checkbox.focus();await page.keyboard.press('Space');check(await checkbox.isChecked(),'Styled checkbox retains keyboard behavior');
  await page.getByRole('radio',{name:'Only me',exact:true}).check();check(await page.getByRole('radio',{name:'Only me',exact:true}).isChecked(),'Styled radio retains exclusive selection');

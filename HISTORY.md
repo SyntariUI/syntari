@@ -1,3 +1,20 @@
+# Orbit UI — version 0.2
+
+September 10, 2026.
+
+- Dedicated static documentation routes for all 106 component families.
+- Preview, Usage, and Code views with 246 authored states and layouts.
+- Copyable source, module entries, shared interaction files, and styles.
+- Versioned source archive and CLI installer; equivalent manual installation.
+- Runtime mounting API and per-component native element contracts.
+- Seven guides covering setup, installation, theming, motion and accessibility, composition, runtime API, and migration.
+- Original gallery and four composed screens retained at `gallery.html`.
+- Light/dark and mobile layouts; all 11 test suites pass, including fresh-project installation.
+
+The content below records the earlier milestone and its scope at that time.
+
+---
+
 # Orbit UI — milestone 01
 
 A working, framework-independent component gallery with 38 component families, light and dark themes, search, category navigation, component inspection, HTML copying, and token export.

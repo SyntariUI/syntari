@@ -95,8 +95,8 @@
   }
   function visibility(el,visible) {
     clearTimeout(timers.get(el));el.getAnimations().forEach(a=>a.cancel());
-    if(visible){el.hidden=false;el.inert=false;animate(el,[{opacity:0,translate:'0 4px'},{opacity:1,translate:'0 0'}],200)}
-    else {el.inert=true;if(preference.matches){el.hidden=true;return}animate(el,[{opacity:1,translate:'0 0'},{opacity:0,translate:'0 3px'}],120);timers.set(el,setTimeout(()=>{el.hidden=true;el.inert=false},120))}
+    if(visible){el.hidden=false;el.inert=false;if(el.matches('.control-panel,.starter-options,.starter-popover-panel,.row-action-menu')&&el.showPopover){el.setAttribute('popover','manual');if(!el.matches(':popover-open'))el.showPopover()}animate(el,[{opacity:0,translate:'0 4px'},{opacity:1,translate:'0 0'}],200)}
+    else {el.inert=true;if(preference.matches){if(el.matches(':popover-open'))el.hidePopover();el.hidden=true;return}animate(el,[{opacity:1,translate:'0 0'},{opacity:0,translate:'0 3px'}],120);timers.set(el,setTimeout(()=>{if(el.matches(':popover-open'))el.hidePopover();el.hidden=true;el.inert=false},120))}
   }
   function panel(el) {el?.getAnimations().forEach(a=>a.cancel());enter(el)}
   function replay() {
@@ -115,5 +115,6 @@
     const a=animate(details,[{height:`${from}px`},{height:`${to}px`}],240);
     if(a)a.finished.then(()=>{details.open=opening;delete details.dataset.motionTarget;details.style.overflow=''},()=>{});
   });
-  window.OrbitMotion={prepare,panel,showDialog,closeDialog,visibility,replay,animate,indicator,enter};
+  function settleAncestors(el){for(let node=el.parentElement;node&&node!==document.body;node=node.parentElement){node.getAnimations().forEach(a=>{if(a.effect?.getKeyframes().some(k=>k.transform||k.translate)){try{a.finish()}catch{a.cancel()}}})}}
+  window.OrbitMotion={settleAncestors,prepare,panel,showDialog,closeDialog,visibility,replay,animate,indicator,enter};
 })();

@@ -1,6 +1,6 @@
 export default async page=>{
  const results=[],errors=[];page.on('pageerror',e=>errors.push(e.message));const check=(x,label)=>{if(!x)throw Error(label);results.push(label)};
- await page.goto('http://127.0.0.1:4318/?v=controls2');await page.locator('[data-category="Form controls"]').click();
+ await page.goto('http://127.0.0.1:4318/gallery.html?v=controls2');await page.locator('[data-category="Form controls"]').click();
  await page.getByRole('button',{name:'Workspace',exact:true}).click();
  check(await page.getByRole('listbox',{name:'Workspaces'}).isVisible(),'Workspace uses shared floating dropdown');
  await page.getByRole('option',{name:'Product team'}).click();check((await page.getByRole('button',{name:'Workspace',exact:true}).innerText()).includes('Product team'),'Workspace selection persists');
@@ -17,6 +17,6 @@ export default async page=>{
  const zone=page.locator('[data-drop-zone]');check(await zone.getByRole('button',{name:'Select assets',exact:true}).isVisible(),'Empty-state upload has small asset button');
  await zone.evaluate(el=>{const dt=new DataTransfer();dt.items.add(new File(['asset'],'photo.png',{type:'image/png'}));el.dispatchEvent(new DragEvent('drop',{bubbles:true,dataTransfer:dt}))});check((await zone.innerText()).includes('photo.png'),'Drop still selects a local asset');
  for(const theme of ['Dark theme','Light theme']){await page.getByRole('button',{name:theme,exact:true}).click();await page.setViewportSize({width:390,height:844});await trigger.click();const box=await page.locator('.calendar-panel:not([hidden])').boundingBox();check(box.x>=0&&box.x+box.width<=390,`${theme}: calendar fits mobile`);await page.keyboard.press('Escape');check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${theme}: controls fit mobile`)}
- await page.setViewportSize({width:1405,height:1000});await page.getByRole('searchbox').fill('Select & date');await trigger.click();await page.waitForFunction(()=>!document.getAnimations().some(a=>a.playState==='running'&&a.effect.getTiming().iterations!==Infinity));await page.screenshot({path:'test-results/controls-preview.png'});await page.keyboard.press('Escape');await page.getByRole('searchbox').fill('');
+ await page.setViewportSize({width:1405,height:1000});await page.getByRole('searchbox',{name:'Find a component'}).fill('Select & date');await trigger.click();await page.waitForFunction(()=>!document.getAnimations().some(a=>a.playState==='running'&&a.effect.getTiming().iterations!==Infinity));await page.screenshot({path:'test-results/controls-preview.png'});await page.keyboard.press('Escape');await page.getByRole('searchbox',{name:'Find a component'}).fill('');
  check(errors.length===0,'No control runtime errors');return results;
 }
