@@ -29,7 +29,7 @@
   if(kindChanged)OrbitMotion.animate(el,[{opacity:0,translate:'0 5px'},{opacity:1,translate:'0 0'}],150);
  }
  const countries=[['🇺🇸','United States',1823,4680],['🇬🇧','United Kingdom',672,2180],['🇩🇪','Germany',521,1290],['🇫🇷','France',398,0],['🇨🇦','Canada',312,0],['🇦🇺','Australia',245,0],['🇳🇱','Netherlands',176,0]];
- const sources=[['search','Google',2341,5280],['arrow','Direct',1892,3600],['chat','Twitter',743,1490],['code','GitHub',521,790],['type','Hacker News',412,0],['layers','LinkedIn',298,0],['smile','Reddit',187,0]];
+ const sources=[['search','Search',2341,5280],['arrow','Direct',1892,3600],['chat','Social',743,1490],['code','Referral',521,790],['type','Newsletter',412,0],['layers','Campaign',298,0],['smile','Community',187,0]];
  function rowValue(row,initial=false){const revenue=row.matches(':hover')||row.contains(document.activeElement)||row.closest('[data-attribution]').dataset.metric==='revenue';row.classList.toggle('show-revenue',revenue);set(row.querySelector('[data-row-value]'),Number(row.dataset[revenue?'revenue':'people']),{kind:revenue?'currency':'number',initial});}
  function build(table,initial=true){
   const type=table.dataset.dimension||'countries',step=Number(table.dataset.tick||0),data=type==='countries'?countries:sources;

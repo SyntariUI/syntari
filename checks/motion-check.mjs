@@ -59,7 +59,7 @@ export default async page => {
  await page.setViewportSize({width:1440,height:1080});
  await page.getByRole('button',{name:'Light theme',exact:true}).click();
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.getByRole('searchbox').fill('inspired');
+ await page.getByRole('searchbox').fill('dock');
  await page.screenshot({path:'test-results/motion-patterns-preview.png'});
  await page.getByRole('searchbox').fill('');
  check(errors.length===0,'No motion runtime errors');

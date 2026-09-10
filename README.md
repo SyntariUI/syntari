@@ -43,6 +43,6 @@ Tests start their own server and run five browser suites against the built site,
 
 This is a browser-based component gallery. Demo actions use local state; they do not upload files, create backend records, or contact services. Theme preference persists in the browser. Copied HTML depends on the shared styles and, for interactive examples, gallery event handlers. Framework packages and backend integrations are not included.
 
-## Attribution
+## Bundled licenses
 
-Visual direction: [Visitors](https://visitors.now/). Component taxonomy reference: [Astryx](https://astryx.atmeta.com/components). Orbit is independent of Visitors and Meta. OpenRunde fonts use the SIL Open Font License (`assets/OFL.txt`); Lucide icon paths use the ISC license (`assets/lucide-LICENSE.txt`). Original implementation and milestone details are documented in [HISTORY.md](HISTORY.md).
+OpenRunde fonts use the SIL Open Font License (`assets/OFL.txt`); Lucide icon paths use the ISC license (`assets/lucide-LICENSE.txt`). Original implementation and milestone details are documented in [HISTORY.md](HISTORY.md).

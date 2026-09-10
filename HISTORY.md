@@ -12,7 +12,7 @@ No install or build is needed. Font files are local. There are no analytics, API
 
 - `index.html`: gallery shell and native dialogs.
 - `app.js`: example catalog, interactions, search, and inspection.
-- `tokens.css`: original Visitors light/dark tokens and Orbit semantic aliases.
+- `tokens.css`: light/dark tokens and Orbit semantic aliases.
 - `styles.css`: shared component and gallery styles.
 - `motion.css`: transitions, elevations, moving selections, and composed card/toolbar styles.
 - `motion.js`: interruptible entrances, dialogs, disclosures, and reduced-motion support.
@@ -20,17 +20,9 @@ No install or build is needed. Font files are local. There are no analytics, API
 
 ## Scope
 
-This is a gallery milestone, not a packaged component library or an Astryx integration. Copied HTML uses the shared styles and, for interactive examples, app.js event handlers. Demo actions and messages are local; no files are uploaded, no project records are stored, and no external changes occur. Theme preference persists locally. Search filters the catalog by names, descriptions, and category.
+This is a gallery milestone, not a packaged component library. Copied HTML uses the shared styles and, for interactive examples, app.js event handlers. Demo actions and messages are local; no files are uploaded, no project records are stored, and no external changes occur. Theme preference persists locally. Search filters the catalog by names, descriptions, and category.
 
-The next milestone can extract components into the chosen product framework, add formal APIs and documentation, and expand coverage against Astryx. The current collection is a curated subset, not full parity.
-
-## References and provenance
-
-Visual direction: https://visitors.now/ and the five user-provided Visitors screenshots (stats, performance, funnels, profiles, realtime).
-Original colors, radii, and OpenRunde font URLs were inspected from https://visitors.now/assets/styles-pNqCiRay.css on 2026-09-10. Palette values are retained; semantic status text colors are adjusted for legibility.
-Component taxonomy and documentation reference: https://astryx.atmeta.com/components. No Astryx component implementation is included.
-OpenRunde: https://github.com/lauridskern/open-runde (SIL Open Font License).
-Orbit is a working name for this kit, not an official Visitors or Meta product.
+The next milestone can extract components into the chosen product framework, add formal APIs and documentation.
 
 ## Verification
 
@@ -54,13 +46,11 @@ The reusable numeric display masks each digit and rolls changed columns, maintai
 
 Automatic updates run every three seconds only while the table is visible, the document is visible, and reduced motion is off. No external data is used. Implementation: `numbers.js` and `numbers.css`.
 
-Reference inspected: https://visitors.now/vs-google-analytics and its publicly served bar-list, home-how-it-works, and number-flow modules on 2026-09-10. The reference uses NumberFlow for digit transitions, 300ms proportional bar updates, and short vertical transitions for count/revenue changes. This kit implements its own small numeric primitive; no reference implementation or NumberFlow package is bundled.
-
 Validation: 27 gallery checks, 20 motion checks, and 17 numeric/table checks passed. Numeric checks cover hover/focus, touch revenue toggle, dimension changes, rapid 999 → 1,000 → 9 updates, reduced-motion behavior, live-update gating, and mobile overflow in both themes. See `checks/numbers-check.mjs`.
 
 ## Gallery refinements
 
-Checkboxes and radios retain native input semantics with rounded Apple-inspired shells, subtle inset highlights, and animated selected marks. All shared icon paths now come from Lucide v0.468.0; the local ISC license is in `assets/lucide-LICENSE.txt`. The date input uses a Lucide calendar while retaining the platform picker. Toasts and the toast specimen stay navigation-dark in either theme. File input is a keyboard-accessible clickable drop zone with local-file feedback; the browser's file button is hidden.
+Checkboxes and radios retain native input semantics with rounded shells, subtle inset highlights, and animated selected marks. All shared icon paths now come from Lucide v0.468.0; the local ISC license is in `assets/lucide-LICENSE.txt`. The date input uses a Lucide calendar while retaining the platform picker. Toasts and the toast specimen stay navigation-dark in either theme. File input is a keyboard-accessible clickable drop zone with local-file feedback; the browser's file button is hidden.
 
 ## Unified form controls
 
