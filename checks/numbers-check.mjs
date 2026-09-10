@@ -15,7 +15,7 @@ export default async page=>{
  await table.getByRole('button',{name:'Show revenue',exact:true}).click();
  check((await table.locator('tbody tr').nth(2).locator('[data-row-value]').getAttribute('aria-label')).startsWith('$'),'Touch-friendly revenue toggle updates all rows');
  await table.getByRole('button',{name:'Sources',exact:true}).click();
- check((await first.innerText()).includes('Google'),'Dimension switch updates source identities');
+ check((await first.innerText()).includes('Search'),'Dimension switch updates source identities');
  const counter=page.locator('[data-number-demo] [data-number]');
  await page.getByRole('button',{name:'+127',exact:true}).click();
  check(await counter.getAttribute('aria-label')==='2,496','Increase rolls to exact formatted target');
