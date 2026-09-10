@@ -1,0 +1,44 @@
+export default async page=>{
+ const results=[],errors=[];page.on('pageerror',e=>errors.push(e.message));const check=(ok,label)=>{if(!ok)throw Error(label);results.push(label)};
+ await page.goto('http://127.0.0.1:4318/');
+ const table=page.locator('[data-attribution]');
+ await table.getByRole('button',{name:'Automatic table updates'}).click();
+ check(await table.locator('tbody tr').count()===7,'Ranked table renders seven stable rows');
+ const first=table.locator('tbody tr').first(),number=first.locator('[data-row-value]');
+ await page.mouse.move(0,0);await first.getByRole('button').hover();
+ check((await number.getAttribute('aria-label')).startsWith('$'),'Hover reveals formatted revenue');
+ await page.mouse.move(0,0);await first.getByRole('button').focus();
+ check((await number.getAttribute('aria-label')).startsWith('$'),'Keyboard focus reveals revenue');
+ await table.getByRole('button',{name:'Update',exact:true}).click();
+ check(Number(await first.getAttribute('data-people'))>1823,'Update increases row values');
+ check(await number.locator('.number-digit').count()>0,'Digits use masked rolling columns');
+ await table.getByRole('button',{name:'Show revenue',exact:true}).click();
+ check((await table.locator('tbody tr').nth(2).locator('[data-row-value]').getAttribute('aria-label')).startsWith('$'),'Touch-friendly revenue toggle updates all rows');
+ await table.getByRole('button',{name:'Sources',exact:true}).click();
+ check((await first.innerText()).includes('Google'),'Dimension switch updates source identities');
+ const counter=page.locator('[data-number-demo] [data-number]');
+ await page.getByRole('button',{name:'+127',exact:true}).click();
+ check(await counter.getAttribute('aria-label')==='2,496','Increase rolls to exact formatted target');
+ await page.getByRole('button',{name:'−89',exact:true}).click();
+ check(await counter.getAttribute('aria-label')==='2,407','Decrease rolls to exact target');
+ await counter.evaluate(el=>{OrbitNumbers.set(el,999);OrbitNumbers.set(el,1000);OrbitNumbers.set(el,9)});
+ check(await counter.getAttribute('aria-label')==='9','Rapid updates across digit boundaries settle correctly');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(()=>document.getAnimations().filter(a=>a.playState==='running').length===0,{},{timeout:1500});
+ await page.getByRole('button',{name:'+127',exact:true}).click();
+ check(await counter.getAttribute('aria-label')==='136','Reduced motion preserves numeric updates');
+ check(await counter.locator('.number-track').count()===0,'Reduced motion uses static digits');
+ await table.getByRole('button',{name:'Automatic table updates'}).click();
+ const value=await first.getAttribute('data-people');await page.waitForTimeout(3200);
+ check(await first.getAttribute('data-people')===value,'Reduced motion pauses automatic updates');
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.waitForFunction(v=>document.querySelector('[data-ranked-row]').dataset.people!==v,value,{timeout:4500});
+ check(await first.getAttribute('data-people')!==value,'Live values resume when motion is allowed');
+ await table.getByRole('button',{name:'Automatic table updates'}).click();
+ await page.getByRole('button',{name:'Reset',exact:true}).click();
+ for(const theme of ['Dark theme','Light theme']){await page.getByRole('button',{name:theme,exact:true}).click();await page.setViewportSize({width:390,height:844});check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${theme} ranked table fits mobile`)}
+ await page.setViewportSize({width:1440,height:1080});await page.evaluate(()=>{document.activeElement.blur();scrollTo(0,0)});
+ await page.waitForFunction(()=>!document.getAnimations().some(a=>a.playState==='running'&&a.effect.getTiming().iterations!==Infinity));
+ await page.screenshot({path:'test-results/number-tables-preview.png'});
+ check(!errors.length,'No numeric runtime errors');return results;
+}
