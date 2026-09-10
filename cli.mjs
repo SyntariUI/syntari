@@ -15,9 +15,9 @@ try {
   for(const name of names)if(!catalog.some(c=>c.slug===name))throw Error(`Unknown component: ${name}. Run orbit list to see available names.`);
   const target=resolve(output),runtime=join(target,'runtime');
   let existing=false;try{await access(target);existing=true}catch{}
-  if(existing){let version;try{version=JSON.parse(await readFile(join(target,'orbit.json'),'utf8')).version}catch{throw Error('The destination already exists and is not an Orbit installation. Choose a new --dir.')}if(version!=='0.2.0')throw Error('This destination contains another Orbit version. Choose a new --dir.');}
+  if(existing){let version;try{version=JSON.parse(await readFile(join(target,'orbit.json'),'utf8')).version}catch{throw Error('The destination already exists and is not an Orbit installation. Choose a new --dir.')}if(version!=='0.2.1')throw Error('This destination contains another Orbit version. Choose a new --dir.');}
   for(const name of names)for(const extension of ['.js','.html']){try{await access(join(target,name+extension));throw Error(`${name}${extension} already exists. Your changes have been preserved.`)}catch(error){if(error.code!=='ENOENT')throw error;}}
-  if(!existing){await mkdir(target,{recursive:true});await cp(join(kit,'runtime'),runtime,{recursive:true,errorOnExist:true,force:false});await writeFile(join(target,'orbit.json'),JSON.stringify({version:'0.2.0'},null,2));}
+  if(!existing){await mkdir(target,{recursive:true});await cp(join(kit,'runtime'),runtime,{recursive:true,errorOnExist:true,force:false});await writeFile(join(target,'orbit.json'),JSON.stringify({version:'0.2.1'},null,2));}
   for(const name of names) {
     await cp(join(kit,'components',name+'.js'),join(target,name+'.js'),{errorOnExist:true,force:false});
     await cp(join(kit,'components',name+'.html'),join(target,name+'.html'),{errorOnExist:true,force:false});

@@ -1,6 +1,6 @@
 # Orbit UI 0.2
 
-106 component pages, 246 authored preview states and layouts, seven guides, and four starter screens. Light and dark themes share Orbit’s tokens, OpenRunde typography, Lucide icons, and restrained motion.
+107 component pages, 250 authored preview states and layouts, seven guides, and four starter screens. Light and dark themes share Orbit’s tokens, OpenRunde typography, Lucide icons, and restrained motion.
 
 Each component page includes Preview / Usage / Code, CLI and manual installation, its element contract, runtime API, and guidelines. All examples use the same editable HTML, CSS, and JavaScript runtime included in the source archive.
 
@@ -21,7 +21,7 @@ Open http://127.0.0.1:4318/ for documentation. The original gallery is at `/gall
 With the local site running:
 
 ```sh
-npm exec --yes --package="http://127.0.0.1:4318/downloads/orbit-ui-0.2.0.tgz" -- orbit add button
+npm exec --yes --package="http://127.0.0.1:4318/downloads/orbit-ui-0.2.1.tgz" -- orbit add button
 ```
 
 ```html
@@ -44,7 +44,7 @@ npm test
 npm run build
 ```
 
-Eleven suites cover the original gallery and workflows, all 106 page routes, all 246 authored preview states, documentation navigation, clipboard, keyboard controls, light/dark themes, reduced motion, responsive layouts, and a fresh-project installation from the downloadable archive. The installer check also verifies that existing files are preserved and invalid component names are rejected.
+The browser suites cover the original gallery and workflows, all 107 page routes, all 250 authored preview states, documentation navigation, clipboard, keyboard controls, light/dark themes, reduced motion, responsive layouts, a fresh-project installation from the downloadable archive, and host-app integration boundaries. The installer check also verifies that existing files are preserved and invalid component names are rejected.
 
 `dist/` contains the complete static site, generated routes, and versioned source download. Existing GitHub Actions configuration can build and deploy it; local changes are not published by the build command.
 
@@ -73,7 +73,7 @@ OpenRunde fonts use the SIL Open Font License (`assets/OFL.txt`); Lucide icon pa
 
 ## Expanded starter pack
 
-The gallery includes 106 component families and four composed starter screens. See [REFERENCE-COVERAGE.md](./REFERENCE-COVERAGE.md) for the Be UI catalog audit, equivalent Orbit patterns, and intentional adaptations.
+The gallery includes 107 component families and four composed starter screens. See [REFERENCE-COVERAGE.md](./REFERENCE-COVERAGE.md) for the Be UI catalog audit, equivalent Orbit patterns, and intentional adaptations.
 
 - `?category=Agents` opens the agent collection.
 - `?view=screens&screen=settings` opens account settings.
@@ -84,3 +84,12 @@ The gallery includes 106 component families and four composed starter screens. S
 `starter.js` contains reusable form, table, overlay, and layout builders exposed through `OrbitStarter.components`. `agents.js` exposes the agent pattern builders through `OrbitAgents`. Include their matching styles and the existing Orbit scripts in the same order as `index.html`. The inspector's HTML is the initial markup; interactive behavior requires those scripts. All examples are local demonstrations, with the boundaries explained in the coverage document.
 
 Run `npm run build` for the static `dist/` output. Run `npm test` for gallery, control, number, motion, agent, and composed-screen workflows. Tests reuse the local development server outside CI; CI builds and starts the static output itself.
+
+## 0.2.1 integration fixes
+
+- `prepare(root)` preserves the application container’s layout. `mount` owns its inserted example wrapper and retains the preview layout.
+- An embedded command palette handles Command/Ctrl K within its own prepared region; unrelated Orbit components do not take over an app’s shortcut.
+- Consumer callbacks run after delegated control updates. Reset/destroy cancel pending callbacks from the old instance.
+- Rolling numbers support `kind: 'percent'`, accepting fractions and displaying one decimal, including their accessible label.
+
+The distribution still includes global reset and gallery selectors. These fixes do not make every stylesheet isolated or replace the app’s layout/density decisions. See [the integration audit](audits/embedding-2026-09-10.md) for verified boundaries and follow-up work.

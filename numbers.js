@@ -1,7 +1,7 @@
 /* Stable numeric labels with masked, individually rolling digits. */
 (() => {
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'), values=new WeakMap(),visible=new Set(),initialized=new WeakSet();
- const format=(value,kind)=>new Intl.NumberFormat('en-US',kind==='currency'?{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}:{}).format(value);
+ const format=(value,kind)=>new Intl.NumberFormat('en-US',kind==='percent'?{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1}:kind==='currency'?{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}:{}).format(value);
  function set(el,value,{kind=el.dataset.format||'number',initial=false}={}) {
   if(!el)return;
   const kindChanged=el.dataset.numberKind&&el.dataset.numberKind!==kind;el.dataset.numberKind=kind;

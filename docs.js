@@ -1,7 +1,7 @@
 import { getComponents, mount, slugify, setTheme } from './orbit.js';
 import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI } from './docs-data.js';
 import { guideContent } from './docs-guides.js';
-const base=new URL('.',import.meta.url), archive=new URL('downloads/orbit-ui-0.2.0.tgz',base).href;
+const base=new URL('.',import.meta.url), archive=new URL('downloads/orbit-ui-0.2.1.tgz',base).href;
 const $=s=>document.querySelector(s);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let catalog=[],current=null,instance=null,mainTab='preview',installTab='cli',manager='npm',stateId='default',sourceTab='html',routeGeneration=0,previewGeneration=0,routePath=location.pathname;

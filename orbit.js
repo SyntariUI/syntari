@@ -33,7 +33,8 @@ export async function getComponents() { return (await initialize()).map(c => ({ 
 export async function prepare(root) {
   await initialize();
   if (!(root instanceof Element)) throw new TypeError('Orbit prepare() needs an Element.');
-  root.classList.add('specimen-body', 'orbit-component');
+  // Enhancement must not impose gallery spacing on a consumer-owned container.
+  root.classList.add('orbit-component');
   const scope = `orbit-${crypto.randomUUID()}`;
   root.querySelectorAll('input[type="radio"][name]').forEach(input => { if (!input.form) input.name = `${scope}-${input.name}`; });
   window.OrbitPrepare(root);
@@ -49,23 +50,35 @@ export async function mount(slug, target, options = {}) {
   const container = typeof target === 'string' ? document.querySelector(target) : target;
   if (!(container instanceof Element)) throw new TypeError('Orbit mount() needs a matching selector or Element.');
   let element, controller, destroyed = false;
+  const pendingCallbacks = new Set();
+  function cancelCallbacks() { pendingCallbacks.forEach(clearTimeout); pendingCallbacks.clear(); }
   async function render() {
     controller?.abort();
+    cancelCallbacks();
     if (element) element.remove();
-    element = document.createElement('div'); element.dataset.orbitComponent = slug; element.innerHTML = component.html;
+    element = document.createElement('div'); element.classList.add('specimen-body'); element.dataset.orbitComponent = slug; element.innerHTML = component.html;
     container.append(element); await prepare(element);
     if (destroyed) { element.remove(); return; }
     options.configure?.(element);
     controller = new AbortController();
+    const renderedElement = element, signal = controller.signal;
     for (const [event, callback] of [['input', options.onInput], ['change', options.onChange], ['click', options.onAction]]) {
-      if (callback) element.addEventListener(event, e => queueMicrotask(() => { if (!destroyed) callback(e, element); }), { signal: controller.signal });
+      if (callback) renderedElement.addEventListener(event, e => {
+        // Microtasks can run between native event listeners. Let delegated Orbit
+        // handlers finish before consumer code reads state or removes controls.
+        const timer = setTimeout(() => {
+          pendingCallbacks.delete(timer);
+          if (!destroyed && !signal.aborted) callback(e, renderedElement);
+        }, 0);
+        pendingCallbacks.add(timer);
+      }, { signal });
     }
   }
   await render();
   return {
     get element() { return element; },
     async reset() { if (destroyed) throw new Error('Cannot reset a destroyed Orbit component.'); await render(); },
-    destroy() { destroyed = true; controller?.abort(); element.querySelectorAll(':popover-open').forEach(p => p.hidePopover()); element.getAnimations({subtree:true}).forEach(a => a.cancel()); element.remove(); }
+    destroy() { destroyed = true; controller?.abort(); cancelCallbacks(); element.querySelectorAll(':popover-open').forEach(p => p.hidePopover()); element.getAnimations({subtree:true}).forEach(a => a.cancel()); element.remove(); }
   };
 }
 export function setTheme(theme) {

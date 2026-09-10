@@ -9,7 +9,7 @@ const exec=promisify(execFile);
 test('documented archive installs and runs in a clean project',async({page})=>{
  const temp=await mkdtemp(join(tmpdir(),'orbit-install-check-'));let server;
  try{
-  const {stdout}=await exec('npm',['exec','--yes','--package=http://127.0.0.1:4318/downloads/orbit-ui-0.2.0.tgz','--','orbit','add','button','slider','--dir',join(temp,'components/orbit')],{cwd:temp,timeout:60000});expect(stdout).toContain('Added button, slider');
+  const {stdout}=await exec('npm',['exec','--yes','--package=http://127.0.0.1:4318/downloads/orbit-ui-0.2.1.tgz','--','orbit','add','button','slider','--dir',join(temp,'components/orbit')],{cwd:temp,timeout:60000});expect(stdout).toContain('Added button, slider');
   const entry=join(temp,'components/orbit/button.js');await writeFile(entry,(await readFile(entry,'utf8'))+'\n// A local customization.\n');
   const duplicate=await exec(process.execPath,['cli.mjs','add','button','--dir',join(temp,'components/orbit')],{cwd:process.cwd()}).then(()=>null,e=>e);expect(duplicate.stderr).toContain('already exists');expect(await readFile(entry,'utf8')).toContain('A local customization');
   const unknown=await exec(process.execPath,['cli.mjs','add','../../outside','--dir',join(temp,'invalid')],{cwd:process.cwd()}).then(()=>null,e=>e);expect(unknown.stderr).toContain('Unknown component');expect(await access(join(temp,'invalid')).then(()=>true,()=>false)).toBe(false);

@@ -54,7 +54,7 @@
   add('Searchable select','Form controls','Filter / keyboard','Search a list of options. Arrow keys move the active option; Enter commits and Escape dismisses.',combo('Assign to',['Alex Morgan','Jamie Chen','Sam Rivera','Robin Park','Casey Lewis']));
   add('Autocomplete','Form controls','Suggestions / custom values','Suggestions narrow as you type. Choose an existing value or keep a custom value.',combo('Project name',['Brand refresh','Website exploration','Mobile companion','Customer research'],'free','Start typing a project…'));
   add('Multiselect','Form controls','Search / removable chips','Select several values from a searchable list. Remove selected chips without reopening the list.',combo('Project labels',['Design','Research','Engineering','Marketing','Operations'],'multiple','Find a label…'));
-  add('Command palette','Overlay','Search / shortcuts','Find screens, components, and common actions with the keyboard. Open anywhere with Command/Ctrl K.',`${button(icon('search')+' Search or jump to… <kbd>⌘ K</kbd>','data-open-command')}<span class="label-caption">One place to find your way.</span>`);
+  add('Command palette','Overlay','Search / shortcuts','Find screens, components, and common actions with the keyboard. Use Command/Ctrl K in this component; the gallery also supports it globally.',`${button(icon('search')+' Search or jump to… <kbd>⌘ K</kbd>','data-open-command')}<span class="label-caption">One place to find your way.</span>`);
   add('Number stepper','Form controls','Bounds / keyboard','Increment, decrement, or enter a number. Boundary buttons disable at the minimum and maximum.',stepper());
   add('Password field','Form controls','Reveal / concealed','Reveal a password without changing its value. The toggle exposes its pressed state and updates its label.',`<div class="stack">${password()}<p class="hint">Use at least 8 characters.</p></div>`);
   add('Date range picker','Form controls','Range / presets','Choose two dates across months, or use a quick preset. Apply commits the selection; cancel preserves the original value.',dateRange());
@@ -221,7 +221,11 @@
   if(form.hasAttribute('data-onboard-purpose')){onboard.purpose=form.elements.purpose.value;onboardStep=3;showScreen('onboarding')}
  });
  document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();e.stopImmediatePropagation();openCommand();return}
+  // In a consumer app, the palette shortcut belongs only to its prepared region.
+  // Apps can bind their own global shortcut to OrbitStarter.openCommand().
+  const commandRoot=e.target.closest('.orbit-component');
+  const ownsCommand=!window.OrbitEmbed||commandRoot?.querySelector('[data-open-command]');
+  if(ownsCommand&&!e.defaultPrevented&&(e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();e.stopImmediatePropagation();openCommand();return}
   const comboRoot=e.target.closest('[data-starter-combo]');if(comboRoot&&e.target.matches('input')){const s=ensureCombo(comboRoot),input=e.target,list=comboRoot.querySelector('[role=listbox]');if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();if(list.hidden)renderCombo(comboRoot);s.active=e.key==='Home'?0:e.key==='End'?s.filtered.length-1:(s.active+(e.key==='ArrowDown'?1:-1)+s.filtered.length)%s.filtered.length;renderCombo(comboRoot);list.querySelector('.active')?.scrollIntoView({block:'nearest'})}if(e.key==='Enter'&&!list.hidden&&s.active>=0){e.preventDefault();e.stopImmediatePropagation();input.dataset.justSelected='true';chooseCombo(comboRoot,s.filtered[s.active])}if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeFloating()}if(e.key==='Tab')closeFloating();}
   if(e.target.matches('[data-command-search]')){if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();commandIndex=(commandIndex+(e.key==='ArrowDown'?1:-1)+commands.length)%commands.length;document.querySelectorAll('#command-results [role=option]').forEach((x,i)=>x.setAttribute('aria-selected',i===commandIndex));e.target.setAttribute('aria-activedescendant',`command-${commandIndex}`)}if(e.key==='Enter'){e.preventDefault();runCommand(commandIndex)}}
   const panel=e.target.closest('.starter-popover-panel,.row-action-menu');if(panel&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeFloating(true)}
