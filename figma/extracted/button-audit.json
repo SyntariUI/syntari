@@ -1,0 +1,2067 @@
+{
+  "scope": "Unenhanced default component templates; excludes documentation chrome, dynamically created menus, and starter screens.",
+  "counts": {
+    "danger": 2,
+    "ghost": 36,
+    "icon-button": 19,
+    "outline": 65,
+    "primary": 14,
+    "secondary": 6
+  },
+  "knownTreatments": {
+    "outline": ".button",
+    "secondary": ".button.secondary",
+    "primary": ".button.primary",
+    "accent": ".button.accent",
+    "ghost": ".button.ghost",
+    "danger": ".button.danger"
+  },
+  "separateFilledSecondaryDefined": true,
+  "buttons": [
+    {
+      "component": "attribution-table",
+      "index": 2,
+      "tag": "button",
+      "label": "Show revenue",
+      "attributes": {
+        "class": "button ghost small",
+        "data-table-metric": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "attribution-table",
+      "index": 3,
+      "tag": "button",
+      "label": "Update",
+      "attributes": {
+        "class": "button small",
+        "data-table-update": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "attribution-table",
+      "index": 4,
+      "tag": "button",
+      "label": "Automatic table updates",
+      "attributes": {
+        "class": "button small",
+        "data-table-play": "",
+        "aria-pressed": "true",
+        "aria-label": "Automatic table updates"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "rolling-number",
+      "index": 0,
+      "tag": "button",
+      "label": "−89",
+      "attributes": {
+        "class": "button ",
+        "data-number-action": "decrease"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "rolling-number",
+      "index": 1,
+      "tag": "button",
+      "label": "+127",
+      "attributes": {
+        "class": "button primary",
+        "data-number-action": "increase"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "rolling-number",
+      "index": 2,
+      "tag": "button",
+      "label": "Reset",
+      "attributes": {
+        "class": "button ghost",
+        "data-number-action": "reset"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "button",
+      "index": 0,
+      "tag": "button",
+      "label": "Get started",
+      "attributes": {
+        "class": "button primary",
+        "data-notify": "You’re ready to get started."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "button",
+      "index": 1,
+      "tag": "button",
+      "label": "Secondary",
+      "attributes": {
+        "class": "button secondary",
+        "data-notify": "Secondary action selected."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "secondary"
+    },
+    {
+      "component": "button",
+      "index": 2,
+      "tag": "button",
+      "label": "Ghost",
+      "attributes": {
+        "class": "button ghost",
+        "data-notify": "Ghost action selected."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "button",
+      "index": 3,
+      "tag": "button",
+      "label": "Delete",
+      "attributes": {
+        "class": "button danger",
+        "data-notify": "Delete button preview. No data was removed."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "danger"
+    },
+    {
+      "component": "button",
+      "index": 4,
+      "tag": "button",
+      "label": "Disabled",
+      "attributes": {
+        "class": "button ",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "outline"
+    },
+    {
+      "component": "icon-button",
+      "index": 0,
+      "tag": "button",
+      "label": "Add item",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Add item",
+        "data-notify": "Item added."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "icon-button",
+      "index": 1,
+      "tag": "button",
+      "label": "Favorite",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Favorite",
+        "aria-pressed": "true"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "icon-button",
+      "index": 2,
+      "tag": "button",
+      "label": "Bookmark",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Bookmark",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "icon-button",
+      "index": 3,
+      "tag": "button",
+      "label": "Copy link",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Copy link",
+        "data-copy-link": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "icon-button",
+      "index": 4,
+      "tag": "button",
+      "label": "More options",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "More options",
+        "data-notify": "More options button preview."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "icon-button",
+      "index": 5,
+      "tag": "button",
+      "label": "Disabled add",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Disabled add",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "dropdown-menu",
+      "index": 0,
+      "tag": "button",
+      "label": "Project actions",
+      "attributes": {
+        "class": "button ",
+        "data-menu-toggle": "",
+        "aria-expanded": "false",
+        "aria-haspopup": "true"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "card",
+      "index": 0,
+      "tag": "button",
+      "label": "Open project",
+      "attributes": {
+        "class": "button small",
+        "data-open-project": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "dialog",
+      "index": 0,
+      "tag": "button",
+      "label": "Create a project",
+      "attributes": {
+        "class": "button ",
+        "data-open-project": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "toast",
+      "index": 0,
+      "tag": "button",
+      "label": "Show toast",
+      "attributes": {
+        "class": "button small",
+        "data-notify": "Changes saved successfully."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "tooltip",
+      "index": 0,
+      "tag": "button",
+      "label": "Copy component",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Copy component",
+        "data-notify": "Component copied in this preview."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "tooltip",
+      "index": 1,
+      "tag": "button",
+      "label": "Download tokens",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Download tokens",
+        "data-notify": "Download button preview. Use Export tokens for the full palette."
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "tooltip",
+      "index": 2,
+      "tag": "button",
+      "label": "Favorite component",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Favorite component",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "stepper",
+      "index": 0,
+      "tag": "button",
+      "label": "Continue",
+      "attributes": {
+        "class": "button small",
+        "data-step-next": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "empty-state",
+      "index": 0,
+      "tag": "button",
+      "label": "Create project",
+      "attributes": {
+        "class": "button small",
+        "data-open-project": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "filter-chips",
+      "index": 3,
+      "tag": "button",
+      "label": "Clear all",
+      "attributes": {
+        "class": "button ghost small",
+        "data-clear-chips": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "filter-chips",
+      "index": 4,
+      "tag": "button",
+      "label": "Reset filters",
+      "attributes": {
+        "class": "button small",
+        "data-reset-chips": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "chat-composer",
+      "index": 1,
+      "tag": "button",
+      "label": "Send message",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Send message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "file-input",
+      "index": 0,
+      "tag": "button",
+      "label": "Select assets",
+      "attributes": {
+        "class": "button small secondary",
+        "type": "button",
+        "data-select-assets": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "secondary"
+    },
+    {
+      "component": "file-input",
+      "index": 1,
+      "tag": "button",
+      "label": "Remove selected file",
+      "attributes": {
+        "class": "button small secondary file-remove",
+        "type": "button",
+        "data-remove-asset": "",
+        "hidden": "",
+        "aria-label": "Remove selected file"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "secondary"
+    },
+    {
+      "component": "selection-toolbar",
+      "index": 2,
+      "tag": "button",
+      "label": "Copy selected items",
+      "attributes": {
+        "class": "icon-button",
+        "aria-label": "Copy selected items",
+        "data-toolbar-action": "copy"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "selection-toolbar",
+      "index": 3,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "class": "button small",
+        "data-toolbar-action": "archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "page-header-and-breadcrumbs",
+      "index": 0,
+      "tag": "button",
+      "label": "Workspace",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-breadcrumb": "Workspace"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "page-header-and-breadcrumbs",
+      "index": 1,
+      "tag": "button",
+      "label": "New project",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-create-record": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "side-drawer",
+      "index": 0,
+      "tag": "button",
+      "label": "Open project details",
+      "attributes": {
+        "type": "button",
+        "class": "button ",
+        "data-open-drawer": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "bottom-sheet",
+      "index": 0,
+      "tag": "button",
+      "label": "Share workspace",
+      "attributes": {
+        "type": "button",
+        "class": "button ",
+        "data-open-sheet": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "popover",
+      "index": 0,
+      "tag": "button",
+      "label": "Notification preferences",
+      "attributes": {
+        "type": "button",
+        "class": "button",
+        "data-popover-toggle": "",
+        "aria-expanded": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "confirmation-dialog",
+      "index": 0,
+      "tag": "button",
+      "label": "Archive project",
+      "attributes": {
+        "type": "button",
+        "class": "button small danger",
+        "data-demo-confirm": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "danger"
+    },
+    {
+      "component": "command-palette",
+      "index": 0,
+      "tag": "button",
+      "label": "Search or jump to… ⌘ K",
+      "attributes": {
+        "type": "button",
+        "class": "button ",
+        "data-open-command": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "simple-data-table",
+      "index": 5,
+      "tag": "button",
+      "label": "Open Brand refresh",
+      "attributes": {
+        "type": "button",
+        "class": "icon-button",
+        "data-simple-open": "1",
+        "aria-label": "Open Brand refresh"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "simple-data-table",
+      "index": 6,
+      "tag": "button",
+      "label": "Open Website exploration",
+      "attributes": {
+        "type": "button",
+        "class": "icon-button",
+        "data-simple-open": "2",
+        "aria-label": "Open Website exploration"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "simple-data-table",
+      "index": 7,
+      "tag": "button",
+      "label": "Open Customer research",
+      "attributes": {
+        "type": "button",
+        "class": "icon-button",
+        "data-simple-open": "3",
+        "aria-label": "Open Customer research"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "simple-data-table",
+      "index": 8,
+      "tag": "button",
+      "label": "Open Mobile companion",
+      "attributes": {
+        "type": "button",
+        "class": "icon-button",
+        "data-simple-open": "4",
+        "aria-label": "Open Mobile companion"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "simple-data-table",
+      "index": 9,
+      "tag": "button",
+      "label": "Open Autumn campaign",
+      "attributes": {
+        "type": "button",
+        "class": "icon-button",
+        "data-simple-open": "5",
+        "aria-label": "Open Autumn campaign"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "data-table",
+      "index": 1,
+      "tag": "button",
+      "label": "All statuses",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-table-status": "",
+        "data-popover-toggle": "",
+        "aria-expanded": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "data-table",
+      "index": 2,
+      "tag": "button",
+      "label": "All statuses",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-table-filter": "All statuses"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "data-table",
+      "index": 3,
+      "tag": "button",
+      "label": "Active",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-table-filter": "Active"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "data-table",
+      "index": 4,
+      "tag": "button",
+      "label": "Review",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-table-filter": "Review"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "data-table",
+      "index": 5,
+      "tag": "button",
+      "label": "Archived",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-table-filter": "Archived"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "data-table",
+      "index": 9,
+      "tag": "button",
+      "label": "Archive selected",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-table-bulk": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "data-table",
+      "index": 10,
+      "tag": "button",
+      "label": "Previous results",
+      "attributes": {
+        "type": "button",
+        "class": "button small previous-results",
+        "data-table-page": "-1",
+        "aria-label": "Previous results"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "data-table",
+      "index": 11,
+      "tag": "button",
+      "label": "Next results",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-table-page": "1",
+        "aria-label": "Next results"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "inline-validation",
+      "index": 1,
+      "tag": "button",
+      "label": "Continue",
+      "attributes": {
+        "class": "button primary",
+        "type": "submit"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "error-and-retry",
+      "index": 0,
+      "tag": "button",
+      "label": "Try again",
+      "attributes": {
+        "type": "button",
+        "class": "button ",
+        "data-retry": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "upload-progress",
+      "index": 0,
+      "tag": "button",
+      "label": "Start upload",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-upload-start": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "upload-progress",
+      "index": 1,
+      "tag": "button",
+      "label": "Cancel",
+      "attributes": {
+        "type": "button",
+        "class": "button small secondary",
+        "data-upload-cancel": "",
+        "disabled": "",
+        "hidden": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "secondary"
+    },
+    {
+      "component": "unsaved-changes",
+      "index": 1,
+      "tag": "button",
+      "label": "Discard",
+      "attributes": {
+        "type": "button",
+        "class": "button small secondary",
+        "data-discard-draft": ""
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "secondary"
+    },
+    {
+      "component": "unsaved-changes",
+      "index": 2,
+      "tag": "button",
+      "label": "Save",
+      "attributes": {
+        "class": "button primary small",
+        "type": "submit"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "agent-todo-list",
+      "index": 1,
+      "tag": "button",
+      "label": "Run plan",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "todo-run"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "agent-todo-list",
+      "index": 2,
+      "tag": "button",
+      "label": "Stop plan",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "todo-stop",
+        "aria-label": "Stop plan",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "ghost"
+    },
+    {
+      "component": "agent-message",
+      "index": 0,
+      "tag": "button",
+      "label": "Copy message",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "copy-message",
+        "aria-label": "Copy message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "agent-message",
+      "index": 1,
+      "tag": "button",
+      "label": "Helpful response",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "like",
+        "aria-label": "Helpful response",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "agent-message",
+      "index": 2,
+      "tag": "button",
+      "label": "Regenerate message",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "regenerate",
+        "aria-label": "Regenerate message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "message-scroller",
+      "index": 0,
+      "tag": "button",
+      "label": "Jump to latest",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "jump-latest"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "prompt-input",
+      "index": 2,
+      "tag": "button",
+      "label": "Send message",
+      "attributes": {
+        "type": "submit",
+        "class": "icon-button primary",
+        "aria-label": "Send message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "code-block",
+      "index": 0,
+      "tag": "button",
+      "label": "Copy",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "copy-code"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "approval-card",
+      "index": 0,
+      "tag": "button",
+      "label": "Decline",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "reject"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "approval-card",
+      "index": 1,
+      "tag": "button",
+      "label": "Approve",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "approve"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "file-diff",
+      "index": 1,
+      "tag": "button",
+      "label": "Keep changes",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "approve"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "file-diff",
+      "index": 2,
+      "tag": "button",
+      "label": "Discard",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "reject"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "tool-result",
+      "index": 1,
+      "tag": "button",
+      "label": "Run again",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "tool-run"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "streaming-response",
+      "index": 0,
+      "tag": "button",
+      "label": "Generate response",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "stream-start"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "streaming-response",
+      "index": 1,
+      "tag": "button",
+      "label": "Stop",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "stream-stop",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "ghost"
+    },
+    {
+      "component": "image-generation",
+      "index": 0,
+      "tag": "button",
+      "label": "Generate preview",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "image-generate"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "tool-approval",
+      "index": 0,
+      "tag": "button",
+      "label": "Decline",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "reject"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "tool-approval",
+      "index": 1,
+      "tag": "button",
+      "label": "Approve",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "approve"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "citations",
+      "index": 1,
+      "tag": "button",
+      "label": "View foundations",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "foundations"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "citations",
+      "index": 3,
+      "tag": "a",
+      "label": "Be UI reference",
+      "attributes": {
+        "class": "button small",
+        "href": "https://beui.dev/components/agents/todo-list",
+        "target": "_blank",
+        "rel": "noopener"
+      },
+      "treatment": "outline"
+    },
+    {
+      "component": "agent-activity",
+      "index": 0,
+      "tag": "button",
+      "label": "Add event",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "activity-add"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "agent-activity",
+      "index": 1,
+      "tag": "button",
+      "label": "Clear",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "activity-clear"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "agent-loading-states",
+      "index": 0,
+      "tag": "button",
+      "label": "Next state",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "loading-next"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "ai-sidebar",
+      "index": 0,
+      "tag": "button",
+      "label": "New chat",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "new-chat"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "ai-sidebar",
+      "index": 5,
+      "tag": "button",
+      "label": "Send message",
+      "attributes": {
+        "type": "submit",
+        "class": "icon-button primary",
+        "aria-label": "Send message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "chat-workspace",
+      "index": 0,
+      "tag": "button",
+      "label": "New chat",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "new-chat"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "chat-workspace",
+      "index": 5,
+      "tag": "button",
+      "label": "Send message",
+      "attributes": {
+        "type": "submit",
+        "class": "icon-button primary",
+        "aria-label": "Send message"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "icon-button"
+    },
+    {
+      "component": "file-tree",
+      "index": 2,
+      "tag": "button",
+      "label": "Button.html",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "tree-file",
+        "data-file": "Button"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "file-tree",
+      "index": 3,
+      "tag": "button",
+      "label": "Card.html",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "tree-file",
+        "data-file": "Card"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "file-tree",
+      "index": 4,
+      "tag": "button",
+      "label": "Dialog.html",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "tree-file",
+        "data-file": "Dialog"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "file-tree",
+      "index": 6,
+      "tag": "button",
+      "label": "tokens.css",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "tree-file",
+        "data-file": "Tokens"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "otp-input",
+      "index": 1,
+      "tag": "button",
+      "label": "Verify code",
+      "attributes": {
+        "class": "button primary small",
+        "type": "submit"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "feedback-widget",
+      "index": 4,
+      "tag": "button",
+      "label": "Send feedback",
+      "attributes": {
+        "class": "button small primary",
+        "type": "submit"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    },
+    {
+      "component": "notification-stack",
+      "index": 0,
+      "tag": "button",
+      "label": "Dismiss Jamie shared a project",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "dismiss-notification",
+        "aria-label": "Dismiss Jamie shared a project"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "notification-stack",
+      "index": 1,
+      "tag": "button",
+      "label": "Dismiss Your export is ready",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "dismiss-notification",
+        "aria-label": "Dismiss Your export is ready"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "notification-stack",
+      "index": 2,
+      "tag": "button",
+      "label": "Add notification",
+      "attributes": {
+        "type": "button",
+        "class": "button small secondary",
+        "data-agent-action": "add-notification"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "secondary"
+    },
+    {
+      "component": "context-menu",
+      "index": 0,
+      "tag": "button",
+      "label": "Actions",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "context-open"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "context-menu",
+      "index": 1,
+      "tag": "button",
+      "label": "Duplicate",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "context-choice",
+        "role": "menuitem",
+        "data-choice": "Duplicate"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "context-menu",
+      "index": 2,
+      "tag": "button",
+      "label": "Rename",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "context-choice",
+        "role": "menuitem",
+        "data-choice": "Rename"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "context-menu",
+      "index": 3,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "type": "button",
+        "class": "button ghost small",
+        "data-agent-action": "context-choice",
+        "role": "menuitem",
+        "data-choice": "Archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 0,
+      "tag": "button",
+      "label": "Mon",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-day",
+        "data-day": "Monday",
+        "aria-pressed": "true"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 1,
+      "tag": "button",
+      "label": "Tue",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-day",
+        "data-day": "Tuesday",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 2,
+      "tag": "button",
+      "label": "Wed",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-day",
+        "data-day": "Wednesday",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 3,
+      "tag": "button",
+      "label": "09:00",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-time",
+        "data-time": "09:00",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 4,
+      "tag": "button",
+      "label": "10:30",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-time",
+        "data-time": "10:30",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 5,
+      "tag": "button",
+      "label": "14:00",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-time",
+        "data-time": "14:00",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 6,
+      "tag": "button",
+      "label": "15:30",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "schedule-time",
+        "data-time": "15:30",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "availability-scheduler",
+      "index": 7,
+      "tag": "button",
+      "label": "Confirm time",
+      "attributes": {
+        "type": "button",
+        "class": "button small primary",
+        "data-agent-action": "schedule-confirm",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "primary"
+    },
+    {
+      "component": "swipeable-list",
+      "index": 0,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "swipe-archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "swipeable-list",
+      "index": 1,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "swipe-archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "swipeable-list",
+      "index": 2,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "swipe-archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "ghost"
+    },
+    {
+      "component": "swipeable-list",
+      "index": 3,
+      "tag": "button",
+      "label": "Undo",
+      "attributes": {
+        "type": "button",
+        "class": "button small ghost",
+        "data-agent-action": "swipe-undo",
+        "disabled": ""
+      },
+      "value": "",
+      "disabled": true,
+      "treatment": "ghost"
+    },
+    {
+      "component": "not-found",
+      "index": 0,
+      "tag": "button",
+      "label": "Back to components",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-agent-action": "gallery"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "tilt-card",
+      "index": 0,
+      "tag": "button",
+      "label": "Open project",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "tilt-open"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "marquee",
+      "index": 0,
+      "tag": "button",
+      "label": "Play",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "marquee-toggle",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "pull-to-refresh",
+      "index": 0,
+      "tag": "button",
+      "label": "Refresh",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "refresh"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "ambient-background",
+      "index": 0,
+      "tag": "button",
+      "label": "Animate background",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "ambient-toggle",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "rotating-carousel",
+      "index": 0,
+      "tag": "button",
+      "label": "Previous card",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "carousel-prev",
+        "aria-label": "Previous card"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "rotating-carousel",
+      "index": 1,
+      "tag": "button",
+      "label": "Next card",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "carousel-next",
+        "aria-label": "Next card"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "card-and-project-folder",
+      "index": 1,
+      "tag": "button",
+      "label": "Identity",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "folder-file",
+        "data-title": "Identity"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "card-and-project-folder",
+      "index": 2,
+      "tag": "button",
+      "label": "Guidelines",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "folder-file",
+        "data-title": "Guidelines"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "card-and-project-folder",
+      "index": 3,
+      "tag": "button",
+      "label": "Color studies",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "folder-file",
+        "data-title": "Color studies"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "masonry-grid",
+      "index": 0,
+      "tag": "button",
+      "label": "Load more",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "masonry-more"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "fixtures",
+      "index": 0,
+      "tag": "button",
+      "label": "Studio A vs Studio B10:00",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "fixture",
+        "aria-pressed": "false",
+        "data-title": "Studio A vs Studio B at 10:00"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "fixtures",
+      "index": 1,
+      "tag": "button",
+      "label": "North vs South12:30",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "fixture",
+        "aria-pressed": "false",
+        "data-title": "North vs South at 12:30"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "fixtures",
+      "index": 2,
+      "tag": "button",
+      "label": "East vs West16:00",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "fixture",
+        "aria-pressed": "false",
+        "data-title": "East vs West at 16:00"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "asset-swap",
+      "index": 1,
+      "tag": "button",
+      "label": "Reverse assets",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "swap-reverse"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "asset-swap",
+      "index": 2,
+      "tag": "button",
+      "label": "Preview swap",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "swap-preview"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "overflow-actions",
+      "index": 1,
+      "tag": "button",
+      "label": "Duplicate",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "overflow-choice",
+        "data-title": "Duplicate"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "overflow-actions",
+      "index": 2,
+      "tag": "button",
+      "label": "Move to folder",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "overflow-choice",
+        "data-title": "Move to folder"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "overflow-actions",
+      "index": 3,
+      "tag": "button",
+      "label": "Archive",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "overflow-choice",
+        "data-title": "Archive"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "wallet-card",
+      "index": 0,
+      "tag": "button",
+      "label": "Hide balance",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "wallet-hide",
+        "aria-label": "Hide balance",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "wallet-card",
+      "index": 1,
+      "tag": "button",
+      "label": "Copy demo identifier",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "wallet-copy",
+        "aria-label": "Copy demo identifier"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "prediction-card",
+      "index": 0,
+      "tag": "button",
+      "label": "Yes",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "predict",
+        "data-title": "Yes",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "prediction-card",
+      "index": 1,
+      "tag": "button",
+      "label": "No",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "predict",
+        "data-title": "No",
+        "aria-pressed": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "bloom-menu",
+      "index": 0,
+      "tag": "button",
+      "label": "New document",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "bloom-choice",
+        "aria-label": "New document",
+        "data-title": "Document"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "bloom-menu",
+      "index": 1,
+      "tag": "button",
+      "label": "New folder",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "bloom-choice",
+        "aria-label": "New folder",
+        "data-title": "Folder"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "bloom-menu",
+      "index": 2,
+      "tag": "button",
+      "label": "New conversation",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "bloom-choice",
+        "aria-label": "New conversation",
+        "data-title": "Conversation"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "bloom-menu",
+      "index": 3,
+      "tag": "button",
+      "label": "Create",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "bloom-toggle",
+        "aria-expanded": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "morphing-search",
+      "index": 0,
+      "tag": "button",
+      "label": "Find a project",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "search-expand",
+        "aria-expanded": "false"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "morphing-search",
+      "index": 2,
+      "tag": "button",
+      "label": "Close",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "search-close"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "action-swap",
+      "index": 0,
+      "tag": "button",
+      "label": "Prepare export",
+      "attributes": {
+        "type": "button",
+        "class": "button small",
+        "data-extra": "action-swap"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "outline"
+    },
+    {
+      "component": "agent-questions",
+      "index": 4,
+      "tag": "button",
+      "label": "Review response",
+      "attributes": {
+        "type": "submit",
+        "class": "button small primary"
+      },
+      "value": "",
+      "disabled": false,
+      "treatment": "primary"
+    }
+  ]
+}

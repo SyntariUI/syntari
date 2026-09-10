@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "commit": "5b557fcdb4b8aa77955b6f2fb68edffff4c18950",
+    "files": {
+      "package.json": "6a78e4272a17826a609d0642e77058a36bd3deee9c411fe45c21e9ffb5e596e8",
+      "orbit.js": "2854df3196f08566f0e15c1488f7bdbb562795f3def69e93999cf1b674c97788",
+      "support.html": "e6ac5c57ec54fe1094e03522c29350b01e1219a33a5bfe72b002fbc3a83d6c04",
+      "app.js": "2fc9b37451dcff365889b1dc40d96fb9614f067ba0313add3dcc938326524107",
+      "starter.js": "cbc25a793e99b37ca4cefe3e936701797b681c6dbb563f9806e526d43126c64d",
+      "agents.js": "4c67aa9b7f9f54af953fb215f3dcd024aa364512f3a082b801952e23b611f015",
+      "extras.js": "8ac176549a1e38408a99b36857966af9b085a304288d5f67a1ae7e97e334bfcc",
+      "controls.js": "61515a0e5234abffc513c4acc8ea70aa3a4a677d711673fa02b931de64eeb66e",
+      "motion.js": "d0ce568977f3110c154d9e53ef7eef9dc7502fd04e4cda81312112431637d557",
+      "numbers.js": "b61fecdc369decd02096cc2e3d3ff1e7118bdba0faff604e17dc46a51b38f689",
+      "docs-data.js": "e10643eb24687781b082799b287a10580c86022dcc590c752dfb243e89d83c01",
+      "docs.js": "cabaa8f9e360bd45e1bf39ff5de7928cac19464fff8376d4f2012cac73f09b18",
+      "docs.html": "9c46e069622b4f3af8dac7c6c535f32fcdac65399285dddbec358d618841f467",
+      "gallery.html": "0e5d3aec37b6ed5cba9a3d89bfb8463d9943c343570081ee3b7a7d30f137bb19",
+      "tokens.css": "01f03ecb716f217ccc7a1153f2a4c6f59e43bb25dee547b748441ac41549e2a2",
+      "styles.css": "35fc214cc934cd72e1640e7f6c9b6d171c6f8988c9366852141747617c94139f",
+      "controls.css": "1d0ed215fc41badda0a7de5cb7815b834deaa4cd89999c5f0474810ef938ad19",
+      "motion.css": "3750b906205efaf2dfa345538dc706a885299a5d0c938e59d8013ba3b71c2c70",
+      "numbers.css": "ce5050801a883134d48a1f028d8cb32ac05a5f7487bb129d6c916a3315277702",
+      "starter.css": "1fb49b3077b15d9fdfd8f8c16da55159a41d5132ed8f5fb8f899c78ce9944f95",
+      "agents.css": "b1093e8386bf38c52941f4462b00997f6f359f563e6ccac100a0536c06267267",
+      "extras.css": "de338b3c54c165e7618f7062299aec7351fde34c621a83c943d70e49b53da4c3",
+      "docs.css": "2e813d4971597c217095dc1ae927160d4e485a230a677c14148a40bc43e610eb"
+    },
+    "version": "0.2.0"
+  },
+  "target": {
+    "name": "Orbit",
+    "fileKey": "0rv4sI7MUcEZaERaCJX8bt",
+    "url": "https://www.figma.com/design/0rv4sI7MUcEZaERaCJX8bt",
+    "generated": false
+  },
+  "capture": {
+    "engine": "153.0.8010.12",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "stageWidth": 640,
+    "reducedMotion": true,
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "note": "Default-state computed snapshots at one width. State checks confirm recipes mount; they are not visual or interaction parity certification."
+  },
+  "summary": {
+    "components": 107,
+    "authoredStates": 250,
+    "checkedThemeStates": 500,
+    "tokens": 137,
+    "themeOverrides": 72,
+    "fonts": 3,
+    "icons": 58,
+    "cssRules": 1177,
+    "literalColorDeclarations": 67,
+    "documentedMissingTokens": [],
+    "buttonCounts": {
+      "danger": 2,
+      "ghost": 36,
+      "icon-button": 19,
+      "outline": 65,
+      "primary": 14,
+      "secondary": 6
+    },
+    "errors": []
+  },
+  "files": [
+    "tokens.json",
+    "components.json",
+    "styles.json",
+    "assets.json",
+    "button-audit.json",
+    "gaps.json"
+  ],
+  "limitations": [
+    "Authored preview states are not a complete Cartesian Figma variant matrix.",
+    "DOM trees are component templates and enhanced default examples, not native Figma nodes.",
+    "Computed values and matching CSS rules are evidence, not inferred variable bindings.",
+    "Figma font availability and prototype behavior remain unverified.",
+    "Live timers, overlays opened after interaction, and responsive layouts require a later capture pass.",
+    "Code Connect mappings have not been created."
+  ]
+}

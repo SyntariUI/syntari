@@ -53,13 +53,15 @@
   function prepare(root = document) {
     // Discard detached nodes after search/category replacement.
     observed.forEach(card=>{if(!card.isConnected){observer.unobserve(card);observed.delete(card)}});
-    document.querySelectorAll('.specimen').forEach(card=>{if(!seen.has(card)){seen.add(card);observed.add(card);observer.observe(card)}});
+    const cards=[...root.querySelectorAll('.specimen, .orbit-component')];
+    if(root.matches?.('.specimen, .orbit-component'))cards.push(root);
+    cards.forEach(card=>{if(!seen.has(card)){seen.add(card);observed.add(card);observer.observe(card)}});
     root.querySelectorAll(groups).forEach(group => indicator(group,true));
   }
   function refresh() { document.querySelectorAll(groups).forEach(group=>indicator(group,true)); }
   const resize = new ResizeObserver(refresh);
-  addEventListener('DOMContentLoaded', () => {
-    resize.observe(document.querySelector('.page'));
+  function start() {
+    resize.observe(document.querySelector('.page') || document.body);
     document.fonts.ready.then(refresh);
     enter(document.querySelector('.intro'));
     prepare();
@@ -70,7 +72,9 @@
       });
       dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(dialog)});
     });
-  });
+  }
+  if(document.readyState==='loading')addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
   // Capture old selection geometry; update after the existing action has run.
   document.addEventListener('click', e => {
     const button=e.target.closest('button');if(!button)return;
@@ -99,22 +103,47 @@
     else {el.inert=true;if(preference.matches){if(el.matches(':popover-open'))el.hidePopover();el.hidden=true;return}animate(el,[{opacity:1,translate:'0 0'},{opacity:0,translate:'0 3px'}],120);timers.set(el,setTimeout(()=>{if(el.matches(':popover-open'))el.hidePopover();el.hidden=true;el.inert=false},120))}
   }
   function panel(el) {el?.getAnimations().forEach(a=>a.cancel());enter(el)}
+  function feedback(el, text) {
+    if(!el || el.textContent===text)return;
+    el.textContent=text;
+    panel(el);
+  }
+  // Preserve row identity, focus, and spatial continuity when a list changes order.
+  function rearrange(container, update) {
+    const before=new Map([...container.children].map(el=>[el,el.getBoundingClientRect()]));
+    update();
+    [...container.children].forEach(el=>{
+      const from=before.get(el),to=el.getBoundingClientRect();
+      el.getAnimations().forEach(a=>a.cancel());
+      if(from){const x=from.left-to.left,y=from.top-to.top;if(x||y)animate(el,[{transform:`translate(${x}px,${y}px)`},{transform:'translate(0,0)'}],280);}
+      else enter(el);
+    });
+  }
+  async function remove(el) {
+    if(!el || el.dataset.removing)return;
+    el.dataset.removing='true';el.inert=true;
+    const parent=el.parentElement;
+    const a=animate(el,[{opacity:1,transform:'translateX(0)'},{opacity:0,transform:'translateX(10px)'}],140);
+    if(a)await a.finished.catch(()=>{});
+    if(parent)rearrange(parent,()=>el.remove());
+  }
   function replay() {
-    document.querySelectorAll('.specimen').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0){enter(el);chart(el)}});
+    document.querySelectorAll('.specimen, .orbit-component').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0){enter(el);chart(el)}});
   }
   // Native disclosure semantics are preserved during an interruptible height transition.
   document.addEventListener('click',e=>{
-    const summary=e.target.closest('summary');if(!summary||preference.matches)return;
+    const summary=e.target.closest('summary');if(!summary||preference.matches||e.target.closest('button,a,input')||summary.parentElement.matches('.column-picker'))return;
     const details=summary.parentElement;e.preventDefault();
     const from=details.getBoundingClientRect().height;
     const opening=details.dataset.motionTarget ? details.dataset.motionTarget!=='open' : !details.open;
     details.getAnimations().forEach(a=>a.cancel());details.open=true;
     details.dataset.motionTarget=opening?'open':'closed';
-    const to=opening?details.scrollHeight:summary.getBoundingClientRect().height;
+    const style=getComputedStyle(details);
+    const to=opening?details.scrollHeight+parseFloat(style.borderTopWidth)+parseFloat(style.borderBottomWidth):summary.getBoundingClientRect().height+parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+parseFloat(style.borderTopWidth)+parseFloat(style.borderBottomWidth);
     details.style.overflow='hidden';
     const a=animate(details,[{height:`${from}px`},{height:`${to}px`}],240);
     if(a)a.finished.then(()=>{details.open=opening;delete details.dataset.motionTarget;details.style.overflow=''},()=>{});
   });
   function settleAncestors(el){for(let node=el.parentElement;node&&node!==document.body;node=node.parentElement){node.getAnimations().forEach(a=>{if(a.effect?.getKeyframes().some(k=>k.transform||k.translate)){try{a.finish()}catch{a.cancel()}}})}}
-  window.OrbitMotion={settleAncestors,prepare,panel,showDialog,closeDialog,visibility,replay,animate,indicator,enter};
+  window.OrbitMotion={settleAncestors,prepare,panel,showDialog,closeDialog,visibility,replay,animate,indicator,enter,feedback,rearrange,remove};
 })();

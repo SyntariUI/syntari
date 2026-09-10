@@ -26,7 +26,7 @@ test('agent workflows',async({page})=>{
 });
 test('remaining catalog patterns and responsive coverage',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4318/gallery.html');const c=name=>page.locator(`[data-component="${name}"]`);
- await expect(page.locator('.specimen')).toHaveCount(106);
+ await expect(page.locator('.specimen')).toHaveCount(107);
  await c('Data table').getByRole('button',{name:'All statuses',exact:true}).click();await c('Data table').getByRole('button',{name:'Review',exact:true}).click();await expect(c('Data table').locator('tbody tr')).toHaveCount(2);
  await c('OTP input').getByRole('textbox').fill('111111');await c('OTP input').getByRole('button',{name:'Verify code'}).click();await expect(c('OTP input').getByRole('status')).toContainText('did not match');await c('OTP input').getByRole('textbox').fill('123456');await c('OTP input').getByRole('button',{name:'Verify code'}).click();await expect(c('OTP input').getByRole('status')).toContainText('verified');
  await c('Range slider').getByRole('slider',{name:'Minimum budget'}).fill('900');await expect(c('Range slider').getByRole('slider',{name:'Maximum budget'})).toHaveValue('900');

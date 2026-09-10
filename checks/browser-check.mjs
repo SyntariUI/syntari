@@ -3,7 +3,7 @@ export default async page => {
   const check=(ok,label)=>{if(!ok)throw new Error(label);results.push(label)};
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4318/gallery.html');
-  check(await page.locator('.specimen').count()===106,'106 component families render');
+  check(await page.locator('.specimen').count()===107,'107 component families render');
   await page.getByRole('button',{name:'Dark theme',exact:true}).click();
   check(await page.locator('html').getAttribute('data-theme')==='dark','Dark theme switches');
   await page.reload();

@@ -17,7 +17,7 @@
 .button:active:not(:disabled),.icon-button:active:not(:disabled){transform:translateY(1px) scale(.975);box-shadow:var(--shadow-pressed)}
 .button.ghost:active,.button.accent:active,.button.danger:active{box-shadow:none}
 .button .icon{transition:transform var(--motion-medium) var(--ease-out)}
-.button:hover .icon:last-child:not(:first-child){transform:translateX(2px)}
+.button:hover .icon-arrow:last-child:not(:first-child){transform:translateX(2px)}
 .field input:focus,.field textarea:focus,.field select:focus,.input-shell:focus-within,.search:focus-within,.composer:focus-within{box-shadow:0 0 0 3px var(--purple-a1)}
 .switch span{transition:background-color var(--motion-medium) ease}
 .switch span:after{transition:transform var(--motion-medium) var(--ease-out),box-shadow var(--motion-fast) ease}
@@ -26,8 +26,8 @@
 .choice input:active:not(:disabled){transform:scale(.92)}
 .tooltip{transition:opacity var(--motion-fast) ease,translate var(--motion-fast) var(--ease-out);translate:0 3px}
 .tooltip-wrap:hover .tooltip,.tooltip-wrap:focus-within .tooltip{translate:0 0;transition-delay:160ms}
-summary .icon{transition:transform var(--motion-medium) var(--ease-out)}
-details[data-motion-target=closed] summary .icon{transform:rotate(0)}
+summary>.icon-chevron,summary>.icon-down{transition:transform var(--motion-medium) var(--ease-out)}
+details[data-motion-target=closed]>summary>.icon-chevron,details[data-motion-target=closed]>summary>.icon-down{transform:rotate(0)}
 dialog::backdrop{animation:backdrop-enter var(--motion-medium) ease}
 dialog.is-closing::backdrop{animation:backdrop-exit 140ms ease forwards}
 @keyframes backdrop-enter{from{opacity:0}to{opacity:1}}

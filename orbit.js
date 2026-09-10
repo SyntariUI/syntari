@@ -35,7 +35,7 @@ export async function prepare(root) {
   if (!(root instanceof Element)) throw new TypeError('Orbit prepare() needs an Element.');
   root.classList.add('specimen-body', 'orbit-component');
   const scope = `orbit-${crypto.randomUUID()}`;
-  root.querySelectorAll('input[type="radio"][name]').forEach(input => input.name = `${scope}-${input.name}`);
+  root.querySelectorAll('input[type="radio"][name]').forEach(input => { if (!input.form) input.name = `${scope}-${input.name}`; });
   window.OrbitPrepare(root);
   window.OrbitNumbers.prepare(root);
   window.OrbitMotion.prepare(root);
