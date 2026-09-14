@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Common interaction patterns for building trustworthy AI experiences, built with Syntari components.">
+  <title>AI behavioural design patterns — Syntari</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'light'}catch{}</script>
+  <style>
+    .pattern-page{min-height:100vh;background:radial-gradient(920px 540px at 50% -12%,var(--purple-a2),transparent 60%),radial-gradient(720px 460px at 90% 2%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed}
+    .poster{max-width:1140px;margin:0 auto;padding:44px 28px 72px}
+    .poster-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:54px;animation:pattern-rise .6s var(--ease-out) backwards}
+    .poster-brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:600;letter-spacing:-.6px}
+    .poster-brand .brand-mark{width:24px;height:24px}
+    .theme-toggle .icon{width:15px;height:15px}
+    .poster-head{text-align:center;max-width:840px;margin:0 auto;animation:pattern-rise .7s var(--ease-spring) .06s backwards}
+    .poster-title{font-size:clamp(36px,6.2vw,68px);line-height:1.03;font-weight:600;letter-spacing:-.035em;text-transform:uppercase;margin:0}
+    .poster-sub{margin:20px auto 0;max-width:38ch;font-size:clamp(15px,1.5vw,19px);line-height:1.5;color:var(--muted)}
+    .poster-rule{border:0;border-top:1px solid var(--border);max-width:1010px;margin:44px auto 40px}
+    .pattern-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+    .pattern{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 26px 30px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-card);animation:pattern-rise .62s var(--ease-spring) backwards;animation-delay:calc(var(--i) * 70ms);transition:transform var(--motion-medium) var(--ease-spring),box-shadow var(--motion-medium) var(--ease-out),border-color var(--motion-medium) var(--ease-out)}
+    .pattern:hover{transform:translateY(-4px);border-color:var(--purple-a3);box-shadow:var(--shadow-card-hover)}
+    .pattern-art{display:grid;place-items:center;min-height:132px;margin-bottom:24px}
+    .medallion{position:relative;display:grid;place-items:center;width:96px;height:96px;border-radius:28px;color:var(--accent-text);background:linear-gradient(152deg,var(--purple-a2),var(--sky-a1) 64%,transparent);box-shadow:inset 0 0 0 1px var(--border),0 14px 30px -20px #2c78fc66}
+    .medallion>.icon{width:42px;height:42px;stroke-width:1.5}
+    .medallion-badge{position:absolute;right:-7px;bottom:-7px;display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-control-hover);color:var(--accent-text)}
+    .medallion-badge .icon{width:17px;height:17px;stroke-width:1.9}
+    .pattern-rule{border:0;border-top:1px solid var(--border);width:100%;margin:0 0 22px}
+    .pattern h2{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:0 0 12px}
+    .pattern p{font-size:13.5px;line-height:1.62;color:var(--muted);margin:0;max-width:30ch}
+    .poster-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:50px;padding-top:24px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+    .poster-foot>span{display:flex;align-items:center;gap:9px}
+    @keyframes pattern-rise{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(max-width:960px){.pattern-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:620px){.poster{padding:32px 20px 56px}.poster-top{margin-bottom:36px}.poster-rule{margin:32px auto 28px}.pattern-grid{grid-template-columns:1fr;gap:16px}}
+  </style>
+</head>
+<body class="pattern-page">
+  <div class="poster">
+    <header class="poster-top">
+      <span class="poster-brand"><span class="brand-mark" aria-hidden="true"></span>Syntari</span>
+      <div class="theme-toggle" role="group" aria-label="Colour theme">
+        <button type="button" data-theme-choice="light" aria-pressed="true" aria-label="Light theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false" aria-label="Dark theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+      </div>
+    </header>
+
+    <div class="poster-head">
+      <h1 class="poster-title">AI behavioural design patterns</h1>
+      <p class="poster-sub">Common interaction patterns for building trustworthy AI experiences</p>
+    </div>
+
+    <hr class="poster-rule">
+
+    <div class="pattern-grid">
+      <article class="pattern" style="--i:0">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Clarification</h2>
+        <p>Asking the user to clarify ambiguous input or confirm intent</p>
+      </article>
+
+      <article class="pattern" style="--i:1">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Uncertainty</h2>
+        <p>Expressing uncertainty and confidence levels to the user</p>
+      </article>
+
+      <article class="pattern" style="--i:2">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <span class="medallion-badge"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Delegation</h2>
+        <p>Handing off tasks to the AI or recommending expert involvement</p>
+      </article>
+
+      <article class="pattern" style="--i:3">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span class="medallion-badge"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Recovery</h2>
+        <p>Gracefully handling errors and offering corrective actions</p>
+      </article>
+
+      <article class="pattern" style="--i:4">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
+            <span class="medallion-badge"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></span>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Memory</h2>
+        <p>Maintaining context and remembering user interactions over time</p>
+      </article>
+
+      <article class="pattern" style="--i:5">
+        <div class="pattern-art">
+          <span class="medallion">
+            <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+          </span>
+        </div>
+        <hr class="pattern-rule">
+        <h2>Generation</h2>
+        <p>Creating and suggesting new content or solutions</p>
+      </article>
+    </div>
+
+    <footer class="poster-foot">
+      <span><span class="mini-mark" aria-hidden="true"></span>Built with Syntari</span>
+      <span>Six interaction patterns · Light &amp; dark</span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const buttons = [...document.querySelectorAll('[data-theme-choice]')];
+      const sync = () => buttons.forEach(button => {
+        const on = button.dataset.themeChoice === (root.dataset.theme || 'light');
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-pressed', String(on));
+      });
+      buttons.forEach(button => button.addEventListener('click', () => {
+        root.dataset.theme = button.dataset.themeChoice;
+        try { localStorage.setItem('syntari-theme', button.dataset.themeChoice); } catch {}
+        sync();
+      }));
+      sync();
+    })();
+  </script>
+</body>
+</html>

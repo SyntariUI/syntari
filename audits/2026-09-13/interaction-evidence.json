@@ -1,0 +1,109 @@
+[
+  {
+    "label": "First open, normal motion",
+    "choices": [
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      },
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      },
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      }
+    ],
+    "geometry": {
+      "anchorCenter": 560,
+      "optionsCenter": 560
+    }
+  },
+  {
+    "label": "Second open, normal motion",
+    "choices": [
+      {
+        "opacity": "0",
+        "width": 37.719970703125,
+        "height": 37.719970703125,
+        "animations": 1
+      },
+      {
+        "opacity": "0",
+        "width": 37.719970703125,
+        "height": 37.719970703125,
+        "animations": 1
+      },
+      {
+        "opacity": "0",
+        "width": 37.719970703125,
+        "height": 37.719970703125,
+        "animations": 1
+      }
+    ],
+    "geometry": {
+      "anchorCenter": 560,
+      "optionsCenter": 560
+    }
+  },
+  {
+    "label": "Open with reduced motion",
+    "choices": [
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      },
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      },
+      {
+        "opacity": "1",
+        "width": 46,
+        "height": 46,
+        "animations": 0
+      }
+    ],
+    "geometry": {
+      "anchorCenter": 560,
+      "optionsCenter": 639
+    }
+  },
+  {
+    "label": "Touch device control sizes",
+    "controls": [
+      {
+        "label": "Open library navigation",
+        "text": "",
+        "width": 44,
+        "height": 44,
+        "coarse": true
+      },
+      {
+        "label": "Open product navigation",
+        "text": "",
+        "width": 35,
+        "height": 35,
+        "coarse": true
+      },
+      {
+        "label": null,
+        "text": "⌘ K",
+        "width": 71.359375,
+        "height": 20,
+        "coarse": true
+      }
+    ]
+  }
+]

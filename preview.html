@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Workspace preview — Syntari</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="preview.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'light'}catch{}</script>
+  <script type="module" src="preview.js"></script>
+</head>
+<body class="preview-body">
+  <a class="skip" href="#screens">Skip to workspace</a>
+  <header class="preview-header"><a href="gallery.html?view=screens&screen=projects" class="preview-home"><span class="brand-mark"></span>Syntari <span>Workspace preview</span></a><button type="button" class="icon-button" data-preview-theme aria-label="Switch to dark theme"></button></header>
+  <main id="screens" tabindex="-1"><p>Loading workspace…</p></main>
+  <div class="sr-only" role="status" data-preview-status></div>
+</body>
+</html>

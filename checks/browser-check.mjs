@@ -1,0 +1,77 @@
+import { setTheme } from './theme.mjs';
+export default async page => {
+  const results=[];
+  const check=(ok,label)=>{if(!ok)throw new Error(label);results.push(label)};
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('http://127.0.0.1:4318/gallery.html');
+  await page.locator('.specimen').first().waitFor();
+  check(await page.locator('.specimen').count()===107,'107 component families render');
+  await setTheme(page,'dark');
+  check(await page.locator('html').getAttribute('data-theme')==='dark','Dark theme switches');
+  await page.reload();
+  check(await page.locator('html').getAttribute('data-theme')==='dark','Theme persists after reload');
+  await setTheme(page,'light');
+  await page.getByRole('searchbox',{name:'Find a component'}).fill('funnel');
+  check(await page.locator('.specimen').count()===1,'Search filters by component');
+  await page.getByRole('searchbox',{name:'Find a component'}).fill('zzznothing');
+  check(await page.locator('#empty').isVisible(),'Search empty state');
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await page.locator('[data-category="Form controls"]').click();
+  check(await page.locator('.specimen').count()===21,'Category filters twenty-one form controls');
+  await page.locator('.docs-sidebar [data-view="gallery"]').click();
+  const segmented=page.locator('[data-component="Segmented control"]');
+  await segmented.getByRole('button',{name:'List',exact:true}).click();
+  check(await segmented.getByRole('button',{name:'List',exact:true}).getAttribute('aria-pressed')==='true','Segmented selection updates');
+  await segmented.getByRole('button',{name:'List',exact:true}).press('ArrowRight');
+  check(await segmented.getByRole('button',{name:'Board',exact:true}).getAttribute('aria-pressed')==='true','Segmented arrow navigation works');
+  await page.getByRole('switch',{name:'Weekly digest',exact:true}).check();
+  check(await page.getByRole('switch',{name:'Weekly digest',exact:true}).isChecked(),'Switch toggles');
+  const tabs=page.locator('[data-component="Tabs"]');
+  await tabs.getByRole('tab',{name:'Activity'}).click();
+  check((await tabs.getByRole('tabpanel').innerText()).includes('Jamie'),'Tabs update panel');
+  const menu=page.locator('[data-component="Dropdown menu"]');
+  await menu.getByRole('button',{name:'Project actions'}).click();
+  check(await menu.locator('.dropdown-panel').isVisible(),'Dropdown opens');
+  await page.keyboard.press('Escape');
+  await menu.locator('.dropdown-panel').waitFor({state:'hidden'});
+  check(await menu.locator('.dropdown-panel').isHidden(),'Dropdown Escape dismisses');
+  await page.getByRole('button',{name:'Inspect Button',exact:true}).click();
+  check(await page.locator('#detail-dialog').isVisible(),'Component inspector opens');
+  await page.locator('#detail-dialog').getByRole('button',{name:'HTML',exact:true}).click();
+  check((await page.locator('#detail-content pre').innerText()).includes('button primary'),'Inspector shows HTML');
+  await page.locator('#detail-dialog').getByRole('button',{name:'Tokens',exact:true}).click();
+  check((await page.locator('#detail-content pre').innerText()).includes('--radius-control'),'Inspector shows tokens');
+  await page.keyboard.press('Escape');
+  await page.locator('[data-component="Dialog"] [data-open-project]').click();
+  await page.getByRole('textbox',{name:'Project name',exact:true}).fill('A considered product');
+  await page.locator('#sample-dialog').getByRole('button',{name:'Create project',exact:true}).click();
+  await page.locator('#sample-dialog').waitFor({state:'hidden'});
+  check(await page.locator('#sample-dialog').isHidden()&&(await page.locator('#toast').innerText()).includes('A considered product'),'Dialog validates, submits, and confirms');
+  const pagination=page.locator('[data-component="Pagination"]');
+  await pagination.getByRole('button',{name:'Next page'}).click();
+  check((await pagination.locator('.page-range').innerText()).includes('11–20'),'Pagination updates results range');
+  const chat=page.locator('[data-component="Chat composer"]');
+  await chat.getByRole('textbox').fill('Hello Syntari');await chat.getByRole('button',{name:'Send message'}).click();
+  check((await chat.locator('[data-messages]').innerText()).includes('Hello Syntari'),'Chat sends a local message');
+  await page.locator('.docs-sidebar [data-view="foundations"]').click();
+  check(await page.locator('.swatch').count()===12,'Foundations shows twelve token swatches');
+  const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export tokens'}).click();
+  const download=await downloadPromise;check(download.suggestedFilename()==='syntari-tokens.css','Theme token export downloads');
+  await page.locator('.docs-sidebar [data-view="gallery"]').click();
+  for(const theme of ['light','dark']) {
+    await setTheme(page,theme);
+    for(const width of [390,768,1440]) {
+      await page.setViewportSize({width,height:1000});
+      check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${theme} theme fits ${width}px viewport`);
+    }
+  }
+  check(errors.length===0,'No JavaScript runtime errors');
+  await page.evaluate(()=>scrollTo(0,0));
+  await page.screenshot({path:'test-results/dark-preview.png'});
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:'test-results/mobile-preview.png'});
+  await page.setViewportSize({width:1440,height:1080});
+  await setTheme(page,'light');
+  await page.evaluate(()=>scrollTo(0,0));
+  return results;
+}

@@ -1,0 +1,415 @@
+{
+  "documentedMissingTokens": [],
+  "literalColorDeclarations": [
+    {
+      "source": "styles.css#53",
+      "selector": ".avatar",
+      "property": "background-image",
+      "value": "radial-gradient(at 30% 15%, rgb(61, 54, 91) 20%, transparent 65%), radial-gradient(at 75% 15%, rgb(121, 106, 57) 10%, transparent 58%), initial"
+    },
+    {
+      "source": "styles.css#53",
+      "selector": ".avatar",
+      "property": "background-color",
+      "value": "rgb(255, 102, 109)"
+    },
+    {
+      "source": "styles.css#55",
+      "selector": ".avatar.blue",
+      "property": "background-image",
+      "value": "radial-gradient(at 20% 70%, rgb(87, 111, 250) 10%, transparent 60%), radial-gradient(at 75% 15%, rgb(238, 201, 119) 10%, transparent 70%), initial"
+    },
+    {
+      "source": "styles.css#55",
+      "selector": ".avatar.blue",
+      "property": "background-color",
+      "value": "rgb(154, 178, 249)"
+    },
+    {
+      "source": "styles.css#56",
+      "selector": ".avatar.mint",
+      "property": "background-image",
+      "value": "radial-gradient(at 60% 90%, rgb(80, 201, 168) 10%, transparent 65%), radial-gradient(at 10% 15%, rgb(36, 52, 68) 10%, transparent 70%), initial"
+    },
+    {
+      "source": "styles.css#56",
+      "selector": ".avatar.mint",
+      "property": "background-color",
+      "value": "rgb(207, 205, 130)"
+    },
+    {
+      "source": "styles.css#126",
+      "selector": ".switch span::after",
+      "property": "background-color",
+      "value": "rgb(255, 255, 255)"
+    },
+    {
+      "source": "styles.css#126",
+      "selector": ".switch span::after",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.133) 0px 1px 2px"
+    },
+    {
+      "source": "styles.css#146",
+      "selector": ".dock",
+      "property": "background-color",
+      "value": "rgb(20, 20, 31)"
+    },
+    {
+      "source": "styles.css#146",
+      "selector": ".dock",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.07) 0px 4px 10px"
+    },
+    {
+      "source": "styles.css#147",
+      "selector": ".dock button",
+      "property": "color",
+      "value": "rgb(145, 146, 161)"
+    },
+    {
+      "source": "styles.css#148",
+      "selector": ".dock button.active",
+      "property": "background-color",
+      "value": "rgb(51, 52, 71)"
+    },
+    {
+      "source": "styles.css#148",
+      "selector": ".dock button.active",
+      "property": "color",
+      "value": "rgb(234, 234, 235)"
+    },
+    {
+      "source": "styles.css#149",
+      "selector": ".dock button:last-child",
+      "property": "color",
+      "value": "rgb(162, 150, 255)"
+    },
+    {
+      "source": "styles.css#195",
+      "selector": ".dropdown-panel",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.08) 0px 7px 25px"
+    },
+    {
+      "source": "styles.css#240",
+      "selector": ".toast",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.133) 0px 5px 25px"
+    },
+    {
+      "source": "styles.css#242",
+      "selector": "dialog",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.2) 0px 20px 100px"
+    },
+    {
+      "source": "styles.css#243",
+      "selector": "dialog::backdrop",
+      "property": "background-color",
+      "value": "rgba(20, 20, 31, 0.333)"
+    },
+    {
+      "source": "styles.css#291",
+      "selector": ".choice input",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.03) 0px 1px 2px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset"
+    },
+    {
+      "source": "styles.css#294",
+      "selector": ".choice input:checked",
+      "property": "box-shadow",
+      "value": "rgba(255, 255, 255, 0.15) 0px 1px 0px inset, rgba(0, 0, 0, 0.07) 0px 1px 2px"
+    },
+    {
+      "source": "styles.css#296",
+      "selector": ".choice input[type=\"checkbox\"]::after",
+      "property": "border-left-color",
+      "value": "white"
+    },
+    {
+      "source": "styles.css#296",
+      "selector": ".choice input[type=\"checkbox\"]::after",
+      "property": "border-bottom-color",
+      "value": "white"
+    },
+    {
+      "source": "styles.css#298",
+      "selector": ".choice input[type=\"radio\"]::after",
+      "property": "background-color",
+      "value": "white"
+    },
+    {
+      "source": "styles.css#298",
+      "selector": ".choice input[type=\"radio\"]::after",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.07) 0px 1px 2px"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "background-color",
+      "value": "rgb(20, 20, 31)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "color",
+      "value": "rgb(234, 234, 235)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "border-top-color",
+      "value": "rgba(255, 255, 255, 0.05)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "border-right-color",
+      "value": "rgba(255, 255, 255, 0.05)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "border-bottom-color",
+      "value": "rgba(255, 255, 255, 0.05)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "border-left-color",
+      "value": "rgba(255, 255, 255, 0.05)"
+    },
+    {
+      "source": "styles.css#306",
+      "selector": ".toast, .toast-preview",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.08) 0px 2px 4px, rgba(0, 0, 0, 0.125) 0px 8px 24px, rgba(255, 255, 255, 0.03) 0px 1px 0px inset"
+    },
+    {
+      "source": "styles.css#308",
+      "selector": ".toast-preview > .icon, .toast > .icon",
+      "property": "color",
+      "value": "rgb(113, 218, 139)"
+    },
+    {
+      "source": "styles.css#309",
+      "selector": ".toast-preview .muted",
+      "property": "color",
+      "value": "rgb(164, 164, 183)"
+    },
+    {
+      "source": "motion.css#4.8",
+      "selector": ".dock button:hover",
+      "property": "color",
+      "value": "rgb(234, 234, 235)"
+    },
+    {
+      "source": "motion.css#28",
+      "selector": ".dock.has-indicator .selection-indicator",
+      "property": "background-color",
+      "value": "rgb(51, 52, 71)"
+    },
+    {
+      "source": "motion.css#28",
+      "selector": ".dock.has-indicator .selection-indicator",
+      "property": "box-shadow",
+      "value": "rgba(255, 255, 255, 0.035) 0px 1px 0px inset"
+    },
+    {
+      "source": "motion.css#31",
+      "selector": ".dock",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.05) 0px 2px 3px, rgba(0, 0, 0, 0.07) 0px 8px 20px, rgba(255, 255, 255, 0.047) 0px 1px 0px inset"
+    },
+    {
+      "source": "motion.css#33",
+      "selector": ".gallery-toolbar.is-stuck",
+      "property": "box-shadow",
+      "value": "rgba(24, 25, 37, 0.208) 0px 7px 12px -10px"
+    },
+    {
+      "source": "motion.css#56",
+      "selector": ".expanded-dock",
+      "property": "background-color",
+      "value": "rgb(20, 20, 31)"
+    },
+    {
+      "source": "motion.css#56",
+      "selector": ".expanded-dock",
+      "property": "color",
+      "value": "rgb(234, 234, 235)"
+    },
+    {
+      "source": "motion.css#56",
+      "selector": ".expanded-dock",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.094) 0px 4px 14px"
+    },
+    {
+      "source": "motion.css#62",
+      "selector": ".dock-summary > span:first-child",
+      "property": "color",
+      "value": "rgb(187, 188, 195)"
+    },
+    {
+      "source": "motion.css#63",
+      "selector": ".dock-summary .dock-bar",
+      "property": "background-color",
+      "value": "rgb(43, 44, 59)"
+    },
+    {
+      "source": "motion.css#64",
+      "selector": ".dock-summary small",
+      "property": "color",
+      "value": "rgb(145, 146, 161)"
+    },
+    {
+      "source": "numbers.css#1",
+      "selector": ".number-digit",
+      "property": "mask-image",
+      "value": "linear-gradient(transparent, rgb(0, 0, 0) 9%, rgb(0, 0, 0) 91%, transparent)"
+    },
+    {
+      "source": "controls.css#4",
+      "selector": ".control-panel",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.043) 0px 3px 8px, rgba(0, 0, 0, 0.075) 0px 12px 32px"
+    },
+    {
+      "source": "controls.css#20",
+      "selector": ".calendar-days button.selected",
+      "property": "color",
+      "value": "rgb(255, 255, 255)"
+    },
+    {
+      "source": "controls.css#25",
+      "selector": ".choice input",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.016) 0px 1px 2px"
+    },
+    {
+      "source": "controls.css#27",
+      "selector": ".choice input:checked",
+      "property": "box-shadow",
+      "value": "rgba(255, 255, 255, 0.07) 0px 1px 0px inset"
+    },
+    {
+      "source": "controls.css#30",
+      "selector": ".choice input[type=\"checkbox\"]::after",
+      "property": "background-color",
+      "value": "white"
+    },
+    {
+      "source": "controls.css#30",
+      "selector": ".choice input[type=\"checkbox\"]::after",
+      "property": "mask-image",
+      "value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 6 9 17l-5-5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "background-color",
+      "value": "rgb(255, 255, 255)"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "border-top-color",
+      "value": "rgba(0, 0, 0, 0.05)"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "border-right-color",
+      "value": "rgba(0, 0, 0, 0.05)"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "border-bottom-color",
+      "value": "rgba(0, 0, 0, 0.05)"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "border-left-color",
+      "value": "rgba(0, 0, 0, 0.05)"
+    },
+    {
+      "source": "controls.css#37",
+      "selector": ".range::-webkit-slider-thumb",
+      "property": "box-shadow",
+      "value": "rgba(0, 0, 0, 0.094) 0px 1px 3px, rgba(0, 0, 0, 0.05) 0px 2px 5px"
+    },
+    {
+      "source": "controls.css#38",
+      "selector": ".range:hover::-webkit-slider-thumb, .range:focus-visible::-webkit-slider-thumb",
+      "property": "box-shadow",
+      "value": "0 0 0 4px var(--purple-a1),0 1px 4px #00000018"
+    },
+    {
+      "source": "controls.css#39",
+      "selector": ".range:active::-webkit-slider-thumb",
+      "property": "box-shadow",
+      "value": "0 0 0 5px var(--purple-a2),0 1px 4px #00000018"
+    },
+    {
+      "source": "starter.css#4",
+      "selector": ".starter-options, .starter-popover-panel, .row-action-menu",
+      "property": "box-shadow",
+      "value": "var(--shadow-card-hover),0 12px 36px #00000012"
+    },
+    {
+      "source": "starter.css#95",
+      "selector": ".range-days .range-edge",
+      "property": "color",
+      "value": "rgb(255, 255, 255)"
+    },
+    {
+      "source": "agents.css#100",
+      "selector": ".agent-context-menu",
+      "property": "box-shadow",
+      "value": "var(--shadow-card-hover),0 10px 30px #00000012"
+    },
+    {
+      "source": "extras.css#39",
+      "selector": ".status-island",
+      "property": "background-color",
+      "value": "rgb(20, 20, 31)"
+    },
+    {
+      "source": "extras.css#39",
+      "selector": ".status-island",
+      "property": "color",
+      "value": "rgb(234, 234, 235)"
+    },
+    {
+      "source": "extras.css#43",
+      "selector": ".status-island p",
+      "property": "color",
+      "value": "rgb(170, 170, 184)"
+    },
+    {
+      "source": "extras.css#70",
+      "selector": ".marquee-window",
+      "property": "mask-image",
+      "value": "linear-gradient(to right, transparent, rgb(0, 0, 0) 7%, rgb(0, 0, 0) 93%, transparent)"
+    },
+    {
+      "source": "extras.css#86",
+      "selector": ".status-island .row",
+      "property": "border-top-color",
+      "value": "rgba(255, 255, 255, 0.086)"
+    }
+  ],
+  "limitations": [
+    "Authored preview states are not a complete Cartesian Figma variant matrix.",
+    "DOM trees are component templates and enhanced default examples, not native Figma nodes.",
+    "Computed values and matching CSS rules are evidence, not inferred variable bindings.",
+    "Figma font availability and prototype behavior remain unverified.",
+    "Live timers, overlays opened after interaction, and responsive layouts require a later capture pass.",
+    "Code Connect mappings have not been created."
+  ]
+}

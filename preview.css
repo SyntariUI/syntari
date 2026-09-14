@@ -1,0 +1,16 @@
+.preview-body { background:var(--background-subtle); }
+.preview-header { display:flex; justify-content:space-between; align-items:center; gap:16px; max-width:1440px; margin:auto; padding:20px 28px; }
+.preview-home { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:500; }
+.preview-home .brand-mark { width:22px; height:22px; }
+.preview-home>span:last-child { margin-left:14px; color:var(--muted); font-size:12px; font-weight:400; }
+.preview-body #screens { display:block!important; max-width:1440px; padding:0 28px 28px; margin:auto; outline:none; }
+.preview-body .screens-heading { display:none; }
+.preview-body .screen-picker { margin:6px 0 20px; }
+.preview-body .screen-picker button { font-size:12px; padding:8px 12px; border-radius:8px; }
+.preview-body .screen-picker button.active { background:var(--bg-a2); }
+.preview-body .syntari-shell { min-height:calc(100dvh - 204px); }
+.preview-body .syntari-shell-body { padding:0 36px; }
+@media(max-width:700px) { .preview-header { padding:16px; } .preview-body #screens { padding:0 12px 12px; } .preview-home>span:last-child { margin-left:4px; font-size:11px; } .preview-body .screen-picker { gap:2px; } .preview-body .screen-picker button { font-size:11px; min-height:40px; } }
+
+.preview-body :is(.product-heading,.auth-card) h1 { font-size:28px; font-weight:500; line-height:1.25; letter-spacing:-.8px; margin:0 0 10px; }
+@media(max-width:700px) { .preview-body :is(.product-heading,.auth-card) h1 { font-size:24px; } }

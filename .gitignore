@@ -1,0 +1,16 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.DS_Store
+.env
+.env.*
+
+# Generated documentation routes and source distribution
+kit/
+downloads/
+components/
+guides/
+
+# Local visual verification captures
+previews/

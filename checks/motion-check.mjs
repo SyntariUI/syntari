@@ -1,0 +1,68 @@
+import { setTheme } from './theme.mjs';
+export default async page => {
+ const results=[],errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const check=(value,label)=>{if(!value)throw Error(label);results.push(label)};
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('http://127.0.0.1:4318/gallery.html');
+ await page.getByRole('button',{name:'Replay motion',exact:true}).click();
+ check(await page.evaluate(()=>document.getAnimations().some(a=>a.effect.target.classList.contains('specimen'))),'Replay animates visible specimens');
+ await page.locator('[data-category="Navigation"]').click();
+ const dock=page.locator('[data-component="Expandable dock"]');
+ await dock.getByRole('button',{name:'Realtime',exact:true}).click();
+ check(await dock.locator('.expanded-dock').evaluate(el=>el.classList.contains('is-expanded')),'Realtime expands contextual dock');
+ check(await dock.locator('.dock-content').getAttribute('aria-hidden')==='false','Expanded content exposed accessibly');
+ await dock.getByRole('button',{name:'People',exact:true}).click();
+ check(await dock.locator('.dock-content').getAttribute('aria-hidden')==='true','Changing destination collapses dock');
+ const markers=await page.locator('.dock.has-indicator').evaluateAll(groups=>groups.filter(g=>g.offsetWidth).every(g=>{const a=g.querySelector('button.active').getBoundingClientRect(),m=g.querySelector('.selection-indicator');return Math.abs(parseFloat(m.style.width)-a.width)<1}));
+ check(markers,'Selection indicators track destination geometry');
+ await page.locator('[data-category="Container"]').click();
+ const details=page.locator('[data-component="Session card"] details');
+ await details.locator('summary').click();
+ await page.waitForFunction(()=>!document.querySelector('[data-component="Session card"] details').dataset.motionTarget);
+ check(await details.getAttribute('open')!==null,'Session details expand');
+ await details.locator('summary').click();
+ await page.waitForFunction(()=>!document.querySelector('[data-component="Session card"] details').open);
+ check(await details.getAttribute('open')===null,'Session details collapse after exit');
+ // Rapid reversal must not leave a locked height or mismatched state.
+ await details.locator('summary').evaluate(el=>{el.click();el.click();el.click()});
+ await page.waitForFunction(()=>!document.querySelector('[data-component="Session card"] details').dataset.motionTarget);
+ check(await details.evaluate(el=>el.open&&el.style.overflow===''),'Interrupted disclosure settles correctly');
+ await page.locator('[data-category="Action"]').click();
+ const toolbar=page.locator('[data-component="Selection toolbar"]');
+ await toolbar.getByRole('button',{name:'Archive',exact:true}).click();
+ check(await toolbar.locator('.toolbar-count').innerText()==='0 selected','Toolbar actions update selection');
+ check(await toolbar.getByRole('button',{name:'Archive',exact:true}).isDisabled(),'Empty toolbar disables actions');
+ await toolbar.getByRole('checkbox',{name:'Brand assets',exact:true}).check();
+ check(await toolbar.locator('.toolbar-count').innerText()==='1 selected','Toolbar recovers after new selection');
+ await page.getByRole('button',{name:'Inspect Dropdown menu',exact:true}).click();
+ const dialog=page.locator('#detail-dialog');
+ await dialog.getByRole('button',{name:'Project actions'}).click();
+ await page.keyboard.press('Escape');
+ check(await dialog.isVisible(),'Escape dismisses menu before dialog');
+ await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+ check(await dialog.isHidden(),'Second Escape dismisses dialog');
+ await page.locator('.docs-sidebar [data-view="gallery"]').click();
+ await page.getByRole('button',{name:'Replay motion',exact:true}).click();
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(()=>document.getAnimations().filter(a=>a.playState==='running').length===0,{},{timeout:1000});
+ check(await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running').length===0),'Reduced-motion change cancels active animations');
+ await page.getByRole('button',{name:'Replay motion',exact:true}).click();
+ check(await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running').length===0),'Replay respects reduced motion');
+ await page.locator('[data-component="Dialog"] [data-open-project]').click();
+ check(await page.locator('#sample-dialog').isVisible(),'Dialogs remain usable with reduced motion');
+ await page.keyboard.press('Escape');
+ check(await page.locator('#sample-dialog').isHidden(),'Reduced-motion dialog closes immediately');
+ for(const theme of ['Light theme','Dark theme']) {
+  await setTheme(page,theme);
+  await page.setViewportSize({width:390,height:844});
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${theme} motion additions fit mobile`);
+ }
+ await page.setViewportSize({width:1440,height:1080});
+ await setTheme(page,'light');
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.getByRole('searchbox',{name:'Find a component'}).fill('dock');
+ await page.screenshot({path:'test-results/motion-patterns-preview.png'});
+ await page.getByRole('searchbox',{name:'Find a component'}).fill('');
+ check(errors.length===0,'No motion runtime errors');
+ return results;
+}
