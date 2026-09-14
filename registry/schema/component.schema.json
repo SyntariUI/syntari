@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://syntari.dev/schema/component.schema.json",
+  "title": "SyntariComponent",
+  "description": "Machine-readable contract for one Syntari component or agent pattern.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "category",
+    "purpose",
+    "variants",
+    "states",
+    "anatomy",
+    "accessibility",
+    "tokens"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "name": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "category": { "type": "string" },
+    "purpose": { "type": "string" },
+    "description": { "type": "string" },
+    "intents": { "type": "array", "items": { "type": "string" } },
+    "variants": {
+      "type": "object",
+      "additionalProperties": { "type": "array", "items": { "type": "string" } }
+    },
+    "states": { "type": "array", "items": { "type": "string" } },
+    "anatomy": { "type": "array", "items": { "type": "string" } },
+    "accessibility": {
+      "type": "object",
+      "required": ["role", "keyboard", "accessibleNameRequired"],
+      "properties": {
+        "role": { "type": "string" },
+        "keyboard": { "type": "array", "items": { "type": "string" } },
+        "accessibleNameRequired": { "type": "boolean" },
+        "liveRegion": { "type": "string" },
+        "focusTrap": { "type": "boolean" },
+        "focusRestoration": { "type": "boolean" }
+      }
+    },
+    "rules": { "type": "array", "items": { "type": "string" } },
+    "tokens": { "type": "array", "items": { "type": "string" } },
+    "compatibleWith": { "type": "array", "items": { "type": "string" } },
+    "avoidWhen": { "type": "array", "items": { "type": "string" } },
+    "dependencies": { "type": "array", "items": { "type": "string" } },
+    "agentEvents": { "type": "array", "items": { "type": "string" } },
+    "composition": {
+      "type": "object",
+      "properties": {
+        "requires": { "type": "array", "items": { "type": "string" } },
+        "mayContain": { "type": "array", "items": { "type": "string" } },
+        "forbidden": { "type": "array", "items": { "type": "string" } },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "primaryMax": { "type": "integer" },
+            "destructiveRequiresConfirmation": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "semantics": {
+      "type": "object",
+      "properties": {
+        "intent": { "type": "array", "items": { "type": "string" } },
+        "density": { "type": "array", "items": { "type": "string" } },
+        "attention": { "type": "string" },
+        "risk": { "type": "string" },
+        "interaction": { "type": "string" },
+        "context": { "type": "array", "items": { "type": "string" } },
+        "action": { "type": "array", "items": { "type": "string" } },
+        "reversibility": { "type": "string" },
+        "ownership": { "type": "string" }
+      }
+    },
+    "examples": {
+      "type": "object",
+      "properties": {
+        "good": { "type": "array", "items": { "type": "string" } },
+        "bad": { "type": "array", "items": { "type": "string" } },
+        "boundary": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "source": { "type": "string" },
+    "status": { "enum": ["authored", "generated", "draft"] }
+  },
+  "additionalProperties": true
+}

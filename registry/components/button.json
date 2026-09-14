@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "button",
+  "name": "Button",
+  "version": "1.0.0",
+  "category": "Action",
+  "status": "authored",
+  "purpose": "Trigger an immediate user action.",
+  "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
+  "intents": ["submit", "continue", "confirm", "cancel", "destructive-action", "open", "close"],
+  "variants": {
+    "hierarchy": ["primary", "secondary", "ghost", "danger"],
+    "size": ["sm", "md", "lg"],
+    "loading": [true, false],
+    "disabled": [true, false]
+  },
+  "states": ["default", "hover", "focus", "pressed", "disabled", "loading"],
+  "anatomy": ["root", "label", "leadingIcon", "trailingIcon", "spinner"],
+  "accessibility": {
+    "role": "button",
+    "keyboard": ["Enter", "Space"],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "max-one-primary-per-action-region",
+    "danger-requires-destructive-intent",
+    "button-label-is-action"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.action.primary.text",
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.control",
+    "space.3",
+    "space.4",
+    "motion.duration.fast",
+    "shadow.soft"
+  ],
+  "compatibleWith": ["dialog", "form", "card", "tool-approval", "page-header", "empty-state"],
+  "avoidWhen": ["navigating-between-pages", "standalone-inline-navigation"],
+  "semantics": {
+    "intent": ["confirmation", "navigation", "editing", "destructive"],
+    "density": ["compact", "comfortable"],
+    "attention": ["low", "normal", "high"],
+    "risk": "none",
+    "interaction": "immediate",
+    "context": ["workspace", "onboarding", "settings", "agent"]
+  },
+  "examples": {
+    "good": ["A single primary “Save changes” in a settings form."],
+    "bad": ["Two primary buttons side by side in the same dialog."],
+    "boundary": ["A destructive action must pair danger hierarchy with explicit confirmation."]
+  },
+  "source": "components/button/"
+}

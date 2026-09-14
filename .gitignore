@@ -14,3 +14,7 @@ guides/
 
 # Local visual verification captures
 previews/
+
+# Registry manifests are source data, not generated component output
+!registry/components/
+!registry/components/**

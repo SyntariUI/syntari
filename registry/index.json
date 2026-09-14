@@ -1,0 +1,1821 @@
+{
+  "$id": "https://syntari.dev/registry/index.json",
+  "version": "0.2.1",
+  "components": [
+    {
+      "id": "attribution-table",
+      "name": "Attribution table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "Proportional traffic and revenue segments sit behind stable, borderless rows. Values roll during live updates. Hover or focus a country to reveal revenue, or use Show revenue on touch devices. Pause stops the three-second demo updates.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/attribution-table/",
+      "manifest": "components/attribution-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "rolling-number",
+      "name": "Rolling number",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "Individual digits roll inside fixed-width masks. Thousands separators and currency stay legible; the final number is exposed as one accessible label. Try crossing a digit boundary or changing direction.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/rolling-number/",
+      "manifest": "components/rolling-number.json",
+      "status": "generated"
+    },
+    {
+      "id": "visitor-table",
+      "name": "Visitor table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "A compact visitor list with overlapping avatar and country flag, source pills, right-aligned revenue, and quiet timestamps. Value animations share the same numeric primitive as the attribution table.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/visitor-table/",
+      "manifest": "components/visitor-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "button",
+      "name": "Button",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/button/",
+      "manifest": "components/button.json",
+      "status": "authored"
+    },
+    {
+      "id": "icon-button",
+      "name": "Icon button",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Compact actions with accessible names. Toggle buttons expose pressed state, and disabled actions remain visible.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/icon-button/",
+      "manifest": "components/icon-button.json",
+      "status": "generated"
+    },
+    {
+      "id": "segmented-control",
+      "name": "Segmented control",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Switch between mutually exclusive views. Each control exposes its selected state and supports arrow-key navigation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/segmented-control/",
+      "manifest": "components/segmented-control.json",
+      "status": "generated"
+    },
+    {
+      "id": "text-input",
+      "name": "Text input",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Labeled fields with persistent hints and associated validation messages. Error meaning is communicated with text as well as color.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/text-input/",
+      "manifest": "components/text-input.json",
+      "status": "generated"
+    },
+    {
+      "id": "switch",
+      "name": "Switch",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Turn a setting on or off immediately. Each switch has a descriptive label and a generous interaction area.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/switch/",
+      "manifest": "components/switch.json",
+      "status": "generated"
+    },
+    {
+      "id": "checkbox-and-radio",
+      "name": "Checkbox & radio",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Use checkboxes for independent choices and radio buttons for a single selection within a set.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/checkbox-and-radio/",
+      "manifest": "components/checkbox-and-radio.json",
+      "status": "generated"
+    },
+    {
+      "id": "badge-and-status",
+      "name": "Badge & status",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Quiet status indicators with semantic text colors. A dot, label, or sign carries the meaning beyond color.",
+      "tokens": [
+        "--green-a1",
+        "--success-text",
+        "--red-a1",
+        "--danger-text",
+        "--accent-text"
+      ],
+      "source": "components/badge-and-status/",
+      "manifest": "components/badge-and-status.json",
+      "status": "generated"
+    },
+    {
+      "id": "metric-and-sparkline",
+      "name": "Metric & sparkline",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A compact metric, comparison, and trend. A lavender line and restrained gradient highlight the trend.",
+      "tokens": [
+        "--purple-4",
+        "--green-a1",
+        "--success-text",
+        "--fg-3"
+      ],
+      "source": "components/metric-and-sparkline/",
+      "manifest": "components/metric-and-sparkline.json",
+      "status": "generated"
+    },
+    {
+      "id": "floating-navigation",
+      "name": "Floating navigation",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "A compact utility rail for switching views. The selected destination has a quiet filled state and an accessible pressed label.",
+      "tokens": [
+        "--background",
+        "--bg-4",
+        "--purple-4",
+        "--radius-control"
+      ],
+      "source": "components/floating-navigation/",
+      "manifest": "components/floating-navigation.json",
+      "status": "generated"
+    },
+    {
+      "id": "avatar-and-group",
+      "name": "Avatar & group",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "Abstract color avatars provide recognizable identity without depending on photography. Groups show overflow as a count.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/avatar-and-group/",
+      "manifest": "components/avatar-and-group.json",
+      "status": "generated"
+    },
+    {
+      "id": "select-and-date",
+      "name": "Select & date",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A workspace selector and calendar share the same floating surface, selection colors, and Lucide icons. The calendar supports arrow keys, Home/End, Page Up/Down, Enter, and Escape.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/select-and-date/",
+      "manifest": "components/select-and-date.json",
+      "status": "generated"
+    },
+    {
+      "id": "progress-and-score",
+      "name": "Progress & score",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A progress ring pairs a numerical score with a written evaluation. Linear progress shows a measurable completion value.",
+      "tokens": [
+        "--green-4",
+        "--green-a1",
+        "--accent",
+        "--bg-3"
+      ],
+      "source": "components/progress-and-score/",
+      "manifest": "components/progress-and-score.json",
+      "status": "generated"
+    },
+    {
+      "id": "dropdown-menu",
+      "name": "Dropdown menu",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "A contextual action list that opens on demand, dismisses on Escape or outside click, and supports keyboard navigation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/dropdown-menu/",
+      "manifest": "components/dropdown-menu.json",
+      "status": "generated"
+    },
+    {
+      "id": "tabs",
+      "name": "Tabs",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "Switch related content in place. Tabs expose selected state, are connected to their panels, and support arrow keys.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/tabs/",
+      "manifest": "components/tabs.json",
+      "status": "generated"
+    },
+    {
+      "id": "banner",
+      "name": "Banner",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Inline feedback communicates what happened and whether the user needs to act. Text remains readable in both themes.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/banner/",
+      "manifest": "components/banner.json",
+      "status": "generated"
+    },
+    {
+      "id": "table",
+      "name": "Table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "Compact rows with subtle filled backgrounds. Semantic column headers keep the values understandable to screen readers.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/table/",
+      "manifest": "components/table.json",
+      "status": "generated"
+    },
+    {
+      "id": "card",
+      "name": "Card",
+      "category": "Container",
+      "version": "0.2.1",
+      "description": "A composed container for a project summary. Surface, border, and spacing tokens work independently of product domain.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/card/",
+      "manifest": "components/card.json",
+      "status": "generated"
+    },
+    {
+      "id": "slider",
+      "name": "Slider",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Choose a value along a range. The live output is associated with the labeled slider and updates on every change.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/slider/",
+      "manifest": "components/slider.json",
+      "status": "generated"
+    },
+    {
+      "id": "dialog",
+      "name": "Dialog",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "A focused modal for a single task. Native dialog manages focus containment and Escape. The form validates before confirming.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/dialog/",
+      "manifest": "components/dialog.json",
+      "status": "generated"
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Transient confirmation after an action. The message is announced through a live status region without moving focus.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/toast/",
+      "manifest": "components/toast.json",
+      "status": "generated"
+    },
+    {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "A short label for an icon action, shown on pointer hover and keyboard focus. It never contains essential instructions.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/tooltip/",
+      "manifest": "components/tooltip.json",
+      "status": "generated"
+    },
+    {
+      "id": "pagination",
+      "name": "Pagination",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "Navigate a bounded set of pages. Current page and visible item range stay synchronized, including previous and next actions.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/pagination/",
+      "manifest": "components/pagination.json",
+      "status": "generated"
+    },
+    {
+      "id": "stepper",
+      "name": "Stepper",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "Progress through a short sequence with completed, current, and upcoming steps. The demo advances and can be restarted.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/stepper/",
+      "manifest": "components/stepper.json",
+      "status": "generated"
+    },
+    {
+      "id": "empty-state",
+      "name": "Empty state",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "Explain what belongs in an empty space and offer the next useful action.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/empty-state/",
+      "manifest": "components/empty-state.json",
+      "status": "generated"
+    },
+    {
+      "id": "activity-list",
+      "name": "Activity list",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "A simple timeline pairs an event, context, and time. The connecting line is decorative; event order is semantic.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/activity-list/",
+      "manifest": "components/activity-list.json",
+      "status": "generated"
+    },
+    {
+      "id": "skeleton-and-spinner",
+      "name": "Skeleton & spinner",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Static skeletons reserve the shape of loading content. The spinner respects reduced-motion preferences.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/skeleton-and-spinner/",
+      "manifest": "components/skeleton-and-spinner.json",
+      "status": "generated"
+    },
+    {
+      "id": "accordion",
+      "name": "Accordion",
+      "category": "Container",
+      "version": "0.2.1",
+      "description": "Progressively disclose supporting details. Native details elements retain keyboard and screen-reader behavior.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/accordion/",
+      "manifest": "components/accordion.json",
+      "status": "generated"
+    },
+    {
+      "id": "funnel",
+      "name": "Funnel",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A flowing stage comparison, with stage names and values available as text.",
+      "tokens": [
+        "--purple-4",
+        "--purple-a2",
+        "--sky-4",
+        "--blue-4"
+      ],
+      "source": "components/funnel/",
+      "manifest": "components/funnel.json",
+      "status": "generated"
+    },
+    {
+      "id": "filter-chips",
+      "name": "Filter chips",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Applied filters are visible and individually removable. Clear all and reset keep the example repeatable.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/filter-chips/",
+      "manifest": "components/filter-chips.json",
+      "status": "generated"
+    },
+    {
+      "id": "chat-composer",
+      "name": "Chat composer",
+      "category": "Chat",
+      "version": "0.2.1",
+      "description": "A local AI-chat composer with room to write, attach, and send. Messages are kept locally and announced when added.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chat-composer/",
+      "manifest": "components/chat-composer.json",
+      "status": "generated"
+    },
+    {
+      "id": "file-input",
+      "name": "File input",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "An empty-state pattern for assets: drop files on the surface or use Select assets. Selection stays on your device.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/file-input/",
+      "manifest": "components/file-input.json",
+      "status": "generated"
+    },
+    {
+      "id": "text-area",
+      "name": "Text area",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A multiline field with an associated character counter. Length limits are enforced by the native textarea.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/text-area/",
+      "manifest": "components/text-area.json",
+      "status": "generated"
+    },
+    {
+      "id": "session-card",
+      "name": "Session card",
+      "category": "Container",
+      "version": "0.2.1",
+      "description": "A layered review card. Expand the result row to see what was checked; spacing and shadows keep nested surfaces quiet.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/session-card/",
+      "manifest": "components/session-card.json",
+      "status": "generated"
+    },
+    {
+      "id": "selection-toolbar",
+      "name": "Selection toolbar",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "A compact body toolbar responds to selection. Actions confirm the selected items locally and clear selection after archiving.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/selection-toolbar/",
+      "manifest": "components/selection-toolbar.json",
+      "status": "generated"
+    },
+    {
+      "id": "expandable-dock",
+      "name": "Expandable dock",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "A contextual activity switcher opens into a compact realtime summary. Select Realtime to expand; any other destination collapses it.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/expandable-dock/",
+      "manifest": "components/expandable-dock.json",
+      "status": "generated"
+    },
+    {
+      "id": "app-shell",
+      "name": "App shell",
+      "category": "Layout",
+      "version": "0.2.1",
+      "description": "One navigation system with sidebar and topbar layouts, a collapsible rail, and a keyboard-accessible mobile drawer. Starter screens use the same component.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/app-shell/",
+      "manifest": "components/app-shell.json",
+      "status": "generated"
+    },
+    {
+      "id": "page-header-and-breadcrumbs",
+      "name": "Page header & breadcrumbs",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "A page title, supporting description, breadcrumb trail, and primary action share a reusable alignment.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/page-header-and-breadcrumbs/",
+      "manifest": "components/page-header-and-breadcrumbs.json",
+      "status": "generated"
+    },
+    {
+      "id": "side-drawer",
+      "name": "Side drawer",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Inspect and edit a record without losing your place. Native modal semantics keep keyboard focus inside until dismissed.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/side-drawer/",
+      "manifest": "components/side-drawer.json",
+      "status": "generated"
+    },
+    {
+      "id": "bottom-sheet",
+      "name": "Bottom sheet",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "A compact action surface rises from the bottom, with Escape and backdrop dismissal.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/bottom-sheet/",
+      "manifest": "components/bottom-sheet.json",
+      "status": "generated"
+    },
+    {
+      "id": "popover",
+      "name": "Popover",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Small controls appear next to their trigger and dismiss on outside click or Escape.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/popover/",
+      "manifest": "components/popover.json",
+      "status": "generated"
+    },
+    {
+      "id": "confirmation-dialog",
+      "name": "Confirmation dialog",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Confirm a consequential action with a clear description, safe cancel action, and explicit outcome.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/confirmation-dialog/",
+      "manifest": "components/confirmation-dialog.json",
+      "status": "generated"
+    },
+    {
+      "id": "searchable-select",
+      "name": "Searchable select",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Search a list of options. Arrow keys move the active option; Enter commits and Escape dismisses.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/searchable-select/",
+      "manifest": "components/searchable-select.json",
+      "status": "generated"
+    },
+    {
+      "id": "autocomplete",
+      "name": "Autocomplete",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Suggestions narrow as you type. Choose an existing value or keep a custom value.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/autocomplete/",
+      "manifest": "components/autocomplete.json",
+      "status": "generated"
+    },
+    {
+      "id": "multiselect",
+      "name": "Multiselect",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Select several values from a searchable list. Remove selected chips without reopening the list.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/multiselect/",
+      "manifest": "components/multiselect.json",
+      "status": "generated"
+    },
+    {
+      "id": "command-palette",
+      "name": "Command palette",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Find screens, components, and common actions with the keyboard. Open anywhere with Command/Ctrl K.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/command-palette/",
+      "manifest": "components/command-palette.json",
+      "status": "generated"
+    },
+    {
+      "id": "number-stepper",
+      "name": "Number stepper",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Increment, decrement, or enter a number. Boundary buttons disable at the minimum and maximum.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/number-stepper/",
+      "manifest": "components/number-stepper.json",
+      "status": "generated"
+    },
+    {
+      "id": "password-field",
+      "name": "Password field",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Reveal a password without changing its value. The toggle exposes its pressed state and updates its label.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/password-field/",
+      "manifest": "components/password-field.json",
+      "status": "generated"
+    },
+    {
+      "id": "date-range-picker",
+      "name": "Date range picker",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Choose two dates across months, or use a quick preset. Apply commits the selection; cancel preserves the original value.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/date-range-picker/",
+      "manifest": "components/date-range-picker.json",
+      "status": "generated"
+    },
+    {
+      "id": "time-picker",
+      "name": "Time picker",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A tactile hour-and-minute wheel with momentum scrolling, keyboard control, and explicit confirmation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/time-picker/",
+      "manifest": "components/time-picker.json",
+      "status": "generated"
+    },
+    {
+      "id": "selectable-cards",
+      "name": "Selectable cards",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/selectable-cards/",
+      "manifest": "components/selectable-cards.json",
+      "status": "generated"
+    },
+    {
+      "id": "simple-data-table",
+      "name": "Simple data table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "A quiet table with one record per line. Sort project names, status, progress, currency, and dates without extra toolbars or bulk controls.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/simple-data-table/",
+      "manifest": "components/simple-data-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "data-table",
+      "name": "Data table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "Sort, search, filter, hide columns, select rows, paginate, expand details, and edit records. Actions update local preview data.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/data-table/",
+      "manifest": "components/data-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "inline-validation",
+      "name": "Inline validation",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Associated inline errors explain how to correct an invalid field. Valid input replaces the error with confirmation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/inline-validation/",
+      "manifest": "components/inline-validation.json",
+      "status": "generated"
+    },
+    {
+      "id": "error-and-retry",
+      "name": "Error & retry",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Recover from a failed load without losing context. Retry shows a loading state before replacing the error.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/error-and-retry/",
+      "manifest": "components/error-and-retry.json",
+      "status": "generated"
+    },
+    {
+      "id": "upload-progress",
+      "name": "Upload progress",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A bounded progress simulation with cancel and retry. Screen-reader updates announce milestones, not every frame.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/upload-progress/",
+      "manifest": "components/upload-progress.json",
+      "status": "generated"
+    },
+    {
+      "id": "unsaved-changes",
+      "name": "Unsaved changes",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A contextual save bar appears when values differ from the saved version. Discard restores the original.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/unsaved-changes/",
+      "manifest": "components/unsaved-changes.json",
+      "status": "generated"
+    },
+    {
+      "id": "metadata-list",
+      "name": "Metadata list",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "Aligned labels and values display the details that accompany a record.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/metadata-list/",
+      "manifest": "components/metadata-list.json",
+      "status": "generated"
+    },
+    {
+      "id": "thumbnail-and-lightbox",
+      "name": "Thumbnail & lightbox",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "Local abstract artwork demonstrates an asset thumbnail and larger lightbox preview. Escape returns focus to the thumbnail.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/thumbnail-and-lightbox/",
+      "manifest": "components/thumbnail-and-lightbox.json",
+      "status": "generated"
+    },
+    {
+      "id": "divider-and-form-section",
+      "name": "Divider & form section",
+      "category": "Layout",
+      "version": "0.2.1",
+      "description": "A titled section and quiet divider separate related fields without adding another card.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/divider-and-form-section/",
+      "manifest": "components/divider-and-form-section.json",
+      "status": "generated"
+    },
+    {
+      "id": "agent-todo-list",
+      "name": "Agent todo list",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A collapsible task plan with explicit task states and bounded progress.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/agent-todo-list/",
+      "manifest": "components/agent-todo-list.json",
+      "status": "generated"
+    },
+    {
+      "id": "agent-message",
+      "name": "Agent message",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A response with source identity and contextual actions.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/agent-message/",
+      "manifest": "components/agent-message.json",
+      "status": "generated"
+    },
+    {
+      "id": "message-bubbles",
+      "name": "Message bubbles",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Role-specific message surfaces.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/message-bubbles/",
+      "manifest": "components/message-bubbles.json",
+      "status": "generated"
+    },
+    {
+      "id": "message-scroller",
+      "name": "Message scroller",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A bounded message history with an explicit jump action.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/message-scroller/",
+      "manifest": "components/message-scroller.json",
+      "status": "generated"
+    },
+    {
+      "id": "prompt-input",
+      "name": "Prompt input",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A growing prompt field with a local attachment picker and submit feedback.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/prompt-input/",
+      "manifest": "components/prompt-input.json",
+      "status": "generated"
+    },
+    {
+      "id": "code-block",
+      "name": "Code block",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Code is preserved as text, with a copy action.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/code-block/",
+      "manifest": "components/code-block.json",
+      "status": "generated"
+    },
+    {
+      "id": "approval-card",
+      "name": "Approval card",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A decision card that records an explicit choice.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/approval-card/",
+      "manifest": "components/approval-card.json",
+      "status": "generated"
+    },
+    {
+      "id": "file-diff",
+      "name": "File diff",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Readable additions and deletions with a review outcome.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/file-diff/",
+      "manifest": "components/file-diff.json",
+      "status": "generated"
+    },
+    {
+      "id": "tool-result",
+      "name": "Tool result",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Inspect structured output and run a bounded local simulation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/tool-result/",
+      "manifest": "components/tool-result.json",
+      "status": "generated"
+    },
+    {
+      "id": "streaming-response",
+      "name": "Streaming response",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A cancellable response preview. Completion is announced without reading every character.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/streaming-response/",
+      "manifest": "components/streaming-response.json",
+      "status": "generated"
+    },
+    {
+      "id": "image-generation",
+      "name": "Image generation",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Local artwork illustrates generation states; no model service is called.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/image-generation/",
+      "manifest": "components/image-generation.json",
+      "status": "generated"
+    },
+    {
+      "id": "tool-approval",
+      "name": "Tool approval",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Show the requested scope before the user decides.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/tool-approval/",
+      "manifest": "components/tool-approval.json",
+      "status": "authored"
+    },
+    {
+      "id": "citations",
+      "name": "Citations",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Numbered references disclose context next to a response.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/citations/",
+      "manifest": "components/citations.json",
+      "status": "generated"
+    },
+    {
+      "id": "agent-activity",
+      "name": "Agent activity",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A chronological record separate from the task plan.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/agent-activity/",
+      "manifest": "components/agent-activity.json",
+      "status": "generated"
+    },
+    {
+      "id": "agent-loading-states",
+      "name": "Agent loading states",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Feedback before a durable task plan is available.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/agent-loading-states/",
+      "manifest": "components/agent-loading-states.json",
+      "status": "generated"
+    },
+    {
+      "id": "ai-sidebar",
+      "name": "AI sidebar",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "Conversation navigation next to a working composer.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/ai-sidebar/",
+      "manifest": "components/ai-sidebar.json",
+      "status": "generated"
+    },
+    {
+      "id": "chat-workspace",
+      "name": "Chat workspace",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A composed local conversation with retained messages between previews.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chat-workspace/",
+      "manifest": "components/chat-workspace.json",
+      "status": "generated"
+    },
+    {
+      "id": "file-tree",
+      "name": "File tree",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "Explore nested files with disclosures and preview feedback.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/file-tree/",
+      "manifest": "components/file-tree.json",
+      "status": "generated"
+    },
+    {
+      "id": "preview-rail",
+      "name": "Preview rail",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A compact artwork selector updates a shared preview.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/preview-rail/",
+      "manifest": "components/preview-rail.json",
+      "status": "generated"
+    },
+    {
+      "id": "otp-input",
+      "name": "OTP input",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "One accessible code field supports paste, autofill, and validation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/otp-input/",
+      "manifest": "components/otp-input.json",
+      "status": "generated"
+    },
+    {
+      "id": "feedback-widget",
+      "name": "Feedback widget",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Collect a rating and optional note within the local preview.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/feedback-widget/",
+      "manifest": "components/feedback-widget.json",
+      "status": "generated"
+    },
+    {
+      "id": "notification-stack",
+      "name": "Notification stack",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A compact inbox with per-notification dismissal.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/notification-stack/",
+      "manifest": "components/notification-stack.json",
+      "status": "generated"
+    },
+    {
+      "id": "context-menu",
+      "name": "Context menu",
+      "category": "Overlay",
+      "version": "0.2.1",
+      "description": "Secondary actions open with right-click, Shift F10, or an explicit button.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/context-menu/",
+      "manifest": "components/context-menu.json",
+      "status": "generated"
+    },
+    {
+      "id": "availability-scheduler",
+      "name": "Availability scheduler",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Choose a day and available time with explicit confirmation.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/availability-scheduler/",
+      "manifest": "components/availability-scheduler.json",
+      "status": "generated"
+    },
+    {
+      "id": "wheel-picker",
+      "name": "Wheel picker",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A bounded duration list with scroll snapping and keyboard selection.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/wheel-picker/",
+      "manifest": "components/wheel-picker.json",
+      "status": "generated"
+    },
+    {
+      "id": "swipeable-list",
+      "name": "Swipeable list",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "Pointer swipes and visible actions lead to the same reversible outcome.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/swipeable-list/",
+      "manifest": "components/swipeable-list.json",
+      "status": "generated"
+    },
+    {
+      "id": "not-found",
+      "name": "Not found",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "An actionable empty route state.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/not-found/",
+      "manifest": "components/not-found.json",
+      "status": "generated"
+    },
+    {
+      "id": "range-slider",
+      "name": "Range slider",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A budget interval with independent, labeled lower and upper controls.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/range-slider/",
+      "manifest": "components/range-slider.json",
+      "status": "generated"
+    },
+    {
+      "id": "tilt-card",
+      "name": "Tilt card",
+      "category": "Container",
+      "version": "0.2.1",
+      "description": "A restrained perspective response on pointer movement, without changing the content hierarchy.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/tilt-card/",
+      "manifest": "components/tilt-card.json",
+      "status": "generated"
+    },
+    {
+      "id": "marquee",
+      "name": "Marquee",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A pausable horizontal strip. Motion stops when reduced motion is requested.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/marquee/",
+      "manifest": "components/marquee.json",
+      "status": "generated"
+    },
+    {
+      "id": "pull-to-refresh",
+      "name": "Pull to refresh",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "Refresh a short feed using a downward gesture or accessible button.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/pull-to-refresh/",
+      "manifest": "components/pull-to-refresh.json",
+      "status": "generated"
+    },
+    {
+      "id": "ambient-background",
+      "name": "Ambient background",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A lightweight CSS interpretation of the reference shader effect, using only Syntari palette tokens.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/ambient-background/",
+      "manifest": "components/ambient-background.json",
+      "status": "generated"
+    },
+    {
+      "id": "rotating-carousel",
+      "name": "Rotating carousel",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "Three artwork cards rotate through a shared stage, with explicit controls and reduced motion.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/rotating-carousel/",
+      "manifest": "components/rotating-carousel.json",
+      "status": "generated"
+    },
+    {
+      "id": "card-and-project-folder",
+      "name": "Card & project folder",
+      "category": "Container",
+      "version": "0.2.1",
+      "description": "A folder opens into a compact set of file actions.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/card-and-project-folder/",
+      "manifest": "components/card-and-project-folder.json",
+      "status": "generated"
+    },
+    {
+      "id": "masonry-grid",
+      "name": "Masonry grid",
+      "category": "Layout",
+      "version": "0.2.1",
+      "description": "An uneven grid with explicit loading instead of an endless automatic fetch.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/masonry-grid/",
+      "manifest": "components/masonry-grid.json",
+      "status": "generated"
+    },
+    {
+      "id": "fixtures",
+      "name": "Fixtures",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A compact schedule pattern with selectable fixtures and local detail feedback.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/fixtures/",
+      "manifest": "components/fixtures.json",
+      "status": "generated"
+    },
+    {
+      "id": "asset-swap",
+      "name": "Asset swap",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "A local illustrative swap form. Amounts are demo values; no wallet, trading, or network transaction is connected.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/asset-swap/",
+      "manifest": "components/asset-swap.json",
+      "status": "generated"
+    },
+    {
+      "id": "status-island",
+      "name": "Status island",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A dark floating surface reveals task context without switching pages.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/status-island/",
+      "manifest": "components/status-island.json",
+      "status": "generated"
+    },
+    {
+      "id": "overflow-actions",
+      "name": "Overflow actions",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Low-frequency actions share the standard Syntari menu surface.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/overflow-actions/",
+      "manifest": "components/overflow-actions.json",
+      "status": "generated"
+    },
+    {
+      "id": "wallet-card",
+      "name": "Wallet card",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A sample account surface with concealed balance and a copyable demonstration identifier.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/wallet-card/",
+      "manifest": "components/wallet-card.json",
+      "status": "generated"
+    },
+    {
+      "id": "prediction-card",
+      "name": "Prediction card",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A product-planning prediction sample with local choices; no betting or payment.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/prediction-card/",
+      "manifest": "components/prediction-card.json",
+      "status": "generated"
+    },
+    {
+      "id": "bloom-menu",
+      "name": "Bloom menu",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Circular actions float above a central trigger that clearly changes between Create and Close.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/bloom-menu/",
+      "manifest": "components/bloom-menu.json",
+      "status": "generated"
+    },
+    {
+      "id": "morphing-search",
+      "name": "Morphing search",
+      "category": "Navigation",
+      "version": "0.2.1",
+      "description": "An inline search expands in place and filters a small set of recent projects.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/morphing-search/",
+      "manifest": "components/morphing-search.json",
+      "status": "generated"
+    },
+    {
+      "id": "action-swap",
+      "name": "Action swap",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "A single action changes its label and icon as work progresses.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/action-swap/",
+      "manifest": "components/action-swap.json",
+      "status": "generated"
+    },
+    {
+      "id": "agent-questions",
+      "name": "Agent questions",
+      "category": "Agents",
+      "version": "0.2.1",
+      "description": "A small guided approval flow combines radio options, free text, and a reviewable result.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/agent-questions/",
+      "manifest": "components/agent-questions.json",
+      "status": "generated"
+    }
+  ]
+}

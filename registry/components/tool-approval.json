@@ -1,0 +1,72 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "tool-approval",
+  "name": "Tool approval",
+  "version": "1.0.0",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Require explicit human consent before an agent runs a consequential or external operation.",
+  "description": "Surfaces what the agent wants to do, the consequence, the affected scope, and explicit approve or reject actions.",
+  "intents": ["approve", "reject", "confirm", "authorize", "cancel"],
+  "variants": {
+    "risk": ["moderate", "high", "critical"],
+    "reversibility": ["reversible", "partially-reversible", "irreversible"]
+  },
+  "states": ["idle", "pending", "approved", "rejected", "expired", "blocked"],
+  "anatomy": ["root", "title", "actionDescription", "consequence", "scope", "affectedResources", "approveAction", "rejectAction", "reversibleStatus"],
+  "accessibility": {
+    "role": "region",
+    "keyboard": ["Tab", "Enter", "Space", "Escape"],
+    "accessibleNameRequired": true,
+    "focusTrap": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "external-side-effect-requires-approval",
+    "approval-describes-consequence",
+    "destructive-agent-action-requires-confirmation",
+    "reversible-action-should-expose-undo"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.status.danger",
+    "color.status.success",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "space.5",
+    "motion.duration.medium",
+    "shadow.card"
+  ],
+  "compatibleWith": ["agent-activity", "tool-result", "file-diff", "agent-message", "confirmation-dialog"],
+  "avoidWhen": ["low-risk-reversible-action", "background-local-read"],
+  "agentEvents": ["ToolRequested", "ApprovalRequired", "ToolStarted", "ToolCompleted", "ToolFailed"],
+  "composition": {
+    "requires": ["actionDescription", "consequence", "scope", "approveAction", "rejectAction"],
+    "mayContain": ["text", "badge", "code", "diff"],
+    "forbidden": ["dialog", "bottom-sheet"],
+    "actions": {
+      "primaryMax": 1,
+      "destructiveRequiresConfirmation": true
+    }
+  },
+  "semantics": {
+    "intent": ["confirmation", "authorization"],
+    "density": ["comfortable"],
+    "attention": "high",
+    "risk": "consequential",
+    "interaction": "approval_required",
+    "action": ["modify", "delete", "publish", "send", "execute", "purchase"],
+    "reversibility": "partially_reversible",
+    "ownership": "external",
+    "context": ["agent"]
+  },
+  "examples": {
+    "good": ["A destructive external action shows a tool-approval card before the agent proceeds."],
+    "bad": ["A low-risk local read blocks the user behind a tool-approval card."],
+    "boundary": ["A consequential but reversible action may use inline confirmation instead of tool approval."]
+  },
+  "source": "components/tool-approval/"
+}
