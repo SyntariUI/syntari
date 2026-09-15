@@ -70,3 +70,12 @@ body{min-width:320px}
 .specimen::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(360px 200px at 50% -12%,var(--purple-a2),transparent 70%);opacity:0;transition:opacity var(--motion-medium) var(--ease-out)}
 .specimen::after{content:"";position:absolute;inset:0 0 auto 0;height:2px;border-radius:var(--radius-card) var(--radius-card) 0 0;background:var(--syntari-gradient);opacity:0;transition:opacity var(--motion-medium) var(--ease-out)}
 .specimen:hover::before,.specimen:hover::after{opacity:1}
+
+/* Animated bar chart for the metric card */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;width:100%;height:96px;margin-top:14px}
+.bar-chart .bar{position:relative;flex:1;height:100%;display:flex;align-items:flex-end;background:none;border:0;padding:0;cursor:pointer}
+.bar-chart .bar-fill{display:block;width:100%;height:var(--bar);min-height:6px;background:var(--bg-3);border-radius:7px 7px 3px 3px;transform-origin:bottom;animation:bar-grow .6s var(--ease-out) backwards;transition:background var(--motion-fast) var(--ease-out)}
+.bar-chart .bar:hover .bar-fill,.bar-chart .bar:focus-visible .bar-fill{background:var(--accent)}
+.bar-chart .bar-value{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:3px 7px;border-radius:7px;background:var(--text);color:var(--surface);font-size:10px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--motion-fast) var(--ease-out)}
+.bar-chart .bar:hover .bar-value,.bar-chart .bar:focus-visible .bar-value{opacity:1}
+@keyframes bar-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}

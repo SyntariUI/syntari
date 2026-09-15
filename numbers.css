@@ -22,3 +22,11 @@
 @media(prefers-reduced-motion:reduce){.rank-bars>span{transition:none}}
 .rank-bars{right:3px}
 .show-revenue[data-revenue="0"] td{color:var(--muted)}
+
+/* Visitor table: steadier name column and cleaner source badges */
+.visitor-table td:first-child{width:46%}
+.visitor-name{gap:9px;min-width:0}
+.visitor-name>span{min-width:0}
+.referrer-pill .icon{width:13px;height:13px}
+.visitor-table .verified .icon{width:13px;height:13px}
+.visitor-flag{right:-2px;bottom:-2px;font-size:11px;line-height:1.1;padding:1px 2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-soft)}

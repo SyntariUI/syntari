@@ -20,23 +20,15 @@
 .landing-showcase{margin:30px 0 60px}
 .showcase-wall{columns:320px;column-gap:12px}
 .showcase-item{break-inside:avoid;margin:0 0 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
-.showcase-item--explorer{column-span:all;padding:20px}
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
 
-/* Explorer composition: the segmented control switches real content */
-.explorer{display:flex;flex-direction:column;min-width:0}
-.explorer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
-.explorer-body{min-height:440px}
-.explorer-view[hidden]{display:none}
-.explorer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;align-content:start}
-.explorer-grid .mini-card h3{font-size:13px;margin-top:12px}
-.explorer-grid .mini-card p{font-size:11px;color:var(--muted);margin:6px 0 0}
-.explorer-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-content:start}
-.explorer-column{display:grid;gap:10px;align-content:start}
-.explorer-column h4{font-size:11px;font-weight:500;color:var(--muted)}
-.explorer-column .mini-card{padding:12px}
-.explorer-column .mini-card h3{font-size:12px}
-.explorer-column .mini-card p{font-size:10px;color:var(--muted);margin:4px 0 0}
+/* Project card: avatar group in a dashboard context */
+.project-card{padding:18px}
+.project-card h3{font-size:15px;margin-top:14px}
+.project-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.project-stats>div{display:grid;gap:4px}
+.project-stats span{font-size:11px;color:var(--muted)}
+.project-stats strong{font-size:19px;font-weight:600;letter-spacing:-.02em}
 
 .landing-footer{border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:30px 0 48px;font-size:12px;color:var(--muted)}
 .landing-footer>span{display:flex;align-items:center;gap:9px}

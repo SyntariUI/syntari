@@ -1,7 +1,7 @@
 /* Stable numeric labels with masked, individually rolling digits. */
 (() => {
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'), values=new WeakMap(),visible=new Set(),initialized=new WeakSet();
- const format=(value,kind)=>new Intl.NumberFormat('en-US',kind==='currency'?{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}:{}).format(value);
+ const format=(value,kind)=>new Intl.NumberFormat('en-US',kind==='currency'?{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}:kind==='percent'?{style:'percent'}:{}).format(value);
  function set(el,value,{kind=el.dataset.format||'number',initial=false}={}) {
   if(!el)return;
   const kindChanged=el.dataset.numberKind&&el.dataset.numberKind!==kind;el.dataset.numberKind=kind;
@@ -48,7 +48,7 @@
  function reveal(root){root.querySelectorAll('[data-number]').forEach(el=>set(el,Number(el.dataset.number),{initial:true}));root.querySelectorAll('[data-attribution]').forEach(el=>build(el,true));}
  function prepare(root){
   root.querySelectorAll('[data-attribution]').forEach(el=>{if(initialized.has(el))return;initialized.add(el);build(el,true);observer.observe(el)});
-  root.querySelectorAll('.mini-stats .stat strong,.ring strong').forEach(el=>{if(!el.dataset.number){const raw=el.textContent;el.dataset.number=Number(raw.replace(/[^\d.]/g,''));if(raw.includes('$'))el.dataset.format='currency';set(el,Number(el.dataset.number),{initial:true})}});
+  root.querySelectorAll('.mini-stats .stat strong,.ring strong').forEach(el=>{if(!el.dataset.number){const raw=el.textContent,digits=Number(raw.replace(/[^\d.]/g,''));if(raw.includes('$')){el.dataset.format='currency';el.dataset.number=digits}else if(raw.includes('%')){el.dataset.format='percent';el.dataset.number=digits/100}else el.dataset.number=digits;set(el,Number(el.dataset.number),{initial:true})}});
   root.querySelectorAll('[data-number]').forEach(el=>{if(!values.has(el))set(el,Number(el.dataset.number),{initial:true})});
  }
  const observer=new IntersectionObserver(entries=>entries.forEach(({target,isIntersecting})=>{if(isIntersecting)visible.add(target);else visible.delete(target)}),{threshold:.15});

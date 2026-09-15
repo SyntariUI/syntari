@@ -24,7 +24,7 @@
       animate(p, [{strokeDasharray: `${length} ${length}`, strokeDashoffset: length}, {strokeDasharray: `${length} ${length}`, strokeDashoffset: 0}], 650);
     });
     el.querySelectorAll('.progress>span').forEach(p => {p.style.transformOrigin = 'left';animate(p, [{transform:'scaleX(0)'},{transform:'scaleX(1)'}], 500)});
-    el.querySelectorAll('.ring circle:last-child').forEach(p => animate(p, [{strokeDasharray:'0 220'}, {strokeDasharray:'204 220'}], 650));
+    el.querySelectorAll('.ring circle:last-child').forEach(p => {const to=p.dataset.dash||'204 220';animate(p, [{strokeDasharray:'0 220'}, {strokeDasharray:to}], 650)});
     el.querySelectorAll('.funnel').forEach(p => animate(p, [{opacity:0},{opacity:1}], 500));
   }
   const observer = new IntersectionObserver(entries => {

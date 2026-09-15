@@ -70,7 +70,7 @@ test('pointer motion runs normally and reduced motion preserves final states',as
  await page.mouse.move(10,10);await expect.poll(()=>card.evaluate(el=>el.style.transform)).toBe('');
  await page.emulateMedia({reducedMotion:'reduce'});await card.hover();await expect(card).toHaveCSS('transform','none');
  await open(page,'action-swap');await live(page).getByRole('button',{name:'Prepare export'}).click();await expect(live(page).getByRole('button',{name:'Prepare again'})).toBeEnabled();expect(await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running').length)).toBe(0);
- await open(page,'otp-input');await live(page).getByRole('textbox').fill('123456');await live(page).getByRole('button',{name:'Verify code'}).click();await expect(live(page).getByRole('button',{name:'Verified'})).toBeDisabled();await live(page).getByRole('textbox').fill('111111');await expect(live(page).getByRole('button',{name:'Verify code'})).toBeEnabled();
+ await open(page,'otp-input');const fillOtp=async value=>{const digits=live(page).locator('.otp-digit');for(let i=0;i<value.length;i++)await digits.nth(i).fill(value[i]);};await fillOtp('123456');await live(page).getByRole('button',{name:'Verify code'}).click();await expect(live(page).getByRole('button',{name:'Verified'})).toBeDisabled();await fillOtp('111111');await expect(live(page).getByRole('button',{name:'Verify code'})).toBeEnabled();
 });
 
 test('every default component fits its documentation preview in both themes at three widths',async({page})=>{
