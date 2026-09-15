@@ -18,7 +18,7 @@
 
 /* Bento: explicit columns so every card lands where it belongs */
 .landing-showcase{width:100vw;margin-left:calc(50% - 50vw);margin-top:30px;margin-bottom:60px;padding:0 clamp(16px,3vw,32px)}
-.showcase-wall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 280px),rgba(0,0,0,.45) calc(100% - 130px),transparent 100%);mask-image:linear-gradient(to bottom,#000 calc(100% - 280px),rgba(0,0,0,.45) calc(100% - 130px),transparent 100%)}
+.showcase-wall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 360px),rgba(0,0,0,.4) calc(100% - 170px),transparent 100%);mask-image:linear-gradient(to bottom,#000 calc(100% - 360px),rgba(0,0,0,.4) calc(100% - 170px),transparent 100%)}
 .showcase-col{display:flex;flex-direction:column;gap:12px;min-width:0}
 .showcase-item{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
