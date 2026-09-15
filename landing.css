@@ -24,12 +24,6 @@
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
 .table-filters{display:grid;gap:10px;padding:18px 18px 0}
 .table-filters .row{flex-wrap:wrap;gap:6px}
-.primary-tabs{padding:18px}
-.tabs-primary{display:flex;gap:4px;padding:4px;border:0;background:var(--subtle);border-radius:12px;width:100%}
-.tabs-primary button{flex:1;padding:8px 10px;border-radius:9px;font-size:12px;color:var(--muted)}
-.tabs-primary button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-soft)}
-.tabs-primary button.active:after{display:none}
-.primary-tabs .tab-panel{margin-top:14px;font-size:12px;line-height:1.7;color:var(--muted)}
 .project-card{padding:18px}
 .project-card h3{font-size:15px;margin-top:14px}
 .project-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
