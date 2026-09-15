@@ -29,87 +29,50 @@
     <main>
       <section class="landing-hero">
         <span class="badge purple"><span class="status-dot"></span> Agent-first design system</span>
-        <h1>A design system agents can understand, use, verify, and evolve.</h1>
-        <p>Composable, accessible components and agent-native interaction patterns, backed by a machine-readable registry that turns interface work into a governed, verifiable process.</p>
+        <h1>A design system agents can use, verify, and evolve.</h1>
+        <p>Composable components, design tokens, and agent-native patterns — all machine-readable.</p>
         <div class="landing-cta">
-          <a class="button primary" href="library.html">Explore components</a>
+          <a class="button primary" href="library.html">Explore the library</a>
           <a class="button" href="https://github.com/SyntariUI/syntari">Star on GitHub</a>
         </div>
-        <div class="landing-stats">107 components &middot; 252 states &middot; 18 agent patterns &middot; Light &amp; dark</div>
+        <div class="landing-stats">107 components &middot; 252 states &middot; 18 agent patterns</div>
       </section>
 
       <section class="landing-showcase">
-        <div class="landing-panel landing-code">
-          <div class="landing-panel-head"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> screen.json &middot; Syntari UI IR</div>
-          <pre><code>{
-  <span class="c-key">"type"</span>: <span class="c-str">"screen"</span>,
-  <span class="c-key">"layout"</span>: <span class="c-str">"workspace"</span>,
-  <span class="c-key">"children"</span>: [
-    { <span class="c-key">"component"</span>: <span class="c-str">"page-header"</span>,
-      <span class="c-key">"props"</span>: { <span class="c-key">"title"</span>: <span class="c-str">"Analytics"</span> } },
-    { <span class="c-key">"component"</span>: <span class="c-str">"metric"</span>,
-      <span class="c-key">"props"</span>: { <span class="c-key">"label"</span>: <span class="c-str">"Revenue"</span>,
-                 <span class="c-key">"value"</span>: <span class="c-str">"$24,190"</span> } }
-  ]
-}</code></pre>
+        <div class="showcase-intro">
+          <h2>Live components, not screenshots.</h2>
+          <p>Everything below is interactive.</p>
         </div>
-        <div class="landing-panel landing-preview">
-          <div class="mini-card">
-            <div class="row spread"><span class="avatar blue tiny" aria-hidden="true"></span><span class="badge purple">In progress</span></div>
-            <h3>Something worth making</h3>
-            <p>A home for your next big idea.</p>
-            <button class="button small">Open project <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
-          </div>
-          <div class="row" style="gap:8px;flex-wrap:wrap">
-            <span class="badge green"><span class="status-dot"></span> Active</span>
-            <span class="badge amber">Pending</span>
-            <span class="badge purple">Pro</span>
-          </div>
+        <div class="showcase-grid">
+          <article class="showcase-item showcase-item--wide">
+            <div class="showcase-head"><span>Attribution table</span><a href="components/attribution-table/">View docs</a></div>
+            <div class="showcase-stage showcase-stage--wide" id="stage-attribution-table"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Metric &amp; sparkline</span><a href="components/metric-and-sparkline/">View docs</a></div>
+            <div class="showcase-stage" id="stage-metric-and-sparkline"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Dropdown menu</span><a href="components/dropdown-menu/">View docs</a></div>
+            <div class="showcase-stage" id="stage-dropdown-menu"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Text input</span><a href="components/text-input/">View docs</a></div>
+            <div class="showcase-stage" id="stage-text-input"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Switch</span><a href="components/switch/">View docs</a></div>
+            <div class="showcase-stage" id="stage-switch"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Card</span><a href="components/card/">View docs</a></div>
+            <div class="showcase-stage" id="stage-card"></div>
+          </article>
+          <article class="showcase-item">
+            <div class="showcase-head"><span>Progress &amp; score</span><a href="components/progress-and-score/">View docs</a></div>
+            <div class="showcase-stage" id="stage-progress-and-score"></div>
+          </article>
         </div>
-      </section>
-
-      <section class="landing-features">
-        <article class="landing-feature">
-          <span><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
-          <h3>Components with contracts</h3>
-          <p>Every component declares purpose, variants, anatomy, accessibility, rules, and tokens.</p>
-        </article>
-        <article class="landing-feature">
-          <span><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span>
-          <h3>Agent-native patterns</h3>
-          <p>Approval, tool use, streaming, citations, and plans rendered from an agent event model.</p>
-        </article>
-        <article class="landing-feature">
-          <span><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/></svg></span>
-          <h3>Machine-readable registry</h3>
-          <p>Query components, tokens, and patterns, then compose screens as constrained Syntari UI IR.</p>
-        </article>
-        <article class="landing-feature">
-          <span><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-          <h3>Validator &amp; governance</h3>
-          <p>Rules produce actionable “why + use instead” diagnostics before an agent change is merged.</p>
-        </article>
-      </section>
-
-      <section class="landing-agent">
-        <div>
-          <h2>Agents query Syntari, not scrape it.</h2>
-          <p>Search by intent, get the right pattern with its risk and reversibility, and compose from validated concepts instead of inventing markup.</p>
-        </div>
-        <div class="landing-panel landing-code">
-          <div class="landing-panel-head"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg> registry query</div>
-          <pre><code>syntari.search({
-  <span class="c-key">intent</span>: <span class="c-str">"destructive confirmation"</span>,
-  <span class="c-key">context</span>: <span class="c-str">"agent action"</span>
-})
-<span class="c-key">// → ["tool-approval", "confirmation-dialog"]</span></code></pre>
-        </div>
-      </section>
-
-      <section class="landing-cta-band">
-        <h2>Build agent-native interfaces with confidence.</h2>
-        <p>Explore the patterns, read the contracts, and bring the source into your own project.</p>
-        <a class="button primary" href="library.html">Explore components</a>
       </section>
     </main>
 
@@ -139,6 +102,24 @@
       }));
       sync();
     })();
+  </script>
+  <script type="module">
+    import { initialize, mount } from './syntari.js';
+    try {
+      await initialize();
+      const items = [
+        ['attribution-table', '#stage-attribution-table'],
+        ['metric-and-sparkline', '#stage-metric-and-sparkline'],
+        ['dropdown-menu', '#stage-dropdown-menu'],
+        ['text-input', '#stage-text-input'],
+        ['switch', '#stage-switch'],
+        ['card', '#stage-card'],
+        ['progress-and-score', '#stage-progress-and-score']
+      ];
+      await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));
+    } catch (error) {
+      console.error(error);
+    }
   </script>
 </body>
 </html>
