@@ -19,10 +19,10 @@ export function initialize() {
         host = document.createElement('div'); host.dataset.syntariSupport = ''; host.innerHTML = await support.text(); document.body.append(host);
       }
     } catch {}
-    for (const file of scripts) await new Promise((resolve, reject) => {
-      const script = document.createElement('script'); script.src = new URL(file, base);
+    await Promise.all(scripts.map(file => new Promise((resolve, reject) => {
+      const script = document.createElement('script'); script.src = new URL(file, base); script.async = false;
       script.onload = resolve; script.onerror = () => reject(new Error(`Could not load ${file}`)); document.head.append(script);
-    });
+    })));
     document.querySelectorAll('dialog').forEach(dialog => {
       dialog.addEventListener('cancel', event => { if (!event.defaultPrevented) { event.preventDefault(); window.SyntariMotion.closeDialog(dialog); } });
       dialog.addEventListener('click', event => { const r = dialog.getBoundingClientRect(); if (event.target === dialog && (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom)) window.SyntariMotion.closeDialog(dialog); });

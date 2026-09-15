@@ -22,6 +22,12 @@
 .showcase-col{display:flex;flex-direction:column;gap:12px;min-width:0}
 .showcase-item{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
+/* Loading state: cards hold their height and shimmer until the component mounts */
+.showcase-item:empty{min-height:var(--min-h,150px);padding:18px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.showcase-item:empty::before,.showcase-item:empty::after{content:'';border-radius:6px;background:linear-gradient(90deg,var(--bg-3) 25%,var(--bg-2) 50%,var(--bg-3) 75%);background-size:200% 100%;animation:syntari-skeleton 1.5s linear infinite}
+.showcase-item:empty::before{height:16px}
+.showcase-item:empty::after{height:10px;width:62%}
+@keyframes syntari-skeleton{from{background-position:200% 0}to{background-position:-200% 0}}
 .table-filters{display:grid;gap:10px;padding:18px 18px 0}
 .table-filters .row{flex-wrap:wrap;gap:6px}
 .project-card{padding:18px}
