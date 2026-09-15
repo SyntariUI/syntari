@@ -18,7 +18,7 @@ npm run build
 npm start
 ```
 
-Open http://127.0.0.1:4318/ for Syntari. Gallery and Components are views of the same application, with shared navigation, theme, and component runtime. `/gallery.html` still accepts screen and category query parameters; `q` stores the gallery search. Gallery cards open their component page in place, and returning restores the selected category, search, and scroll position. Run the build again after adding catalog entries or changing installation source. The development server serves files from this directory without caching.
+Open http://127.0.0.1:4318/ for the landing page. The library overview is at `/library.html` and the gallery at `/gallery.html`; they share navigation, theme, and the component runtime. `/gallery.html` still accepts screen and category query parameters; `q` stores the gallery search. Gallery cards open their component page in place, and returning restores the selected category, search, and scroll position. Run the build again after adding catalog entries or changing installation source. The development server serves files from this directory without caching.
 
 ## Workspace navigation
 
@@ -63,7 +63,7 @@ The browser checks cover the shared gallery and documentation shell, category an
 - `docs-data.js`, `docs-guides.js`: example states, element contracts, and guides.
 - `syntari.js`: reusable mounting and manual enhancement API.
 - `cli.mjs`: source installer.
-- `docs.html`, `docs.js`, `docs-gallery.js`, `docs.css`: shared Syntari shell, routes, gallery, and documentation. The build generates both `index.html` and the compatible `gallery.html` entry from this shell.
+- `docs.html`, `docs.js`, `docs-gallery.js`, `docs.css`: shared Syntari shell, routes, gallery, and documentation. The build generates `library.html` and `gallery.html` from this shell, and `index.html` from `landing.html`.
 - `app.js`, `styles.css`: base component templates and gallery rendering, shared with the documentation runtime.
 - `starter.*`, `agents.*`, `extras.*`: additional interactive patterns and starter screens.
 - `tokens.css`, `motion.*`, `numbers.*`, `controls.*`: shared foundations.
@@ -71,7 +71,8 @@ The browser checks cover the shared gallery and documentation shell, category an
 - `assets/`: fonts and third-party license notices.
 - `scripts/catalog.mjs`, `scripts/build.mjs`: catalog extraction and static/source packaging.
 - `checks/`: repeatable browser and installer verification.
-- `index.html`, `components/`, `guides/`, `kit/`, `downloads/`, `dist/`: generated outputs.
+- `landing.html`, `landing.css`: the marketing landing page and its styles.
+- `index.html`, `library.html`, `components/`, `guides/`, `kit/`, `downloads/`, `dist/`: generated outputs.
 
 ## Scope and reuse
 

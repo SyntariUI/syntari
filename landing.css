@@ -1,0 +1,45 @@
+/* Syntari landing page */
+.landing-body{background:radial-gradient(1000px 600px at 12% -8%,var(--purple-a2),transparent 62%),radial-gradient(800px 540px at 92% 4%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed;min-height:100vh}
+.landing{max-width:1120px;margin:0 auto;padding:0 28px}
+.landing-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid var(--border);position:relative;z-index:2}
+.landing-brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:600;letter-spacing:-.6px}
+.landing-brand .brand-mark{width:26px;height:26px}
+.landing-nav-links{display:flex;align-items:center;gap:6px}
+.landing-nav-links a{padding:8px 12px;border-radius:9px;font-size:13px;color:var(--muted)}
+.landing-nav-links a:hover{background:var(--bg-a1);color:var(--text)}
+.landing-nav .theme-toggle .icon{width:15px;height:15px}
+.landing-hero{max-width:820px;margin:0 auto;text-align:center;padding:76px 0 30px}
+.landing-hero .badge{margin-bottom:24px}
+.landing-hero h1{font-size:clamp(40px,6.6vw,72px);line-height:1.02;font-weight:600;letter-spacing:-.045em;margin:0 0 24px}
+.landing-hero>p{font-size:clamp(16px,1.7vw,19px);line-height:1.6;color:var(--muted);max-width:56ch;margin:0 auto}
+.landing-cta{display:flex;gap:12px;justify-content:center;margin:30px 0 18px;flex-wrap:wrap}
+.landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
+.landing-stats{font-size:12px;color:var(--fg-2)}
+.landing-showcase{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:stretch;margin:46px 0 72px}
+.landing-panel{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card);overflow:hidden}
+.landing-panel-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font:10px ui-monospace,monospace;color:var(--muted)}
+.landing-panel-head .icon{width:13px;height:13px}
+.landing-code pre{margin:0;padding:22px;overflow:auto;font:11px/1.9 ui-monospace,monospace;color:var(--text);tab-size:2}
+.landing-code .c-key{color:#9960a2}.landing-code .c-str{color:#367d91}.landing-code .c-num{color:#b06b38}
+[data-theme=dark] .landing-code .c-key{color:#c4a1dd}[data-theme=dark] .landing-code .c-str{color:#9cbfd4}[data-theme=dark] .landing-code .c-num{color:#dbaa87}
+.landing-preview{display:grid;gap:16px;padding:24px}
+.landing-preview .mini-card h3{margin-top:12px}
+.landing-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:72px}
+.landing-feature{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-soft);padding:24px 22px}
+.landing-feature>span{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--syntari-gradient);color:#fff;margin-bottom:22px}
+.landing-feature>span .icon{width:18px;height:18px}
+.landing-feature h3{font-size:15px;margin-bottom:8px}
+.landing-feature p{font-size:12.5px;line-height:1.7;color:var(--muted)}
+.landing-agent{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:80px}
+.landing-agent h2{font-size:clamp(28px,3.4vw,42px);line-height:1.1;font-weight:600;letter-spacing:-.03em;margin-bottom:18px}
+.landing-agent p{font-size:15px;line-height:1.7;color:var(--muted)}
+.landing-cta-band{border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow-card);text-align:center;padding:56px 32px;margin-bottom:80px}
+.landing-cta-band h2{font-size:clamp(26px,3vw,38px);font-weight:600;letter-spacing:-.03em;margin-bottom:12px}
+.landing-cta-band p{color:var(--muted);margin-bottom:26px}
+.landing-footer{border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:30px 0 48px;font-size:12px;color:var(--muted)}
+.landing-footer>span{display:flex;align-items:center;gap:9px}
+.landing-footer nav{display:flex;gap:16px}
+.landing-footer a{color:var(--muted)}
+.landing-footer a:hover{color:var(--text)}
+@media(max-width:860px){.landing-showcase,.landing-agent{grid-template-columns:1fr}.landing-features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.landing-features{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:52px}}

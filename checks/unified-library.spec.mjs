@@ -4,7 +4,7 @@ const origin = 'http://127.0.0.1:4318';
 
 test('gallery and documentation share one document, filters, theme and browser history', async ({page}) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
-  await page.goto(origin + '/');
+  await page.goto(origin + '/library.html');
   await page.getByRole('link', {name: 'Explore components', exact: true}).waitFor();
   await page.evaluate(() => { window.shellHeader = document.querySelector('.docs-header'); });
   await page.getByRole('link', {name: 'Explore components', exact: true}).click();
@@ -35,7 +35,7 @@ test('gallery and documentation share one document, filters, theme and browser h
   await expect(page.locator('script[src$="/app.js"]')).toHaveCount(1);
   await page.locator('#view-documentation').click();
   await page.locator('.docs-sidebar .brand').click();
-  await expect(page).toHaveURL(origin + '/');
+  await expect(page).toHaveURL(origin + '/library.html');
   await page.locator('#view-gallery').click();
   await page.reload();
   await expect(page.locator('#search')).toHaveValue('slider');

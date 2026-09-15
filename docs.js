@@ -2,7 +2,7 @@ import { getComponents, mount, slugify, setTheme } from './syntari.js';
 import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI } from './docs-data.js';
 import { guideContent } from './docs-guides.js';
 import { galleryURL, galleryState, galleryPage, prepareGallery } from './docs-gallery.js';
-const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.1.tgz',base).href;
+const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.1.tgz',base).href, libraryURL=new URL('library.html',base).href;
 // Keep relative links stable when history changes the current route.
 const baseElement=document.querySelector('base')||document.head.insertBefore(document.createElement('base'),document.head.firstChild);
 baseElement.href=base.href;
@@ -13,7 +13,7 @@ const codeValues=new Map(),sourceCache=new Map(); let codeIndex=0;
 const ic=n=>window.SyntariIcon?.(n)||'';
 const componentURL=c=>new URL(`components/${c.slug}/`,base).href;
 const guideURL=id=>new URL(`guides/${id}/`,base).href;
-let browsing=null,lastGalleryURL=history.state?.syntariGallery||galleryURL().href,lastDocumentURL=base.href;
+let browsing=null,lastGalleryURL=history.state?.syntariGallery||galleryURL().href,lastDocumentURL=libraryURL;
 const galleryPlaces=new Map();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 function syncViews(){
@@ -48,7 +48,7 @@ function setDocumentTheme(theme){setTheme(theme);try{localStorage.setItem('synta
 function renderNavigation(){
  const term=$('#docs-search').value.trim().toLowerCase(),route=location.pathname;
  const link=(url,title,icon='',badge='',active=new URL(url).pathname===route,attributes='')=>`<a class="docs-nav-link" href="${esc(url)}" ${active?'aria-current="page"':''} ${attributes}>${icon?ic(icon):''}${esc(title)}${badge?`<span class="docs-nav-badge">${badge}</span>`:''}</a>`;
- let html=`<div class="docs-nav-group"><h2>Workspace</h2>${link(base.href,'Overview','grid')}${link(galleryURL(),'Component gallery','layers','',browsing?.view==='gallery','data-view="gallery"')}${link(galleryURL({view:'screens'}),'Starter screens','layout','',browsing?.view==='screens','data-view="screens"')}${link(galleryURL({view:'foundations'}),'Foundations','palette','',browsing?.view==='foundations','data-view="foundations"')}</div>`;
+ let html=`<div class="docs-nav-group"><h2>Workspace</h2>${link(base.href,'Home','external','',false,'data-nav-route')}${link(libraryURL,'Overview','grid')}${link(galleryURL(),'Component gallery','layers','',browsing?.view==='gallery','data-view="gallery"')}${link(galleryURL({view:'screens'}),'Starter screens','layout','',browsing?.view==='screens','data-view="screens"')}${link(galleryURL({view:'foundations'}),'Foundations','palette','',browsing?.view==='foundations','data-view="foundations"')}</div>`;
  if(browsing){
   html+=`<div class="docs-nav-group"><h2>Components<span>${catalog.length}</span></h2>${link(galleryURL(),'All components','',String(catalog.length),browsing.view==='gallery'&&browsing.category==='All components')}${Object.entries(groups).map(([name,[icon]])=>link(galleryURL({category:name}),name,icon,String(catalog.filter(c=>c.category===name).length),browsing.view==='gallery'&&browsing.category===name,`data-category="${esc(name)}"`)).join('')}</div>`;
  }
@@ -168,7 +168,7 @@ async function navigate(url,{restore=false,preserveGallery=false}={}){
 document.addEventListener('click',async e=>{
  const link=e.target.closest('a');
  if(link?.closest('.docs-view-switch')&&link.hasAttribute('aria-current')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0){e.preventDefault();return;}
- if(link&&!link.hasAttribute('data-nav-route')&&(!link.target||link.target==='_self')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0&&!link.hasAttribute('download')){const url=new URL(link.href);if(url.origin===base.origin&&url.pathname.startsWith(base.pathname)){const path=url.pathname.slice(base.pathname.length);if((!url.hash||url.pathname!==location.pathname)&&(!path||path==='index.html'||path==='gallery.html'||/^(components|guides)\/[^/]+\/?$/.test(path))){e.preventDefault();navigate(url,{preserveGallery:link.id==='view-gallery'});return;}}}
+if(link&&!link.hasAttribute('data-nav-route')&&(!link.target||link.target==='_self')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0&&!link.hasAttribute('download')){const url=new URL(link.href);if(url.origin===base.origin&&url.pathname.startsWith(base.pathname)){const path=url.pathname.slice(base.pathname.length);if((!url.hash||url.pathname!==location.pathname)&&(!path||path==='library.html'||path==='gallery.html'||/^(components|guides)\/[^/]+\/?$/.test(path))){e.preventDefault();navigate(url,{preserveGallery:link.id==='view-gallery'});return;}}}
  const b=e.target.closest('button');if(!b)return;
  if(b.id==='replay-motion'){window.SyntariMotion.replay();return;}
  if(b.id==='download'){window.SyntariGallery.exportTokens(new URL('tokens.css',base));return;}
