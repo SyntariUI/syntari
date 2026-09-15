@@ -1,6 +1,6 @@
 /* Syntari landing page */
 .landing-body{background:radial-gradient(1000px 600px at 12% -8%,var(--purple-a2),transparent 62%),radial-gradient(800px 540px at 92% 4%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed;min-height:100vh}
-.landing{max-width:1180px;margin:0 auto;padding:0 28px}
+.landing{width:100%;padding:0 clamp(20px,4vw,64px)}
 .landing-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid var(--border);position:relative;z-index:2}
 .landing-brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:600;letter-spacing:-.6px}
 .landing-brand .brand-mark{width:26px;height:26px}
@@ -19,7 +19,7 @@
 .showcase-intro{text-align:center;margin-bottom:26px}
 .showcase-intro h2{font-size:26px;font-weight:600;letter-spacing:-.03em;margin-bottom:8px}
 .showcase-intro p{color:var(--muted);font-size:13px}
-.showcase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.showcase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
 .showcase-item{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-soft);display:flex;flex-direction:column;min-width:0}
 .showcase-item--wide{grid-column:1 / -1}
 .showcase-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);flex-shrink:0}
@@ -33,5 +33,4 @@
 .landing-footer nav{display:flex;gap:16px}
 .landing-footer a{color:var(--muted)}
 .landing-footer a:hover{color:var(--text)}
-@media(max-width:860px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.showcase-grid{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}
+@media(max-width:560px){.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}

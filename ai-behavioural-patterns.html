@@ -8,7 +8,7 @@
   <link rel="icon" href="favicon.svg">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'light'}catch{}</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
   <style>
     .pattern-page{min-height:100vh;background:radial-gradient(920px 540px at 50% -12%,var(--purple-a2),transparent 60%),radial-gradient(720px 460px at 90% 2%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed}
     .poster{max-width:1140px;margin:0 auto;padding:44px 28px 72px}
@@ -43,8 +43,8 @@
     <header class="poster-top">
       <span class="poster-brand"><span class="brand-mark" aria-hidden="true"></span>Syntari</span>
       <div class="theme-toggle" role="group" aria-label="Colour theme">
-        <button type="button" data-theme-choice="light" aria-pressed="true" aria-label="Light theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
-        <button type="button" data-theme-choice="dark" aria-pressed="false" aria-label="Dark theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <button type="button" data-theme-choice="light" aria-pressed="false" aria-label="Light theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+        <button type="button" data-theme-choice="dark" aria-pressed="true" aria-label="Dark theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
       </div>
     </header>
 
@@ -137,7 +137,7 @@
       const root = document.documentElement;
       const buttons = [...document.querySelectorAll('[data-theme-choice]')];
       const sync = () => buttons.forEach(button => {
-        const on = button.dataset.themeChoice === (root.dataset.theme || 'light');
+        const on = button.dataset.themeChoice === (root.dataset.theme || 'dark');
         button.classList.toggle('active', on);
         button.setAttribute('aria-pressed', String(on));
       });

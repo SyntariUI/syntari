@@ -12,9 +12,13 @@ export function initialize() {
       const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = new URL(file, base);
       link.onload = resolve; link.onerror = () => reject(new Error(`Could not load ${file}`)); document.head.append(link);
     }));
-    const support = await fetch(new URL('support.html', base));
-    if (!support.ok) throw new Error('Could not load Syntari overlay templates.');
-    const host = document.createElement('div'); host.dataset.syntariSupport = ''; host.innerHTML = await support.text(); document.body.append(host);
+    let host;
+    try {
+      const support = await fetch(new URL('support.html', base));
+      if (support.ok) {
+        host = document.createElement('div'); host.dataset.syntariSupport = ''; host.innerHTML = await support.text(); document.body.append(host);
+      }
+    } catch {}
     for (const file of scripts) await new Promise((resolve, reject) => {
       const script = document.createElement('script'); script.src = new URL(file, base);
       script.onload = resolve; script.onerror = () => reject(new Error(`Could not load ${file}`)); document.head.append(script);
@@ -23,7 +27,7 @@ export function initialize() {
       dialog.addEventListener('cancel', event => { if (!event.defaultPrevented) { event.preventDefault(); window.SyntariMotion.closeDialog(dialog); } });
       dialog.addEventListener('click', event => { const r = dialog.getBoundingClientRect(); if (event.target === dialog && (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom)) window.SyntariMotion.closeDialog(dialog); });
     });
-    window.SyntariIcon && host.querySelectorAll('[data-icon]').forEach(el => el.outerHTML = window.SyntariIcon(el.dataset.icon));
+    if (host) window.SyntariIcon && host.querySelectorAll('[data-icon]').forEach(el => el.outerHTML = window.SyntariIcon(el.dataset.icon));
     await Promise.all(css);
     return window.SyntariCatalog;
   })();

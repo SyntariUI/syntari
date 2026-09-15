@@ -85,7 +85,9 @@ test('mobile drawer traps focus, closes with Escape and backdrop, and follows na
 test('navigation fits phones and tablets, and the catalog exposes both layouts',async({page})=>{
   await page.goto(url);
   for(const theme of ['dark','light']){
-    await page.getByRole('button',{name:`Switch to ${theme} theme`}).click();
+    if(await page.locator('html').getAttribute('data-theme') !== theme){
+      await page.locator('[data-preview-theme]').click();
+    }
     for(const width of [320,390,768,1024,1440]){
       await page.setViewportSize({width,height:1000});
       for(const layout of ['Sidebar','Topbar']){

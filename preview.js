@@ -19,7 +19,7 @@ function render(screen, focus = false) {
 }
 try {
   await initialize();
-  theme(document.documentElement.dataset.theme || 'light');
+  theme(document.documentElement.dataset.theme || 'dark');
   render(new URL(location.href).searchParams.get('screen'));
   themeButton.addEventListener('click', () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
   window.addEventListener('syntari:navigate', event => {

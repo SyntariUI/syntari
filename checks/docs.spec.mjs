@@ -18,7 +18,7 @@ test('documentation routes, examples, source, installation and navigation',async
  await page.getByRole('searchbox',{name:'Search documentation'}).fill('agent todo');await page.locator('#docs-navigation').getByRole('link',{name:'Agent todo list',exact:true}).click();await expect(page).toHaveURL(/components\/agent-todo-list\/$/);
  await page.getByRole('button',{name:'Completed',exact:true}).click();await expect(page.locator('[data-run-status]')).toHaveText('All tasks completed');
  await page.getByRole('button',{name:'Running',exact:true}).click();await page.getByRole('button',{name:'Stop plan'}).click();await expect(page.locator('[data-run-status]')).toContainText('Plan stopped');
- await page.getByRole('button',{name:'Switch to dark theme'}).click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await page.getByRole('button',{name:'Switch to light theme'}).click();await expect(page.locator('html')).toHaveAttribute('data-theme','light');
  await page.setViewportSize({width:390,height:844});await expect(page.locator('#docs-menu')).toBeVisible();await page.locator('#docs-menu').click();await expect(page.locator('body')).toHaveClass(/nav-open/);await page.getByRole('searchbox',{name:'Search documentation'}).fill('');await page.locator('#docs-navigation').getByRole('link',{name:'Theming',exact:true}).click();await expect(page.locator('h1')).toHaveText('One shared language.');await expect(page.locator('body')).not.toHaveClass(/nav-open/);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.goBack();await expect(page.locator('h1')).toHaveText('Agent todo list');await page.reload();await expect(page.locator('.syntari-component')).toBeVisible();expect(errors).toEqual([]);

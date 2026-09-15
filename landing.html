@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="landing.css">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'light'}catch{}</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
 </head>
 <body class="landing-body">
   <div class="landing">
@@ -21,8 +21,8 @@
         <a href="https://github.com/SyntariUI/syntari">GitHub</a>
       </nav>
       <div class="theme-toggle" role="group" aria-label="Colour theme">
-        <button type="button" data-theme-choice="light" aria-pressed="true" aria-label="Light theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
-        <button type="button" data-theme-choice="dark" aria-pressed="false" aria-label="Dark theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <button type="button" data-theme-choice="light" aria-pressed="false" aria-label="Light theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+        <button type="button" data-theme-choice="dark" aria-pressed="true" aria-label="Dark theme"><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
       </div>
     </header>
 
@@ -91,7 +91,7 @@
       const root = document.documentElement;
       const buttons = [...document.querySelectorAll('[data-theme-choice]')];
       const sync = () => buttons.forEach(button => {
-        const on = button.dataset.themeChoice === (root.dataset.theme || 'light');
+        const on = button.dataset.themeChoice === (root.dataset.theme || 'dark');
         button.classList.toggle('active', on);
         button.setAttribute('aria-pressed', String(on));
       });

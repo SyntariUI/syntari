@@ -191,5 +191,5 @@ $('#docs-search').addEventListener('input',renderNavigation);
 document.addEventListener('input',e=>{if(e.target.id==='search')filterGallery(e.target.value)});
 window.addEventListener('popstate',()=>{if(location.pathname+location.search!==routePath)navigate(location.href,{restore:true});});window.addEventListener('resize',syncNavigation);
 window.addEventListener('syntari:navigate',e=>{const d=e.detail;if(d.component){const c=catalog.find(c=>c.name===d.component);if(c)navigate(componentURL(c));}else if(['gallery','screens','foundations'].includes(d.view))navigate(galleryURL({view:d.view,category:d.category,screen:d.screen}));});
-try{catalog=await getComponents();iconize();setDocumentTheme(document.documentElement.dataset.theme||'light');await renderRoute();}
+try{catalog=await getComponents();iconize();setDocumentTheme(document.documentElement.dataset.theme||'dark');await renderRoute();}
 catch(error){console.error(error);$('#docs-main').innerHTML='<h1>Couldn’t load the library.</h1><p class="docs-description" style="margin-top:20px">Refresh to try again. Make sure the site’s component assets are available.</p>';}

@@ -99,7 +99,7 @@ function updateToolbar(demo){const count=demo.querySelectorAll('[data-toolbar-ch
 document.addEventListener('change',e=>{if(e.target.matches('[data-toolbar-choice]'))updateToolbar(e.target.closest('.toolbar-example'))});
 if(!window.SyntariEmbed){$('#replay-motion').onclick=()=>SyntariMotion.replay();
 const toolbarObserver=new IntersectionObserver(([entry])=>$('.gallery-toolbar').classList.toggle('is-stuck',!entry.isIntersecting),{threshold:0});toolbarObserver.observe($('.intro'));
-hydrate();setTheme(document.documentElement.dataset.theme||'light');renderGallery();}
+hydrate();setTheme(document.documentElement.dataset.theme||'dark');renderGallery();}
 window.SyntariCatalog=components;window.SyntariPrepare=prepareDemo;window.SyntariIcon=icon;
 window.SyntariGallery={render:renderGallery,foundations:renderFoundations,exportTokens};
 if(window.SyntariEmbed)$('#copy-code').onclick=()=>copy(selectedComponent.html,'Component HTML copied.');
