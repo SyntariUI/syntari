@@ -40,3 +40,16 @@
 .visitor-name .verified{display:inline-flex;flex-shrink:0;align-items:center;color:var(--accent-text)}
 .visitor-name .verified .icon{width:13px;height:13px;flex-shrink:0}
 .visitor-flag{right:-3px;bottom:-3px;font-size:11px;line-height:1;padding:1px 2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-soft)}
+
+/* Visitor table: compact three columns */
+.visitor-table td:first-child{width:52%}
+.visitor-table td:nth-child(2){width:22%}
+.visitor-table td:nth-child(3){width:26%;text-align:right;color:var(--success-text)}
+.visitor-table td:last-child{text-align:right}
+
+/* Visitor table column rhythm */
+.visitor-table{table-layout:auto}
+.visitor-table th:nth-child(1),.visitor-table td:nth-child(1){width:52%}
+.visitor-table th:nth-child(2),.visitor-table td:nth-child(2){width:22%}
+.visitor-table th:nth-child(3),.visitor-table td:nth-child(3){width:26%}
+.visitor-table .visitor-name>span:nth-child(2){white-space:nowrap}
