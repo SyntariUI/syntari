@@ -30,3 +30,13 @@
 .referrer-pill .icon{width:13px;height:13px}
 .visitor-table .verified .icon{width:13px;height:13px}
 .visitor-flag{right:-2px;bottom:-2px;font-size:11px;line-height:1.1;padding:1px 2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-soft)}
+
+/* Visitor table: full-width rows with intact badges */
+.visitor-table td:first-child{width:40%}
+.visitor-table td:nth-child(2){width:20%}
+.visitor-table td:nth-child(3){width:22%}
+.visitor-table td:last-child{width:18%}
+.visitor-name>span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.visitor-name .verified{display:inline-flex;flex-shrink:0;align-items:center;color:var(--accent-text)}
+.visitor-name .verified .icon{width:13px;height:13px;flex-shrink:0}
+.visitor-flag{right:-3px;bottom:-3px;font-size:11px;line-height:1;padding:1px 2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-soft)}

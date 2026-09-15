@@ -43,7 +43,7 @@
           <div class="showcase-item" id="stage-attribution-table"></div>
           <div class="showcase-item" id="stage-metric-and-sparkline"></div>
           <div class="showcase-item" id="stage-progress-and-score"></div>
-          <div class="showcase-item" id="stage-visitor-table"></div>
+          <div class="showcase-item showcase-item--wide" id="stage-visitor-table"></div>
           <div class="showcase-item" id="stage-card"></div>
           <article class="showcase-item project-card">
             <div class="row spread"><span class="badge purple">Project X</span><span class="badge green"><span class="status-dot"></span> On track</span></div>
@@ -59,6 +59,11 @@
           <div class="showcase-item" id="stage-otp-input"></div>
           <div class="showcase-item" id="stage-activity-list"></div>
           <div class="showcase-item" id="stage-breadcrumbs"></div>
+          <div class="showcase-item" id="stage-tabs"></div>
+          <div class="showcase-item" id="stage-banner"></div>
+          <div class="showcase-item" id="stage-filter-chips"></div>
+          <div class="showcase-item" id="stage-session-card"></div>
+          <div class="showcase-item" id="stage-stepper"></div>
         </div>
       </section>
     </main>
@@ -107,7 +112,12 @@
         ['slider', '#stage-slider'],
         ['otp-input', '#stage-otp-input'],
         ['activity-list', '#stage-activity-list'],
-        ['page-header-and-breadcrumbs', '#stage-breadcrumbs']
+        ['page-header-and-breadcrumbs', '#stage-breadcrumbs'],
+        ['tabs', '#stage-tabs'],
+        ['banner', '#stage-banner'],
+        ['filter-chips', '#stage-filter-chips'],
+        ['session-card', '#stage-session-card'],
+        ['stepper', '#stage-stepper']
       ];
       await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));
     } catch (error) {

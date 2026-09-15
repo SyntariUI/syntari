@@ -20,6 +20,7 @@
 .landing-showcase{margin:30px 0 60px}
 .showcase-wall{columns:320px;column-gap:12px}
 .showcase-item{break-inside:avoid;margin:0 0 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
+.showcase-item--wide{column-span:all}
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
 
 /* Project card: avatar group in a dashboard context */
