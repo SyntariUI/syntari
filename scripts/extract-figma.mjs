@@ -72,7 +72,7 @@ try {
     const needle = `'${component.name}'`;
     const registration = registrations.find(file => file.text.includes(needle));
     assert.ok(registration, `No source registration for ${component.slug}`);
-    component.source = { registration:{file:registration.file,line:registration.text.slice(0,registration.text.indexOf(needle)).split('\n').length}, interactions:component.interactionSource, states:'docs-data.js', runtime:'syntari.js', docs:`https://giovanitier.github.io/syntari/components/${component.slug}/` };
+    component.source = { registration:{file:registration.file,line:registration.text.slice(0,registration.text.indexOf(needle)).split('\n').length}, interactions:component.interactionSource, states:'docs-data.js', runtime:'syntari.js', docs:`https://syntariui.github.io/syntari/components/${component.slug}/` };
     for (const snapshot of Object.values(component.defaultSnapshots)) {
       assert.ok(snapshot.length, `No enhanced structure for ${component.slug}`);
       assert.ok(snapshot.every(node => Object.values(node.bounds).every(Number.isFinite)), `Invalid geometry in ${component.slug}`);

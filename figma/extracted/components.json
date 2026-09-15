@@ -11618,7 +11618,7 @@
         "interactions": "numbers.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/attribution-table/"
+        "docs": "https://syntariui.github.io/syntari/components/attribution-table/"
       }
     },
     {
@@ -13260,7 +13260,7 @@
         "interactions": "numbers.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/rolling-number/"
+        "docs": "https://syntariui.github.io/syntari/components/rolling-number/"
       }
     },
     {
@@ -29044,7 +29044,7 @@
         "interactions": "numbers.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/visitor-table/"
+        "docs": "https://syntariui.github.io/syntari/components/visitor-table/"
       }
     },
     {
@@ -30446,7 +30446,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/button/"
+        "docs": "https://syntariui.github.io/syntari/components/button/"
       }
     },
     {
@@ -33881,7 +33881,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/icon-button/"
+        "docs": "https://syntariui.github.io/syntari/components/icon-button/"
       }
     },
     {
@@ -37028,7 +37028,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/segmented-control/"
+        "docs": "https://syntariui.github.io/syntari/components/segmented-control/"
       }
     },
     {
@@ -38274,7 +38274,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/text-input/"
+        "docs": "https://syntariui.github.io/syntari/components/text-input/"
       }
     },
     {
@@ -40630,7 +40630,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/switch/"
+        "docs": "https://syntariui.github.io/syntari/components/switch/"
       }
     },
     {
@@ -42370,7 +42370,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/checkbox-and-radio/"
+        "docs": "https://syntariui.github.io/syntari/components/checkbox-and-radio/"
       }
     },
     {
@@ -43779,7 +43779,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/badge-and-status/"
+        "docs": "https://syntariui.github.io/syntari/components/badge-and-status/"
       }
     },
     {
@@ -47297,7 +47297,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/metric-and-sparkline/"
+        "docs": "https://syntariui.github.io/syntari/components/metric-and-sparkline/"
       }
     },
     {
@@ -50772,7 +50772,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/floating-navigation/"
+        "docs": "https://syntariui.github.io/syntari/components/floating-navigation/"
       }
     },
     {
@@ -52193,7 +52193,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/avatar-and-group/"
+        "docs": "https://syntariui.github.io/syntari/components/avatar-and-group/"
       }
     },
     {
@@ -58473,7 +58473,7 @@
         "interactions": "controls.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/select-and-date/"
+        "docs": "https://syntariui.github.io/syntari/components/select-and-date/"
       }
     },
     {
@@ -60481,7 +60481,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/progress-and-score/"
+        "docs": "https://syntariui.github.io/syntari/components/progress-and-score/"
       }
     },
     {
@@ -62688,7 +62688,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/dropdown-menu/"
+        "docs": "https://syntariui.github.io/syntari/components/dropdown-menu/"
       }
     },
     {
@@ -63832,7 +63832,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/tabs/"
+        "docs": "https://syntariui.github.io/syntari/components/tabs/"
       }
     },
     {
@@ -65437,7 +65437,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/banner/"
+        "docs": "https://syntariui.github.io/syntari/components/banner/"
       }
     },
     {
@@ -69099,7 +69099,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/table/"
+        "docs": "https://syntariui.github.io/syntari/components/table/"
       }
     },
     {
@@ -70403,7 +70403,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/card/"
+        "docs": "https://syntariui.github.io/syntari/components/card/"
       }
     },
     {
@@ -71779,7 +71779,7 @@
         "interactions": "controls.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/slider/"
+        "docs": "https://syntariui.github.io/syntari/components/slider/"
       }
     },
     {
@@ -73076,7 +73076,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/dialog/"
+        "docs": "https://syntariui.github.io/syntari/components/dialog/"
       }
     },
     {
@@ -74058,7 +74058,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/toast/"
+        "docs": "https://syntariui.github.io/syntari/components/toast/"
       }
     },
     {
@@ -76496,7 +76496,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/tooltip/"
+        "docs": "https://syntariui.github.io/syntari/components/tooltip/"
       }
     },
     {
@@ -78220,7 +78220,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/pagination/"
+        "docs": "https://syntariui.github.io/syntari/components/pagination/"
       }
     },
     {
@@ -80035,7 +80035,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/stepper/"
+        "docs": "https://syntariui.github.io/syntari/components/stepper/"
       }
     },
     {
@@ -81328,7 +81328,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/empty-state/"
+        "docs": "https://syntariui.github.io/syntari/components/empty-state/"
       }
     },
     {
@@ -84491,7 +84491,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/activity-list/"
+        "docs": "https://syntariui.github.io/syntari/components/activity-list/"
       }
     },
     {
@@ -85867,7 +85867,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/skeleton-and-spinner/"
+        "docs": "https://syntariui.github.io/syntari/components/skeleton-and-spinner/"
       }
     },
     {
@@ -87253,7 +87253,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/accordion/"
+        "docs": "https://syntariui.github.io/syntari/components/accordion/"
       }
     },
     {
@@ -89036,7 +89036,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/funnel/"
+        "docs": "https://syntariui.github.io/syntari/components/funnel/"
       }
     },
     {
@@ -91355,7 +91355,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/filter-chips/"
+        "docs": "https://syntariui.github.io/syntari/components/filter-chips/"
       }
     },
     {
@@ -92573,7 +92573,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/chat-composer/"
+        "docs": "https://syntariui.github.io/syntari/components/chat-composer/"
       }
     },
     {
@@ -94684,7 +94684,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/file-input/"
+        "docs": "https://syntariui.github.io/syntari/components/file-input/"
       }
     },
     {
@@ -95246,7 +95246,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/text-area/"
+        "docs": "https://syntariui.github.io/syntari/components/text-area/"
       }
     },
     {
@@ -98676,7 +98676,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/session-card/"
+        "docs": "https://syntariui.github.io/syntari/components/session-card/"
       }
     },
     {
@@ -100542,7 +100542,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/selection-toolbar/"
+        "docs": "https://syntariui.github.io/syntari/components/selection-toolbar/"
       }
     },
     {
@@ -106449,7 +106449,7 @@
         "interactions": "app.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/expandable-dock/"
+        "docs": "https://syntariui.github.io/syntari/components/expandable-dock/"
       }
     },
     {
@@ -111642,7 +111642,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/app-shell/"
+        "docs": "https://syntariui.github.io/syntari/components/app-shell/"
       }
     },
     {
@@ -113384,7 +113384,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/page-header-and-breadcrumbs/"
+        "docs": "https://syntariui.github.io/syntari/components/page-header-and-breadcrumbs/"
       }
     },
     {
@@ -114697,7 +114697,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/side-drawer/"
+        "docs": "https://syntariui.github.io/syntari/components/side-drawer/"
       }
     },
     {
@@ -115675,7 +115675,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/bottom-sheet/"
+        "docs": "https://syntariui.github.io/syntari/components/bottom-sheet/"
       }
     },
     {
@@ -117392,7 +117392,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/popover/"
+        "docs": "https://syntariui.github.io/syntari/components/popover/"
       }
     },
     {
@@ -118043,7 +118043,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/confirmation-dialog/"
+        "docs": "https://syntariui.github.io/syntari/components/confirmation-dialog/"
       }
     },
     {
@@ -119726,7 +119726,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/searchable-select/"
+        "docs": "https://syntariui.github.io/syntari/components/searchable-select/"
       }
     },
     {
@@ -121409,7 +121409,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/autocomplete/"
+        "docs": "https://syntariui.github.io/syntari/components/autocomplete/"
       }
     },
     {
@@ -123203,7 +123203,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/multiselect/"
+        "docs": "https://syntariui.github.io/syntari/components/multiselect/"
       }
     },
     {
@@ -124080,7 +124080,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/command-palette/"
+        "docs": "https://syntariui.github.io/syntari/components/command-palette/"
       }
     },
     {
@@ -125651,7 +125651,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/number-stepper/"
+        "docs": "https://syntariui.github.io/syntari/components/number-stepper/"
       }
     },
     {
@@ -126888,7 +126888,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/password-field/"
+        "docs": "https://syntariui.github.io/syntari/components/password-field/"
       }
     },
     {
@@ -128850,7 +128850,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/date-range-picker/"
+        "docs": "https://syntariui.github.io/syntari/components/date-range-picker/"
       }
     },
     {
@@ -129938,7 +129938,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/time-picker/"
+        "docs": "https://syntariui.github.io/syntari/components/time-picker/"
       }
     },
     {
@@ -133066,7 +133066,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/selectable-cards/"
+        "docs": "https://syntariui.github.io/syntari/components/selectable-cards/"
       }
     },
     {
@@ -148029,7 +148029,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/simple-data-table/"
+        "docs": "https://syntariui.github.io/syntari/components/simple-data-table/"
       }
     },
     {
@@ -169711,7 +169711,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/data-table/"
+        "docs": "https://syntariui.github.io/syntari/components/data-table/"
       }
     },
     {
@@ -171058,7 +171058,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/inline-validation/"
+        "docs": "https://syntariui.github.io/syntari/components/inline-validation/"
       }
     },
     {
@@ -172250,7 +172250,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/error-and-retry/"
+        "docs": "https://syntariui.github.io/syntari/components/error-and-retry/"
       }
     },
     {
@@ -174330,7 +174330,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/upload-progress/"
+        "docs": "https://syntariui.github.io/syntari/components/upload-progress/"
       }
     },
     {
@@ -175686,7 +175686,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/unsaved-changes/"
+        "docs": "https://syntariui.github.io/syntari/components/unsaved-changes/"
       }
     },
     {
@@ -177758,7 +177758,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/metadata-list/"
+        "docs": "https://syntariui.github.io/syntari/components/metadata-list/"
       }
     },
     {
@@ -180204,7 +180204,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/thumbnail-and-lightbox/"
+        "docs": "https://syntariui.github.io/syntari/components/thumbnail-and-lightbox/"
       }
     },
     {
@@ -181883,7 +181883,7 @@
         "interactions": "starter.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/divider-and-form-section/"
+        "docs": "https://syntariui.github.io/syntari/components/divider-and-form-section/"
       }
     },
     {
@@ -187402,7 +187402,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/agent-todo-list/"
+        "docs": "https://syntariui.github.io/syntari/components/agent-todo-list/"
       }
     },
     {
@@ -190388,7 +190388,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/agent-message/"
+        "docs": "https://syntariui.github.io/syntari/components/agent-message/"
       }
     },
     {
@@ -190915,7 +190915,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/message-bubbles/"
+        "docs": "https://syntariui.github.io/syntari/components/message-bubbles/"
       }
     },
     {
@@ -192560,7 +192560,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/message-scroller/"
+        "docs": "https://syntariui.github.io/syntari/components/message-scroller/"
       }
     },
     {
@@ -194566,7 +194566,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/prompt-input/"
+        "docs": "https://syntariui.github.io/syntari/components/prompt-input/"
       }
     },
     {
@@ -196411,7 +196411,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/code-block/"
+        "docs": "https://syntariui.github.io/syntari/components/code-block/"
       }
     },
     {
@@ -198512,7 +198512,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/approval-card/"
+        "docs": "https://syntariui.github.io/syntari/components/approval-card/"
       }
     },
     {
@@ -201149,7 +201149,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/file-diff/"
+        "docs": "https://syntariui.github.io/syntari/components/file-diff/"
       }
     },
     {
@@ -203830,7 +203830,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/tool-result/"
+        "docs": "https://syntariui.github.io/syntari/components/tool-result/"
       }
     },
     {
@@ -206053,7 +206053,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/streaming-response/"
+        "docs": "https://syntariui.github.io/syntari/components/streaming-response/"
       }
     },
     {
@@ -208145,7 +208145,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/image-generation/"
+        "docs": "https://syntariui.github.io/syntari/components/image-generation/"
       }
     },
     {
@@ -210141,7 +210141,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/tool-approval/"
+        "docs": "https://syntariui.github.io/syntari/components/tool-approval/"
       }
     },
     {
@@ -213207,7 +213207,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/citations/"
+        "docs": "https://syntariui.github.io/syntari/components/citations/"
       }
     },
     {
@@ -215804,7 +215804,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/agent-activity/"
+        "docs": "https://syntariui.github.io/syntari/components/agent-activity/"
       }
     },
     {
@@ -218061,7 +218061,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/agent-loading-states/"
+        "docs": "https://syntariui.github.io/syntari/components/agent-loading-states/"
       }
     },
     {
@@ -222386,7 +222386,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/ai-sidebar/"
+        "docs": "https://syntariui.github.io/syntari/components/ai-sidebar/"
       }
     },
     {
@@ -226711,7 +226711,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/chat-workspace/"
+        "docs": "https://syntariui.github.io/syntari/components/chat-workspace/"
       }
     },
     {
@@ -231018,7 +231018,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/file-tree/"
+        "docs": "https://syntariui.github.io/syntari/components/file-tree/"
       }
     },
     {
@@ -232460,7 +232460,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/preview-rail/"
+        "docs": "https://syntariui.github.io/syntari/components/preview-rail/"
       }
     },
     {
@@ -234139,7 +234139,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/otp-input/"
+        "docs": "https://syntariui.github.io/syntari/components/otp-input/"
       }
     },
     {
@@ -236724,7 +236724,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/feedback-widget/"
+        "docs": "https://syntariui.github.io/syntari/components/feedback-widget/"
       }
     },
     {
@@ -239757,7 +239757,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/notification-stack/"
+        "docs": "https://syntariui.github.io/syntari/components/notification-stack/"
       }
     },
     {
@@ -242688,7 +242688,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/context-menu/"
+        "docs": "https://syntariui.github.io/syntari/components/context-menu/"
       }
     },
     {
@@ -245964,7 +245964,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/availability-scheduler/"
+        "docs": "https://syntariui.github.io/syntari/components/availability-scheduler/"
       }
     },
     {
@@ -247824,7 +247824,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/wheel-picker/"
+        "docs": "https://syntariui.github.io/syntari/components/wheel-picker/"
       }
     },
     {
@@ -251532,7 +251532,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/swipeable-list/"
+        "docs": "https://syntariui.github.io/syntari/components/swipeable-list/"
       }
     },
     {
@@ -252619,7 +252619,7 @@
         "interactions": "agents.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/not-found/"
+        "docs": "https://syntariui.github.io/syntari/components/not-found/"
       }
     },
     {
@@ -254043,7 +254043,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/range-slider/"
+        "docs": "https://syntariui.github.io/syntari/components/range-slider/"
       }
     },
     {
@@ -255415,7 +255415,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/tilt-card/"
+        "docs": "https://syntariui.github.io/syntari/components/tilt-card/"
       }
     },
     {
@@ -258680,7 +258680,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/marquee/"
+        "docs": "https://syntariui.github.io/syntari/components/marquee/"
       }
     },
     {
@@ -259876,7 +259876,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/pull-to-refresh/"
+        "docs": "https://syntariui.github.io/syntari/components/pull-to-refresh/"
       }
     },
     {
@@ -260833,7 +260833,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/ambient-background/"
+        "docs": "https://syntariui.github.io/syntari/components/ambient-background/"
       }
     },
     {
@@ -263425,7 +263425,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/rotating-carousel/"
+        "docs": "https://syntariui.github.io/syntari/components/rotating-carousel/"
       }
     },
     {
@@ -266190,7 +266190,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/card-and-project-folder/"
+        "docs": "https://syntariui.github.io/syntari/components/card-and-project-folder/"
       }
     },
     {
@@ -269483,7 +269483,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/masonry-grid/"
+        "docs": "https://syntariui.github.io/syntari/components/masonry-grid/"
       }
     },
     {
@@ -271379,7 +271379,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/fixtures/"
+        "docs": "https://syntariui.github.io/syntari/components/fixtures/"
       }
     },
     {
@@ -273093,7 +273093,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/asset-swap/"
+        "docs": "https://syntariui.github.io/syntari/components/asset-swap/"
       }
     },
     {
@@ -274930,7 +274930,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/status-island/"
+        "docs": "https://syntariui.github.io/syntari/components/status-island/"
       }
     },
     {
@@ -276544,7 +276544,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/overflow-actions/"
+        "docs": "https://syntariui.github.io/syntari/components/overflow-actions/"
       }
     },
     {
@@ -278533,7 +278533,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/wallet-card/"
+        "docs": "https://syntariui.github.io/syntari/components/wallet-card/"
       }
     },
     {
@@ -280075,7 +280075,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/prediction-card/"
+        "docs": "https://syntariui.github.io/syntari/components/prediction-card/"
       }
     },
     {
@@ -282210,7 +282210,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/bloom-menu/"
+        "docs": "https://syntariui.github.io/syntari/components/bloom-menu/"
       }
     },
     {
@@ -283995,7 +283995,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/morphing-search/"
+        "docs": "https://syntariui.github.io/syntari/components/morphing-search/"
       }
     },
     {
@@ -284994,7 +284994,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/action-swap/"
+        "docs": "https://syntariui.github.io/syntari/components/action-swap/"
       }
     },
     {
@@ -287261,7 +287261,7 @@
         "interactions": "extras.js",
         "states": "docs-data.js",
         "runtime": "syntari.js",
-        "docs": "https://giovanitier.github.io/syntari/components/agent-questions/"
+        "docs": "https://syntariui.github.io/syntari/components/agent-questions/"
       }
     }
   ]

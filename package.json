@@ -3,6 +3,11 @@
   "version": "0.2.1",
   "private": false,
   "description": "Syntari: an agentic design system with interactive components, tokens, patterns, and a machine-readable registry.",
+  "homepage": "https://syntariui.github.io/syntari/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SyntariUI/syntari.git"
+  },
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",

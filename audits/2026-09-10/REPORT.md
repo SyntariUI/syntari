@@ -26,7 +26,7 @@ This report records local verification of the revised Syntari source, documentat
 
 Project identity and owner, status badge, progress, budget, date, and detail action share one line with quiet separators. Each data heading sorts in both directions. Numeric values sort numerically; dates sort chronologically. Rows keep their DOM identity and animate to their new positions. Editing a record updates the row and retains the active sort. Small screens scroll within the table, without widening the page.
 
-[Open the working table](https://giovanitier.github.io/syntari/components/simple-data-table/) · [Open the gallery](https://giovanitier.github.io/syntari/gallery.html)
+[Open the working table](https://syntariui.github.io/syntari/components/simple-data-table/) · [Open the gallery](https://syntariui.github.io/syntari/gallery.html)
 
 ## Verification
 
