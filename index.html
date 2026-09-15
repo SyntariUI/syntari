@@ -40,13 +40,15 @@
 
       <section class="landing-showcase">
         <div class="showcase-grid">
-          <div class="showcase-item showcase-item--hero" id="stage-attribution-table"></div>
-          <div class="showcase-item" id="stage-card"></div>
-          <div class="showcase-item" id="stage-metric-and-sparkline"></div>
-          <div class="showcase-item" id="stage-dropdown-menu"></div>
-          <div class="showcase-item" id="stage-text-input"></div>
-          <div class="showcase-item" id="stage-switch"></div>
-          <div class="showcase-item showcase-item--wide" id="stage-progress-and-score"></div>
+          <div class="showcase-item showcase-item--table" id="stage-attribution-table"></div>
+          <div class="showcase-item showcase-item--card" id="stage-card"></div>
+          <div class="showcase-item showcase-item--metric" id="stage-metric-and-sparkline"></div>
+          <div class="showcase-item showcase-item--progress" id="stage-progress-and-score"></div>
+          <div class="showcase-item showcase-item--dropdown" id="stage-dropdown-menu"></div>
+          <div class="showcase-item showcase-item--input" id="stage-text-input"></div>
+          <div class="showcase-item showcase-item--switch" id="stage-switch"></div>
+          <div class="showcase-item showcase-item--segmented" id="stage-segmented-control"></div>
+          <div class="showcase-item showcase-item--slider" id="stage-slider"></div>
         </div>
       </section>
     </main>
@@ -84,12 +86,14 @@
       await initialize();
       const items = [
         ['attribution-table', '#stage-attribution-table'],
+        ['card', '#stage-card'],
         ['metric-and-sparkline', '#stage-metric-and-sparkline'],
+        ['progress-and-score', '#stage-progress-and-score'],
         ['dropdown-menu', '#stage-dropdown-menu'],
         ['text-input', '#stage-text-input'],
         ['switch', '#stage-switch'],
-        ['card', '#stage-card'],
-        ['progress-and-score', '#stage-progress-and-score']
+        ['segmented-control', '#stage-segmented-control'],
+        ['slider', '#stage-slider']
       ];
       await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));
     } catch (error) {
