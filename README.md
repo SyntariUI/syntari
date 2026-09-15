@@ -1,5 +1,7 @@
 # Syntari 0.2.1
 
+Syntari is an agentic design system: interactive components, design tokens, and agent-interface patterns, backed by a machine-readable registry that agents can query, compose, validate, and safely evolve.
+
 107 component pages, 252 authored preview states and layouts, seven guides, and four starter screens. Light and dark themes share Syntari’s tokens, OpenRunde typography, Lucide icons, and restrained motion.
 
 Each component page includes Preview / Usage / Code, CLI and manual installation, its element contract, runtime API, and guidelines. All examples use the same editable HTML, CSS, and JavaScript runtime included in the source archive.
