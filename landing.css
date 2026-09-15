@@ -16,21 +16,37 @@
 .landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
 .landing-stats{font-size:12px;color:var(--fg-2)}
 .landing-showcase{margin:44px 0 72px}
-.showcase-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"table table table table table table" "card card metric metric progress progress" "dropdown dropdown input input switch switch" "segmented segmented segmented slider slider slider";gap:14px;align-items:stretch}
+.showcase-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"explorer explorer explorer explorer explorer explorer" "metric metric metric progress progress progress" "card card input input switch switch" "slider slider activity activity visitor visitor";gap:14px;align-items:stretch}
 .showcase-item{min-width:0}
-.showcase-item--table{grid-area:table}
-.showcase-item--card{grid-area:card}
+.showcase-item--explorer{grid-area:explorer;padding:22px}
 .showcase-item--metric{grid-area:metric}
 .showcase-item--progress{grid-area:progress}
-.showcase-item--dropdown{grid-area:dropdown}
+.showcase-item--card{grid-area:card}
 .showcase-item--input{grid-area:input}
 .showcase-item--switch{grid-area:switch}
-.showcase-item--segmented{grid-area:segmented}
 .showcase-item--slider{grid-area:slider}
+.showcase-item--activity{grid-area:activity}
+.showcase-item--visitor{grid-area:visitor}
+
+/* Explorer composition: the segmented control switches real content */
+.explorer{display:flex;flex-direction:column;min-width:0}
+.explorer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.explorer-body{min-height:470px}
+.explorer-view[hidden]{display:none}
+.explorer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;align-content:start}
+.explorer-grid .mini-card h3{font-size:13px;margin-top:12px}
+.explorer-grid .mini-card p{font-size:11px;color:var(--muted);margin:6px 0 0}
+.explorer-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-content:start}
+.explorer-column{display:grid;gap:10px;align-content:start}
+.explorer-column h4{font-size:11px;font-weight:500;color:var(--muted)}
+.explorer-column .mini-card{padding:12px}
+.explorer-column .mini-card h3{font-size:12px}
+.explorer-column .mini-card p{font-size:10px;color:var(--muted);margin:4px 0 0}
+
 .landing-footer{border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:30px 0 48px;font-size:12px;color:var(--muted)}
 .landing-footer>span{display:flex;align-items:center;gap:9px}
 .landing-footer nav{display:flex;gap:16px}
 .landing-footer a{color:var(--muted)}
 .landing-footer a:hover{color:var(--text)}
-@media(max-width:1000px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"table table" "card metric" "progress progress" "dropdown input" "switch switch" "segmented slider"}}
-@media(max-width:620px){.showcase-grid{grid-template-columns:1fr;grid-template-areas:"table" "card" "metric" "progress" "dropdown" "input" "switch" "segmented" "slider"}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}
+@media(max-width:1000px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"explorer explorer" "metric progress" "card input" "switch switch" "slider slider" "activity visitor"}.explorer-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.showcase-grid{grid-template-columns:1fr;grid-template-areas:"explorer" "metric" "progress" "card" "input" "switch" "slider" "activity" "visitor"}.explorer-board{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}

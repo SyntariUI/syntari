@@ -40,15 +40,48 @@
 
       <section class="landing-showcase">
         <div class="showcase-grid">
-          <div class="showcase-item showcase-item--table" id="stage-attribution-table"></div>
-          <div class="showcase-item showcase-item--card" id="stage-card"></div>
+          <div class="showcase-item showcase-item--explorer">
+            <div class="explorer">
+              <div class="explorer-bar">
+                <div class="segmented" data-explorer role="group" aria-label="View">
+                  <button type="button" class="active" data-explorer-view="table" aria-pressed="true">Table</button>
+                  <button type="button" data-explorer-view="grid" aria-pressed="false">Grid</button>
+                  <button type="button" data-explorer-view="board" aria-pressed="false">Board</button>
+                </div>
+                <div class="dropdown">
+                  <button type="button" class="button small" data-menu-toggle aria-expanded="false" aria-haspopup="true">All statuses <svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+                  <div class="dropdown-panel" hidden>
+                    <button type="button">All statuses</button>
+                    <button type="button">Active</button>
+                    <button type="button">Review</button>
+                    <button type="button">Archived</button>
+                  </div>
+                </div>
+              </div>
+              <div class="explorer-body">
+                <div class="explorer-view" data-explorer-panel="table" id="explorer-table"></div>
+                <div class="explorer-view explorer-grid" data-explorer-panel="grid" hidden>
+                  <article class="mini-card"><div class="row spread"><span class="avatar blue tiny" aria-hidden="true"></span><span class="badge purple">Active</span></div><h3>Autumn campaign</h3><p>Alex Morgan &middot; Sep 6</p></article>
+                  <article class="mini-card"><div class="row spread"><span class="avatar tiny" aria-hidden="true"></span><span class="badge green"><span class="status-dot"></span> Live</span></div><h3>Brand refresh</h3><p>Jamie Chen &middot; Sep 10</p></article>
+                  <article class="mini-card"><div class="row spread"><span class="avatar mint tiny" aria-hidden="true"></span><span class="badge amber">Review</span></div><h3>Customer research</h3><p>Sam Rivera &middot; Sep 8</p></article>
+                  <article class="mini-card"><div class="row spread"><span class="avatar blue tiny" aria-hidden="true"></span><span class="badge">Archived</span></div><h3>Design foundations</h3><p>Sam Rivera &middot; Sep 5</p></article>
+                </div>
+                <div class="explorer-view explorer-board" data-explorer-panel="board" hidden>
+                  <div class="explorer-column"><h4>To do</h4><article class="mini-card"><h3>Help center</h3><p>Jamie Chen</p></article><article class="mini-card"><h3>Docs pass</h3><p>Alex Morgan</p></article></div>
+                  <div class="explorer-column"><h4>In progress</h4><article class="mini-card"><h3>Brand refresh</h3><p>Jamie Chen</p></article><article class="mini-card"><h3>Autumn campaign</h3><p>Alex Morgan</p></article></div>
+                  <div class="explorer-column"><h4>Done</h4><article class="mini-card"><h3>Customer research</h3><p>Sam Rivera</p></article><article class="mini-card"><h3>Design foundations</h3><p>Sam Rivera</p></article></div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="showcase-item showcase-item--metric" id="stage-metric-and-sparkline"></div>
           <div class="showcase-item showcase-item--progress" id="stage-progress-and-score"></div>
-          <div class="showcase-item showcase-item--dropdown" id="stage-dropdown-menu"></div>
+          <div class="showcase-item showcase-item--card" id="stage-card"></div>
           <div class="showcase-item showcase-item--input" id="stage-text-input"></div>
           <div class="showcase-item showcase-item--switch" id="stage-switch"></div>
-          <div class="showcase-item showcase-item--segmented" id="stage-segmented-control"></div>
           <div class="showcase-item showcase-item--slider" id="stage-slider"></div>
+          <div class="showcase-item showcase-item--activity" id="stage-activity-list"></div>
+          <div class="showcase-item showcase-item--visitor" id="stage-visitor-table"></div>
         </div>
       </section>
     </main>
@@ -85,17 +118,32 @@
     try {
       await initialize();
       const items = [
-        ['attribution-table', '#stage-attribution-table'],
-        ['card', '#stage-card'],
         ['metric-and-sparkline', '#stage-metric-and-sparkline'],
         ['progress-and-score', '#stage-progress-and-score'],
-        ['dropdown-menu', '#stage-dropdown-menu'],
+        ['card', '#stage-card'],
         ['text-input', '#stage-text-input'],
         ['switch', '#stage-switch'],
-        ['segmented-control', '#stage-segmented-control'],
-        ['slider', '#stage-slider']
+        ['slider', '#stage-slider'],
+        ['activity-list', '#stage-activity-list'],
+        ['visitor-table', '#stage-visitor-table'],
+        ['attribution-table', '#explorer-table']
       ];
       await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));
+      document.querySelectorAll('[data-explorer]').forEach(group => {
+        window.SyntariMotion?.indicator(group, true);
+        group.addEventListener('click', event => {
+          const button = event.target.closest('[data-explorer-view]');
+          if (!button) return;
+          const view = button.dataset.explorerView;
+          group.querySelectorAll('[data-explorer-view]').forEach(candidate => {
+            const active = candidate === button;
+            candidate.classList.toggle('active', active);
+            candidate.setAttribute('aria-pressed', String(active));
+          });
+          document.querySelectorAll('[data-explorer-panel]').forEach(panel => { panel.hidden = panel.dataset.explorerPanel !== view; });
+          window.SyntariMotion?.indicator(group);
+        });
+      });
     } catch (error) {
       console.error(error);
     }
