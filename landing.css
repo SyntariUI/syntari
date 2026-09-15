@@ -16,16 +16,20 @@
 .landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
 .landing-stats{font-size:12px;color:var(--fg-2)}
 
-/* Bento: a packed masonry of working dashboard components */
+/* Bento: explicit columns so every card lands where it belongs */
 .landing-showcase{margin:30px 0 60px}
-.showcase-wall{columns:320px;column-gap:12px}
-.showcase-item{break-inside:avoid;margin:0 0 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
-.showcase-item--wide{column-span:all}
+.showcase-wall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.showcase-col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.showcase-item{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
 .showcase-item .specimen-body{min-height:0;align-items:stretch;justify-content:flex-start;padding:18px;gap:14px}
 .table-filters{display:grid;gap:10px;padding:18px 18px 0}
 .table-filters .row{flex-wrap:wrap;gap:6px}
-
-/* Project card: avatar group in a dashboard context */
+.primary-tabs{padding:18px}
+.tabs-primary{display:flex;gap:4px;padding:4px;border:0;background:var(--subtle);border-radius:12px;width:100%}
+.tabs-primary button{flex:1;padding:8px 10px;border-radius:9px;font-size:12px;color:var(--muted)}
+.tabs-primary button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-soft)}
+.tabs-primary button.active:after{display:none}
+.primary-tabs .tab-panel{margin-top:14px;font-size:12px;line-height:1.7;color:var(--muted)}
 .project-card{padding:18px}
 .project-card h3{font-size:15px;margin-top:14px}
 .project-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
@@ -38,4 +42,6 @@
 .landing-footer nav{display:flex;gap:16px}
 .landing-footer a{color:var(--muted)}
 .landing-footer a:hover{color:var(--text)}
-@media(max-width:620px){.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:40px}}
+@media(max-width:1300px){.showcase-wall{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:980px){.showcase-wall{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.showcase-wall{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:40px}}

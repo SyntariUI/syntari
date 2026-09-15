@@ -40,39 +40,55 @@
 
       <section class="landing-showcase">
         <div class="showcase-wall">
-          <div class="showcase-item" id="stage-attribution-table"></div>
-          <div class="showcase-item" id="stage-metric-and-sparkline"></div>
-          <div class="showcase-item" id="stage-progress-and-score"></div>
-          <div class="showcase-item" id="stage-visitor-table"></div>
-          <div class="showcase-item" id="stage-card"></div>
-          <article class="showcase-item project-card">
-            <div class="row spread"><span class="badge purple">Project X</span><span class="badge green"><span class="status-dot"></span> On track</span></div>
-            <h3>Website relaunch</h3>
-            <div class="row" style="align-items:center;gap:10px;margin-top:14px"><div class="avatars" aria-hidden="true"><span class="avatar"></span><span class="avatar blue"></span><span class="avatar mint"></span><span class="avatar-count">+4</span></div><span class="label-caption">7 contributors</span></div>
-            <div class="project-stats"><div><span>Time spent</span><strong>128h</strong></div><div><span>Profit</span><strong>$12,480</strong></div></div>
-          </article>
-          <div class="showcase-item table-card">
-            <div class="table-filters">
-              <div class="row" data-chip-list>
-                <span class="chip">Active <button type="button" aria-label="Remove Active filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
-                <span class="chip">Design <button type="button" aria-label="Remove Design filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
-                <span class="chip">This month <button type="button" aria-label="Remove This month filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
-              </div>
-              <div class="row" style="gap:6px"><button type="button" class="button ghost small" data-clear-chips>Clear all</button><button type="button" class="button small" data-reset-chips>Reset filters</button></div>
-            </div>
-            <div id="stage-simple-data-table"></div>
+          <div class="showcase-col">
+            <div class="showcase-item" id="stage-attribution-table"></div>
+            <div class="showcase-item" id="stage-card"></div>
+            <div class="showcase-item" id="stage-text-input"></div>
+            <div class="showcase-item" id="stage-switch"></div>
           </div>
-          <div class="showcase-item" id="stage-text-input"></div>
-          <div class="showcase-item" id="stage-switch"></div>
-          <div class="showcase-item" id="stage-dropdown-menu"></div>
-          <div class="showcase-item" id="stage-slider"></div>
-          <div class="showcase-item" id="stage-otp-input"></div>
-          <div class="showcase-item" id="stage-activity-list"></div>
-          <div class="showcase-item" id="stage-breadcrumbs"></div>
-          <div class="showcase-item" id="stage-tabs"></div>
-          <div class="showcase-item" id="stage-banner"></div>
-          <div class="showcase-item" id="stage-session-card"></div>
-          <div class="showcase-item" id="stage-metadata-list"></div>
+          <div class="showcase-col">
+            <div class="showcase-item" id="stage-metric-and-sparkline"></div>
+            <div class="showcase-item" id="stage-visitor-table"></div>
+            <div class="showcase-item" id="stage-progress-and-score"></div>
+            <div class="showcase-item" id="stage-slider"></div>
+            <div class="showcase-item" id="stage-banner"></div>
+          </div>
+          <div class="showcase-col">
+            <div class="showcase-item primary-tabs">
+              <div class="tabs tabs-primary" role="tablist" aria-label="Sections" data-primary-tabs>
+                <button type="button" role="tab" aria-selected="true" class="active" data-panel="Pipeline is up 18.6% this month.<br>4 deals moved to review.">Pipeline</button>
+                <button type="button" role="tab" aria-selected="false" tabindex="-1" data-panel="Forecast lands at $48k for Q3.<br>Confidence is high.">Forecast</button>
+                <button type="button" role="tab" aria-selected="false" tabindex="-1" data-panel="12 tasks due this week.<br>2 blocked by review.">Activity</button>
+              </div>
+              <div class="tab-panel" role="tabpanel">Pipeline is up 18.6% this month.<br>4 deals moved to review.</div>
+            </div>
+            <div class="showcase-item table-card">
+              <div class="table-filters">
+                <div class="row" data-chip-list>
+                  <span class="chip">Active <button type="button" aria-label="Remove Active filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+                  <span class="chip">Design <button type="button" aria-label="Remove Design filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+                  <span class="chip">This month <button type="button" aria-label="Remove This month filter" data-remove-chip><svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+                </div>
+                <div class="row" style="gap:6px"><button type="button" class="button ghost small" data-clear-chips>Clear all</button><button type="button" class="button small" data-reset-chips>Reset filters</button></div>
+              </div>
+              <div id="stage-simple-data-table"></div>
+            </div>
+            <div class="showcase-item" id="stage-otp-input"></div>
+            <div class="showcase-item" id="stage-dropdown-menu"></div>
+            <div class="showcase-item" id="stage-breadcrumbs"></div>
+          </div>
+          <div class="showcase-col">
+            <article class="showcase-item project-card">
+              <div class="row spread"><span class="badge purple">Project X</span><span class="badge green"><span class="status-dot"></span> On track</span></div>
+              <h3>Website relaunch</h3>
+              <div class="row" style="align-items:center;gap:10px;margin-top:14px"><div class="avatars" aria-hidden="true"><span class="avatar"></span><span class="avatar blue"></span><span class="avatar mint"></span><span class="avatar-count">+4</span></div><span class="label-caption">7 contributors</span></div>
+              <div class="project-stats"><div><span>Time spent</span><strong>128h</strong></div><div><span>Profit</span><strong>$12,480</strong></div></div>
+            </article>
+            <div class="showcase-item" id="stage-session-card"></div>
+            <div class="showcase-item" id="stage-metadata-list"></div>
+            <div class="showcase-item" id="stage-activity-list"></div>
+            <div class="showcase-item" id="stage-tabs"></div>
+          </div>
         </div>
       </section>
     </main>
@@ -128,6 +144,20 @@
         ['metadata-list', '#stage-metadata-list']
       ];
       await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));
+      document.querySelectorAll('[data-primary-tabs]').forEach(group => {
+        group.addEventListener('click', event => {
+          const button = event.target.closest('button');
+          if (!button) return;
+          group.querySelectorAll('button').forEach(candidate => {
+            const active = candidate === button;
+            candidate.classList.toggle('active', active);
+            candidate.setAttribute('aria-selected', String(active));
+            candidate.tabIndex = active ? 0 : -1;
+          });
+          const panel = group.nextElementSibling;
+          if (panel) panel.innerHTML = button.dataset.panel || '';
+        });
+      });
     } catch (error) {
       console.error(error);
     }
