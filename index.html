@@ -76,12 +76,17 @@
           </div>
           <div class="showcase-item showcase-item--metric" id="stage-metric-and-sparkline"></div>
           <div class="showcase-item showcase-item--progress" id="stage-progress-and-score"></div>
+          <div class="showcase-item showcase-item--visitor" id="stage-visitor-table"></div>
           <div class="showcase-item showcase-item--card" id="stage-card"></div>
           <div class="showcase-item showcase-item--input" id="stage-text-input"></div>
           <div class="showcase-item showcase-item--switch" id="stage-switch"></div>
+          <div class="showcase-item showcase-item--dropdown" id="stage-dropdown-menu"></div>
           <div class="showcase-item showcase-item--slider" id="stage-slider"></div>
+          <div class="showcase-item showcase-item--otp" id="stage-otp-input"></div>
+          <div class="showcase-item showcase-item--avatar" id="stage-avatar-and-group"></div>
           <div class="showcase-item showcase-item--activity" id="stage-activity-list"></div>
-          <div class="showcase-item showcase-item--visitor" id="stage-visitor-table"></div>
+          <div class="showcase-item showcase-item--badge" id="stage-badge-and-status"></div>
+          <div class="showcase-item showcase-item--breadcrumbs" id="stage-breadcrumbs"></div>
         </div>
       </section>
     </main>
@@ -120,12 +125,17 @@
       const items = [
         ['metric-and-sparkline', '#stage-metric-and-sparkline'],
         ['progress-and-score', '#stage-progress-and-score'],
+        ['visitor-table', '#stage-visitor-table'],
         ['card', '#stage-card'],
         ['text-input', '#stage-text-input'],
         ['switch', '#stage-switch'],
+        ['dropdown-menu', '#stage-dropdown-menu'],
         ['slider', '#stage-slider'],
+        ['otp-input', '#stage-otp-input'],
+        ['avatar-and-group', '#stage-avatar-and-group'],
         ['activity-list', '#stage-activity-list'],
-        ['visitor-table', '#stage-visitor-table'],
+        ['badge-and-status', '#stage-badge-and-status'],
+        ['page-header-and-breadcrumbs', '#stage-breadcrumbs'],
         ['attribution-table', '#explorer-table']
       ];
       await Promise.allSettled(items.map(([slug, selector]) => mount(slug, selector)));

@@ -1,35 +1,42 @@
 /* Syntari landing page */
-.landing-body{background:radial-gradient(1000px 600px at 12% -8%,var(--purple-a2),transparent 62%),radial-gradient(800px 540px at 92% 4%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed;min-height:100vh}
-.landing{width:100%;padding:0 clamp(20px,4vw,64px)}
-.landing-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid var(--border);position:relative;z-index:2}
+.landing-body{background:radial-gradient(1000px 620px at 12% -8%,var(--purple-a2),transparent 62%),radial-gradient(820px 560px at 92% 3%,var(--sky-a1),transparent 58%),var(--canvas);background-attachment:fixed;min-height:100vh}
+.landing{width:100%;padding:0 clamp(20px,3.5vw,56px)}
+.landing-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--border);position:relative;z-index:2}
 .landing-brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:600;letter-spacing:-.6px}
 .landing-brand .brand-mark{width:26px;height:26px}
 .landing-nav-links{display:flex;align-items:center;gap:6px}
 .landing-nav-links a{padding:8px 12px;border-radius:9px;font-size:13px;color:var(--muted)}
 .landing-nav-links a:hover{background:var(--bg-a1);color:var(--text)}
 .landing-nav .theme-toggle .icon{width:15px;height:15px}
-.landing-hero{max-width:760px;margin:0 auto;text-align:center;padding:64px 0 36px}
-.landing-hero .badge{margin-bottom:22px}
-.landing-hero h1{font-size:clamp(38px,6vw,64px);line-height:1.02;font-weight:600;letter-spacing:-.045em;margin:0 0 20px}
-.landing-hero>p{font-size:clamp(15px,1.6vw,18px);line-height:1.55;color:var(--muted);max-width:46ch;margin:0 auto}
-.landing-cta{display:flex;gap:12px;justify-content:center;margin:28px 0 16px;flex-wrap:wrap}
+.landing-hero{max-width:720px;margin:0 auto;text-align:center;padding:56px 0 30px}
+.landing-hero .badge{margin-bottom:20px}
+.landing-hero h1{font-size:clamp(34px,5vw,56px);line-height:1.03;font-weight:600;letter-spacing:-.045em;margin:0 0 18px}
+.landing-hero>p{font-size:clamp(15px,1.5vw,18px);line-height:1.55;color:var(--muted);max-width:46ch;margin:0 auto}
+.landing-cta{display:flex;gap:12px;justify-content:center;margin:24px 0 14px;flex-wrap:wrap}
 .landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
 .landing-stats{font-size:12px;color:var(--fg-2)}
-.landing-showcase{margin:44px 0 72px}
-.showcase-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"explorer explorer explorer explorer explorer explorer" "metric metric metric progress progress progress" "card card input input switch switch" "slider slider activity activity visitor visitor";gap:14px;align-items:stretch}
-.showcase-item{min-width:0}
-.showcase-item--explorer{grid-area:explorer;padding:22px}
+
+/* Bento: a wall of working components */
+.landing-showcase{margin:34px 0 60px}
+.showcase-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"explorer explorer explorer explorer metric metric" "explorer explorer explorer explorer progress progress" "visitor visitor visitor card card card" "input input input switch switch switch" "dropdown dropdown slider slider otp otp" "avatar avatar activity activity badge badge" "breadcrumbs breadcrumbs breadcrumbs breadcrumbs breadcrumbs breadcrumbs";gap:12px;align-items:stretch}
+.showcase-item{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-soft)}
+.showcase-item--explorer{grid-area:explorer;padding:20px}
 .showcase-item--metric{grid-area:metric}
 .showcase-item--progress{grid-area:progress}
+.showcase-item--visitor{grid-area:visitor}
 .showcase-item--card{grid-area:card}
 .showcase-item--input{grid-area:input}
 .showcase-item--switch{grid-area:switch}
+.showcase-item--dropdown{grid-area:dropdown}
 .showcase-item--slider{grid-area:slider}
+.showcase-item--otp{grid-area:otp}
+.showcase-item--avatar{grid-area:avatar}
 .showcase-item--activity{grid-area:activity}
-.showcase-item--visitor{grid-area:visitor}
+.showcase-item--badge{grid-area:badge}
+.showcase-item--breadcrumbs{grid-area:breadcrumbs}
 
 /* Explorer composition: the segmented control switches real content */
-.explorer{display:flex;flex-direction:column;min-width:0}
+.explorer{display:flex;flex-direction:column;min-width:0;height:100%}
 .explorer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
 .explorer-body{min-height:470px}
 .explorer-view[hidden]{display:none}
@@ -48,5 +55,5 @@
 .landing-footer nav{display:flex;gap:16px}
 .landing-footer a{color:var(--muted)}
 .landing-footer a:hover{color:var(--text)}
-@media(max-width:1000px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"explorer explorer" "metric progress" "card input" "switch switch" "slider slider" "activity visitor"}.explorer-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:620px){.showcase-grid{grid-template-columns:1fr;grid-template-areas:"explorer" "metric" "progress" "card" "input" "switch" "slider" "activity" "visitor"}.explorer-board{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}
+@media(max-width:1000px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"explorer explorer" "metric progress" "visitor visitor" "card card" "input switch" "dropdown slider" "otp otp" "avatar badge" "activity activity" "breadcrumbs breadcrumbs"}.explorer-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.showcase-grid{grid-template-columns:1fr;grid-template-areas:"explorer" "metric" "progress" "visitor" "card" "input" "switch" "dropdown" "slider" "otp" "avatar" "activity" "badge" "breadcrumbs"}.explorer-board{grid-template-columns:1fr}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:42px}}
