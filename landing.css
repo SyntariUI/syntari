@@ -15,22 +15,15 @@
 .landing-cta{display:flex;gap:12px;justify-content:center;margin:28px 0 16px;flex-wrap:wrap}
 .landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
 .landing-stats{font-size:12px;color:var(--fg-2)}
-.landing-showcase{margin:40px 0 72px}
-.showcase-intro{text-align:center;margin-bottom:26px}
-.showcase-intro h2{font-size:26px;font-weight:600;letter-spacing:-.03em;margin-bottom:8px}
-.showcase-intro p{color:var(--muted);font-size:13px}
-.showcase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.showcase-item{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-soft);display:flex;flex-direction:column;min-width:0}
-.showcase-item--wide{grid-column:1 / -1}
-.showcase-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);flex-shrink:0}
-.showcase-head a{color:var(--accent-text);font-size:11px}
-.showcase-head a:hover{text-decoration:underline}
-.showcase-stage{padding:22px;display:flex;align-items:center;justify-content:center;flex:1;min-width:0}
-.showcase-stage .syntari-component{width:100%}
-.showcase-stage--wide{padding:20px 22px;align-items:flex-start;overflow:auto}
+.landing-showcase{margin:44px 0 72px}
+.showcase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.showcase-item{min-width:0}
+.showcase-item--hero{grid-column:span 2}
+.showcase-item--wide{grid-column:span 2}
 .landing-footer{border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:30px 0 48px;font-size:12px;color:var(--muted)}
 .landing-footer>span{display:flex;align-items:center;gap:9px}
 .landing-footer nav{display:flex;gap:16px}
 .landing-footer a{color:var(--muted)}
 .landing-footer a:hover{color:var(--text)}
-@media(max-width:560px){.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}
+@media(max-width:860px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.showcase-item--wide{grid-column:span 1}}
+@media(max-width:560px){.showcase-grid{grid-template-columns:1fr}.showcase-item--hero,.showcase-item--wide{grid-column:span 1}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:46px}}
