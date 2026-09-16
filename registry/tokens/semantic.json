@@ -42,7 +42,6 @@
     "shadow.soft": { "primitive": "shadow.soft", "css": "--shadow-soft" },
     "shadow.card": { "primitive": "shadow.card", "css": "--shadow-card" },
     "shadow.card.hover": { "primitive": "shadow.card-hover", "css": "--shadow-card-hover" },
-    "font.sans": { "primitive": "font.sans", "css": "--font-sans" },
-    "brand.gradient": { "primitive": "brand.gradient", "css": "--syntari-gradient" }
+    "font.sans": { "primitive": "font.sans", "css": "--font-sans" }
   }
 }

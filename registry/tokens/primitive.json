@@ -41,6 +41,6 @@
     "shadow.card": "0 1px 2px #18192508,0 2px 5px #18192504",
     "shadow.card-hover": "0 2px 4px #18192508,0 6px 16px #18192507",
     "font.sans": "OpenRunde, Arial, sans-serif",
-    "brand.gradient": "linear-gradient(135deg,#7d8af1,#4877f2 52%,#4da6f6)"
+    "brand.mark": "#4877f2"
   }
 }

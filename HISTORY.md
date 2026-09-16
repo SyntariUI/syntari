@@ -1,11 +1,12 @@
 # Unreleased
 
-September 13, 2026.
+September 16, 2026.
 
 - Renamed the design system to Syntari across the interface, documentation, runtime, source archive, and installer.
 - Renamed the installation command to <code>syntari</code> and the default installed directory to <code>components/syntari</code>.
-- Adopted the Syntari gradient mark across the app, documentation, workspace switcher, sign-in art, and favicon.
-- Added livelier motion: staggered entrances, card hover lift and glow, springy controls, and a brand-mark hover response.
+- Set the Syntari mark, favicon, sign-in art, icon tiles, avatars, artwork, selection controls, and hover surfaces in solid fills, and removed the brand gradient token from the token set and registry.
+- Rebuilt the asset swap as a two-sided convert form: each field carries its own asset select, the reverse control sits on the seam between the fields, and the primary action reviews the order.
+- Added livelier motion: staggered entrances, card hover lift, springy controls, and a brand-mark hover response.
 - Added matching sidebar and topbar layouts to the App shell and starter screens, with shared workspace, search, account, and navigation controls.
 - Added a collapsible rail with accessible destination names and a mobile drawer with keyboard dismissal and focus restoration.
 - Preserved navigation preferences across screens and form edits when switching layouts.
