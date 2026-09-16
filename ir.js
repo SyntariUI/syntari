@@ -198,13 +198,14 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   if (!root) { report('warning', 'instance-root-missing', `The contract expects "${ir.node}" inside ${manifest.id}; the markup has changed.`); return element; }
   if (root !== element) for (const child of [...element.children]) if (child !== root && !child.contains(root)) child.remove();
   const value = key => props[key];
-  for (const [key, selector] of Object.entries(ir.text ?? {})) setText(pick(root, selector), value(key));
-  for (const [key, selector] of Object.entries(ir.lead ?? {})) setLead(pick(root, selector), value(key));
-  for (const [key, selector] of Object.entries(ir.icon ?? {})) setIcon(pick(root, selector), value(key), report, path);
-  for (const [key, binding] of Object.entries(ir.variant ?? {})) applyVariant(pick(root, binding.selector), binding.values, value(key), report, path);
+  /** An optional prop that the spec left out must not write "undefined" into the markup. */
+  const bound = (key, apply) => { const current = value(key); if (current !== undefined) apply(current); };
+  for (const [key, selector] of Object.entries(ir.text ?? {})) bound(key, current => setText(pick(root, selector), current));
+  for (const [key, selector] of Object.entries(ir.lead ?? {})) bound(key, current => setLead(pick(root, selector), current));
+  for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => setIcon(pick(root, selector), current, report, path));
+  for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
-    const target = pick(root, binding.selector);
-    if (target) target.setAttribute(binding.attribute, String(value(key)));
+    bound(key, current => { const target = pick(root, binding.selector); if (target) target.setAttribute(binding.attribute, String(current)); });
   }
   for (const [key, declared] of Object.entries(ir.list ?? {})) {
     const items = Array.isArray(value(key)) ? value(key) : [];
@@ -222,18 +223,16 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         const field = name => Array.isArray(data) ? data[Number(name)] : data?.[name];
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
         if (part.cells) [...item.querySelectorAll(part.cells)].forEach((cell, index) => setText(cell, Array.isArray(data) ? data[index] ?? '' : ''));
-        for (const [name, selector] of Object.entries(part.text ?? {})) setText(pick(item, selector), field(name));
-        for (const [name, selector] of Object.entries(part.lead ?? {})) setLead(pick(item, selector), field(name));
-        for (const [name, selector] of Object.entries(part.icon ?? {})) setIcon(pick(item, selector), field(name), report, path);
+        const filled = (name, apply) => { const current = field(name); if (current !== undefined) apply(current); };
+        for (const [name, selector] of Object.entries(part.text ?? {})) filled(name, current => setText(pick(item, selector), current));
+        for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => setLead(pick(item, selector), current));
+        for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current, report, path));
         for (const [name, style] of Object.entries(part.style ?? {})) {
-          const target = pick(item, style.selector) ?? item;
-          if (target.style) target.style.setProperty(style.name, `${field(name)}${style.suffix ?? ''}`);
+          filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${current}${style.suffix ?? ''}`); });
         }
-        for (const [name, binding] of Object.entries(part.variant ?? {})) applyVariant(pick(item, binding.selector), binding.values, field(name), report, path);
+        for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
-          const target = pick(item, binding.selector);
-          if (!target) continue;
-          target.setAttribute(binding.attribute, String(field(name)));
+          filled(name, current => { const target = pick(item, binding.selector); if (target) target.setAttribute(binding.attribute, String(current)); });
         }
         container.append(item);
       }

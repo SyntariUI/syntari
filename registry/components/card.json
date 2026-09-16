@@ -88,10 +88,19 @@
       "type": "string",
       "maxLength": 28,
       "description": "Label for the card action."
+    },
+    "mark": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "file",
+      "description": "Lucide icon shown in the card's leading mark, so the card says what kind of thing it holds."
     }
   },
   "ir": {
     "node": ".mini-card",
+    "icon": {
+      "mark": ".mini-card .avatar"
+    },
     "text": {
       "title": ".mini-card h3",
       "body": ".mini-card p",
