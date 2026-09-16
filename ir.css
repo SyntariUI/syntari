@@ -1,0 +1,42 @@
+/* Syntari UI IR: layout for rendered screens and the surface used when a node cannot be drawn. */
+.ir-screen{display:grid;gap:20px;width:100%;min-width:0;font-size:13px;line-height:1.7}
+.ir-screen[data-ir-layout=stack]{grid-template-columns:minmax(0,1fr)}
+.ir-screen[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:start}
+.ir-screen[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:start}
+.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr)}
+.ir-screen-title{font-size:20px;font-weight:500;letter-spacing:-.4px}
+.ir-node{min-width:0;grid-column:auto}
+.ir-node>.syntari-component{display:block;width:100%;padding:0;min-height:0;gap:0;align-items:stretch;justify-content:flex-start}
+.ir-node[data-ir-component]>.syntari-component>:first-child{margin-top:0}
+.ir-fallback{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px dashed var(--bg-a4);border-radius:12px;background:var(--subtle);text-align:left}
+.ir-fallback-mark{display:grid;place-items:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--amber-a1);color:var(--warning-text);font-size:11px;line-height:1}
+.ir-fallback strong{display:block;font-size:12px;font-weight:500;letter-spacing:-.1px}
+.ir-fallback p{margin:4px 0 0;font-size:11px;line-height:1.75;color:var(--muted)}
+.ir-screen[data-ir-status=partial]{--ir-status:var(--warning-text)}
+@media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+/* Generative UI page: spec on the left, the rendered screen on the right. */
+.ir-page{background:var(--background-subtle);margin:0}
+.ir-page-header{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1440px;margin:auto;padding:20px 28px}
+.ir-page-home{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500}
+.ir-page-home .brand-mark{width:22px;height:22px}
+.ir-page-home>span:last-child{margin-left:10px;color:var(--muted);font-size:12px;font-weight:400}
+.ir-page-actions{display:flex;align-items:center;gap:10px}
+.ir-page-main{display:grid;gap:20px;max-width:1440px;margin:auto;padding:0 28px 40px;align-items:start}
+.ir-page-intro{max-width:640px}
+.ir-page-intro h1{font-size:30px;font-weight:500;letter-spacing:-1.1px;line-height:1.2}
+.ir-page-intro p{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
+.ir-page-samples{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.ir-page-spec{font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:340px;resize:vertical;white-space:pre;overflow:auto}
+.ir-page-bar{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.ir-page-output{min-width:0}
+.ir-page-output h2{font-size:12px;color:var(--muted);font-weight:400;margin-bottom:12px}
+.ir-stage{padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.ir-diagnostics{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.ir-diagnostics li{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;font-size:11px;line-height:1.7;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--border)}
+.ir-diagnostics li[data-severity=error]{background:var(--red-a1);border-color:transparent;color:var(--danger-text)}
+.ir-diagnostics li[data-severity=warning]{background:var(--amber-a1);border-color:transparent;color:var(--warning-text)}
+.ir-diagnostics code{font:10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+.ir-diagnostics span{color:inherit;opacity:.85}
+.ir-clean{padding:10px 12px;border-radius:10px;background:var(--green-a1);color:var(--success-text);font-size:11px}
+@media(min-width:1000px){.ir-page-main{grid-template-columns:minmax(0,420px) minmax(0,1fr)}}

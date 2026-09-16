@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Render agent-authored Syntari UI IR specs with the reference renderer and the published component contracts.">
+  <title>Generative UI — Syntari UI</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ir.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
+  <script type="module" src="generative-ui.js"></script>
+</head>
+<body class="ir-page">
+  <a class="skip" href="#ir-output">Skip to the rendered screen</a>
+  <header class="ir-page-header">
+    <a class="ir-page-home" href="library.html"><span class="brand-mark" aria-hidden="true"></span>Syntari <span>Generative UI</span></a>
+    <div class="ir-page-actions">
+      <a class="button small" href="guides/generative-ui/">Read the guide</a>
+      <button type="button" class="icon-button" data-ir-theme aria-label="Switch to light theme"></button>
+    </div>
+  </header>
+  <main class="ir-page-main">
+    <section class="ir-page-intro">
+      <h1>Agents describe the screen. Syntari draws it.</h1>
+      <p>A spec is validated against the published registry before anything paints. Props the contract does not define are refused; a component the registry cannot render becomes a labelled fallback instead of a blank space.</p>
+      <div class="ir-page-samples" role="group" aria-label="Example specs"></div>
+      <label class="field" for="ir-spec">Syntari UI IR
+        <textarea id="ir-spec" class="ir-page-spec" spellcheck="false" aria-describedby="ir-summary"></textarea>
+      </label>
+      <div class="ir-page-bar">
+        <button type="button" class="button primary" data-ir-render>Render screen</button>
+        <span class="hint" id="ir-summary" data-ir-summary></span>
+      </div>
+      <ul class="ir-diagnostics" data-ir-diagnostics aria-live="polite"></ul>
+    </section>
+    <section class="ir-page-output">
+      <h2 id="ir-output-heading">Rendered with Syntari</h2>
+      <div class="ir-stage" data-ir-output aria-labelledby="ir-output-heading" tabindex="-1"></div>
+    </section>
+  </main>
+</body>
+</html>
