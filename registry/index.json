@@ -41,7 +41,7 @@
       "name": "Visitor table",
       "category": "Table & list",
       "version": "0.2.1",
-      "description": "A compact visitor list with overlapping avatar and country flag, source pills, right-aligned revenue, and quiet timestamps. Value animations share the same numeric primitive as the attribution table.",
+      "description": "A compact visitor list with an overlapping avatar and country flag, a source pill, and right-aligned revenue. Value animations share the same numeric primitive as the attribution table.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -139,11 +139,11 @@
       "status": "generated"
     },
     {
-      "id": "checkbox-and-radio",
-      "name": "Checkbox & radio",
+      "id": "checkbox",
+      "name": "Checkbox",
       "category": "Form controls",
       "version": "0.2.1",
-      "description": "Use checkboxes for independent choices and radio buttons for a single selection within a set.",
+      "description": "Use checkboxes for independent choices that can be combined.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -151,8 +151,25 @@
         "--border",
         "--accent"
       ],
-      "source": "components/checkbox-and-radio/",
-      "manifest": "components/checkbox-and-radio.json",
+      "source": "components/checkbox/",
+      "manifest": "components/checkbox.json",
+      "status": "generated"
+    },
+    {
+      "id": "radio",
+      "name": "Radio",
+      "category": "Form controls",
+      "version": "0.2.1",
+      "description": "Use radio buttons for a single selection within a set.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/radio/",
+      "manifest": "components/radio.json",
       "status": "generated"
     },
     {
@@ -239,19 +256,31 @@
       "status": "generated"
     },
     {
-      "id": "progress-and-score",
-      "name": "Progress & score",
+      "id": "score",
+      "name": "Score",
       "category": "Feedback & status",
       "version": "0.2.1",
-      "description": "A progress ring pairs a numerical score with a written evaluation. Linear progress shows a measurable completion value.",
+      "description": "A progress ring pairs a numerical score with a written evaluation.",
       "tokens": [
         "--green-4",
-        "--green-a1",
+        "--green-a1"
+      ],
+      "source": "components/score/",
+      "manifest": "components/score.json",
+      "status": "generated"
+    },
+    {
+      "id": "progress",
+      "name": "Progress",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A linear progress bar shows measurable completion with a written value.",
+      "tokens": [
         "--accent",
         "--bg-3"
       ],
-      "source": "components/progress-and-score/",
-      "manifest": "components/progress-and-score.json",
+      "source": "components/progress/",
+      "manifest": "components/progress.json",
       "status": "generated"
     },
     {

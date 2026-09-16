@@ -5,7 +5,7 @@ export default async page => {
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4318/gallery.html');
   await page.locator('.specimen').first().waitFor();
-  check(await page.locator('.specimen').count()===107,'107 component families render');
+  check(await page.locator('.specimen').count()===109,'109 component families render');
   await setTheme(page,'dark');
   check(await page.locator('html').getAttribute('data-theme')==='dark','Dark theme switches');
   await page.reload();
@@ -17,7 +17,7 @@ export default async page => {
   check(await page.locator('#empty').isVisible(),'Search empty state');
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
   await page.locator('[data-category="Form controls"]').click();
-  check(await page.locator('.specimen').count()===21,'Category filters twenty-one form controls');
+  check(await page.locator('.specimen').count()===22,'Category filters twenty-two form controls');
   await page.locator('.docs-sidebar [data-view="gallery"]').click();
   const segmented=page.locator('[data-component="Segmented control"]');
   await segmented.getByRole('button',{name:'List',exact:true}).click();
