@@ -60,3 +60,15 @@
 .carousel-card h3{margin-block:14px 6px}.carousel-card p{font-size:12px;line-height:1.6;color:var(--muted)}
 .wallet-surface strong{font-variant-numeric:tabular-nums;line-height:1.2}
 .status-island{width:min(100%,360px);margin-inline:auto;padding:12px 14px;border-radius:18px}.status-island summary{min-height:32px}.status-island .row{padding-top:10px;margin-top:10px}.extra-demo input.range,.range{appearance:none;-webkit-appearance:none;height:10px;border-radius:999px;background:var(--bg-3);padding:0!important;min-height:10px!important}.extra-demo input.range::-webkit-slider-runnable-track,.range::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0 var(--range-fill,52%),var(--bg-3) var(--range-fill,52%) 100%)}.extra-demo input.range::-webkit-slider-thumb,.range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin-top:-6px;border:2px solid var(--surface);border-radius:50%;background:var(--accent);box-shadow:0 1px 4px #0002}.extra-demo input.range::-moz-range-track,.range::-moz-range-track{height:10px;border-radius:999px;background:var(--bg-3)}.extra-demo input.range::-moz-range-progress,.range::-moz-range-progress{height:10px;border-radius:999px;background:var(--accent)}.extra-demo input.range::-moz-range-thumb,.range::-moz-range-thumb{width:18px;height:18px;border:2px solid var(--surface);border-radius:50%;background:var(--accent);box-shadow:0 1px 4px #0002}
+
+/* Asset swap: coin picker inside the amount field */
+.swap-input{display:flex;align-items:center;gap:8px}
+.swap-input>input{flex:1;min-width:0}
+.swap-coin{flex-shrink:0}
+.swap-coin .control-trigger{display:inline-flex;align-items:center;gap:7px;height:100%;padding:7px 10px;border:0;background:var(--subtle);border-radius:12px;font-size:13px;font-weight:500}
+.swap-coin-panel{width:210px;left:auto;right:0}
+.coin-badge{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:12px;line-height:1;flex-shrink:0;background:var(--sky-a1);color:var(--sky-4)}
+.coin-usdc{background:var(--sky-a1);color:var(--sky-4)}
+.coin-dai{background:var(--amber-a1);color:var(--amber-4)}
+.coin-eth{background:var(--purple-a1);color:var(--purple-4)}
+.coin-btc{background:var(--orange-a1);color:var(--orange-4)}
