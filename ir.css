@@ -3,17 +3,23 @@
 .ir-screen[data-ir-layout=stack]{grid-template-columns:minmax(0,1fr)}
 .ir-screen[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:start}
 .ir-screen[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:start}
-.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr)}
+.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr);align-items:start}
 .ir-screen-title{font-size:20px;font-weight:500;letter-spacing:-.4px}
+/**
+ * A mounted component keeps the flow it was authored for: the shared runtime stacks
+ * its parts in a flex column with a gap, and some parts compensate for that gap with
+ * a negative margin. Only the preview padding, centring, and minimum height belong to
+ * the documentation stage, so those are the only things reset here.
+ */
 .ir-node{min-width:0;grid-column:auto}
-.ir-node>.syntari-component{display:block;width:100%;padding:0;min-height:0;gap:0;align-items:stretch;justify-content:flex-start}
+.ir-node>.syntari-component{width:100%;padding:0;margin:0;min-height:0;max-width:none;align-items:stretch;justify-content:flex-start}
 .ir-node[data-ir-component]>.syntari-component>:first-child{margin-top:0}
 .ir-fallback{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px dashed var(--bg-a4);border-radius:12px;background:var(--subtle);text-align:left}
 .ir-fallback-mark{display:grid;place-items:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--amber-a1);color:var(--warning-text);font-size:11px;line-height:1}
 .ir-fallback strong{display:block;font-size:12px;font-weight:500;letter-spacing:-.1px}
 .ir-fallback p{margin:4px 0 0;font-size:11px;line-height:1.75;color:var(--muted)}
 .ir-screen[data-ir-status=partial]{--ir-status:var(--warning-text)}
-@media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
 
 /* Generative UI page: spec on the left, the rendered screen on the right. */
 .ir-page{background:var(--background-subtle);margin:0}
@@ -27,6 +33,9 @@
 .ir-page-intro h1{font-size:30px;font-weight:500;letter-spacing:-1.1px;line-height:1.2}
 .ir-page-intro p{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
 .ir-page-samples{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.ir-brief{display:grid;gap:6px;padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.ir-brief-intent{font-size:13px;line-height:1.7}
+.ir-brief-does{font-size:11px;line-height:1.7;color:var(--muted)}
 .ir-page-spec{font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:340px;resize:vertical;white-space:pre;overflow:auto}
 .ir-page-bar{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
 .ir-page-output{min-width:0}

@@ -1,21 +1,50 @@
 import { test, expect } from '@playwright/test';
 const origin = 'http://127.0.0.1:4318';
 
-test('an agent-authored screen renders with the published contracts', async ({ page }) => {
+/** label, screen title, and how many nodes the registry cannot draw for this situation. */
+const situations = [
+  ['Production migration', 'A migration needs your decision', 0],
+  ['Review finished work', 'Three pages are ready for review', 0],
+  ['Incident in progress', 'Checkout is slow for some users', 0],
+  ['Weekly report', 'What changed this week', 0],
+  ['A choice, not a yes/no', 'Choose how this account is billed', 0],
+  ['Nothing found', 'No invoices matched those filters', 0],
+  ['Unsupported request', 'Repair, do not guess', 2]
+];
+
+test('a situation renders as a screen, not a paragraph of chat', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`${origin}/generative-ui.html`);
   const output = page.locator('[data-ir-output]');
   await output.locator('.ir-screen').waitFor();
-  await expect(output.locator('[data-ir-component]')).toHaveCount(3);
+  await expect(output.locator('.ir-screen-title')).toHaveText('A migration needs your decision');
+  await expect(output.locator('[data-ir-component]')).toHaveCount(4);
   await expect(output.locator('.ir-fallback')).toHaveCount(0);
-  await expect(output.locator('.banner > div')).toContainText('Build 4281 passed');
+  await expect(output.locator('.banner > div')).toContainText('All checks passed');
   await expect(output.locator('.agent-surface > p').first()).toContainText('Apply three schema changes');
   await expect(output.locator('.agent-footer [data-agent-action=approve]')).toContainText('Run migration');
-  await expect(output.locator('.activity-item')).toHaveCount(3);
+  await expect(output.locator('.metadata-list > div')).toHaveCount(4);
+  await expect(output.locator('.activity-item')).toHaveCount(4);
   await expect(output.locator('.activity-item time').first()).toHaveText('2m ago');
+  await expect(page.locator('[data-ir-intent]')).toContainText('cannot be undone');
+  await expect(page.locator('[data-ir-does]')).toContainText('blast radius');
   await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('every situation explains itself and only the invented component is refused', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  const output = page.locator('[data-ir-output]');
+  await output.locator('.ir-screen').waitFor();
+  for (const [label, title, fallbacks] of situations) {
+    await page.getByRole('button', { name: label, exact: true }).click();
+    await expect(output.locator('.ir-screen-title')).toHaveText(title);
+    await expect(page.locator('[data-ir-intent]')).not.toBeEmpty();
+    await expect(page.locator('[data-ir-does]')).not.toBeEmpty();
+    await expect(output.locator('.ir-fallback')).toHaveCount(fallbacks);
+    expect(await page.locator('[data-ir-diagnostics] li[data-severity=error]').count(), `${label} raised errors`).toBe(fallbacks);
+  }
 });
 
 test('every component with a prop contract renders its props into the real markup', async ({ page }) => {
@@ -61,23 +90,6 @@ test('every component with a prop contract renders its props into the real marku
   expect(results.find(row => row.slug === 'table').rows).toBe(1);
 });
 
-test('an unsupported or invalid node keeps its place as a labelled fallback', async ({ page }) => {
-  await page.goto(`${origin}/generative-ui.html`);
-  await page.locator('[data-ir-output] .ir-screen').waitFor();
-  await page.getByRole('button', { name: 'Unsupported input' }).click();
-  const output = page.locator('[data-ir-output]');
-  await expect(output.locator('.ir-fallback')).toHaveCount(2);
-  await expect(output.locator('.ir-fallback').first()).toContainText('syntari.wizard-hat');
-  await expect(output.locator('.ir-fallback').first()).toContainText('not in the Syntari registry');
-  await expect(output.locator('[data-ir-component=card]')).toHaveCount(1);
-  await expect(page.locator('[data-ir-summary]')).toContainText('replaced by a fallback');
-  const codes = await page.locator('[data-ir-diagnostics] code').allTextContents();
-  expect(codes).toEqual(expect.arrayContaining(['unknown-component', 'enum-outside-values', 'unknown-prop']));
-  const severities = await page.locator('[data-ir-diagnostics] li').evaluateAll(rows => rows.map(row => row.dataset.severity));
-  expect(severities).toContain('error');
-  expect(severities).toContain('warning');
-});
-
 test('validation refuses invented components, missing props, and values outside the contract', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   await page.locator('[data-ir-output] .ir-screen').waitFor();
@@ -119,4 +131,61 @@ test('the guide documents exactly the components that carry a prop contract', as
   expect(documented).toEqual(supported);
   expect(supported).toHaveLength(10);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
+});
+
+test('leaving an optional prop out never writes "undefined" into the screen', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const report = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const stage = document.querySelector('[data-ir-output]');
+    const rows = [];
+    const cases = [
+      ['card', { title: 'Only a title' }],
+      ['banner', { message: 'Only a message' }],
+      ['approval-card', { title: 'Review', summary: 'Summary only', detail: 'One place' }],
+      ['streaming-response', { author: 'Agent', text: 'Body only' }]
+    ];
+    for (const [slug, props] of cases) {
+      const spec = { type: 'screen', layout: 'stack', children: [{ component: `syntari.${slug}`, props }] };
+      const result = await render(spec, stage);
+      rows.push({
+        slug,
+        text: result.element.textContent.replace(/\s+/g, ' '),
+        diagnostics: result.diagnostics.map(diagnostic => `${diagnostic.severity}:${diagnostic.code}`)
+      });
+      result.destroy();
+    }
+    return rows;
+  });
+  for (const row of report) {
+    expect(row.text, `${row.slug} printed an empty prop`).not.toContain('undefined');
+    expect(row.diagnostics, `${row.slug} reported a problem`).toEqual([]);
+  }
+});
+
+test('a mounted component keeps the internal rhythm it was authored for', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  await page.getByRole('button', { name: 'Weekly report', exact: true }).click();
+  await page.waitForTimeout(1800);
+  const report = await page.evaluate(() => {
+    const stage = document.querySelector('[data-ir-output] [data-ir-component=metric-and-sparkline]');
+    const rect = selector => stage.querySelector(selector).getBoundingClientRect();
+    const chart = rect('.bar-chart');
+    const labels = rect('.chart-labels');
+    const stats = rect('.mini-stats');
+    const bars = [...stage.querySelectorAll('.bar-chart .bar-fill')].map(bar => bar.getBoundingClientRect().height);
+    return {
+      labelGap: Math.round(labels.top - chart.bottom),
+      chartGap: Math.round(chart.top - stats.bottom),
+      tallestBar: Math.round(Math.max(...bars)),
+      chartHeight: Math.round(chart.height),
+      statLabels: [...stage.querySelectorAll('.stat > span')].map(span => span.textContent.trim()).join(' ')
+    };
+  });
+  expect(report.chartGap).toBeGreaterThan(0);
+  expect(report.labelGap).toBeGreaterThanOrEqual(0);
+  expect(report.tallestBar).toBeLessThanOrEqual(report.chartHeight);
+  expect(report.statLabels).toContain('Agent runs');
 });

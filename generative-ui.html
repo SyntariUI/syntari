@@ -24,10 +24,17 @@
   <main class="ir-page-main">
     <section class="ir-page-intro">
       <h1>Agents describe the screen. Syntari draws it.</h1>
-      <p>A spec is validated against the published registry before anything paints. Props the contract does not define are refused; a component the registry cannot render becomes a labelled fallback instead of a blank space.</p>
-      <div class="ir-page-samples" role="group" aria-label="Example specs"></div>
-      <label class="field" for="ir-spec">Syntari UI IR
-        <textarea id="ir-spec" class="ir-page-spec" spellcheck="false" aria-describedby="ir-summary"></textarea>
+      <p>Seven situations an agent runs into, each written as a screen spec instead of a paragraph of chat. Pick one, then open the spec to see what the agent actually sent.</p>
+      <div class="ir-page-samples" role="group" aria-label="Situations"></div>
+      <div class="ir-brief">
+        <p class="ir-brief-intent" data-ir-intent></p>
+        <p class="ir-brief-does" data-ir-does></p>
+      </div>
+      <div class="ir-page-bar">
+        <button type="button" class="button small" data-ir-toggle-spec aria-expanded="false" aria-controls="ir-spec">Show the spec</button>
+      </div>
+      <label class="field" for="ir-spec" id="ir-spec-label" data-ir-spec-label hidden>Syntari UI IR
+        <textarea id="ir-spec" class="ir-page-spec" spellcheck="false" aria-describedby="ir-summary" hidden></textarea>
       </label>
       <div class="ir-page-bar">
         <button type="button" class="button primary" data-ir-render>Render screen</button>
