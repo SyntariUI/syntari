@@ -6,7 +6,7 @@ export const groups = {
  'Table & list':['list','Make information easy to scan and act on.'], 'Chat':['chat','A place for conversation.'],
  'Layout':['layout','Connect small components into whole products.'], 'Agents':['bot','Keep automated work understandable and in your control.']
 };
-export const guideLinks=[['getting-started','Getting started','arrow'],['installation','Installation','terminal'],['theming','Theming','palette'],['motion','Motion & accessibility','chart'],['composition','Composition','layers'],['api','Runtime API','code'],['migration','What’s new in 0.2','circlecheck']];
+export const guideLinks=[['getting-started','Getting started','arrow'],['installation','Installation','terminal'],['theming','Theming','palette'],['motion','Motion & accessibility','chart'],['generative-ui','Generative UI','bot'],['composition','Composition','layers'],['api','Runtime API','code'],['migration','What’s new in 0.2','circlecheck']];
 const state = (id,label,description,code='')=>({id,label,description,code});
 const defaultState=state('default','Default','An interactive example. Use the controls to explore its behavior.');
 const disabled=state('disabled','Disabled','Unavailable controls retain their shape and cannot be activated.',`root.querySelectorAll('button, input, textarea, select').forEach(control => { control.disabled = true; });\nroot.querySelectorAll('summary, a').forEach(control => { control.inert = true; });`);

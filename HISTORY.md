@@ -6,6 +6,7 @@ September 16, 2026.
 - Renamed the installation command to <code>syntari</code> and the default installed directory to <code>components/syntari</code>.
 - Set the Syntari mark, favicon, sign-in art, icon tiles, avatars, artwork, selection controls, and hover surfaces in solid fills, and removed the brand gradient token from the token set and registry.
 - Rebuilt the asset swap as a two-sided convert form: each field carries its own asset select, the reverse control sits on the seam between the fields, and the primary action reviews the order.
+- Added the Syntari UI IR: a screen spec an agent can produce, prop contracts and slot bindings for ten components, a reference renderer that validates against the published registry, and labelled fallbacks for anything it cannot draw. The guide is at `guides/generative-ui/` and the live demo at `generative-ui.html`.
 - Added livelier motion: staggered entrances, card hover lift, springy controls, and a brand-mark hover response.
 - Added matching sidebar and topbar layouts to the App shell and starter screens, with shared workspace, search, account, and navigation controls.
 - Added a collapsible rail with accessible destination names and a mobile drawer with keyboard dismissal and focus restoration.
