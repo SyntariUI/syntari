@@ -1,0 +1,90 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "metadata-list",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/metadata-list/",
+  "name": "Metadata list",
+  "category": "Content",
+  "purpose": "Show the label and value pairs that describe one record.",
+  "description": "Aligned labels and values keep record detail scannable next to the content it belongs to.",
+  "intents": [
+    "describe-record",
+    "inspect"
+  ],
+  "variants": {
+    "density": [
+      "default"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "row",
+    "label",
+    "value"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "labels-are-short-nouns",
+    "values-stay-readable-without-colour"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "space.3",
+    "space.4"
+  ],
+  "compatibleWith": [
+    "card",
+    "approval-card"
+  ],
+  "avoidWhen": [
+    "the-record-has-more-than-eight-pairs"
+  ],
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "description": "Label and value pairs.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "value": {
+            "type": "string",
+            "required": true,
+            "maxLength": 80
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".metadata-list",
+    "list": {
+      "items": {
+        "container": ".metadata-list",
+        "item": ".metadata-list > div",
+        "lead": {
+          "label": "dt"
+        },
+        "text": {
+          "value": "dd"
+        }
+      }
+    }
+  }
+}

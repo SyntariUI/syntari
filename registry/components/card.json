@@ -1,0 +1,116 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "card",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/card/",
+  "name": "Card",
+  "category": "Container",
+  "purpose": "Hold one record or one idea in a surface that can stand on its own.",
+  "description": "A small surface with a status badge, a title, supporting copy, and one action.",
+  "intents": [
+    "summarize",
+    "open",
+    "review",
+    "link"
+  ],
+  "variants": {
+    "density": [
+      "default"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "badge",
+    "title",
+    "body",
+    "action"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-action-per-card",
+    "title-is-a-noun-phrase"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.action.primary.soft",
+    "color.action.primary.text",
+    "radius.card",
+    "space.4",
+    "shadow.card"
+  ],
+  "compatibleWith": [
+    "banner",
+    "metadata-list",
+    "activity-list"
+  ],
+  "avoidWhen": [
+    "the-detail-needs-a-full-screen"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "badge": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Short status word."
+    },
+    "badgeTone": {
+      "type": "enum",
+      "values": [
+        "neutral",
+        "accent",
+        "success",
+        "warning",
+        "danger"
+      ],
+      "default": "accent"
+    },
+    "action": {
+      "type": "string",
+      "maxLength": 28,
+      "description": "Label for the card action."
+    }
+  },
+  "ir": {
+    "node": ".mini-card",
+    "text": {
+      "title": ".mini-card h3",
+      "body": ".mini-card p",
+      "badge": ".mini-card .badge"
+    },
+    "lead": {
+      "action": ".mini-card .button"
+    },
+    "variant": {
+      "badgeTone": {
+        "selector": ".mini-card .badge",
+        "values": {
+          "neutral": "",
+          "accent": "purple",
+          "success": "green",
+          "warning": "amber",
+          "danger": "red"
+        }
+      }
+    }
+  }
+}

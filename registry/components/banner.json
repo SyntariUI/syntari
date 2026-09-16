@@ -1,0 +1,112 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "banner",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/banner/",
+  "name": "Banner",
+  "category": "Feedback & status",
+  "purpose": "Report an outcome or a needed action inside the current context.",
+  "description": "One outcome with optional context. Colour carries the sentiment; the text carries the meaning.",
+  "intents": [
+    "confirm",
+    "inform",
+    "warn",
+    "report-outcome"
+  ],
+  "variants": {
+    "sentiment": [
+      "success",
+      "info"
+    ],
+    "placement": [
+      "inline"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "message",
+    "detail"
+  ],
+  "accessibility": {
+    "role": "status",
+    "keyboard": [],
+    "accessibleNameRequired": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "text-carries-the-meaning",
+    "one-outcome-per-banner",
+    "no-action-in-a-banner"
+  ],
+  "tokens": [
+    "color.status.success",
+    "color.action.primary.soft",
+    "color.action.primary.text",
+    "color.surface.raised",
+    "color.text.secondary",
+    "radius.3",
+    "space.3",
+    "space.4"
+  ],
+  "compatibleWith": [
+    "card",
+    "simple-data-table",
+    "page-header-and-breadcrumbs"
+  ],
+  "avoidWhen": [
+    "the-message-needs-a-decision-before-the-user-continues"
+  ],
+  "props": {
+    "message": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90,
+      "description": "The outcome, in one line."
+    },
+    "detail": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "Optional supporting context."
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "success",
+        "info"
+      ],
+      "default": "success",
+      "description": "Sentiment colour. The text still carries the meaning."
+    },
+    "icon": {
+      "type": "string",
+      "default": "circlecheck",
+      "maxLength": 24,
+      "description": "Lucide icon name."
+    }
+  },
+  "ir": {
+    "node": ".banner",
+    "lead": {
+      "message": ".banner > div"
+    },
+    "text": {
+      "detail": ".banner > div > p"
+    },
+    "icon": {
+      "icon": ".banner > .icon"
+    },
+    "variant": {
+      "tone": {
+        "values": {
+          "success": "",
+          "info": "info"
+        }
+      }
+    }
+  }
+}

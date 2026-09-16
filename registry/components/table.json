@@ -1,0 +1,116 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "table",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/table/",
+  "name": "Table",
+  "category": "Table & list",
+  "purpose": "Compare records across the same few columns.",
+  "description": "Compact rows with subtle filled backgrounds. Injected cells render as text.",
+  "intents": [
+    "compare",
+    "scan-records"
+  ],
+  "variants": {
+    "columns": [
+      "2",
+      "3",
+      "4"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "head",
+    "row",
+    "cell"
+  ],
+  "accessibility": {
+    "role": "table",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "caption-states-the-subject",
+    "columns-are-nouns",
+    "cells-stay-short"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "radius.2",
+    "space.2",
+    "space.3"
+  ],
+  "compatibleWith": [
+    "card",
+    "banner",
+    "pagination"
+  ],
+  "avoidWhen": [
+    "each-record-needs-more-than-a-few-fields"
+  ],
+  "props": {
+    "caption": {
+      "type": "string",
+      "maxLength": 90,
+      "default": "Records",
+      "description": "Screen-reader caption for the table."
+    },
+    "columns": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "description": "Column headings, in order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 30
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "required": true,
+      "maxItems": 10,
+      "description": "One array of cell strings per row.",
+      "items": {
+        "type": "array",
+        "maxItems": 6,
+        "items": {
+          "type": "string",
+          "maxLength": 40
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".table",
+    "text": {
+      "caption": ".table caption"
+    },
+    "list": {
+      "columns": {
+        "container": "thead tr",
+        "item": "th",
+        "text": {
+          "label": ""
+        }
+      },
+      "rows": {
+        "container": "tbody",
+        "item": "tr",
+        "cells": "td"
+      }
+    }
+  }
+}

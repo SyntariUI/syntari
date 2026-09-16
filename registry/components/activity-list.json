@@ -1,0 +1,109 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "activity-list",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/activity-list/",
+  "name": "Activity list",
+  "category": "Table & list",
+  "purpose": "Show what happened, in order, with the context needed to trust it.",
+  "description": "A timeline pairs an event, its context, and when it happened. Order is semantic.",
+  "intents": [
+    "report-progress",
+    "audit",
+    "narrate"
+  ],
+  "variants": {
+    "density": [
+      "default"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "item",
+    "symbol",
+    "title",
+    "detail",
+    "time"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [],
+    "accessibleNameRequired": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "newest-first",
+    "one-event-per-item",
+    "time-is-relative-or-absolute-never-both"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary",
+    "color.surface.subtle",
+    "color.border.default",
+    "space.3",
+    "space.4"
+  ],
+  "compatibleWith": [
+    "card",
+    "tool-approval",
+    "approval-card"
+  ],
+  "avoidWhen": [
+    "the-list-needs-sorting-or-filtering"
+  ],
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "description": "Events, newest first.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "icon": {
+            "type": "string",
+            "default": "check",
+            "maxLength": 24
+          },
+          "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "time": {
+            "type": "string",
+            "maxLength": 24
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".activity",
+    "list": {
+      "items": {
+        "container": ".activity",
+        "item": ".activity-item",
+        "icon": {
+          "icon": ".activity-symbol"
+        },
+        "lead": {
+          "title": "div"
+        },
+        "text": {
+          "detail": "div > p",
+          "time": "time"
+        }
+      }
+    }
+  }
+}

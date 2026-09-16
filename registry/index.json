@@ -203,7 +203,7 @@
       ],
       "source": "components/metric-and-sparkline/",
       "manifest": "components/metric-and-sparkline.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "floating-navigation",
@@ -332,7 +332,7 @@
       ],
       "source": "components/banner/",
       "manifest": "components/banner.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "table",
@@ -349,7 +349,7 @@
       ],
       "source": "components/table/",
       "manifest": "components/table.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "card",
@@ -366,7 +366,7 @@
       ],
       "source": "components/card/",
       "manifest": "components/card.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "slider",
@@ -485,7 +485,7 @@
       ],
       "source": "components/empty-state/",
       "manifest": "components/empty-state.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "activity-list",
@@ -502,7 +502,7 @@
       ],
       "source": "components/activity-list/",
       "manifest": "components/activity-list.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "skeleton-and-spinner",
@@ -1045,7 +1045,7 @@
       ],
       "source": "components/metadata-list/",
       "manifest": "components/metadata-list.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "thumbnail-and-lightbox",
@@ -1198,7 +1198,7 @@
       ],
       "source": "components/approval-card/",
       "manifest": "components/approval-card.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "file-diff",
@@ -1249,7 +1249,7 @@
       ],
       "source": "components/streaming-response/",
       "manifest": "components/streaming-response.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "image-generation",

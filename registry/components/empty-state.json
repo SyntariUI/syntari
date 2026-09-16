@@ -1,0 +1,90 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "empty-state",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/empty-state/",
+  "name": "Empty state",
+  "category": "Content",
+  "purpose": "Explain what belongs in an empty region and offer the next useful step.",
+  "description": "A quiet placeholder with an icon, an explanation, and one action.",
+  "intents": [
+    "explain-absence",
+    "start",
+    "create"
+  ],
+  "variants": {
+    "emphasis": [
+      "default"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "title",
+    "body",
+    "action"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "offer-one-next-step",
+    "explain-the-absence"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "radius.card",
+    "space.4"
+  ],
+  "compatibleWith": [
+    "card",
+    "simple-data-table"
+  ],
+  "avoidWhen": [
+    "the-region-has-content"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "action": {
+      "type": "string",
+      "maxLength": 28
+    },
+    "icon": {
+      "type": "string",
+      "default": "folder",
+      "maxLength": 24
+    }
+  },
+  "ir": {
+    "node": ".empty-sample",
+    "text": {
+      "title": ".empty-sample h3",
+      "body": ".empty-sample p"
+    },
+    "lead": {
+      "action": ".empty-sample .button"
+    },
+    "icon": {
+      "icon": ".empty-sample .empty-icon"
+    }
+  }
+}

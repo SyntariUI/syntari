@@ -1,0 +1,113 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "streaming-response",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/streaming-response/",
+  "name": "Streaming response",
+  "category": "Agents",
+  "purpose": "Show an agent response as it arrives, with an explicit way to stop it.",
+  "description": "A named response surface with a live text region and start or stop controls. The local demo types its own sample text.",
+  "intents": [
+    "stream-output",
+    "stop",
+    "regenerate"
+  ],
+  "variants": {
+    "state": [
+      "idle",
+      "streaming",
+      "complete"
+    ]
+  },
+  "states": [
+    "idle",
+    "streaming",
+    "complete"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "author",
+    "status",
+    "content",
+    "footer",
+    "start",
+    "stop"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "announce-the-start-of-a-stream",
+    "keep-the-stop-control-reachable",
+    "settle-without-animation-when-reduced-motion-is-set"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.action.primary",
+    "radius.card",
+    "space.4",
+    "motion.duration.fast"
+  ],
+  "compatibleWith": [
+    "activity-list",
+    "citations",
+    "prompt-input"
+  ],
+  "avoidWhen": [
+    "the-answer-is-a-single-fixed-value"
+  ],
+  "props": {
+    "author": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "text": {
+      "type": "string",
+      "required": true,
+      "maxLength": 400,
+      "description": "The settled response text."
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Short status shown beside the author."
+    },
+    "action": {
+      "type": "string",
+      "default": "Generate response",
+      "maxLength": 32
+    },
+    "icon": {
+      "type": "string",
+      "default": "bot",
+      "maxLength": 24
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": ".agent-heading .icon"
+    },
+    "lead": {
+      "author": ".agent-heading strong",
+      "action": ".agent-footer [data-agent-action=stream-start]"
+    },
+    "text": {
+      "status": ".agent-heading .hint",
+      "text": ".stream-content"
+    }
+  }
+}

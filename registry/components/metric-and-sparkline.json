@@ -1,0 +1,185 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "metric-and-sparkline",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/metric-and-sparkline/",
+  "name": "Metric & sparkline",
+  "category": "Data display",
+  "purpose": "Show the numbers that matter now and how they moved.",
+  "description": "A compact metric pair with comparison badges and a bar chart of the same period.",
+  "intents": [
+    "report-numbers",
+    "compare-periods"
+  ],
+  "variants": {
+    "metrics": [
+      "2",
+      "3",
+      "4"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "stats",
+    "metric",
+    "label",
+    "value",
+    "badge",
+    "chart",
+    "bar"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "chart-carries-the-same-period-as-the-metrics",
+    "never-rely-on-the-badge-colour-alone"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary",
+    "color.action.primary",
+    "color.surface.subtle",
+    "radius.2",
+    "space.3",
+    "motion.duration.data"
+  ],
+  "compatibleWith": [
+    "card",
+    "table",
+    "activity-list"
+  ],
+  "avoidWhen": [
+    "the-value-needs-a-full-chart"
+  ],
+  "props": {
+    "stats": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "description": "Metrics, in display order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 30
+          },
+          "value": {
+            "type": "string",
+            "required": true,
+            "maxLength": 12
+          },
+          "badge": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "tone": {
+            "type": "enum",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger"
+            ],
+            "default": "success"
+          }
+        }
+      }
+    },
+    "series": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "Bars, oldest to newest.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 6
+          },
+          "value": {
+            "type": "number",
+            "required": true,
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "chartLabel": {
+      "type": "string",
+      "default": "Values by period",
+      "maxLength": 90,
+      "description": "Accessible name for the chart group."
+    }
+  },
+  "ir": {
+    "attributes": {
+      "chartLabel": {
+        "selector": ".bar-chart",
+        "attribute": "aria-label"
+      }
+    },
+    "list": {
+      "stats": {
+        "container": ".mini-stats",
+        "item": ".stat",
+        "lead": {
+          "label": "span"
+        },
+        "text": {
+          "value": "strong",
+          "badge": ".badge"
+        },
+        "variant": {
+          "tone": {
+            "selector": ".badge",
+            "values": {
+              "neutral": "",
+              "success": "green",
+              "warning": "amber",
+              "danger": "red"
+            }
+          }
+        }
+      },
+      "series": [
+        {
+          "container": ".bar-chart",
+          "item": "button.bar",
+          "text": {
+            "value": ".bar-value"
+          },
+          "style": {
+            "value": {
+              "name": "--bar",
+              "suffix": "%"
+            }
+          },
+          "strip": [
+            "aria-label"
+          ]
+        },
+        {
+          "container": ".chart-labels",
+          "item": "span",
+          "text": {
+            "label": ""
+          }
+        }
+      ]
+    }
+  }
+}

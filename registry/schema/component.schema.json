@@ -44,6 +44,25 @@
     },
     "rules": { "type": "array", "items": { "type": "string" } },
     "tokens": { "type": "array", "items": { "type": "string" } },
+    "props": {
+      "type": "object",
+      "description": "Prop contract an agent may set through the Syntari UI IR. Absent means the component is documented but not yet renderable from IR.",
+      "additionalProperties": { "$ref": "#/definitions/prop" }
+    },
+    "ir": {
+      "type": "object",
+      "description": "Maps validated props onto the component's own markup. The renderer mounts the component, keeps the node this declares, then writes prop values into the declared slots.",
+      "properties": {
+        "node": { "type": "string", "description": "Instance root inside the mounted component. Everything else in the mounted element is discarded." },
+        "text": { "$ref": "#/definitions/selectorMap" },
+        "lead": { "$ref": "#/definitions/selectorMap" },
+        "icon": { "$ref": "#/definitions/selectorMap" },
+        "variant": { "type": "object", "additionalProperties": { "$ref": "#/definitions/variantBinding" } },
+        "attributes": { "type": "object", "additionalProperties": { "$ref": "#/definitions/attributeBinding" } },
+        "list": { "type": "object", "additionalProperties": { "oneOf": [ { "$ref": "#/definitions/listPart" }, { "type": "array", "items": { "$ref": "#/definitions/listPart" } } ] } }
+      },
+      "additionalProperties": false
+    },
     "compatibleWith": { "type": "array", "items": { "type": "string" } },
     "avoidWhen": { "type": "array", "items": { "type": "string" } },
     "dependencies": { "type": "array", "items": { "type": "string" } },
@@ -87,6 +106,74 @@
     },
     "source": { "type": "string" },
     "status": { "enum": ["authored", "generated", "draft"] }
+  },
+  "definitions": {
+    "prop": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["string", "number", "boolean", "enum", "array", "object"] },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" },
+        "maxLength": { "type": "integer", "minimum": 1 },
+        "minimum": { "type": "number" },
+        "maximum": { "type": "number" },
+        "values": { "type": "array" },
+        "default": {},
+        "maxItems": { "type": "integer", "minimum": 1 },
+        "items": { "$ref": "#/definitions/prop" },
+        "fields": { "type": "object", "additionalProperties": { "$ref": "#/definitions/prop" } }
+      },
+      "additionalProperties": false
+    },
+    "selectorMap": {
+      "type": "object",
+      "description": "Prop name to CSS selector, resolved inside the instance root or the list item.",
+      "additionalProperties": { "type": "string" }
+    },
+    "variantBinding": {
+      "type": "object",
+      "required": ["values"],
+      "properties": {
+        "selector": { "type": "string" },
+        "values": { "type": "object", "additionalProperties": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "styleBinding": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "suffix": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "attributeBinding": {
+      "type": "object",
+      "required": ["selector", "attribute"],
+      "properties": {
+        "selector": { "type": "string" },
+        "attribute": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "listPart": {
+      "type": "object",
+      "required": ["container", "item"],
+      "properties": {
+        "container": { "type": "string" },
+        "item": { "type": "string", "description": "Template node. The first match is cloned for every item and the demo copies are removed." },
+        "text": { "$ref": "#/definitions/selectorMap" },
+        "lead": { "$ref": "#/definitions/selectorMap" },
+        "icon": { "$ref": "#/definitions/selectorMap" },
+        "variant": { "type": "object", "additionalProperties": { "$ref": "#/definitions/variantBinding" } },
+        "attributes": { "type": "object", "additionalProperties": { "$ref": "#/definitions/attributeBinding" } },
+        "style": { "type": "object", "additionalProperties": { "$ref": "#/definitions/styleBinding" } },
+        "strip": { "type": "array", "items": { "type": "string" }, "description": "Demo-only attributes removed from generated items." }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": true
 }

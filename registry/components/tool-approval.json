@@ -68,5 +68,59 @@
     "bad": ["A low-risk local read blocks the user behind a tool-approval card."],
     "boundary": ["A consequential but reversible action may use inline confirmation instead of tool approval."]
   },
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120,
+      "description": "What the agent intends to do."
+    },
+    "scope": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90,
+      "description": "What the action touches."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "icon": {
+      "type": "string",
+      "default": "terminal",
+      "maxLength": 24
+    },
+    "approveLabel": {
+      "type": "string",
+      "default": "Approve",
+      "maxLength": 24
+    },
+    "rejectLabel": {
+      "type": "string",
+      "default": "Decline",
+      "maxLength": 24
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": ".agent-heading .icon"
+    },
+    "lead": {
+      "title": ".agent-heading strong",
+      "scope": ".agent-inset",
+      "approveLabel": ".agent-footer [data-agent-action=approve]",
+      "rejectLabel": ".agent-footer [data-agent-action=reject]"
+    },
+    "text": {
+      "question": ".agent-surface > p",
+      "hint": ".agent-surface > p.hint"
+    }
+  },
   "source": "components/tool-approval/"
 }
