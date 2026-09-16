@@ -194,7 +194,7 @@
       "name": "Metric & sparkline",
       "category": "Data display",
       "version": "0.2.1",
-      "description": "A compact metric, comparison, and trend. A lavender line and restrained gradient highlight the trend.",
+      "description": "A compact metric pair with comparison badges and a bar chart.",
       "tokens": [
         "--purple-4",
         "--green-a1",
@@ -1698,7 +1698,7 @@
       "name": "Asset swap",
       "category": "Form controls",
       "version": "0.2.1",
-      "description": "A local illustrative swap form. Amounts are demo values; no wallet, trading, or network transaction is connected.",
+      "description": "A local illustrative crypto convert form: each field carries its own asset select, enter an amount, and review the order. No wallet, trading, or network transaction is connected.",
       "tokens": [
         "--radius-control",
         "--surface",
