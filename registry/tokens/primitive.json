@@ -1,5 +1,5 @@
 {
-  "$id": "https://syntari.dev/registry/tokens/primitive.json",
+  "$id": "https://syntariui.github.io/syntari/registry/tokens/primitive.json",
   "version": "0.2.1",
   "description": "Raw primitive values. Semantic tokens reference these; CSS is compiled output.",
   "values": {

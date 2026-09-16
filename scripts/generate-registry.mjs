@@ -36,7 +36,7 @@ const components = await catalog();
 await mkdir(componentsDir, { recursive: true });
 
 const index = {
-  $id: 'https://syntari.dev/registry/index.json',
+  $id: 'https://syntariui.github.io/syntari/registry/index.json',
   version: '0.2.1',
   components: []
 };

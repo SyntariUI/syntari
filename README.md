@@ -16,7 +16,7 @@ Visit **[syntariui.github.io/syntari](https://syntariui.github.io/syntari/)** fo
 
 - [Component gallery](https://syntariui.github.io/syntari/gallery.html) — live, interactive examples
 - [Library](https://syntariui.github.io/syntari/library.html) — documentation and guides
-- [Registry](./registry/README.md) — the machine-readable components, tokens, and schemas
+- [Registry](https://syntariui.github.io/syntari/registry/index.json) — the machine-readable components, tokens, and schemas ([guide](./registry/README.md))
 
 Every component page includes Preview / Usage / Code, its element contract, runtime API, and guidelines. All examples use the same editable HTML, CSS, and JavaScript runtime included in the source archive.
 

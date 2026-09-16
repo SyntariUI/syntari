@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://syntari.dev/schema/sui.schema.json",
+  "$id": "https://syntariui.github.io/syntari/registry/schema/sui.schema.json",
   "title": "SyntariUI",
   "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen.",
   "oneOf": [

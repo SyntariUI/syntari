@@ -11,6 +11,18 @@ The registry is the machine-readable source of truth for what Syntari contains, 
 - `schema/component.schema.json` — the component manifest contract.
 - `schema/sui.schema.json` — the Syntari UI IR (screen) contract.
 
+## Published URLs
+
+The deployment serves these files alongside the documentation, so agents and tools can fetch them over HTTP instead of cloning the repository:
+
+- <https://syntariui.github.io/syntari/registry/index.json>
+- <https://syntariui.github.io/syntari/registry/schema/component.schema.json>
+- <https://syntariui.github.io/syntari/registry/schema/sui.schema.json>
+- <https://syntariui.github.io/syntari/registry/tokens/primitive.json>
+- <https://syntariui.github.io/syntari/registry/tokens/semantic.json>
+
+Each artifact declares the matching `$id`, so a schema reference resolves without configuration.
+
 ## Three token layers
 
 Primitive values feed semantic roles, and semantic roles feed component tokens:

@@ -1,5 +1,5 @@
 {
-  "$id": "https://syntari.dev/registry/tokens/semantic.json",
+  "$id": "https://syntariui.github.io/syntari/registry/tokens/semantic.json",
   "version": "0.2.1",
   "description": "Meaningful token roles. Each maps to a primitive and compiles to a CSS variable.",
   "tokens": {

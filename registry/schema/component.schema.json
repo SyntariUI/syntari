@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://syntari.dev/schema/component.schema.json",
+  "$id": "https://syntariui.github.io/syntari/registry/schema/component.schema.json",
   "title": "SyntariComponent",
   "description": "Machine-readable contract for one Syntari component or agent pattern.",
   "type": "object",
