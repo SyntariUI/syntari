@@ -101,9 +101,4 @@ body{min-width:320px}
 .asset-drop[data-file-kind=audio] .empty-icon{background:var(--blue-a1);color:var(--blue-4)}
 .range{height:8px}
 
-/* Demo surfaces carry an animated mesh, so the components sit in colour. */
-.docs-stage,.specimen,.showcase-item,.docs-index-card,.ir-stage{position:relative;isolation:isolate}
-.docs-stage>*,.specimen>*,.showcase-item>*,.docs-index-card>*,.ir-stage>*{position:relative;z-index:1}
-.docs-stage::before,.specimen::before,.showcase-item::before,.docs-index-card::before,.ir-stage::before{content:'';position:absolute;inset:8%;z-index:0;border-radius:inherit;pointer-events:none;background:radial-gradient(55% 55% at 12% 6%,var(--mesh-a),transparent 62%),radial-gradient(48% 48% at 88% 12%,var(--mesh-b),transparent 64%),radial-gradient(60% 60% at 52% 104%,var(--mesh-c),transparent 68%);transform:scale(1.06);animation:syntari-mesh 24s var(--ease-out) infinite alternate}
-@keyframes syntari-mesh{from{transform:translate3d(-2%,-1.5%,0) scale(1.05)}to{transform:translate3d(2%,1.5%,0) scale(1.12)}}
-@media(prefers-reduced-motion:reduce){.docs-stage::before,.specimen::before,.showcase-item::before,.docs-index-card::before,.ir-stage::before{animation:none}}
+}
