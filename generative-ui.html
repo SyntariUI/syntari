@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Render agent-authored Syntari UI IR specs with the reference renderer and the published component contracts.">
-  <title>Generative UI — Syntari UI</title>
+  <meta name="description" content="The Syntari renderer: an agent describes a screen as data, the registry decides what may be drawn, and Syntari draws it with the components you already use.">
+  <title>Renderer — Syntari UI</title>
   <link rel="icon" href="favicon.svg">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
@@ -15,36 +15,62 @@
 <body class="ir-page">
   <a class="skip" href="#ir-output">Skip to the rendered screen</a>
   <header class="ir-page-header">
-    <a class="ir-page-home" href="library.html"><span class="brand-mark" aria-hidden="true"></span>Syntari <span>Generative UI</span></a>
+    <a class="ir-page-home" href="library.html"><span class="brand-mark" aria-hidden="true"></span>Syntari <span>Renderer</span></a>
     <div class="ir-page-actions">
       <a class="button small" href="guides/generative-ui/">Read the guide</a>
       <button type="button" class="icon-button" data-ir-theme aria-label="Switch to light theme"></button>
     </div>
   </header>
+
   <main class="ir-page-main">
-    <section class="ir-page-intro">
-      <h1>Agents describe the screen. Syntari draws it.</h1>
-      <p>Seven situations an agent runs into, each written as a screen spec instead of a paragraph of chat. Pick one, then open the spec to see what the agent actually sent.</p>
-      <div class="ir-page-samples" role="group" aria-label="Situations"></div>
+    <section class="ir-hero">
+      <span class="badge accent">Renderer</span>
+      <h1>One spec.<br>Every screen.</h1>
+      <p>An agent describes the screen as data. The registry decides what may be drawn. Syntari renders it with the same components a person would use — no markup, no framework, no drift.</p>
+      <div class="ir-switch" role="group" aria-label="Render mode">
+        <button type="button" data-ir-mode="static" aria-pressed="true">Static</button>
+        <button type="button" data-ir-mode="interactive" aria-pressed="false">Interactive</button>
+      </div>
+      <div class="ir-stats">
+        <div><span data-ir-count="components">125</span><small>components in the registry</small></div>
+        <div><span data-ir-count="renderable">16</span><small>renderable from a spec</small></div>
+        <div><span>4</span><small>layouts</small></div>
+        <div><span>MIT</span><small>licensed and open</small></div>
+      </div>
+    </section>
+
+    <section class="ir-stage-panel">
       <div class="ir-brief">
         <p class="ir-brief-intent" data-ir-intent></p>
         <p class="ir-brief-does" data-ir-does></p>
       </div>
-      <div class="ir-page-bar">
-        <button type="button" class="button small" data-ir-toggle-spec aria-expanded="false" aria-controls="ir-spec">Show the spec</button>
-      </div>
-      <label class="field" for="ir-spec" id="ir-spec-label" data-ir-spec-label hidden>Syntari UI IR
-        <textarea id="ir-spec" class="ir-page-spec" spellcheck="false" aria-describedby="ir-summary" hidden></textarea>
-      </label>
-      <div class="ir-page-bar">
-        <button type="button" class="button primary" data-ir-render>Render screen</button>
-        <span class="hint" id="ir-summary" data-ir-summary></span>
-      </div>
-      <ul class="ir-diagnostics" data-ir-diagnostics aria-live="polite"></ul>
-    </section>
-    <section class="ir-page-output">
-      <h2 id="ir-output-heading">Rendered with Syntari</h2>
       <div class="ir-stage" data-ir-output aria-labelledby="ir-output-heading" tabindex="-1"></div>
+      <div class="ir-stage-foot">
+        <div class="ir-page-bar">
+          <button type="button" class="button small" data-ir-toggle-spec aria-expanded="false" aria-controls="ir-spec">Show the spec</button>
+          <button type="button" class="button small primary" data-ir-render>Render again</button>
+          <span class="hint" id="ir-summary" data-ir-summary></span>
+        </div>
+        <h2 id="ir-output-heading" class="sr-only">Rendered screen</h2>
+        <ul class="ir-diagnostics" data-ir-diagnostics aria-live="polite"></ul>
+        <label class="field" for="ir-spec" id="ir-spec-label" data-ir-spec-label hidden>Spec
+          <textarea id="ir-spec" class="ir-page-spec" spellcheck="false" aria-describedby="ir-summary" hidden></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="ir-captions">
+      <article><h2>Checked before it paints</h2><p>Every node is validated against the published registry. A component that does not exist, a prop that was never declared, or a value outside its range stops that node and paints a labelled fallback instead.</p></article>
+      <article><h2>The contract lives in the registry</h2><p>Props, ranges, and the slots each value lands in are declared in the component manifest. The model never needs to know your markup, and your markup never has to trust the model.</p></article>
+      <article><h2>One spec, any surface</h2><p>The same JSON renders in this page, inside your product, or server-side before it is sent. Components join the contract one manifest at a time.</p></article>
+    </section>
+
+    <section class="ir-catalog">
+      <div class="ir-catalog-head">
+        <h2>Renderable today</h2>
+        <a href="library.html">View all <span data-ir-count="components">125</span> components</a>
+      </div>
+      <div class="ir-catalog-grid" data-ir-catalog></div>
     </section>
   </main>
 </body>

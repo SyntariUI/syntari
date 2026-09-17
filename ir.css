@@ -32,31 +32,52 @@
 .ir-region-body{display:grid;gap:16px;padding:2px 14px 16px}
 @media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
 
-/* Generative UI page: spec on the left, the rendered screen on the right. */
+/* Renderer page: one framed stage, the catalogue it draws from, and the words that explain it. */
 .ir-page{background:var(--background-subtle);margin:0}
-.ir-page-header{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1440px;margin:auto;padding:20px 28px}
+.ir-page-header{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1240px;margin:auto;padding:20px 28px}
 .ir-page-home{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500}
 .ir-page-home .brand-mark{width:22px;height:22px}
 .ir-page-home>span:last-child{margin-left:10px;color:var(--muted);font-size:12px;font-weight:400}
 .ir-page-actions{display:flex;align-items:center;gap:10px}
-.ir-page-main{display:grid;gap:20px;max-width:1440px;margin:auto;padding:0 28px 40px;align-items:start}
-.ir-page-intro{max-width:640px}
-.ir-page-intro h1{font-size:30px;font-weight:500;letter-spacing:-1.1px;line-height:1.2}
-.ir-page-intro p{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
-.ir-page-samples{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
-.ir-brief{display:grid;gap:6px;padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
-.ir-brief-intent{font-size:13px;line-height:1.7}
-.ir-brief-does{font-size:11px;line-height:1.7;color:var(--muted)}
-.ir-page-spec{font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:340px;resize:vertical;white-space:pre;overflow:auto}
-.ir-page-bar{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
-.ir-page-output{min-width:0}
-.ir-page-output h2{font-size:12px;color:var(--muted);font-weight:400;margin-bottom:12px}
-.ir-stage{padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow-soft)}
-.ir-diagnostics{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.ir-page-main{display:grid;gap:36px;max-width:1240px;margin:auto;padding:0 28px 72px}
+.ir-hero{display:grid;gap:18px;max-width:760px}
+.ir-hero .badge{justify-self:start}
+.ir-hero h1{font-size:clamp(34px,5vw,60px);font-weight:500;letter-spacing:-2px;line-height:1.04}
+.ir-hero p{font-size:clamp(14px,1.5vw,17px);line-height:1.65;color:var(--muted);max-width:62ch}
+.ir-switch{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--border);width:max-content}
+.ir-switch button{padding:9px 22px;border-radius:999px;font-size:13px;color:var(--muted);transition:background var(--motion-fast),color var(--motion-fast)}
+.ir-switch button[aria-pressed=true]{background:var(--text);color:var(--surface)}
+.ir-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;margin-top:8px}
+.ir-stats div{display:grid;gap:4px}
+.ir-stats span{font-size:22px;font-weight:500;letter-spacing:-.6px}
+.ir-stats small{font-size:11px;color:var(--muted)}
+.ir-stage-panel{display:grid;gap:22px;padding:clamp(16px,2.6vw,40px);border-radius:24px;background:var(--bg-2)}
+.ir-brief{display:grid;gap:6px;max-width:640px}
+.ir-brief-intent{font-size:14px;line-height:1.6}
+.ir-brief-does{font-size:12px;line-height:1.7;color:var(--muted)}
+.ir-stage{padding:clamp(18px,3vw,40px);border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow-card);min-height:280px;outline:none}
+.ir-stage-foot{display:grid;gap:14px}
+.ir-page-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ir-page-spec{font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:320px;resize:vertical;white-space:pre;overflow:auto}
+.ir-diagnostics{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .ir-diagnostics li{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;font-size:11px;line-height:1.7;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--border)}
 .ir-diagnostics li[data-severity=error]{background:var(--red-a1);border-color:transparent;color:var(--danger-text)}
 .ir-diagnostics li[data-severity=warning]{background:var(--amber-a1);border-color:transparent;color:var(--warning-text)}
 .ir-diagnostics code{font:10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
 .ir-diagnostics span{color:inherit;opacity:.85}
 .ir-clean{padding:10px 12px;border-radius:10px;background:var(--green-a1);color:var(--success-text);font-size:11px}
-@media(min-width:1000px){.ir-page-main{grid-template-columns:minmax(0,420px) minmax(0,1fr)}}
+.ir-captions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px}
+.ir-captions h2{font-size:16px;font-weight:500;letter-spacing:-.3px;margin-bottom:8px}
+.ir-captions p{font-size:12px;line-height:1.8;color:var(--muted)}
+.ir-catalog{display:grid;gap:18px}
+.ir-catalog-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ir-catalog-head h2{font-size:18px;font-weight:500;letter-spacing:-.4px}
+.ir-catalog-head a{font-size:12px;color:var(--accent-text)}
+.ir-catalog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.ir-catalog-card{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);font-size:12px;transition:background var(--motion-fast),border-color var(--motion-fast)}
+.ir-catalog-card:hover{background:var(--bg-2);border-color:var(--bg-a3)}
+.ir-catalog-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--bg-2);color:var(--muted);flex-shrink:0}
+.ir-catalog-icon .icon{width:16px;height:16px}
+.ir-catalog-name{min-width:0}
+.ir-catalog-arrow{margin-left:auto;color:var(--fg-2)}
+@media(max-width:760px){.ir-page-main{padding:0 18px 56px}.ir-page-header{padding:16px 18px}.ir-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-name{font-size:11px}}

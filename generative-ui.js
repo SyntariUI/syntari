@@ -1,189 +1,89 @@
 import { render, renderableSlugs } from './ir.js';
-import { setTheme } from './syntari.js';
+import { getComponents, setTheme } from './syntari.js';
+import { groups } from './docs-data.js';
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const screen = (title, layout, children) => ({ version: 'syntari-ir-1', type: 'screen', layout, title, children });
 
-/**
- * Each situation is a moment, not a component demo.
- * intent — what the moment is about. does — what the person can decide or understand.
- * The screen leads with the decision and keeps evidence inside a region.
- */
-const scenarios = [
-  {
-    label: 'Production migration',
-    intent: 'A migration cannot be undone by the person who has to approve it.',
-    does: 'Decide with the blast radius and the recovery path in view, then open the evidence if you need it.',
-    spec: screen('A migration needs your decision', 'stack', [
-      { component: 'syntari.tool-approval', props: {
-        title: 'Run the migration?',
-        question: 'Apply three schema changes to the billing database in production.',
-        scope: 'billing-production · write access',
-        hint: 'Reversible for 24 hours. A verified snapshot is taken first.',
-        icon: 'terminal',
-        approveLabel: 'Run migration',
-        rejectLabel: 'Not now'
-      }, provenance: { component: 'planner', reason: 'irreversible change needs human consent' } },
-      { component: 'syntari.metadata-list', props: { items: [
-        { label: 'Blast radius', value: '3 tables · 1.2M rows' },
-        { label: 'Window', value: '04:00–06:00 UTC' },
-        { label: 'Recovery', value: 'Snapshot · restorable for 24h' }
+/** Two render modes of the same renderer: a report to read, and a tool to drive. */
+const modes = {
+  static: {
+    title: 'Static',
+    intent: 'A report someone has to trust before they act on it.',
+    does: 'Read the measures, compare the two channels, and open the evidence only if the numbers are not enough.',
+    spec: screen('Release 4281 is ready to review', 'stack', [
+      { component: 'syntari.banner', props: { message: 'All checks passed', detail: '128 tests in 42s. Two approvals are still open.', tone: 'success', icon: 'circlecheck' } },
+      { component: 'syntari.stat-row', props: { stats: [
+        { label: 'Agent runs', value: '1,284', badge: '+18.6%', note: 'since last week', tone: 'success' },
+        { label: 'Approvals', value: '96', badge: '−4.1%', note: 'two still waiting', tone: 'warning' },
+        { label: 'p95 latency', value: '820ms', badge: '+40ms', note: 'this week', tone: 'danger' },
+        { label: 'Tokens saved', value: '1.9M', badge: '+12%', note: 'versus prompting', tone: 'success' }
       ] } },
-      { type: 'region', label: 'Evidence · 4 checks', children: [
-        { component: 'syntari.banner', props: { message: 'All checks passed', detail: '128 tests in 42s. No regressions since release 4279.', tone: 'success', icon: 'circlecheck' } },
-        { component: 'syntari.activity-list', props: { items: [
-          { icon: 'check', title: 'Tests passed', detail: '128 tests in 42s.', time: '2m ago' },
-          { icon: 'file', title: 'Snapshot created', detail: 'billing-production · 8.4 GB', time: '1m ago' },
-          { icon: 'rotate-ccw', title: 'Dry run completed', detail: 'Rehearsed on a copy. No rows lost.', time: '40s ago' },
-          { icon: 'clock', title: 'Waiting for your decision', detail: 'Nothing runs until you approve.', time: 'now' }
-        ] } }
-      ] }
-    ])
-  },
-  {
-    label: 'Review finished work',
-    intent: 'An agent already did the work and needs a person to sign it off.',
-    does: 'Accept it or send it back, then check the details if the summary is not enough.',
-    spec: screen('Three pages are ready for review', 'stack', [
-      { component: 'syntari.approval-card', props: {
-        title: 'Review the rewrite',
-        summary: 'Homepage, About, and Contact were rewritten for the new voice.',
-        detail: 'Homepage, About, Contact',
-        hint: 'Nothing is published until you approve.',
-        icon: 'circlecheck',
-        approveLabel: 'Approve and publish',
-        rejectLabel: 'Send back'
-      } },
-      { type: 'region', label: 'What changed · 3 pages, 24 edits', children: [
-        { component: 'syntari.table', props: {
-          caption: 'Pages changed, with the risk of each',
-          columns: [{ label: 'Page' }, { label: 'Edits' }, { label: 'Risk' }],
-          rows: [['Homepage', '12', 'Low'], ['About', '8', 'Low'], ['Contact', '4', 'Medium']]
-        } },
-        { component: 'syntari.activity-list', props: { items: [
-          { icon: 'edit', title: 'Draft written', detail: 'Three pages, 1,240 words', time: '6m ago' },
-          { icon: 'check', title: 'Tone checked', detail: 'Matches the published style guide', time: '4m ago' },
-          { icon: 'link', title: 'Links verified', detail: '18 links, no dead ends', time: '2m ago' }
-        ] } }
-      ] }
-    ])
-  },
-  {
-    label: 'Incident in progress',
-    intent: 'Something is degrading and the reader has two minutes, not ten.',
-    does: 'Know the state and the owner at a glance, act on the suggestion, and read the timeline only if you need it.',
-    spec: screen('Checkout is slow for some users', 'stack', [
-      { component: 'syntari.banner', props: { message: 'Degraded · since 14:02', detail: 'Elevated latency on checkout. Payments are unaffected.', tone: 'info', icon: 'bell' } },
-      { component: 'syntari.metadata-list', props: { items: [
-        { label: 'Impact', value: '4.2% of sessions' },
-        { label: 'Owner', value: 'Payments on-call' },
-        { label: 'Next update', value: '14:35 UTC' }
-      ] } },
-      { component: 'syntari.card', props: {
-        title: 'Suggested next step',
-        body: 'Roll back to release 4280. The regression starts at that deploy and nowhere else.',
-        badge: 'Ready',
-        badgeTone: 'warning',
-        action: 'Review the rollback',
-        mark: 'gauge'
-      } },
-      { type: 'region', label: 'Timeline · 4 events', children: [
-        { component: 'syntari.activity-list', props: { items: [
-          { icon: 'gauge', title: 'Latency alert fired', detail: 'p95 above 900ms for three minutes', time: '12m ago' },
-          { icon: 'rotate-ccw', title: 'Rollback prepared', detail: 'Release 4280 is ready to restore', time: '9m ago' },
-          { icon: 'file', title: 'Logs checked', detail: 'No database errors in the window', time: '6m ago' },
-          { icon: 'clock', title: 'Waiting on the vendor', detail: 'Support ticket 88231 is open', time: 'now' }
-        ] } }
-      ] }
-    ])
-  },
-  {
-    label: 'Weekly report',
-    intent: 'Numbers are only useful next to the evidence that produced them.',
-    does: 'Read what moved, then check which tools it came from.',
-    spec: screen('What changed this week', 'two-column', [
-      { component: 'syntari.metric-and-sparkline', props: {
-        chartLabel: 'Agent runs by day, this week',
-        stats: [
-          { label: 'Agent runs', value: '1,284', badge: '+18.6%', tone: 'success' },
-          { label: 'Approvals', value: '96', badge: '−4.1%', tone: 'warning' }
-        ],
-        series: [
-          { label: 'Mon', value: 41 }, { label: 'Tue', value: 58 }, { label: 'Wed', value: 47 },
-          { label: 'Thu', value: 66 }, { label: 'Fri', value: 52 }, { label: 'Sat', value: 74 }
+      { component: 'syntari.chart-bars', props: {
+        title: 'Runs by day',
+        note: 'Indexed · this week against last',
+        seriesA: 'This week',
+        seriesB: 'Last week',
+        chartLabel: 'Runs by day: this week compared with last week',
+        columns: [
+          { label: 'Mon', a: 41, b: 30 }, { label: 'Tue', a: 58, b: 44 }, { label: 'Wed', a: 47, b: 51 },
+          { label: 'Thu', a: 66, b: 52 }, { label: 'Fri', a: 52, b: 61 }, { label: 'Sat', a: 74, b: 58 }
         ]
       } },
-      { component: 'syntari.banner', props: { message: 'One approval is still open', detail: 'send_email waited 41 minutes for a person.', tone: 'info', icon: 'clock' } },
-      { type: 'region', label: 'Where the numbers came from', children: [
-        { component: 'syntari.metadata-list', props: { items: [
-          { label: 'Window', value: 'Sep 7 – Sep 13' },
-          { label: 'Workspace', value: 'Syntari Studio' },
-          { label: 'Prepared by', value: 'Weekly report agent' }
-        ] } },
-        { component: 'syntari.table', props: {
-          caption: 'Tools the agents asked to run',
-          columns: [{ label: 'Tool' }, { label: 'Runs' }, { label: 'Approved' }],
-          rows: [['read_workspace', '412', '412'], ['write_files', '12', '12'], ['send_email', '3', '2']]
+      { component: 'syntari.comparison-table', props: {
+        caption: 'Two release channels measured on the same things',
+        optionA: 'Canary',
+        optionB: 'Stable',
+        rows: [
+          { metric: 'Rollback time', a: '1 minute', b: '10 minutes', advantage: 'Canary' },
+          { metric: 'Blast radius', a: '5% of traffic', b: 'All traffic', advantage: 'Canary' },
+          { metric: 'Verification', a: 'Automatic', b: 'Manual', advantage: 'Canary' },
+          { metric: 'Support window', a: 'Standard', b: 'Extended', advantage: 'Stable' }
+        ]
+      } },
+      { type: 'region', label: 'Evidence · 3 stages', children: [
+        { component: 'syntari.process-ledger', props: {
+          total: '2.4ms',
+          budget: 'under the 5ms budget',
+          stages: [
+            { title: 'Resolve the request', detail: 'Match the intent against the catalogue', time: '0.3ms', mark: 'check', state: 'done' },
+            { title: 'Render the parts', detail: 'Five components, eleven props', time: '2.1ms', mark: 'check', state: 'done' },
+            { title: 'Scope the styles', detail: 'Runs now', time: '—', mark: 'clock', state: 'current' }
+          ]
         } }
       ] }
     ])
   },
-  {
-    label: 'A choice, not a yes/no',
-    intent: 'Both options are defensible, and the difference is money and flexibility.',
-    does: 'Pick a direction knowing what changes, what stays the same, and how the numbers were reached.',
-    spec: screen('Choose how this account is billed', 'stack', [
-      { component: 'syntari.approval-card', props: {
-        title: 'Two options, one decision',
-        summary: 'Annual billing saves 18%. Monthly keeps the account flexible.',
-        detail: 'Both options keep the current seat count',
-        hint: 'Effective from the next invoice.',
-        icon: 'gauge',
-        approveLabel: 'Switch to annual',
-        rejectLabel: 'Keep monthly'
+  interactive: {
+    title: 'Interactive',
+    intent: 'A tool someone drives while it runs.',
+    does: 'Press play, step through it, change the speed, and watch the run report itself.',
+    spec: screen('Render run', 'stack', [
+      { component: 'syntari.live-readout', props: {
+        title: 'Render run',
+        state: 'Ready',
+        tone: 'success',
+        note: 'Values update while the run is active.',
+        values: [
+          { label: 'Generation', value: '27' },
+          { label: 'Live cells', value: '297' },
+          { label: 'Speed', value: '8 fps' },
+          { label: 'Elapsed', value: '1m 12s' }
+        ]
       } },
-      { component: 'syntari.metadata-list', props: { items: [
-        { label: 'Annual', value: '€18,240 · saves €3,280' },
-        { label: 'Monthly', value: '€1,620 per month' },
-        { label: 'Reversible', value: 'At any renewal' }
-      ] } },
-      { type: 'region', label: 'How this was calculated · 2 checks', children: [
+      { component: 'syntari.transport-controls', props: { speed: 8, steps: 40 } },
+      { component: 'syntari.banner', props: { message: 'Local demonstration', detail: 'Play, step, and change the speed. Nothing leaves the page.', tone: 'info', icon: 'info' } },
+      { type: 'region', label: 'Timeline · 3 events', children: [
         { component: 'syntari.activity-list', props: { items: [
-          { icon: 'chart', title: 'Usage reviewed', detail: 'Fourteen months of history', time: '3m ago' },
-          { icon: 'check', title: 'Discount checked', detail: '18% is the published rate', time: '2m ago' }
+          { icon: 'arrow', title: 'Ready to run', detail: 'Step 1 of 40', time: 'now' },
+          { icon: 'gauge', title: 'Speed set', detail: '8 frames per second', time: 'now' },
+          { icon: 'clock', title: 'Waiting for input', detail: 'Nothing runs until you press play', time: 'now' }
         ] } }
       ] }
     ])
-  },
-  {
-    label: 'Nothing found',
-    intent: 'An empty result is a result. It deserves an explanation, not a blank page.',
-    does: 'Understand what was searched, which filter to change, and that nothing was altered.',
-    spec: screen('No invoices matched those filters', 'stack', [
-      { component: 'syntari.empty-state', props: {
-        title: 'Nothing matched',
-        body: 'No paid invoice from this vendor in the last ninety days.',
-        action: 'Clear the vendor filter',
-        icon: 'search'
-      } },
-      { component: 'syntari.metadata-list', props: { items: [
-        { label: 'Searched', value: 'invoices · last 90 days' },
-        { label: 'Filters', value: 'Northwind Traders · paid' },
-        { label: 'Data', value: 'Unchanged · read-only query' }
-      ] } }
-    ])
-  },
-  {
-    label: 'Unsupported request',
-    intent: 'A model can ask for a component the registry does not have.',
-    does: 'See the refusal where the invented component was, while the rest of the screen still renders.',
-    spec: screen('Repair, do not guess', 'stack', [
-      { component: 'syntari.wizard-hat', props: { sparkle: true } },
-      { component: 'syntari.banner', props: { message: 'Nothing was written', tone: 'danger', dismissible: true } },
-      { component: 'syntari.card', props: { title: 'Two nodes above failed', body: 'The rest kept their place with a labelled fallback.', badge: 'Repaired', badgeTone: 'warning', mark: 'info' } }
-    ])
   }
-];
+};
+
 let instance = null;
 let busy = false;
 
@@ -194,12 +94,9 @@ function paintDiagnostics(diagnostics) {
     : '<li class="ir-clean">No diagnostics. Every node matches its contract.</li>';
 }
 
-async function paint(text) {
+async function paint(spec) {
   if (busy) return;
   busy = true;
-  let spec;
-  try { spec = JSON.parse(text); }
-  catch (error) { paintDiagnostics([{ severity: 'error', code: 'invalid-json', path: 'spec', message: error.message }]); $('[data-ir-summary]').textContent = 'The spec is not valid JSON.'; busy = false; return; }
   instance?.destroy();
   instance = await render(spec, $('[data-ir-output]'));
   const drawn = instance.element.querySelectorAll('[data-ir-component]').length;
@@ -209,19 +106,20 @@ async function paint(text) {
   busy = false;
 }
 
-function load(index) {
-  const scenario = scenarios[index];
-  $('[data-ir-intent]').textContent = scenario.intent;
-  $('[data-ir-does]').textContent = scenario.does;
-  $('#ir-spec').value = JSON.stringify(scenario.spec, null, 2);
-  document.querySelectorAll('[data-ir-sample]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
-  return paint($('#ir-spec').value);
+function load(mode) {
+  const current = modes[mode];
+  $('[data-ir-intent]').textContent = current.intent;
+  $('[data-ir-does]').textContent = current.does;
+  $('#ir-spec').value = JSON.stringify(current.spec, null, 2);
+  document.querySelectorAll('[data-ir-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.irMode === mode)));
+  return paint(current.spec);
 }
 
-$('[data-ir-render]').addEventListener('click', () => paint($('#ir-spec').value));
-const sampleGroup = $('.ir-page-samples');
-sampleGroup.innerHTML = scenarios.map((scenario, i) => `<button type="button" class="button small" data-ir-sample="${i}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(scenario.label)}</button>`).join('');
-sampleGroup.addEventListener('click', event => { const button = event.target.closest('[data-ir-sample]'); if (button) load(Number(button.dataset.irSample)); });
+document.querySelectorAll('[data-ir-mode]').forEach(button => button.addEventListener('click', () => load(button.dataset.irMode)));
+$('[data-ir-render]').addEventListener('click', () => {
+  try { paint(JSON.parse($('#ir-spec').value)); }
+  catch (error) { paintDiagnostics([{ severity: 'error', code: 'invalid-json', path: 'spec', message: error.message }]); $('[data-ir-summary]').textContent = 'The spec is not valid JSON.'; }
+});
 
 const specToggle = $('[data-ir-toggle-spec]');
 const specField = $('#ir-spec');
@@ -245,5 +143,18 @@ themeButton.addEventListener('click', () => {
   try { localStorage.setItem('syntari-theme', next); } catch {}
   paintThemeButton();
 });
-load(0).then(paintThemeButton);
-renderableSlugs().then(slugs => { document.body.dataset.irSupported = slugs.join(' '); });
+
+/** The catalogue reads the registry, so the grid cannot drift from what renders. */
+async function paintCatalogue() {
+  const [catalog, supported] = await Promise.all([getComponents(), renderableSlugs()]);
+  document.querySelectorAll('[data-ir-count=components]').forEach(node => { node.textContent = String(catalog.length); });
+  document.querySelectorAll('[data-ir-count=renderable]').forEach(node => { node.textContent = String(supported.length); });
+  $('[data-ir-catalog]').innerHTML = supported.map(slug => {
+    const component = catalog.find(entry => entry.slug === slug);
+    const icon = groups[component?.category]?.[0] ?? 'square';
+    return `<a class="ir-catalog-card" href="components/${esc(slug)}/"><span class="ir-catalog-icon">${window.SyntariIcon?.(icon) ?? ''}</span><span class="ir-catalog-name">${esc(component?.name ?? slug)}</span><span class="ir-catalog-arrow" aria-hidden="true">→</span></a>`;
+  }).join('');
+  document.body.dataset.irSupported = supported.join(' ');
+}
+
+load('static').then(paintThemeButton).then(paintCatalogue);
