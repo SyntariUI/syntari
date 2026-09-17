@@ -24,9 +24,15 @@ test('a situation renders as a screen, not a paragraph of chat', async ({ page }
   await expect(output.locator('.banner > div')).toContainText('All checks passed');
   await expect(output.locator('.agent-surface > p').first()).toContainText('Apply three schema changes');
   await expect(output.locator('.agent-footer [data-agent-action=approve]')).toContainText('Run migration');
-  await expect(output.locator('.metadata-list > div')).toHaveCount(4);
+  await expect(output.locator('.metadata-list > div')).toHaveCount(3);
   await expect(output.locator('.activity-item')).toHaveCount(4);
   await expect(output.locator('.activity-item time').first()).toHaveText('2m ago');
+  const region = output.locator('.ir-region');
+  await expect(region).toHaveCount(1);
+  await expect(region.locator('summary')).toHaveText('Evidence · 4 checks');
+  await expect(output.locator('.ir-region-body .activity-item').first()).toBeHidden();
+  await region.locator('summary').click();
+  await expect(output.locator('.ir-region-body .activity-item').first()).toBeVisible();
   await expect(page.locator('[data-ir-intent]')).toContainText('cannot be undone');
   await expect(page.locator('[data-ir-does]')).toContainText('blast radius');
   await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
@@ -106,7 +112,10 @@ test('validation refuses invented components, missing props, and values outside 
       outside: await codesFor(screen({ component: 'syntari.banner', props: { message: 'ok', tone: 'danger' } })),
       overBudget: await codesFor(screen({ component: 'syntari.table', props: { columns: [{ label: 'A' }], rows: Array.from({ length: 20 }, () => ['x']) } })),
       repaired: await codesFor(screen({ component: 'syntari.banner', props: { message: 'ok', dismissible: true } })),
-      layout: await codesFor({ type: 'screen', layout: 'carousel', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] })
+      layout: await codesFor({ type: 'screen', layout: 'carousel', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] }),
+      regionNoLabel: await codesFor(screen({ type: 'region', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] })),
+      regionBadOpen: await codesFor(screen({ type: 'region', label: 'Evidence', open: 'yes', children: [] })),
+      regionNests: await codesFor(screen({ type: 'region', label: 'Evidence', children: [{ type: 'region', label: 'Deeper', children: [{ component: 'syntari.card', props: { title: 'Nested card' } }] }] }))
     };
   });
   expect(report.unknown).toContain('error:unknown-component');
@@ -120,6 +129,9 @@ test('validation refuses invented components, missing props, and values outside 
   expect(report.repaired.some(code => code.startsWith('error'))).toBe(false);
   expect(report.layout).toContain('warning:unknown-layout');
   expect(report.layout.some(code => code.startsWith('error'))).toBe(false);
+  expect(report.regionNoLabel).toContain('error:invalid-region');
+  expect(report.regionBadOpen).toContain('error:wrong-type');
+  expect(report.regionNests.some(code => code.startsWith('error'))).toBe(false);
 });
 
 test('the guide documents exactly the components that carry a prop contract', async ({ page }) => {

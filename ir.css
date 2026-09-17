@@ -13,12 +13,23 @@
  */
 .ir-node{min-width:0;grid-column:auto}
 .ir-node>.syntari-component{width:100%;padding:0;margin:0;min-height:0;max-width:none;align-items:stretch;justify-content:flex-start}
+/* A screen is full-bleed: parts pinned to a preview width fill the column instead. */
+.ir-node>.syntari-component>*{max-width:none}
+/* A slot the renderer fills with an icon is a mark, not a person avatar. */
+.ir-screen [data-ir-icon]{display:grid;place-items:center;background:var(--subtle);color:var(--accent-text);border-radius:50%}
 .ir-node[data-ir-component]>.syntari-component>:first-child{margin-top:0}
 .ir-fallback{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px dashed var(--bg-a4);border-radius:12px;background:var(--subtle);text-align:left}
 .ir-fallback-mark{display:grid;place-items:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--amber-a1);color:var(--warning-text);font-size:11px;line-height:1}
 .ir-fallback strong{display:block;font-size:12px;font-weight:500;letter-spacing:-.1px}
 .ir-fallback p{margin:4px 0 0;font-size:11px;line-height:1.75;color:var(--muted)}
 .ir-screen[data-ir-status=partial]{--ir-status:var(--warning-text)}
+/* Progressive disclosure: a region keeps evidence one click away from the decision. */
+.ir-region{width:100%;border:1px solid var(--border);border-radius:12px;background:var(--background-subtle);font-size:12px;padding:0}
+.ir-region>summary{display:flex;align-items:center;gap:8px;padding:12px 14px;font-size:11px;color:var(--muted);cursor:pointer;border:0}
+.ir-region[open]>summary{color:var(--text)}
+.ir-region>summary::after{content:'';width:6px;height:6px;margin-left:auto;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform var(--motion-fast) var(--ease-out)}
+.ir-region[open]>summary::after{transform:rotate(-135deg)}
+.ir-region-body{display:grid;gap:16px;padding:2px 14px 16px}
 @media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
 
 /* Generative UI page: spec on the left, the rendered screen on the right. */

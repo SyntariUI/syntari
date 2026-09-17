@@ -5,7 +5,8 @@
   "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements.",
   "oneOf": [
     { "$ref": "#/definitions/screen" },
-    { "$ref": "#/definitions/node" }
+    { "$ref": "#/definitions/node" },
+    { "$ref": "#/definitions/region" }
   ],
   "definitions": {
     "node": {
@@ -19,13 +20,27 @@
         },
         "slot": { "type": "string" },
         "props": { "type": "object" },
-        "children": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/node" }
-        },
+        "children": { "$ref": "#/definitions/children" },
         "provenance": { "$ref": "#/definitions/provenance" }
       },
       "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "description": "A labelled disclosure. The label is what a person reads; open decides whether the contents start visible.",
+      "required": ["type", "label", "children"],
+      "properties": {
+        "type": { "const": "region" },
+        "label": { "type": "string", "maxLength": 60 },
+        "open": { "type": "boolean", "default": false },
+        "children": { "$ref": "#/definitions/children" },
+        "provenance": { "$ref": "#/definitions/provenance" }
+      },
+      "additionalProperties": false
+    },
+    "children": {
+      "type": "array",
+      "items": { "oneOf": [ { "$ref": "#/definitions/node" }, { "$ref": "#/definitions/region" } ] }
     },
     "screen": {
       "type": "object",
@@ -38,10 +53,7 @@
           "description": "Layout the reference renderer implements. Hosts may add their own, but only this set renders without configuration."
         },
         "title": { "type": "string" },
-        "children": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/node" }
-        },
+        "children": { "$ref": "#/definitions/children" },
         "meta": { "type": "object" }
       },
       "additionalProperties": false

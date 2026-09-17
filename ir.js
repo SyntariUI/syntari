@@ -89,6 +89,12 @@ function checkValue(value, descriptor, path, report) {
 async function checkNode(node, context, path) {
   const { reg, report } = context;
   if (!node || typeof node !== 'object' || Array.isArray(node)) { report('error', 'invalid-node', path, 'A node must be an object with a component id.'); return null; }
+  if (node.type === 'region') {
+    if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-region', `${path}.label`, 'A region needs a label; it becomes the summary a person reads.');
+    else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Region labels stay under 60 characters.');
+    if (node.open !== undefined && typeof node.open !== 'boolean') report('error', 'wrong-type', `${path}.open`, 'A region is either open or closed.');
+    return { region: true };
+  }
   const { component } = node;
   if (typeof component !== 'string' || !ID_PATTERN.test(component)) {
     report('error', 'invalid-component-id', `${path}.component`, 'Component ids use the form "syntari.component-slug".');
@@ -150,7 +156,7 @@ export async function validate(spec, options = {}) {
     const nested = node.children;
     if (nested === undefined) return;
     if (!Array.isArray(nested)) { report('error', 'wrong-type', `${path}.children`, 'Children must be an array.'); return; }
-    if (nested.length) report('warning', 'nested-children-unsupported', `${path}.children`, 'This release renders nested children as siblings of the parent node.');
+    if (nested.length && !resolved.region) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children yet, so these render as siblings. Wrap them in a region to group them.');
     for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1);
   }
   for (const [i, child] of children.entries()) await walk(child, `children[${i}]`, 1);
@@ -180,7 +186,11 @@ function setIcon(target, value, report, path) {
   const markup = window.SyntariIcon?.(String(value));
   if (!markup) { report('warning', 'unknown-icon', path, `"${value}" is not a Lucide icon in this runtime, so the component's own icon was kept.`); return; }
   if (target.tagName.toLowerCase() === 'svg') target.outerHTML = markup;
-  else target.innerHTML = markup;
+  else {
+    target.innerHTML = markup;
+    /* Mark the slot so a host can present it as an icon tile rather than a person avatar. */
+    target.dataset.irIcon = String(value);
+  }
 }
 function applyVariant(target, values, value, report, path) {
   if (!target) return;
@@ -274,6 +284,19 @@ export async function render(spec, target, options = {}) {
   }
 
   async function paint(node, parent, path) {
+    if (node?.type === 'region') {
+      const region = document.createElement('details');
+      region.className = 'ir-region';
+      region.open = node.open === true;
+      const summary = document.createElement('summary');
+      summary.textContent = String(node.label ?? 'Details');
+      const body = document.createElement('div');
+      body.className = 'ir-region-body';
+      region.append(summary, body);
+      parent.append(region);
+      for (const [i, child] of (node.children ?? []).entries()) await paint(child, body, `${path}.children[${i}]`);
+      return;
+    }
     const slot = document.createElement('div');
     slot.className = 'ir-node';
     parent.append(slot);

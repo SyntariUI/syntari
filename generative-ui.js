@@ -5,16 +5,16 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&'
 const screen = (title, layout, children) => ({ version: 'syntari-ir-1', type: 'screen', layout, title, children });
 
 /**
- * Each scenario is a situation, not a component demo.
+ * Each situation is a moment, not a component demo.
  * intent — what the moment is about. does — what the person can decide or understand.
+ * The screen leads with the decision and keeps evidence inside a region.
  */
 const scenarios = [
   {
     label: 'Production migration',
     intent: 'A migration cannot be undone by the person who has to approve it.',
-    does: 'Decide with the blast radius, the evidence, and the recovery path in view.',
+    does: 'Decide with the blast radius and the recovery path in view, then open the evidence if you need it.',
     spec: screen('A migration needs your decision', 'stack', [
-      { component: 'syntari.banner', props: { message: 'All checks passed', detail: '128 tests in 42s. No regressions since release 4279.', tone: 'success', icon: 'circlecheck' } },
       { component: 'syntari.tool-approval', props: {
         title: 'Run the migration?',
         question: 'Apply three schema changes to the billing database in production.',
@@ -27,21 +27,23 @@ const scenarios = [
       { component: 'syntari.metadata-list', props: { items: [
         { label: 'Blast radius', value: '3 tables · 1.2M rows' },
         { label: 'Window', value: '04:00–06:00 UTC' },
-        { label: 'Snapshot', value: '8.4 GB · verified' },
-        { label: 'Owner', value: 'Data platform' }
+        { label: 'Recovery', value: 'Snapshot · restorable for 24h' }
       ] } },
-      { component: 'syntari.activity-list', props: { items: [
-        { icon: 'check', title: 'Tests passed', detail: '128 tests in 42s.', time: '2m ago' },
-        { icon: 'file', title: 'Snapshot created', detail: 'billing-production · 8.4 GB', time: '1m ago' },
-        { icon: 'rotate-ccw', title: 'Dry run completed', detail: 'Rehearsed on a copy. No rows lost.', time: '40s ago' },
-        { icon: 'clock', title: 'Waiting for your decision', detail: 'Nothing runs until you approve.', time: 'now' }
-      ] } }
+      { type: 'region', label: 'Evidence · 4 checks', children: [
+        { component: 'syntari.banner', props: { message: 'All checks passed', detail: '128 tests in 42s. No regressions since release 4279.', tone: 'success', icon: 'circlecheck' } },
+        { component: 'syntari.activity-list', props: { items: [
+          { icon: 'check', title: 'Tests passed', detail: '128 tests in 42s.', time: '2m ago' },
+          { icon: 'file', title: 'Snapshot created', detail: 'billing-production · 8.4 GB', time: '1m ago' },
+          { icon: 'rotate-ccw', title: 'Dry run completed', detail: 'Rehearsed on a copy. No rows lost.', time: '40s ago' },
+          { icon: 'clock', title: 'Waiting for your decision', detail: 'Nothing runs until you approve.', time: 'now' }
+        ] } }
+      ] }
     ])
   },
   {
     label: 'Review finished work',
     intent: 'An agent already did the work and needs a person to sign it off.',
-    does: 'See what changed, how risky each piece is, and accept it or send it back.',
+    does: 'Accept it or send it back, then check the details if the summary is not enough.',
     spec: screen('Three pages are ready for review', 'stack', [
       { component: 'syntari.approval-card', props: {
         title: 'Review the rewrite',
@@ -52,28 +54,28 @@ const scenarios = [
         approveLabel: 'Approve and publish',
         rejectLabel: 'Send back'
       } },
-      { component: 'syntari.table', props: {
-        caption: 'Pages changed, with the risk of each',
-        columns: [{ label: 'Page' }, { label: 'Edits' }, { label: 'Risk' }],
-        rows: [['Homepage', '12', 'Low'], ['About', '8', 'Low'], ['Contact', '4', 'Medium']]
-      } },
-      { component: 'syntari.activity-list', props: { items: [
-        { icon: 'edit', title: 'Draft written', detail: 'Three pages, 1,240 words', time: '6m ago' },
-        { icon: 'check', title: 'Tone checked', detail: 'Matches the published style guide', time: '4m ago' },
-        { icon: 'link', title: 'Links verified', detail: '18 links, no dead ends', time: '2m ago' }
-      ] } },
-      { component: 'syntari.banner', props: { message: 'Draft only', detail: 'The pages stay unpublished until you approve them.', tone: 'info', icon: 'info' } }
+      { type: 'region', label: 'What changed · 3 pages, 24 edits', children: [
+        { component: 'syntari.table', props: {
+          caption: 'Pages changed, with the risk of each',
+          columns: [{ label: 'Page' }, { label: 'Edits' }, { label: 'Risk' }],
+          rows: [['Homepage', '12', 'Low'], ['About', '8', 'Low'], ['Contact', '4', 'Medium']]
+        } },
+        { component: 'syntari.activity-list', props: { items: [
+          { icon: 'edit', title: 'Draft written', detail: 'Three pages, 1,240 words', time: '6m ago' },
+          { icon: 'check', title: 'Tone checked', detail: 'Matches the published style guide', time: '4m ago' },
+          { icon: 'link', title: 'Links verified', detail: '18 links, no dead ends', time: '2m ago' }
+        ] } }
+      ] }
     ])
   },
   {
     label: 'Incident in progress',
     intent: 'Something is degrading and the reader has two minutes, not ten.',
-    does: 'Know the current state, who owns it, what was tried, and when the next update lands.',
+    does: 'Know the state and the owner at a glance, act on the suggestion, and read the timeline only if you need it.',
     spec: screen('Checkout is slow for some users', 'stack', [
       { component: 'syntari.banner', props: { message: 'Degraded · since 14:02', detail: 'Elevated latency on checkout. Payments are unaffected.', tone: 'info', icon: 'bell' } },
       { component: 'syntari.metadata-list', props: { items: [
         { label: 'Impact', value: '4.2% of sessions' },
-        { label: 'Region', value: 'EU-West' },
         { label: 'Owner', value: 'Payments on-call' },
         { label: 'Next update', value: '14:35 UTC' }
       ] } },
@@ -85,18 +87,20 @@ const scenarios = [
         action: 'Review the rollback',
         mark: 'gauge'
       } },
-      { component: 'syntari.activity-list', props: { items: [
-        { icon: 'gauge', title: 'Latency alert fired', detail: 'p95 above 900ms for three minutes', time: '12m ago' },
-        { icon: 'rotate-ccw', title: 'Rollback prepared', detail: 'Release 4280 is ready to restore', time: '9m ago' },
-        { icon: 'file', title: 'Logs checked', detail: 'No database errors in the window', time: '6m ago' },
-        { icon: 'clock', title: 'Waiting on the vendor', detail: 'Support ticket 88231 is open', time: 'now' }
-      ] } }
+      { type: 'region', label: 'Timeline · 4 events', children: [
+        { component: 'syntari.activity-list', props: { items: [
+          { icon: 'gauge', title: 'Latency alert fired', detail: 'p95 above 900ms for three minutes', time: '12m ago' },
+          { icon: 'rotate-ccw', title: 'Rollback prepared', detail: 'Release 4280 is ready to restore', time: '9m ago' },
+          { icon: 'file', title: 'Logs checked', detail: 'No database errors in the window', time: '6m ago' },
+          { icon: 'clock', title: 'Waiting on the vendor', detail: 'Support ticket 88231 is open', time: 'now' }
+        ] } }
+      ] }
     ])
   },
   {
     label: 'Weekly report',
     intent: 'Numbers are only useful next to the evidence that produced them.',
-    does: 'See what moved, by how much, and which tools the change came from.',
+    does: 'Read what moved, then check which tools it came from.',
     spec: screen('What changed this week', 'two-column', [
       { component: 'syntari.metric-and-sparkline', props: {
         chartLabel: 'Agent runs by day, this week',
@@ -109,23 +113,25 @@ const scenarios = [
           { label: 'Thu', value: 66 }, { label: 'Fri', value: 52 }, { label: 'Sat', value: 74 }
         ]
       } },
-      { component: 'syntari.metadata-list', props: { items: [
-        { label: 'Window', value: 'Sep 7 – Sep 13' },
-        { label: 'Workspace', value: 'Syntari Studio' },
-        { label: 'Prepared by', value: 'Weekly report agent' }
-      ] } },
-      { component: 'syntari.table', props: {
-        caption: 'Tools the agents asked to run',
-        columns: [{ label: 'Tool' }, { label: 'Runs' }, { label: 'Approved' }],
-        rows: [['read_workspace', '412', '412'], ['write_files', '12', '12'], ['send_email', '3', '2']]
-      } },
-      { component: 'syntari.banner', props: { message: 'One approval is still open', detail: 'send_email waited 41 minutes for a person.', tone: 'info', icon: 'clock' } }
+      { component: 'syntari.banner', props: { message: 'One approval is still open', detail: 'send_email waited 41 minutes for a person.', tone: 'info', icon: 'clock' } },
+      { type: 'region', label: 'Where the numbers came from', children: [
+        { component: 'syntari.metadata-list', props: { items: [
+          { label: 'Window', value: 'Sep 7 – Sep 13' },
+          { label: 'Workspace', value: 'Syntari Studio' },
+          { label: 'Prepared by', value: 'Weekly report agent' }
+        ] } },
+        { component: 'syntari.table', props: {
+          caption: 'Tools the agents asked to run',
+          columns: [{ label: 'Tool' }, { label: 'Runs' }, { label: 'Approved' }],
+          rows: [['read_workspace', '412', '412'], ['write_files', '12', '12'], ['send_email', '3', '2']]
+        } }
+      ] }
     ])
   },
   {
     label: 'A choice, not a yes/no',
     intent: 'Both options are defensible, and the difference is money and flexibility.',
-    does: 'Pick a direction knowing what changes in each case, and what stays the same.',
+    does: 'Pick a direction knowing what changes, what stays the same, and how the numbers were reached.',
     spec: screen('Choose how this account is billed', 'stack', [
       { component: 'syntari.approval-card', props: {
         title: 'Two options, one decision',
@@ -139,13 +145,14 @@ const scenarios = [
       { component: 'syntari.metadata-list', props: { items: [
         { label: 'Annual', value: '€18,240 · saves €3,280' },
         { label: 'Monthly', value: '€1,620 per month' },
-        { label: 'Reversible', value: 'At any renewal' },
-        { label: 'Seats', value: '24, unchanged' }
+        { label: 'Reversible', value: 'At any renewal' }
       ] } },
-      { component: 'syntari.activity-list', props: { items: [
-        { icon: 'chart', title: 'Usage reviewed', detail: 'Fourteen months of history', time: '3m ago' },
-        { icon: 'check', title: 'Discount checked', detail: '18% is the published rate', time: '2m ago' }
-      ] } }
+      { type: 'region', label: 'How this was calculated · 2 checks', children: [
+        { component: 'syntari.activity-list', props: { items: [
+          { icon: 'chart', title: 'Usage reviewed', detail: 'Fourteen months of history', time: '3m ago' },
+          { icon: 'check', title: 'Discount checked', detail: '18% is the published rate', time: '2m ago' }
+        ] } }
+      ] }
     ])
   },
   {
@@ -161,11 +168,9 @@ const scenarios = [
       } },
       { component: 'syntari.metadata-list', props: { items: [
         { label: 'Searched', value: 'invoices · last 90 days' },
-        { label: 'Vendor', value: 'Northwind Traders' },
-        { label: 'Status', value: 'Paid' },
-        { label: 'Results', value: '0' }
-      ] } },
-      { component: 'syntari.banner', props: { message: 'Nothing was changed', detail: 'An empty answer is reported as empty, not filled in.', tone: 'info', icon: 'info' } }
+        { label: 'Filters', value: 'Northwind Traders · paid' },
+        { label: 'Data', value: 'Unchanged · read-only query' }
+      ] } }
     ])
   },
   {
@@ -175,11 +180,10 @@ const scenarios = [
     spec: screen('Repair, do not guess', 'stack', [
       { component: 'syntari.wizard-hat', props: { sparkle: true } },
       { component: 'syntari.banner', props: { message: 'Nothing was written', tone: 'danger', dismissible: true } },
-      { component: 'syntari.card', props: { title: 'Two nodes above failed', body: 'The registry decided what could be drawn. The rest kept their place with a labelled fallback.', badge: 'Repaired', badgeTone: 'warning' } }
+      { component: 'syntari.card', props: { title: 'Two nodes above failed', body: 'The rest kept their place with a labelled fallback.', badge: 'Repaired', badgeTone: 'warning', mark: 'info' } }
     ])
   }
 ];
-
 let instance = null;
 let busy = false;
 
