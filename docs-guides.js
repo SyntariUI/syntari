@@ -3,7 +3,7 @@ export function guideContent(id,{code,command,apiTable,commonAPI}) {
  const p=text=>`<p class="docs-prose">${text}</p>`;
  const snippets={
   usage:`<div id="action"></div>\n\n<script type="module">\n  import { mount } from './components/syntari/button.js';\n\n  const button = await mount('#action', {\n    configure(root) {\n      root.querySelector('.primary').textContent = 'Save changes';\n    },\n    onAction(event, root) {\n      if (event.target.closest('.primary')) {\n        // Connect your application's save action here.\n      }\n    }\n  });\n</script>`,
-  theme:`/* Shared tokens work in both themes. */\n:root {\n  --accent: #918df6;\n  --accent-soft: #918df614;\n  --accent-text: #6558bd;\n  --radius-card: 18px;\n}\n\n[data-theme="dark"] {\n  --accent: #9580ff;\n  --accent-text: #b9aaff;\n}\n\n/* In your application: */\n/* document.documentElement.dataset.theme = 'dark'; */`,
+  theme:`/* Shared tokens work in both themes. */\n:root {\n  --accent: #2f6fed;\n  --accent-soft: #2f6fed14;\n  --accent-text: #1b56c8;\n  --radius-card: 18px;\n}\n\n[data-theme="dark"] {\n  --accent: #6f9dff;\n  --accent-text: #a8c8ff;\n}\n\n/* In your application: */\n/* document.documentElement.dataset.theme = 'dark'; */`,
   manual:`<div id="example" class="specimen-body">\n  <!-- Paste the component's HTML from its Code tab here. -->\n</div>\n\n<script type="module">\n  import { prepare } from './syntari/runtime/syntari.js';\n  await prepare(document.querySelector('#example'));\n</script>`
  };
  const pages={

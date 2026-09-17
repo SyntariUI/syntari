@@ -114,7 +114,7 @@
         "selector": ".mini-card .badge",
         "values": {
           "neutral": "",
-          "accent": "purple",
+          "accent": "accent",
           "success": "green",
           "warning": "amber",
           "danger": "red"

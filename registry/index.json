@@ -196,7 +196,7 @@
       "version": "0.2.1",
       "description": "A compact metric pair with comparison badges and a bar chart.",
       "tokens": [
-        "--purple-4",
+        "--blue-4",
         "--green-a1",
         "--success-text",
         "--fg-3"
@@ -214,7 +214,7 @@
       "tokens": [
         "--background",
         "--bg-4",
-        "--purple-4",
+        "--blue-4",
         "--radius-control"
       ],
       "source": "components/floating-navigation/",
@@ -545,8 +545,8 @@
       "version": "0.2.1",
       "description": "A flowing stage comparison, with stage names and values available as text.",
       "tokens": [
-        "--purple-4",
-        "--purple-a2",
+        "--blue-4",
+        "--blue-a2",
         "--sky-4",
         "--blue-4"
       ],
@@ -1844,6 +1844,278 @@
       ],
       "source": "components/agent-questions/",
       "manifest": "components/agent-questions.json",
+      "status": "generated"
+    },
+    {
+      "id": "chart-bars",
+      "name": "Chart bars",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "Grouped columns compare two series across periods, with the numbers in a summary a screen reader can read.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chart-bars/",
+      "manifest": "components/chart-bars.json",
+      "status": "generated"
+    },
+    {
+      "id": "chart-line",
+      "name": "Chart line",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A line chart with points and a quiet grid. Series colours come from the shared tokens rather than a palette of their own.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chart-line/",
+      "manifest": "components/chart-line.json",
+      "status": "generated"
+    },
+    {
+      "id": "chart-donut",
+      "name": "Chart donut",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A ring shows how one whole splits, with the total held in the centre and a legend carrying the exact numbers.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chart-donut/",
+      "manifest": "components/chart-donut.json",
+      "status": "generated"
+    },
+    {
+      "id": "heatmap",
+      "name": "Heatmap",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A compact grid where one intensity ramp carries the comparison, with the scale beside it.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/heatmap/",
+      "manifest": "components/heatmap.json",
+      "status": "generated"
+    },
+    {
+      "id": "treemap",
+      "name": "Treemap",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "Tiles sized by share, so the shape of the whole is readable before any number is.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/treemap/",
+      "manifest": "components/treemap.json",
+      "status": "generated"
+    },
+    {
+      "id": "network-graph",
+      "name": "Network graph",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "Relationships drawn as nodes and edges, with the busiest node carrying the emphasis.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/network-graph/",
+      "manifest": "components/network-graph.json",
+      "status": "generated"
+    },
+    {
+      "id": "gantt-chart",
+      "name": "Gantt chart",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "Rows of work with a span and a marker for today, at a grain people can read at a glance.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/gantt-chart/",
+      "manifest": "components/gantt-chart.json",
+      "status": "generated"
+    },
+    {
+      "id": "comparison-table",
+      "name": "Comparison table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "The same metric measured across options, with the advantage column naming the winner in words rather than colour alone.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/comparison-table/",
+      "manifest": "components/comparison-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "stat-row",
+      "name": "Stat row",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A row of measures with a label, a value, a change, and the note that explains it.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/stat-row/",
+      "manifest": "components/stat-row.json",
+      "status": "generated"
+    },
+    {
+      "id": "process-ledger",
+      "name": "Process ledger",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A pipeline shown as stages with their durations and a total, so the cost of each step is visible.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/process-ledger/",
+      "manifest": "components/process-ledger.json",
+      "status": "generated"
+    },
+    {
+      "id": "transport-controls",
+      "name": "Transport controls",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "Controls for something that runs: play, pause, step, and a speed that states its own value.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/transport-controls/",
+      "manifest": "components/transport-controls.json",
+      "status": "generated"
+    },
+    {
+      "id": "live-readout",
+      "name": "Live readout",
+      "category": "Feedback & status",
+      "version": "0.2.1",
+      "description": "A small panel of measures with a live status, for anything that changes while someone watches.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/live-readout/",
+      "manifest": "components/live-readout.json",
+      "status": "generated"
+    },
+    {
+      "id": "feature-grid",
+      "name": "Feature grid",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A short row of capabilities: an icon, a claim, the explanation, and the footnote that qualifies it.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/feature-grid/",
+      "manifest": "components/feature-grid.json",
+      "status": "generated"
+    },
+    {
+      "id": "pricing-table",
+      "name": "Pricing table",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "A plan matrix where included, limited, and absent stay readable without relying on colour.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/pricing-table/",
+      "manifest": "components/pricing-table.json",
+      "status": "generated"
+    },
+    {
+      "id": "cta-band",
+      "name": "CTA band",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "A closing call to action: one statement, one next step, and no competing links.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/cta-band/",
+      "manifest": "components/cta-band.json",
+      "status": "generated"
+    },
+    {
+      "id": "page-footer",
+      "name": "Page footer",
+      "category": "Content",
+      "version": "0.2.1",
+      "description": "The end of a page: the mark, the promise, grouped links, and whether the service is up.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/page-footer/",
+      "manifest": "components/page-footer.json",
       "status": "generated"
     }
   ]

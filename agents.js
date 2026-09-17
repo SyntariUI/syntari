@@ -12,7 +12,7 @@
  const approval=(tool=false)=>surface('approval',`${header(tool?'terminal':'circlecheck',tool?'Allow this tool?':'Review the changes','Your decision')}<p>${tool?'Read the files in your workspace to prepare a summary.':'Three updated pages are ready for your review.'}</p><div class="agent-inset">${icon(tool?'folder':'file')} ${tool?'Workspace files · read only':'Homepage, About, and Contact'}</div><p class="hint">Local demonstration. No external action is performed.</p><div class="agent-decision" role="status"></div><div class="agent-footer">${b('Decline','reject','small ghost')}${b('Approve','approve','small primary')}</div>`);
  const code=()=>surface('code',`${header('code','theme.css','CSS') }<pre><code>:root {
   --surface: #ffffff;
-  --accent: #918df6;
+  --accent: #2f6fed;
   --radius-card: 18px;
 }</code></pre><div class="agent-footer"><span class="hint">Syntari foundations</span>${b(icon('copy')+' Copy','copy-code')}</div>`);
  const diff=()=>surface('diff',`<details class="agent-disclosure" open><summary>${icon('file')}<span>layout.css<small>2 additions · 2 deletions</small></span>${icon('down')}</summary><pre class="diff-lines"><code><span class="diff-neutral">  .card {</span><span class="diff-remove">−   border-radius: 8px;</span><span class="diff-add">+   border-radius: var(--radius-card);</span><span class="diff-remove">−   background: white;</span><span class="diff-add">+   background: var(--surface);</span><span class="diff-neutral">  }</span></code></pre></details><div class="agent-decision" role="status"></div><div class="agent-footer">${b('Keep changes','approve','small primary')}${b('Discard','reject','small ghost')}</div>`);

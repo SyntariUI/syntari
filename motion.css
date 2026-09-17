@@ -2,7 +2,7 @@
 :where(.button,.icon-button,.inspect,.nav-item,.segmented button,.dock button,.theme-toggle button,.view-tabs button,.pagination button,.tabs button,.dropdown-panel button,.swatch,.chip,.avatar,.step span){transition:background-color var(--motion-fast) ease,color var(--motion-fast) ease,border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,transform var(--motion-fast) var(--ease-out)}
 :where(body,.sidebar,.topbar,.gallery-toolbar,.specimen,.specimen-footer,.mini-card,.input-shell,.field input,.field select,.field textarea,.search,.composer,.badge,.banner,.table td,.activity-symbol,.file-drop,.skeleton,.message){transition:background-color var(--motion-medium) ease,color var(--motion-fast) ease,border-color var(--motion-fast) ease,box-shadow var(--motion-medium) ease}
 .specimen{box-shadow:var(--shadow-card)}
-.specimen:focus-within{border-color:var(--purple-a3);box-shadow:var(--shadow-card-hover)}
+.specimen:focus-within{border-color:var(--blue-a3);box-shadow:var(--shadow-card-hover)}
 @media(hover:hover){
 .specimen:hover{box-shadow:var(--shadow-card-hover);border-color:var(--bg-a3)}
 .button:not(.ghost):not(.danger):not(.accent):not(:disabled):hover,.icon-button:not(:disabled):hover{box-shadow:var(--shadow-control-hover);transform:translateY(-1px)}
@@ -18,10 +18,10 @@
 .button.ghost:active,.button.accent:active,.button.danger:active{box-shadow:none}
 .button .icon{transition:transform var(--motion-medium) var(--ease-out)}
 .button:hover .icon-arrow:last-child:not(:first-child){transform:translateX(2px)}
-.field input:focus,.field textarea:focus,.field select:focus,.input-shell:focus-within,.search:focus-within,.composer:focus-within{box-shadow:0 0 0 3px var(--purple-a1)}
+.field input:focus,.field textarea:focus,.field select:focus,.input-shell:focus-within,.search:focus-within,.composer:focus-within{box-shadow:0 0 0 3px var(--blue-a1)}
 .switch span{transition:background-color var(--motion-medium) ease}
 .switch span:after{transition:transform var(--motion-medium) var(--ease-out),box-shadow var(--motion-fast) ease}
-.switch input:active+span:after{box-shadow:0 0 0 3px var(--purple-a2)}
+.switch input:active+span:after{box-shadow:0 0 0 3px var(--blue-a2)}
 .choice input{transition:filter var(--motion-fast) ease,transform var(--motion-fast) var(--ease-out)}
 .choice input:active:not(:disabled){transform:scale(.92)}
 .tooltip{transition:opacity var(--motion-fast) ease,translate var(--motion-fast) var(--ease-out);translate:0 3px}

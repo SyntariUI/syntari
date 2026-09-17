@@ -28,12 +28,12 @@ Each artifact declares the matching `$id`, so a schema reference resolves withou
 Primitive values feed semantic roles, and semantic roles feed component tokens:
 
 ```
-purple.400               (primitive)
+blue.400                 (primitive)
   → color.action.primary (semantic)
     → button.primary.background (component)
 ```
 
-CSS variables remain compiled output. The semantic layer is where agents reason; `--purple-4` and `--bg-3` are not part of the agent vocabulary.
+CSS variables remain compiled output. The semantic layer is where agents reason; `--blue-4` and `--bg-3` are not part of the agent vocabulary.
 
 ## Component manifest status
 

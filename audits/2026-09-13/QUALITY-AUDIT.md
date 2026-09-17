@@ -20,7 +20,7 @@ The dark sidebar gives identity, search, navigation groups, and the active desti
 
 The light interface aligns the page action, tabs, data, and project details to a common grid. Borders are quiet and consistent. A small amount of inset highlight and shadow gives the primary action definition. Metadata is arranged as a readable label/value system, with avatars and badges integrated into the rows.
 
-For Syntari, carry over this hierarchy and precision using Syntari's rounded type, purple accent, and existing icon family. Tune muted colors against actual contrast measurements. The reference's green glow is a stylistic choice; it is not evidence of usability or a requirement for Syntari.
+For Syntari, carry over this hierarchy and precision using Syntari's rounded type, blue accent, and existing icon family. Tune muted colors against actual contrast measurements. The reference's green glow is a stylistic choice; it is not evidence of usability or a requirement for Syntari.
 
 ## Additional navigation reference
 
@@ -31,7 +31,7 @@ This is the closest visual benchmark for Syntari among the supplied images. Its 
 | Compact brand header with collapse control on the same row | Identity and shell control form one clear unit | Replace the starter's separate collapse row with a header slot. Support a compact brand header and an optional workspace switcher using the same spacing rules. |
 | “Monitor”, “Govern”, and “Prove” group labels | The grouping expresses different purposes and gives the list rhythm | Group Syntari destinations by their actual purpose; define one group heading style and consistent spacing before and after groups. |
 | Consistent icon column and label start | The eye can scan vertically without adjusting for each row | Use a fixed 20px icon slot, an 8px gap, a common text baseline, and the same row inset throughout. |
-| Active “Policies” row with a quiet fill, brighter label, and purple icon | Several restrained cues agree about the current destination | Use a shared selected-row token, medium text, and Syntari's accent icon. Keep keyboard focus visually distinct. |
+| Active “Policies” row with a quiet fill, brighter label, and blue icon | Several restrained cues agree about the current destination | Use a shared selected-row token, medium text, and Syntari's accent icon. Keep keyboard focus visually distinct. |
 | Small count badge aligned at the trailing edge | Counts do not disturb the label alignment | Reserve a trailing badge slot; use semantic status color only when the count represents that status. |
 | Utilities anchored at the bottom | Persistent utilities are easy to find and do not interrupt primary navigation | Separate the scrollable destination groups from the persistent utility/footer area. Test short viewport heights so neither area overlaps. |
 | Matte canvas, sidebar, panel, and nested content tones | Surface boundaries establish hierarchy without heavy shadows | Define a small semantic surface ladder that works in both themes. Match border strength and corner treatment across adjacent panels. |
@@ -77,7 +77,7 @@ Keep the rounded type and existing icon family. Monospaced group labels are an o
 
 These are computed CSS colors from a keyboard-focused documentation link. The external ring is the authored focus treatment and should reach at least 3:1 against the adjacent background. [Non-text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
 
-**Fix:** Define focus colors semantically per theme, independently of the palette's numbered purple steps. As starting values, the existing accent-text colors produce 5.46:1 in light and 8.51:1 in dark against these sidebar surfaces. Verify them against all control surfaces and states. Retain a clear outline with an offset; increasing thickness alone will not correct the color contrast.
+**Fix:** Define focus colors semantically per theme, independently of the palette's numbered accent steps. As starting values, the existing accent-text colors produce 5.46:1 in light and 8.51:1 in dark against these sidebar surfaces. Verify them against all control surfaces and states. Retain a clear outline with an offset; increasing thickness alone will not correct the color contrast.
 
 **Source:** `tokens.css:3–6`, `styles.css:59`.
 
@@ -130,7 +130,7 @@ The starter header is a 24px-high wordmark row. The account footer is static con
 
 The starter sidebar and its main content both compute to `rgb(24, 25, 37)`. A single thin divider carries most of the separation. Selected rows, segmented choices, field surfaces, and cards use closely related tones with little role distinction.
 
-**Fix:** Define roles for canvas, navigation, content panel, raised panel, hover, and selected state. Use a neutral or subtly tinted tonal ladder with Syntari purple reserved for selected indicators and meaningful accents. Test an inset main panel with a 16–20px radius. Following the additional sidebar reference, start selected navigation with a quiet fill, medium label weight, and accent icon; use a focus outline independently. Evaluate an inset marker only if these cues are insufficient in a particular navigation density.
+**Fix:** Define roles for canvas, navigation, content panel, raised panel, hover, and selected state. Use a neutral or subtly tinted tonal ladder with Syntari blue reserved for selected indicators and meaningful accents. Test an inset main panel with a 16–20px radius. Following the additional sidebar reference, start selected navigation with a quiet fill, medium label weight, and accent icon; use a focus outline independently. Evaluate an inset marker only if these cues are insufficient in a particular navigation density.
 
 **Source:** `tokens.css:3–5`, `docs.css:2`, `starter.css:5`. [Dark project screen](projects-desktop-dark.png).
 
@@ -177,7 +177,7 @@ Completion means the same controls remain recognizable and dependable in the gal
 
 ## Strengths to preserve
 
-- Syntari already has an identifiable voice through rounded typography, a restrained purple accent, and a consistent icon family.
+- Syntari already has an identifiable voice through rounded typography, a restrained blue accent, and a consistent icon family.
 - The library exposes live examples, source, and state controls in a unified browsing shell.
 - The sampled neutral navigation text is readable: approximately 5.50:1 in light and 9.21:1 in dark against the sidebar surfaces. The focus-ring defect is a separate issue.
 - Tables, headers, forms, avatars, and metadata primitives provide a useful base for a complete project-detail experience.
