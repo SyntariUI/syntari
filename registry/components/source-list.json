@@ -1,0 +1,99 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "source-list",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/source-list/",
+  "name": "Source list",
+  "category": "Table & list",
+  "purpose": "Show which sources make up a number.",
+  "description": "A short ranked list where each row carries its share as a bar and a value.",
+  "intents": [
+    "break-down",
+    "rank"
+  ],
+  "variants": {
+    "rows": [
+      "1 to 8"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "row",
+    "name",
+    "bar",
+    "share"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "shares-are-of-the-same-whole",
+    "the-name-is-the-label-not-the-number"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "radius.2"
+  ],
+  "compatibleWith": [
+    "area-chart",
+    "card",
+    "metric-strip"
+  ],
+  "avoidWhen": [
+    "the-rows-are-not-a-share-of-one-total"
+  ],
+  "props": {
+    "sources": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "fields": {
+          "name": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "share": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".rank-list",
+    "list": {
+      "sources": {
+        "container": ".rank-list",
+        "item": "li",
+        "lead": {
+          "name": ".rank-name"
+        },
+        "text": {
+          "share": ".rank-share"
+        },
+        "style": {
+          "share": {
+            "selector": ".rank-fill",
+            "name": "--share",
+            "suffix": "%"
+          }
+        }
+      }
+    }
+  }
+}

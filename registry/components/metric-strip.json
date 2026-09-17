@@ -1,0 +1,142 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "metric-strip",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/metric-strip/",
+  "name": "Metric strip",
+  "category": "Data display",
+  "purpose": "Let one measure be the focus of a report.",
+  "description": "A row of measures where the active one is the thing being charted, and choosing another changes the focus.",
+  "intents": [
+    "choose-measure",
+    "report-numbers"
+  ],
+  "variants": {
+    "measures": [
+      "1 to 6"
+    ]
+  },
+  "states": [
+    "default",
+    "selected"
+  ],
+  "anatomy": [
+    "root",
+    "item",
+    "label",
+    "value",
+    "change",
+    "meaning"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "one-measure-is-active",
+    "the-change-names-its-unit",
+    "the-meaning-explains-the-number"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.surface.subtle",
+    "color.border.default",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.status.success"
+  ],
+  "compatibleWith": [
+    "area-chart",
+    "chart-toolbar",
+    "headline-metric"
+  ],
+  "avoidWhen": [
+    "the-measures-are-not-alternatives"
+  ],
+  "props": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 24
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 12,
+            "required": true
+          },
+          "delta": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "direction": {
+            "type": "enum",
+            "values": [
+              "up",
+              "down",
+              "none"
+            ],
+            "default": "up"
+          },
+          "meaning": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "active": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".metric-strip",
+    "list": {
+      "items": {
+        "container": ".metric-strip",
+        "item": ".metric-item",
+        "lead": {
+          "label": ".metric-label"
+        },
+        "icon": {
+          "icon": ".metric-label .icon"
+        },
+        "text": {
+          "value": ".metric-value",
+          "delta": ".metric-delta",
+          "meaning": ".metric-meaning"
+        },
+        "variant": {
+          "direction": {
+            "selector": ".metric-delta",
+            "values": {
+              "up": "up",
+              "down": "down",
+              "none": ""
+            }
+          }
+        },
+        "class": {
+          "active": "active"
+        }
+      }
+    }
+  }
+}

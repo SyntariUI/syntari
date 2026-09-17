@@ -2117,6 +2117,108 @@
       "source": "components/page-footer/",
       "manifest": "components/page-footer.json",
       "status": "generated"
+    },
+    {
+      "id": "area-chart",
+      "name": "Area chart",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A line with its area filled, a labelled axis, and gridlines. The summary states the range for screen readers.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/area-chart/",
+      "manifest": "components/area-chart.json",
+      "status": "authored"
+    },
+    {
+      "id": "chart-toolbar",
+      "name": "Chart toolbar",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "The controls that belong above a chart: a comparison, a view switch, and room for a legend.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/chart-toolbar/",
+      "manifest": "components/chart-toolbar.json",
+      "status": "authored"
+    },
+    {
+      "id": "metric-strip",
+      "name": "Metric strip",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "A row of measures where the active one is the thing being charted. Choosing another changes the focus.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/metric-strip/",
+      "manifest": "components/metric-strip.json",
+      "status": "authored"
+    },
+    {
+      "id": "headline-metric",
+      "name": "Headline metric",
+      "category": "Data display",
+      "version": "0.2.1",
+      "description": "The one number a screen is about, with an optional total it is measured against.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/headline-metric/",
+      "manifest": "components/headline-metric.json",
+      "status": "authored"
+    },
+    {
+      "id": "filter-bar",
+      "name": "Filter bar",
+      "category": "Action",
+      "version": "0.2.1",
+      "description": "The row that scopes a view: a period selector, a filter action, and the chips that describe the current scope.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/filter-bar/",
+      "manifest": "components/filter-bar.json",
+      "status": "authored"
+    },
+    {
+      "id": "source-list",
+      "name": "Source list",
+      "category": "Table & list",
+      "version": "0.2.1",
+      "description": "A short ranked list with share bars, for the sources or answers behind a number.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/source-list/",
+      "manifest": "components/source-list.json",
+      "status": "authored"
     }
   ]
 }

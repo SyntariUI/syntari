@@ -4,7 +4,7 @@ const origin = 'http://127.0.0.1:4318';
 /** mode, screen title, and the components the mode draws. */
 const modes = [
   ['static', 'Release 4281 is ready to review', 5],
-  ['interactive', 'Render run', 4]
+  ['interactive', 'Product overview', 7]
 ];
 
 test('the renderer draws a report from a spec', async ({ page }) => {
@@ -48,7 +48,7 @@ test('both render modes work from the registry, and the catalogue matches it', a
     await expect(page.locator('[data-ir-intent]')).not.toBeEmpty();
     await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   }
-  expect(supported).toBe(16);
+  expect(supported).toBe(22);
 });
 
 test('the interactive mode responds to its own controls', async ({ page }) => {
@@ -56,17 +56,22 @@ test('the interactive mode responds to its own controls', async ({ page }) => {
   await page.locator('[data-ir-output] .ir-screen').waitFor();
   await page.locator('[data-ir-mode=interactive]').click();
   const stage = page.locator('[data-ir-output]');
-  await expect(stage.locator('[data-transport]')).toBeVisible();
-  await expect(stage.locator('[data-transport-status]')).toHaveText('Paused at step 1 of 40');
-  await stage.locator('[data-transport-play]').click();
-  await expect(stage.locator('[data-transport-play]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(stage.locator('[data-transport-status]')).toContainText('Playing at step');
-  await stage.locator('[data-transport-step]').click();
-  await expect(stage.locator('[data-transport-status]')).toContainText('at step 2 of 40');
-  await stage.locator('[data-transport-play]').click();
-  await stage.locator('[data-transport-reset]').click();
-  await expect(stage.locator('[data-transport-status]')).toHaveText('Paused at step 1 of 40');
-  await expect(stage.locator('.live-readout')).toContainText('Render run');
+  await expect(stage.locator('.headline-metric')).toHaveCount(2);
+  await expect(stage.locator('.headline-total').nth(1)).toHaveText('/ 12');
+  await expect(stage.locator('.metric-item')).toHaveCount(4);
+  await expect(stage.locator('.metric-item').first()).toHaveClass(/active/);
+  await stage.locator('.metric-item').nth(1).click();
+  await expect(stage.locator('.metric-item').nth(1)).toHaveClass(/active/);
+  await expect(stage.locator('.metric-item').first()).not.toHaveClass(/active/);
+  await expect(stage.locator('[data-chart-view]')).toHaveAttribute('aria-pressed', 'false');
+  await stage.locator('[data-chart-view]').click();
+  await expect(stage.locator('[data-chart-view]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(stage.locator('[data-chart-view]')).toHaveText('View weekly totals');
+  await expect(stage.locator('.area-line')).toHaveAttribute('d', /^M\d/);
+  await stage.locator('[data-select-toggle]').click();
+  await stage.locator('[data-option="Last 90 days"]').click();
+  await expect(stage.locator('[data-select-label]')).toHaveText('Last 90 days');
+  await expect(stage.locator('.rank-list li')).toHaveCount(5);
 });
 
 test('every component with a prop contract renders its props into the real markup', async ({ page }) => {
@@ -88,7 +93,13 @@ test('every component with a prop contract renders its props into the real marku
     ['stat-row', { stats: [{ label: 'Runs', value: '1,284', badge: '+18.6%', note: 'this week' }] }, ['Runs', '1,284', '+18.6%', 'this week']],
     ['process-ledger', { total: '3.1ms', budget: 'under budget', stages: [{ title: 'Resolve', detail: 'Match the intent', time: '0.3ms', mark: 'check', state: 'done' }] }, ['Resolve', 'Match the intent', '0.3ms', '3.1ms', 'under budget']],
     ['transport-controls', { speed: 12, steps: 60 }, []],
-    ['live-readout', { title: 'Render run', state: 'Running', values: [{ label: 'Generation', value: '27' }] }, ['Render run', 'Running', 'Generation', '27']]
+    ['live-readout', { title: 'Render run', state: 'Running', values: [{ label: 'Generation', value: '27' }] }, ['Render run', 'Running', 'Generation', '27']],
+    ['area-chart', { title: 'Mention rate', note: 'Last 30 days', chartLabel: 'Mention rate', points: [{ label: 'D1', value: 40 }, { label: 'D2', value: 55 }] }, ['Mention rate', 'Last 30 days']],
+    ['chart-toolbar', { compareLabel: 'Compare with the prior period', compare: false, viewLabel: 'View numbers', legend: 'Mention rate' }, ['Compare with the prior period', 'View numbers', 'Mention rate']],
+    ['metric-strip', { items: [{ label: 'Mention rate', icon: 'eye', value: '45.4%', delta: '3.3 pp', direction: 'up', meaning: 'of answers' }, { label: 'Leads', icon: 'star', value: '2', direction: 'down' }] }, ['Mention rate', '45.4%', '3.3 pp', 'Leads']],
+    ['headline-metric', { metrics: [{ label: 'Lost questions', value: '12', total: '/ 12', delta: '50.0%', direction: 'down' }] }, ['Lost questions', '12', '/ 12', '50.0%']],
+    ['filter-bar', { period: 'Last 90 days', periods: [{ label: 'Last 7 days', value: 'Last 7 days' }, { label: 'Last 90 days', value: 'Last 90 days' }], filtersLabel: 'Filters' }, ['Last 90 days', 'Last 7 days']],
+    ['source-list', { sources: [{ name: 'ChatGPT', share: 42 }, { name: 'Perplexity', share: 26 }] }, ['ChatGPT', '42', 'Perplexity']]
   ];
   const results = await page.evaluate(async list => {
     const { render } = await import('/ir.js');
@@ -166,7 +177,7 @@ test('the guide documents exactly the components that carry a prop contract', as
   const documented = await list.evaluateAll(links => links.map(link => link.getAttribute('href').replace(/^components\//, '').replace(/\/$/, '')).sort());
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
   expect(documented).toEqual(supported);
-  expect(supported).toHaveLength(16);
+  expect(supported).toHaveLength(22);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
 });
 

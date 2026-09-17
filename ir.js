@@ -199,6 +199,11 @@ function applyVariant(target, values, value, report, path) {
   for (const className of new Set(Object.values(values))) if (className) target.classList.remove(...className.split(/\s+/));
   if (chosen) target.classList.add(...chosen.split(/\s+/));
 }
+function toggleClass(target, className, value) {
+  if (!target || !className) return;
+  if (value) target.classList.add(...className.split(/\s+/));
+  else target.classList.remove(...className.split(/\s+/));
+}
 
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
 export function applyContract(element, manifest, props, diagnostics, path) {
@@ -215,7 +220,32 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => setIcon(pick(root, selector), current, report, path));
   for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
-    bound(key, current => { const target = pick(root, binding.selector); if (target) target.setAttribute(binding.attribute, String(current)); });
+    bound(key, current => {
+      const target = pick(root, binding.selector);
+      if (!target) return;
+      /* aria attributes state a value, so false is written; markup flags like checked are removed. */
+      if (current === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
+      else target.setAttribute(binding.attribute, String(current));
+    });
+  }
+  for (const [key, className] of Object.entries(ir.class ?? {})) bound(key, current => toggleClass(root, className, current));
+  /** Chart geometry stays data: the series arrives as numbers and the renderer draws the path. */
+  for (const [key, declared] of Object.entries(ir.series ?? {})) {
+    const points = Array.isArray(value(key)) ? value(key) : [];
+    const svg = pick(root, declared.selector);
+    const line = svg && pick(svg, declared.line);
+    if (!line) { report('warning', 'series-slot-missing', `The contract expects "${declared.line}" inside "${declared.selector}" for ${key}.`); continue; }
+    const [width, height] = String(declared.viewBox ?? svg.getAttribute('viewBox') ?? '0 0 360 160').split(/\s+/).slice(2).map(Number);
+    const inset = declared.inset ?? (svg.dataset.inset ? Object.fromEntries(['top', 'bottom', 'left', 'right'].map((side, index) => [side, Number(svg.dataset.inset.split(/\s+/)[index])])) : {});
+    const top = inset.top ?? 18, bottom = inset.bottom ?? 24, left = inset.left ?? 12, right = inset.right ?? 12;
+    const scale = declared.scale ?? (svg.dataset.scale ? { min: Number(svg.dataset.scale.split(/\s+/)[0]), max: Number(svg.dataset.scale.split(/\s+/)[1]) } : {});
+    const min = scale.min ?? 0, max = scale.max ?? 100, field = declared.value ?? 'value';
+    const x = index => left + index * ((width - left - right) / Math.max(1, points.length - 1));
+    const y = number => height - bottom - ((Number(number) - min) / ((max - min) || 1)) * (height - top - bottom);
+    const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(point[field]).toFixed(1)}`).join(' ');
+    line.setAttribute('d', path);
+    const fill = declared.fill && pick(svg, declared.fill);
+    if (fill) fill.setAttribute('d', `${path} L${x(points.length - 1).toFixed(1)},${height - bottom} L${x(0).toFixed(1)},${height - bottom} Z`);
   }
   for (const [key, declared] of Object.entries(ir.list ?? {})) {
     const items = Array.isArray(value(key)) ? value(key) : [];
@@ -242,8 +272,16 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
-          filled(name, current => { const target = pick(item, binding.selector); if (target) target.setAttribute(binding.attribute, String(current)); });
+          filled(name, current => {
+            const target = pick(item, binding.selector);
+            if (!target) return;
+            /* aria attributes state a value, so false is written; markup flags like checked are removed. */
+      if (current === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
+            else target.setAttribute(binding.attribute, String(current));
+          });
         }
+        /* The template carries the demo's classes, so a managed class starts from nothing. */
+        for (const [name, className] of Object.entries(part.class ?? {})) { toggleClass(item, className, false); filled(name, current => toggleClass(item, className, current)); }
         container.append(item);
       }
     }

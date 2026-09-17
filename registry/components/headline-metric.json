@@ -1,0 +1,120 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "headline-metric",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/headline-metric/",
+  "name": "Headline metric",
+  "category": "Data display",
+  "purpose": "State the one number a screen is about.",
+  "description": "A label, an oversized value, and the total it is measured against.",
+  "intents": [
+    "summarize",
+    "report-numbers"
+  ],
+  "variants": {
+    "metrics": [
+      "1 to 4"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "value",
+    "total",
+    "change"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-number-per-metric",
+    "the-total-states-what-it-is-out-of"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary",
+    "color.status.success",
+    "color.status.danger",
+    "radius.card"
+  ],
+  "compatibleWith": [
+    "metric-strip",
+    "area-chart",
+    "card"
+  ],
+  "avoidWhen": [
+    "the-number-needs-no-emphasis"
+  ],
+  "props": {
+    "metrics": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 30,
+            "required": true
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 12,
+            "required": true
+          },
+          "total": {
+            "type": "string",
+            "maxLength": 8
+          },
+          "delta": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "direction": {
+            "type": "enum",
+            "values": [
+              "up",
+              "down",
+              "none"
+            ],
+            "default": "up"
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".headline-row",
+    "list": {
+      "metrics": {
+        "container": ".headline-row",
+        "item": ".headline-metric",
+        "lead": {
+          "label": ".metric-label"
+        },
+        "text": {
+          "value": ".headline-number",
+          "total": ".headline-total",
+          "delta": ".metric-delta"
+        },
+        "variant": {
+          "direction": {
+            "selector": ".metric-delta",
+            "values": {
+              "up": "up",
+              "down": "down",
+              "none": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

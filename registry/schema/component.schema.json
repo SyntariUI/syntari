@@ -58,6 +58,8 @@
         "lead": { "$ref": "#/definitions/selectorMap" },
         "icon": { "$ref": "#/definitions/selectorMap" },
         "variant": { "type": "object", "additionalProperties": { "$ref": "#/definitions/variantBinding" } },
+        "class": { "type": "object", "description": "Prop name to class name. A truthy value adds the class, a false value removes it.", "additionalProperties": { "type": "string" } },
+        "series": { "type": "object", "description": "Numeric series drawn as SVG paths, so a chart is data rather than markup.", "additionalProperties": { "$ref": "#/definitions/seriesBinding" } },
         "attributes": { "type": "object", "additionalProperties": { "$ref": "#/definitions/attributeBinding" } },
         "list": { "type": "object", "additionalProperties": { "oneOf": [ { "$ref": "#/definitions/listPart" }, { "type": "array", "items": { "$ref": "#/definitions/listPart" } } ] } }
       },
@@ -158,6 +160,26 @@
       },
       "additionalProperties": false
     },
+    "seriesBinding": {
+      "type": "object",
+      "required": ["selector", "line"],
+      "properties": {
+        "selector": { "type": "string", "description": "The SVG that owns the geometry." },
+        "line": { "type": "string", "description": "Path that receives the stroked line." },
+        "fill": { "type": "string", "description": "Path that receives the same series closed to the baseline." },
+        "viewBox": { "type": "string" },
+        "value": { "type": "string", "description": "Field of each point that carries the number. Defaults to value." },
+        "inset": {
+          "type": "object",
+          "properties": { "top": { "type": "number" }, "bottom": { "type": "number" }, "left": { "type": "number" }, "right": { "type": "number" } }
+        },
+        "scale": {
+          "type": "object",
+          "properties": { "min": { "type": "number" }, "max": { "type": "number" } }
+        }
+      },
+      "additionalProperties": false
+    },
     "listPart": {
       "type": "object",
       "required": ["container", "item"],
@@ -168,6 +190,7 @@
         "lead": { "$ref": "#/definitions/selectorMap" },
         "icon": { "$ref": "#/definitions/selectorMap" },
         "variant": { "type": "object", "additionalProperties": { "$ref": "#/definitions/variantBinding" } },
+        "class": { "type": "object", "additionalProperties": { "type": "string" } },
         "attributes": { "type": "object", "additionalProperties": { "$ref": "#/definitions/attributeBinding" } },
         "style": { "type": "object", "additionalProperties": { "$ref": "#/definitions/styleBinding" } },
         "strip": { "type": "array", "items": { "type": "string" }, "description": "Demo-only attributes removed from generated items." }

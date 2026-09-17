@@ -210,3 +210,45 @@
 .footer-links a:hover{color:var(--accent-text)}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:18px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)}
 .footer-status{display:flex;align-items:center;gap:7px}
+
+/* North-star families: the measures, the axis, and the scope of a report. */
+.area-figure .plot{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:stretch}
+.plot-axis{position:relative;font-size:10px;color:var(--muted);text-align:right}
+.plot-axis span{position:absolute;left:0;right:0;transform:translateY(-50%)}
+.plot-axis span:nth-child(1){top:11.25%}
+.plot-axis span:nth-child(2){top:36.25%}
+.plot-axis span:nth-child(3){top:61.25%}
+.plot-axis span:nth-child(4){top:86.25%}
+.plot-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px}
+.area-fill{fill:var(--accent-soft);stroke:none}
+.area-line{fill:none}
+.chart-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:12px;color:var(--muted)}
+.chart-toolbar .choice{font-size:12px;color:var(--text)}
+.chart-toolbar-legend{display:flex;align-items:center;gap:7px;margin-left:auto;color:var(--muted)}
+.text-button{font-size:12px;color:var(--accent-text);text-decoration:underline;text-underline-offset:3px}
+.text-button[aria-pressed=true]{color:var(--text);text-decoration:none}
+.metric-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);overflow:hidden}
+.metric-item{display:grid;gap:6px;padding:16px;text-align:left;background:transparent;border-radius:0;transition:background var(--motion-fast) var(--ease-out)}
+.metric-item+.metric-item{box-shadow:inset 1px 0 0 var(--border)}
+.metric-item:hover,.metric-item.active{background:var(--bg-2)}
+.metric-label{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
+.metric-label .icon{width:14px;height:14px}
+.metric-value{font-size:22px;font-weight:500;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.metric-delta{font-size:11px;font-variant-numeric:tabular-nums}
+.metric-delta.up{color:var(--success-text)}
+.metric-delta.up::before{content:'↗ '}
+.metric-delta.down::before{content:'↘ '}
+.metric-delta.down{color:var(--danger-text)}
+.metric-meaning{font-size:10px;color:var(--muted)}
+.headline-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:26px}
+.headline-metric{display:grid;gap:6px}
+.headline-value{font-size:clamp(28px,4vw,40px);font-weight:500;letter-spacing:-1.4px;font-variant-numeric:tabular-nums;line-height:1.1}
+.headline-total{color:var(--muted);font-size:.55em;letter-spacing:0}
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filter-bar .control-trigger{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:transparent;font-size:12px;color:var(--text)}
+.filter-bar .control-trigger .icon{width:14px;height:14px;color:var(--muted)}
+.rank-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;width:100%}
+.rank-list li{display:grid;grid-template-columns:96px minmax(0,1fr) 48px;align-items:center;gap:12px;font-size:12px}
+.rank-track{height:18px;border-radius:6px;background:var(--bg-2);overflow:hidden}
+.rank-fill{display:block;height:100%;width:var(--share,50%);border-radius:6px;background:var(--accent)}
+.rank-share{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}

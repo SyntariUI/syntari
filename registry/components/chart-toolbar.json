@@ -1,0 +1,99 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "chart-toolbar",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/chart-toolbar/",
+  "name": "Chart toolbar",
+  "category": "Data display",
+  "purpose": "Scope a chart before reading it.",
+  "description": "The comparison, the view switch, and the legend that belong above a plot.",
+  "intents": [
+    "compare",
+    "switch-view"
+  ],
+  "variants": {
+    "compare": [
+      true,
+      false
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "compare",
+    "view",
+    "legend"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Space"
+    ],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "comparison-states-its-baseline",
+    "the-view-switch-states-what-it-shows"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary",
+    "color.action.primary.text",
+    "color.border.default",
+    "space.3"
+  ],
+  "compatibleWith": [
+    "area-chart",
+    "chart-bars",
+    "live-readout"
+  ],
+  "avoidWhen": [
+    "the-chart-has-nothing-to-scope"
+  ],
+  "props": {
+    "compareLabel": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "compare": {
+      "type": "boolean",
+      "default": true
+    },
+    "viewLabel": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "viewActive": {
+      "type": "boolean",
+      "default": false
+    },
+    "legend": {
+      "type": "string",
+      "maxLength": 40
+    }
+  },
+  "ir": {
+    "node": ".chart-toolbar",
+    "lead": {
+      "compareLabel": ".choice",
+      "legend": ".chart-toolbar-legend"
+    },
+    "text": {
+      "viewLabel": "[data-chart-view]"
+    },
+    "attributes": {
+      "compare": {
+        "selector": "input[type=checkbox]",
+        "attribute": "checked"
+      },
+      "viewActive": {
+        "selector": "[data-chart-view]",
+        "attribute": "aria-pressed"
+      }
+    }
+  }
+}

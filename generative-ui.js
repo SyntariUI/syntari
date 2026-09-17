@@ -56,28 +56,81 @@ const modes = {
   },
   interactive: {
     title: 'Interactive',
-    intent: 'A tool someone drives while it runs.',
-    does: 'Press play, step through it, change the speed, and watch the run report itself.',
-    spec: screen('Render run', 'stack', [
-      { component: 'syntari.live-readout', props: {
-        title: 'Render run',
-        state: 'Ready',
-        tone: 'success',
-        note: 'Values update while the run is active.',
-        values: [
-          { label: 'Generation', value: '27' },
-          { label: 'Live cells', value: '297' },
-          { label: 'Speed', value: '8 fps' },
-          { label: 'Elapsed', value: '1m 12s' }
+    intent: 'The north-star screen: a report a product team opens every morning.',
+    does: 'Scope the period, choose the measure, compare against the previous one, and open the sources behind the number.',
+    spec: screen('Product overview', 'stack', [
+      { component: 'syntari.filter-bar', props: {
+        period: 'Last 30 days',
+        periods: [{ label: 'Last 7 days', value: 'Last 7 days' }, { label: 'Last 30 days', value: 'Last 30 days' }, { label: 'Last 90 days', value: 'Last 90 days' }],
+        filtersLabel: 'Filters',
+        settingsLabel: 'Chart view'
+      } },
+      { component: 'syntari.headline-metric', props: { metrics: [
+        { label: 'Recommendation share', value: '45.4%', delta: '3.3 pp', direction: 'up' },
+        { label: 'Lost questions', value: '12', total: '/ 12', delta: '50.0%', direction: 'down' }
+      ] } },
+      { component: 'syntari.metric-strip', props: { items: [
+        { label: 'Mention rate', icon: 'eye', value: '45.4%', delta: '3.3 pp', direction: 'up', meaning: 'of sampled answers', active: true },
+        { label: 'Citations', icon: 'link', value: '1,155', delta: '5.2%', direction: 'up', meaning: 'distinct sources' },
+        { label: 'AI referrals', icon: 'globe', value: '54', delta: '3.8%', direction: 'up', meaning: 'sessions from answers' },
+        { label: 'Leads', icon: 'star', value: '2', delta: '50.0%', direction: 'down', meaning: 'converted from AI traffic' }
+      ] } },
+      { component: 'syntari.chart-toolbar', props: {
+        compareLabel: 'Compare with the prior 30 days',
+        compare: false,
+        viewLabel: 'View daily numbers',
+        viewActive: false,
+        legend: 'Mention rate'
+      } },
+      { component: 'syntari.area-chart', props: {
+        title: 'Mention rate',
+        note: 'Last 30 days',
+        chartLabel: 'Mention rate over the last 30 days: it runs between 39 and 58 percent, ending near 48 percent.',
+        points: [
+          { label: 'D1', value: 43 },
+          { label: 'D2', value: 41 },
+          { label: 'D3', value: 39 },
+          { label: 'D4', value: 40 },
+          { label: 'D5', value: 46 },
+          { label: 'D6', value: 48 },
+          { label: 'D7', value: 44 },
+          { label: 'D8', value: 41 },
+          { label: 'D9', value: 39 },
+          { label: 'D10', value: 42 },
+          { label: 'D11', value: 46 },
+          { label: 'D12', value: 48 },
+          { label: 'D13', value: 44 },
+          { label: 'D14', value: 41 },
+          { label: 'D15', value: 40 },
+          { label: 'D16', value: 45 },
+          { label: 'D17', value: 50 },
+          { label: 'D18', value: 52 },
+          { label: 'D19', value: 47 },
+          { label: 'D20', value: 44 },
+          { label: 'D21', value: 42 },
+          { label: 'D22', value: 48 },
+          { label: 'D23', value: 53 },
+          { label: 'D24', value: 57 },
+          { label: 'D25', value: 58 },
+          { label: 'D26', value: 55 },
+          { label: 'D27', value: 49 },
+          { label: 'D28', value: 45 },
+          { label: 'D29', value: 42 },
+          { label: 'D30', value: 48 }
         ]
       } },
-      { component: 'syntari.transport-controls', props: { speed: 8, steps: 40 } },
-      { component: 'syntari.banner', props: { message: 'Local demonstration', detail: 'Play, step, and change the speed. Nothing leaves the page.', tone: 'info', icon: 'info' } },
-      { type: 'region', label: 'Timeline · 3 events', children: [
-        { component: 'syntari.activity-list', props: { items: [
-          { icon: 'arrow', title: 'Ready to run', detail: 'Step 1 of 40', time: 'now' },
-          { icon: 'gauge', title: 'Speed set', detail: '8 frames per second', time: 'now' },
-          { icon: 'clock', title: 'Waiting for input', detail: 'Nothing runs until you press play', time: 'now' }
+      { type: 'region', label: 'Where the numbers come from', children: [
+        { component: 'syntari.source-list', props: { sources: [
+          { name: 'ChatGPT', share: 42 },
+          { name: 'Perplexity', share: 26 },
+          { name: 'Google AI', share: 18 },
+          { name: 'Copilot', share: 9 },
+          { name: 'Others', share: 5 }
+        ] } },
+        { component: 'syntari.metadata-list', props: { items: [
+          { label: 'Window', value: '30 days · 2,548 answers' },
+          { label: 'Compared with', value: 'The prior 30 days' },
+          { label: 'Sampled by', value: 'The daily question set' }
         ] } }
       ] }
     ])

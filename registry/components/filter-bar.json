@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "filter-bar",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/filter-bar/",
+  "name": "Filter bar",
+  "category": "Action",
+  "purpose": "Say what a view is scoped to.",
+  "description": "The period selector, the filter action, and the settings that change what a report covers.",
+  "intents": [
+    "scope-view",
+    "filter"
+  ],
+  "variants": {
+    "periods": [
+      "any list"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "period",
+    "options",
+    "filters",
+    "settings"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Escape"
+    ],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "the-period-is-spelled-out",
+    "filters-state-what-they-change"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.text.primary",
+    "color.text.secondary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "area-chart",
+    "metric-strip",
+    "page-header-and-breadcrumbs"
+  ],
+  "avoidWhen": [
+    "the-view-has-nothing-to-scope"
+  ],
+  "props": {
+    "period": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "periods": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          }
+        }
+      }
+    },
+    "filtersLabel": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "settingsLabel": {
+      "type": "string",
+      "maxLength": 30
+    }
+  },
+  "ir": {
+    "node": ".filter-bar",
+    "text": {
+      "period": "[data-select-label]"
+    },
+    "attributes": {
+      "filtersLabel": {
+        "selector": "[data-filter-action]",
+        "attribute": "aria-label"
+      },
+      "settingsLabel": {
+        "selector": "[data-settings-action]",
+        "attribute": "aria-label"
+      }
+    },
+    "list": {
+      "periods": {
+        "container": ".dropdown-panel",
+        "item": "button",
+        "lead": {
+          "label": "span"
+        },
+        "attributes": {
+          "value": {
+            "selector": "",
+            "attribute": "data-option"
+          }
+        }
+      }
+    }
+  }
+}

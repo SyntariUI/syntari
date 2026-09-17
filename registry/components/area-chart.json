@@ -1,0 +1,113 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "area-chart",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/area-chart/",
+  "name": "Area chart",
+  "category": "Data display",
+  "purpose": "Show one measure over time, with its scale stated.",
+  "description": "A line with its area filled, a labelled axis, and gridlines. The series arrives as numbers.",
+  "intents": [
+    "report-trend",
+    "monitor"
+  ],
+  "variants": {
+    "points": [
+      "2 to 40"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "axis",
+    "grid",
+    "area",
+    "line"
+  ],
+  "accessibility": {
+    "role": "img",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "state-the-scale",
+    "the-summary-names-the-range",
+    "one-measure-per-plot"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.action.primary.soft",
+    "color.border.default",
+    "color.text.secondary",
+    "motion.duration.data"
+  ],
+  "compatibleWith": [
+    "chart-toolbar",
+    "metric-strip",
+    "card"
+  ],
+  "avoidWhen": [
+    "more-than-one-measure-needs-comparing"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "chartLabel": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "points": {
+      "type": "array",
+      "required": true,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 6,
+            "required": true
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".area-figure",
+    "text": {
+      "title": "figcaption strong",
+      "note": "figcaption .hint"
+    },
+    "attributes": {
+      "chartLabel": {
+        "selector": ".plot",
+        "attribute": "aria-label"
+      }
+    },
+    "series": {
+      "points": {
+        "selector": ".chart-svg",
+        "line": ".area-line",
+        "fill": ".area-fill",
+        "value": "value"
+      }
+    }
+  }
+}
