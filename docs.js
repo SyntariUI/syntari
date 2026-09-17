@@ -1,5 +1,5 @@
 import { getComponents, mount, slugify, setTheme } from './syntari.js';
-import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI } from './docs-data.js';
+import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI, wideStage } from './docs-data.js';
 import { guideContent } from './docs-guides.js';
 import { galleryURL, galleryState, galleryPage, prepareGallery } from './docs-gallery.js';
 const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.1.tgz',base).href, libraryURL=new URL('library.html',base).href;
@@ -100,7 +100,7 @@ async function renderPreview(){
   $('#panel-source').innerHTML=code(text,filename==='app.css'?'styles.css':filename,sourceTab==='styles'?'css':'js');window.SyntariMotion.panel(panel);return;
  }
  const states=statesFor(current),state=states.find(s=>s.id===stateId)||states[0];stateId=state.id;
- const wide=/table|chat-workspace|app-shell|masonry-grid|agent-questions/.test(current.slug);
+ const wide=wideStage.test(current.slug);
  panel.innerHTML=`<div class="docs-stage ${wide?'is-wide':''}"><div class="docs-stage-body"><div id="live-example" style="display:contents"></div></div><div class="docs-stage-foot"><div class="docs-state-picker" role="group" aria-label="Component states">${states.map(s=>`<button data-doc-state="${s.id}" aria-pressed="${s.id===stateId}">${s.label}</button>`).join('')}</div><span class="docs-state-note">Interactive preview</span></div></div><p class="docs-preview-caption">${esc(state.description)}</p>`;
  // Recipes are local, authored component examples, never user-provided expressions.
  const configure=state.code?new Function('root',state.code):undefined;

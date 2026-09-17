@@ -12,7 +12,7 @@ Visit **[syntariui.github.io/syntari](https://syntariui.github.io/syntari/)** fo
 
 ## Components
 
-109 component families and 252 authored preview states and layouts, covering actions, form controls, navigation, data display, overlays, tables, chat, and agent interfaces.
+125 component families and 250 authored preview states and layouts, covering actions, form controls, navigation, data display, charts, overlays, tables, page blocks, chat, and agent interfaces.
 
 - [Component gallery](https://syntariui.github.io/syntari/gallery.html) — live, interactive examples
 - [Library](https://syntariui.github.io/syntari/library.html) — documentation and guides

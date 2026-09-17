@@ -8,7 +8,7 @@ export function guideContent(id,{code,command,apiTable,commonAPI}) {
  };
  const pages={
  'getting-started':{title:'A little less setup.',description:'A practical starting point for building with Syntari. Use the components, keep the source, and make the details yours.',body:
- p('Syntari 0.2.1 is a library of 109 interactive HTML patterns, with CSS tokens and plain JavaScript interactions. Each component has its own page, live states, source, and a working usage example. There are no React components or server services hidden behind the examples.')+
+ p('Syntari 0.2.1 is a library of 125 interactive HTML patterns, with CSS tokens and plain JavaScript interactions. Each component has its own page, live states, source, and a working usage example. There are no React components or server services hidden behind the examples.')+
  section('1. Add your first component',p('Run the source installer from your project directory. It copies the selected component and the shared Syntari runtime into your project. Node.js 22 or later is required.')+code(command('button'),'Terminal','shell'))+
  section('2. Make it part of your page',p('Mount an example into a container, then customize its DOM and connect your own actions. The styles, fonts, and interaction handlers load from the local runtime folder.')+code(snippets.usage,'index.html','html'))+
  section('3. Explore the states',p('Every page includes an interactive preview and additional states or layouts. Use the Preview, Usage, and Code tabs to move between the result and its implementation. State selections update the Usage example too.'))+

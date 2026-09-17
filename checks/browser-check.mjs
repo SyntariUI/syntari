@@ -5,7 +5,7 @@ export default async page => {
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4318/gallery.html');
   await page.locator('.specimen').first().waitFor();
-  check(await page.locator('.specimen').count()===109,'109 component families render');
+  const catalogSize=await page.evaluate(async()=>(await import('/syntari.js')).getComponents().then(list=>list.length));check(await page.locator('.specimen').count()===catalogSize,catalogSize+' component families render');
   await setTheme(page,'dark');
   check(await page.locator('html').getAttribute('data-theme')==='dark','Dark theme switches');
   await page.reload();

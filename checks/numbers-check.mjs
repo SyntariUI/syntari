@@ -36,7 +36,7 @@ export default async page=>{
  await page.waitForFunction(v=>document.querySelector('[data-ranked-row]').dataset.people!==v,value,{timeout:4500});
  check(await first.getAttribute('data-people')!==value,'Live values resume when motion is allowed');
  await table.getByRole('button',{name:'Automatic table updates'}).click();
- await page.getByRole('button',{name:'Reset',exact:true}).click();
+ await page.locator('[data-number-demo]').getByRole('button',{name:'Reset',exact:true}).click();
  for(const theme of ['Dark theme','Light theme']){await setTheme(page,theme);await page.setViewportSize({width:390,height:844});check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${theme} ranked table fits mobile`)}
  await page.setViewportSize({width:1440,height:1080});await page.evaluate(()=>{document.activeElement.blur();scrollTo(0,0)});
  await page.waitForFunction(()=>!document.getAnimations().some(a=>a.playState==='running'&&a.effect.getTiming().iterations!==Infinity));

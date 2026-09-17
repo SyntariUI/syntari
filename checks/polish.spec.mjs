@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { wideStage } from '../docs-data.js';
 const origin='http://127.0.0.1:4318';
 async function open(page,slug){await page.goto(`${origin}/components/${slug}/`);await page.locator('.syntari-component').waitFor();}
 const live=page=>page.locator('.syntari-component');
@@ -78,14 +79,14 @@ test('every default component fits its documentation preview in both themes at t
  const failures=[];
  for(const width of [390,768,1440]){await page.setViewportSize({width,height:1000});
   for(const theme of ['light','dark']){
-   const result=await page.evaluate(async({theme})=>{
+   const result=await page.evaluate(async({theme,wide})=>{
     const {getComponents,mount,setTheme}=await import('/syntari.js');setTheme(theme);const catalog=await getComponents(),fail=[];
     const stage=document.querySelector('.docs-stage'),container=document.querySelector('#live-example');container.replaceChildren();
-    for(const c of catalog){stage.classList.toggle('is-wide',/table|chat-workspace|app-shell|masonry-grid|agent-questions/.test(c.slug));const instance=await mount(c.slug,container);const root=instance.element;
+    const wideRe=new RegExp(wide);for(const c of catalog){stage.classList.toggle('is-wide',wideRe.test(c.slug));const instance=await mount(c.slug,container);const root=instance.element;
      if(root.scrollWidth>root.clientWidth+2)fail.push({slug:c.slug,width:root.clientWidth,scroll:root.scrollWidth});
      instance.destroy();
     }return fail;
-   },{theme});failures.push(...result.map(r=>({...r,theme,viewport:width})));
+   },{theme,wide:wideStage.source});failures.push(...result.map(r=>({...r,theme,viewport:width})));
   }
  }
  console.log('Preview overflow audit:',failures);expect(failures).toEqual([]);

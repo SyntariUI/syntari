@@ -1,3 +1,5 @@
+/** Components that need the full documentation stage rather than the narrow preview column. */
+export const wideStage = /table|chart-|heatmap|treemap|network-graph|gantt|kanban|stat-row|process-ledger|transport|live-readout|feature-grid|pricing|page-footer|cta-band|chat-workspace|app-shell|masonry-grid|agent-questions/;
 export const groups = {
  'Action':['cursor','Give people a clear next step.'], 'Form controls':['sliders','Collect a little information, thoughtfully.'],
  'Feedback & status':['bell','Make progress and outcomes easy to understand.'], 'Navigation':['layout','Keep people oriented, wherever they go.'],

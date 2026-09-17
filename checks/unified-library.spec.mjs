@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { setTheme } from './theme.mjs';
+
+const expectFullCatalog=async page=>{const expected=await page.evaluate(async()=>(await import('/syntari.js')).getComponents().then(list=>list.length));await expect(page.locator('.specimen')).toHaveCount(expected);};
 const origin = 'http://127.0.0.1:4318';
 
 test('gallery and documentation share one document, filters, theme and browser history', async ({page}) => {
@@ -8,7 +10,7 @@ test('gallery and documentation share one document, filters, theme and browser h
   await page.getByRole('link', {name: 'Explore components', exact: true}).waitFor();
   await page.evaluate(() => { window.shellHeader = document.querySelector('.docs-header'); });
   await page.getByRole('link', {name: 'Explore components', exact: true}).click();
-  await expect(page.locator('.specimen')).toHaveCount(109);
+  await expectFullCatalog(page);
   await expect(page.locator('#view-gallery')).toHaveAttribute('aria-current', 'page');
   await page.locator('[data-category="Action"]').click();
   await page.locator('[data-category="Form controls"]').click();
@@ -76,7 +78,7 @@ test('mobile navigation, keyboard search and starter links stay inside Syntari',
   await page.locator('#search').fill('nonexistent');
   await expect(page.locator('#empty')).toBeVisible();
   await page.getByRole('button', {name: 'Clear search', exact: true}).click();
-  await expect(page.locator('.specimen')).toHaveCount(109);
+  await expectFullCatalog(page);
   await page.locator('#docs-menu').click();
   await expect(page.locator('.docs-sidebar [data-view="gallery"]')).toBeFocused();
   await page.locator('[data-category="Form controls"]').click();

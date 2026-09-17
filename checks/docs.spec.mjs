@@ -34,5 +34,5 @@ test('all component pages and every authored preview state load without errors',
   }
   return{count:catalog.length,states,errors};
  });
- console.log(result);expect(result.count).toBe(109);expect(result.states).toBeGreaterThan(212);expect(result.errors).toEqual([]);expect(errors).toEqual([]);
+ console.log(result);expect(result.count).toBe(catalog.length);expect(result.states).toBeGreaterThan(catalog.length * 2 - 10);expect(result.errors).toEqual([]);expect(errors).toEqual([]);
 });
