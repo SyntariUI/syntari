@@ -1,0 +1,135 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "live-readout",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/live-readout/",
+  "name": "Live readout",
+  "category": "Feedback & status",
+  "purpose": "Show values that change while someone watches.",
+  "description": "A named run with its state and the measures it is producing right now.",
+  "intents": [
+    "observe",
+    "monitor"
+  ],
+  "variants": {
+    "states": [
+      "running",
+      "paused",
+      "complete"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "state",
+    "label",
+    "value",
+    "note"
+  ],
+  "accessibility": {
+    "role": "status",
+    "keyboard": [],
+    "accessibleNameRequired": true,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "name-the-run",
+    "state-is-written-not-just-coloured",
+    "values-stay-tabular"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.status.success",
+    "color.text.primary",
+    "color.text.secondary",
+    "motion.duration.fast"
+  ],
+  "compatibleWith": [
+    "transport-controls",
+    "activity-list",
+    "card"
+  ],
+  "avoidWhen": [
+    "the-value-never-changes"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "required": true
+    },
+    "state": {
+      "type": "string",
+      "maxLength": 24,
+      "required": true
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "neutral",
+        "success",
+        "warning",
+        "danger"
+      ],
+      "default": "success"
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "values": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 16,
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".live-readout",
+    "text": {
+      "title": ".readout-head strong",
+      "state": ".readout-head .badge",
+      "note": ".live-readout > .hint"
+    },
+    "variant": {
+      "tone": {
+        "selector": ".readout-head .badge",
+        "values": {
+          "neutral": "",
+          "success": "green",
+          "warning": "amber",
+          "danger": "red"
+        }
+      }
+    },
+    "list": {
+      "values": {
+        "container": ".readout-values",
+        "item": "div",
+        "text": {
+          "label": "dt",
+          "value": "dd"
+        }
+      }
+    }
+  }
+}

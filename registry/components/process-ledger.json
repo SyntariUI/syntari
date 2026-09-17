@@ -1,0 +1,139 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "process-ledger",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/process-ledger/",
+  "name": "Process ledger",
+  "category": "Data display",
+  "purpose": "Show the stages of a pipeline and what each one cost.",
+  "description": "Stages with their status, their duration, and the total so far.",
+  "intents": [
+    "report-progress",
+    "audit"
+  ],
+  "variants": {
+    "states": [
+      "done",
+      "current",
+      "pending"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "stage",
+    "mark",
+    "title",
+    "detail",
+    "duration",
+    "total"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [],
+    "accessibleNameRequired": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "one-stage-per-step",
+    "durations-are-measured-not-estimated",
+    "the-total-states-its-budget"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.action.primary.soft",
+    "color.status.success",
+    "color.text.secondary",
+    "motion.duration.fast"
+  ],
+  "compatibleWith": [
+    "card",
+    "live-readout",
+    "activity-list"
+  ],
+  "avoidWhen": [
+    "the-work-is-a-single-step"
+  ],
+  "props": {
+    "stages": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "fields": {
+          "title": {
+            "type": "string",
+            "maxLength": 60,
+            "required": true
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "time": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "mark": {
+            "type": "string",
+            "maxLength": 24
+          },
+          "state": {
+            "type": "enum",
+            "values": [
+              "done",
+              "current",
+              "pending"
+            ],
+            "default": "pending"
+          }
+        }
+      }
+    },
+    "total": {
+      "type": "string",
+      "maxLength": 12
+    },
+    "budget": {
+      "type": "string",
+      "maxLength": 40
+    }
+  },
+  "ir": {
+    "node": ".ledger",
+    "text": {
+      "total": ".ledger-total strong",
+      "budget": ".ledger-total .hint"
+    },
+    "list": {
+      "stages": {
+        "container": ".process-ledger",
+        "item": "li",
+        "lead": {
+          "title": ".stage-body strong",
+          "detail": ".stage-body small"
+        },
+        "text": {
+          "time": ".stage-time"
+        },
+        "icon": {
+          "mark": ".stage-mark"
+        },
+        "variant": {
+          "state": {
+            "values": {
+              "done": "done",
+              "current": "current",
+              "pending": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

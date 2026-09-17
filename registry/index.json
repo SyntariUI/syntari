@@ -1861,7 +1861,7 @@
       ],
       "source": "components/chart-bars/",
       "manifest": "components/chart-bars.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "chart-line",
@@ -1980,7 +1980,7 @@
       ],
       "source": "components/comparison-table/",
       "manifest": "components/comparison-table.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "stat-row",
@@ -1997,7 +1997,7 @@
       ],
       "source": "components/stat-row/",
       "manifest": "components/stat-row.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "process-ledger",
@@ -2014,7 +2014,7 @@
       ],
       "source": "components/process-ledger/",
       "manifest": "components/process-ledger.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "transport-controls",
@@ -2031,7 +2031,7 @@
       ],
       "source": "components/transport-controls/",
       "manifest": "components/transport-controls.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "live-readout",
@@ -2048,7 +2048,7 @@
       ],
       "source": "components/live-readout/",
       "manifest": "components/live-readout.json",
-      "status": "generated"
+      "status": "authored"
     },
     {
       "id": "feature-grid",

@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "stat-row",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/stat-row/",
+  "name": "Stat row",
+  "category": "Data display",
+  "purpose": "Put the few measures that matter side by side.",
+  "description": "Each measure carries its label, value, change, and the note that qualifies it.",
+  "intents": [
+    "report-numbers",
+    "summarize"
+  ],
+  "variants": {
+    "measures": [
+      "1 to 6"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "card",
+    "label",
+    "value",
+    "change",
+    "note"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "one-measure-per-card",
+    "the-note-explains-the-change",
+    "changes-are-signed"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.border.default",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.status.success"
+  ],
+  "compatibleWith": [
+    "chart-bars",
+    "comparison-table",
+    "card"
+  ],
+  "avoidWhen": [
+    "the-values-need-a-shared-scale"
+  ],
+  "props": {
+    "stats": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 12,
+            "required": true
+          },
+          "badge": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "tone": {
+            "type": "enum",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger"
+            ],
+            "default": "success"
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".stat-row",
+    "list": {
+      "stats": {
+        "container": ".stat-row",
+        "item": ".stat-card",
+        "text": {
+          "label": ".stat-label",
+          "value": "strong",
+          "badge": ".badge",
+          "note": "small"
+        },
+        "variant": {
+          "tone": {
+            "selector": ".badge",
+            "values": {
+              "neutral": "",
+              "success": "green",
+              "warning": "amber",
+              "danger": "red"
+            }
+          }
+        }
+      }
+    }
+  }
+}

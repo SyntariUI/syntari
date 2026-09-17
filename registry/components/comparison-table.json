@@ -1,0 +1,124 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "comparison-table",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/comparison-table/",
+  "name": "Comparison table",
+  "category": "Table & list",
+  "purpose": "Measure the same thing across options and name the advantage.",
+  "description": "Rows of metrics with both values and a column that says who wins, in words.",
+  "intents": [
+    "compare",
+    "decide"
+  ],
+  "variants": {
+    "options": [
+      "2"
+    ],
+    "rows": [
+      "up to 8"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "header",
+    "row",
+    "metric",
+    "value",
+    "advantage"
+  ],
+  "accessibility": {
+    "role": "table",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "name-the-advantage-in-words",
+    "one-metric-per-row",
+    "keep-both-values-comparable"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.action.primary.soft",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default"
+  ],
+  "compatibleWith": [
+    "card",
+    "chart-bars",
+    "stat-row"
+  ],
+  "avoidWhen": [
+    "more-than-two-options"
+  ],
+  "props": {
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    },
+    "optionA": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "optionB": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "rows": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "fields": {
+          "metric": {
+            "type": "string",
+            "maxLength": 40,
+            "required": true
+          },
+          "a": {
+            "type": "string",
+            "maxLength": 40,
+            "required": true
+          },
+          "b": {
+            "type": "string",
+            "maxLength": 40,
+            "required": true
+          },
+          "advantage": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".comparison-table",
+    "text": {
+      "caption": "caption",
+      "optionA": "thead th:nth-child(2)",
+      "optionB": "thead th:nth-child(3)"
+    },
+    "list": {
+      "rows": {
+        "container": "tbody",
+        "item": "tr",
+        "text": {
+          "metric": "th",
+          "a": "td:nth-child(2)",
+          "b": "td:nth-child(3)",
+          "advantage": "td:nth-child(4) .badge"
+        }
+      }
+    }
+  }
+}

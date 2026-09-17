@@ -1,0 +1,97 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "transport-controls",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/transport-controls/",
+  "name": "Transport controls",
+  "category": "Action",
+  "purpose": "Drive something that runs: play, pause, step, and a speed.",
+  "description": "Controls for a running process, with the current step and frame rate stated in text.",
+  "intents": [
+    "play",
+    "pause",
+    "step",
+    "tune-speed"
+  ],
+  "variants": {
+    "running": [
+      true,
+      false
+    ]
+  },
+  "states": [
+    "paused",
+    "running"
+  ],
+  "anatomy": [
+    "root",
+    "play",
+    "step",
+    "reset",
+    "speed",
+    "status",
+    "shortcut"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "the-status-states-the-step",
+    "speed-is-readable-without-the-slider",
+    "space-and-s-toggle"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.surface.raised",
+    "color.border.default",
+    "color.text.secondary",
+    "space.3"
+  ],
+  "compatibleWith": [
+    "live-readout",
+    "process-ledger"
+  ],
+  "avoidWhen": [
+    "the-output-is-static"
+  ],
+  "props": {
+    "speed": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 30
+    },
+    "steps": {
+      "type": "number",
+      "minimum": 4,
+      "maximum": 200
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 60
+    }
+  },
+  "ir": {
+    "node": ".transport",
+    "text": {
+      "label": "[data-transport-status]"
+    },
+    "attributes": {
+      "steps": {
+        "selector": ".transport",
+        "attribute": "data-transport-steps"
+      },
+      "speed": {
+        "selector": "[data-transport-speed]",
+        "attribute": "value"
+      }
+    }
+  }
+}

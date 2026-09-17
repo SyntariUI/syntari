@@ -1,0 +1,147 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "chart-bars",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/chart-bars/",
+  "name": "Chart bars",
+  "category": "Data display",
+  "purpose": "Compare two series across the same checkpoints.",
+  "description": "Grouped columns with a legend and a summary a screen reader can read.",
+  "intents": [
+    "compare",
+    "report-trend"
+  ],
+  "variants": {
+    "series": [
+      "2"
+    ],
+    "points": [
+      "up to 12"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "column",
+    "value",
+    "legend"
+  ],
+  "accessibility": {
+    "role": "img",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "both-series-share-a-scale",
+    "the-summary-states-the-numbers",
+    "never-rely-on-colour-alone"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "motion.duration.data"
+  ],
+  "compatibleWith": [
+    "card",
+    "stat-row",
+    "comparison-table"
+  ],
+  "avoidWhen": [
+    "the-series-need-different-scales"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "seriesA": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "seriesB": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "chartLabel": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "columns": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 6,
+            "required": true
+          },
+          "a": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "required": true
+          },
+          "b": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".chart-figure",
+    "text": {
+      "title": ".chart-figure figcaption strong",
+      "note": ".chart-figure figcaption .hint"
+    },
+    "lead": {
+      "seriesA": ".chart-legend li:nth-child(1)",
+      "seriesB": ".chart-legend li:nth-child(2)"
+    },
+    "attributes": {
+      "chartLabel": {
+        "selector": ".chart-columns",
+        "attribute": "aria-label"
+      }
+    },
+    "list": {
+      "columns": {
+        "container": ".chart-columns",
+        "item": ".chart-column",
+        "text": {
+          "label": ".column-label",
+          "a": ".column-value"
+        },
+        "style": {
+          "a": {
+            "selector": ".column-fill.series-a",
+            "name": "--fill",
+            "suffix": "%"
+          },
+          "b": {
+            "selector": ".column-fill.series-b",
+            "name": "--fill",
+            "suffix": "%"
+          }
+        }
+      }
+    }
+  }
+}

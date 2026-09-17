@@ -1,56 +1,72 @@
 import { test, expect } from '@playwright/test';
 const origin = 'http://127.0.0.1:4318';
 
-/** label, screen title, and how many nodes the registry cannot draw for this situation. */
-const situations = [
-  ['Production migration', 'A migration needs your decision', 0],
-  ['Review finished work', 'Three pages are ready for review', 0],
-  ['Incident in progress', 'Checkout is slow for some users', 0],
-  ['Weekly report', 'What changed this week', 0],
-  ['A choice, not a yes/no', 'Choose how this account is billed', 0],
-  ['Nothing found', 'No invoices matched those filters', 0],
-  ['Unsupported request', 'Repair, do not guess', 2]
+/** mode, screen title, and the components the mode draws. */
+const modes = [
+  ['static', 'Release 4281 is ready to review', 5],
+  ['interactive', 'Render run', 4]
 ];
 
-test('a situation renders as a screen, not a paragraph of chat', async ({ page }) => {
+test('the renderer draws a report from a spec', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`${origin}/generative-ui.html`);
   const output = page.locator('[data-ir-output]');
   await output.locator('.ir-screen').waitFor();
-  await expect(output.locator('.ir-screen-title')).toHaveText('A migration needs your decision');
-  await expect(output.locator('[data-ir-component]')).toHaveCount(4);
+  await expect(output.locator('.ir-screen-title')).toHaveText('Release 4281 is ready to review');
+  await expect(output.locator('[data-ir-component]')).toHaveCount(5);
   await expect(output.locator('.ir-fallback')).toHaveCount(0);
-  await expect(output.locator('.banner > div')).toContainText('All checks passed');
-  await expect(output.locator('.agent-surface > p').first()).toContainText('Apply three schema changes');
-  await expect(output.locator('.agent-footer [data-agent-action=approve]')).toContainText('Run migration');
-  await expect(output.locator('.metadata-list > div')).toHaveCount(3);
-  await expect(output.locator('.activity-item')).toHaveCount(4);
-  await expect(output.locator('.activity-item time').first()).toHaveText('2m ago');
+  await expect(output.locator('.stat-card')).toHaveCount(4);
+  await expect(output.locator('.chart-column')).toHaveCount(6);
+  await expect(output.locator('.chart-legend li')).toHaveCount(2);
+  await expect(output.locator('.comparison-table tbody tr')).toHaveCount(4);
+  await expect(output.locator('.comparison-table tbody tr').first()).toContainText('Rollback time');
+  await expect(output.locator('.process-ledger li')).toHaveCount(3);
+  await expect(output.locator('.ledger-total')).toContainText('2.4ms');
   const region = output.locator('.ir-region');
-  await expect(region).toHaveCount(1);
-  await expect(region.locator('summary')).toHaveText('Evidence · 4 checks');
-  await expect(output.locator('.ir-region-body .activity-item').first()).toBeHidden();
+  await expect(region.locator('summary')).toHaveText('Evidence · 3 stages');
+  await expect(output.locator('.ir-region-body .process-ledger li').first()).toBeHidden();
   await region.locator('summary').click();
-  await expect(output.locator('.ir-region-body .activity-item').first()).toBeVisible();
-  await expect(page.locator('[data-ir-intent]')).toContainText('cannot be undone');
-  await expect(page.locator('[data-ir-does]')).toContainText('blast radius');
+  await expect(output.locator('.ir-region-body .process-ledger li').first()).toBeVisible();
+  await expect(page.locator('[data-ir-intent]')).toContainText('trust');
   await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('every situation explains itself and only the invented component is refused', async ({ page }) => {
+test('both render modes work from the registry, and the catalogue matches it', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   const output = page.locator('[data-ir-output]');
   await output.locator('.ir-screen').waitFor();
-  for (const [label, title, fallbacks] of situations) {
-    await page.getByRole('button', { name: label, exact: true }).click();
+  const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).length);
+  await expect(page.locator('.ir-catalog-card')).toHaveCount(supported);
+  await expect(page.locator('[data-ir-count=renderable]')).toHaveText(String(supported));
+  for (const [mode, title] of modes) {
+    await page.locator(`[data-ir-mode=${mode}]`).click();
+    await expect(page.locator(`[data-ir-mode=${mode}]`)).toHaveAttribute('aria-pressed', 'true');
     await expect(output.locator('.ir-screen-title')).toHaveText(title);
+    await expect(output.locator('.ir-fallback')).toHaveCount(0);
     await expect(page.locator('[data-ir-intent]')).not.toBeEmpty();
-    await expect(page.locator('[data-ir-does]')).not.toBeEmpty();
-    await expect(output.locator('.ir-fallback')).toHaveCount(fallbacks);
-    expect(await page.locator('[data-ir-diagnostics] li[data-severity=error]').count(), `${label} raised errors`).toBe(fallbacks);
+    await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   }
+  expect(supported).toBe(16);
+});
+
+test('the interactive mode responds to its own controls', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  await page.locator('[data-ir-mode=interactive]').click();
+  const stage = page.locator('[data-ir-output]');
+  await expect(stage.locator('[data-transport]')).toBeVisible();
+  await expect(stage.locator('[data-transport-status]')).toHaveText('Paused at step 1 of 40');
+  await stage.locator('[data-transport-play]').click();
+  await expect(stage.locator('[data-transport-play]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(stage.locator('[data-transport-status]')).toContainText('Playing at step');
+  await stage.locator('[data-transport-step]').click();
+  await expect(stage.locator('[data-transport-status]')).toContainText('at step 2 of 40');
+  await stage.locator('[data-transport-play]').click();
+  await stage.locator('[data-transport-reset]').click();
+  await expect(stage.locator('[data-transport-status]')).toHaveText('Paused at step 1 of 40');
+  await expect(stage.locator('.live-readout')).toContainText('Render run');
 });
 
 test('every component with a prop contract renders its props into the real markup', async ({ page }) => {
@@ -66,7 +82,13 @@ test('every component with a prop contract renders its props into the real marku
     ['metric-and-sparkline', { chartLabel: 'Runs by day', stats: [{ label: 'Runs', value: '1,284', badge: '+18.6%', tone: 'danger' }], series: [{ label: 'Mon', value: 33 }, { label: 'Tue', value: 61 }] }, ['Runs', '1,284', '+18.6%', 'Mon', 'Tue']],
     ['tool-approval', { title: 'Run it?', question: 'Apply migrations', scope: 'billing · write' }, ['Run it?', 'Apply migrations', 'billing · write', 'Approve', 'Decline']],
     ['approval-card', { title: 'Review', summary: 'Summary line', detail: 'Detail scope' }, ['Review', 'Summary line', 'Detail scope']],
-    ['streaming-response', { author: 'Agent', text: 'Streamed body', status: 'Idle' }, ['Agent', 'Streamed body', 'Idle', 'Generate response']]
+    ['streaming-response', { author: 'Agent', text: 'Streamed body', status: 'Idle' }, ['Agent', 'Streamed body', 'Idle', 'Generate response']],
+    ['chart-bars', { title: 'Runs by period', note: 'Indexed', seriesA: 'This week', seriesB: 'Last', chartLabel: 'Two series', columns: [{ label: 'Mon', a: 41, b: 30 }] }, ['Runs by period', 'Indexed', 'This week', 'Last', 'Mon']],
+    ['comparison-table', { caption: 'Plans compared', optionA: 'Free', optionB: 'Growth', rows: [{ metric: 'Projects', a: '1', b: 'Unlimited', advantage: 'Growth' }] }, ['Plans compared', 'Free', 'Growth', 'Projects', 'Unlimited']],
+    ['stat-row', { stats: [{ label: 'Runs', value: '1,284', badge: '+18.6%', note: 'this week' }] }, ['Runs', '1,284', '+18.6%', 'this week']],
+    ['process-ledger', { total: '3.1ms', budget: 'under budget', stages: [{ title: 'Resolve', detail: 'Match the intent', time: '0.3ms', mark: 'check', state: 'done' }] }, ['Resolve', 'Match the intent', '0.3ms', '3.1ms', 'under budget']],
+    ['transport-controls', { speed: 12, steps: 60 }, []],
+    ['live-readout', { title: 'Render run', state: 'Running', values: [{ label: 'Generation', value: '27' }] }, ['Render run', 'Running', 'Generation', '27']]
   ];
   const results = await page.evaluate(async list => {
     const { render } = await import('/ir.js');
@@ -76,15 +98,15 @@ test('every component with a prop contract renders its props into the real marku
       const spec = { type: 'screen', layout: 'stack', children: [{ component: `syntari.${slug}`, props }] };
       const result = await render(spec, stage);
       const text = result.element.textContent.replace(/\s+/g, ' ');
-      const row = {
+      rows.push({
         slug,
         missing: expected.filter(value => !text.includes(value)),
         diagnostics: result.diagnostics.filter(diagnostic => diagnostic.severity === 'error').map(diagnostic => diagnostic.code),
         bars: result.element.querySelectorAll('.bar-chart .bar').length,
-        rows: result.element.querySelectorAll('tbody tr').length
-      };
+        columns: result.element.querySelectorAll('.chart-column').length,
+        speed: result.element.querySelector('[data-transport-speed]')?.value
+      });
       result.destroy();
-      rows.push(row);
     }
     return rows;
   }, cases);
@@ -92,8 +114,9 @@ test('every component with a prop contract renders its props into the real marku
     expect(row.missing, `${row.slug} did not receive its props`).toEqual([]);
     expect(row.diagnostics, `${row.slug} raised errors`).toEqual([]);
   }
+  expect(results.find(row => row.slug === 'chart-bars').columns).toBe(1);
   expect(results.find(row => row.slug === 'metric-and-sparkline').bars).toBe(2);
-  expect(results.find(row => row.slug === 'table').rows).toBe(1);
+  expect(results.find(row => row.slug === 'transport-controls').speed).toBe('12');
 });
 
 test('validation refuses invented components, missing props, and values outside the contract', async ({ page }) => {
@@ -115,7 +138,8 @@ test('validation refuses invented components, missing props, and values outside 
       layout: await codesFor({ type: 'screen', layout: 'carousel', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] }),
       regionNoLabel: await codesFor(screen({ type: 'region', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] })),
       regionBadOpen: await codesFor(screen({ type: 'region', label: 'Evidence', open: 'yes', children: [] })),
-      regionNests: await codesFor(screen({ type: 'region', label: 'Evidence', children: [{ type: 'region', label: 'Deeper', children: [{ component: 'syntari.card', props: { title: 'Nested card' } }] }] }))
+      regionNests: await codesFor(screen({ type: 'region', label: 'Evidence', children: [{ type: 'region', label: 'Deeper', children: [{ component: 'syntari.card', props: { title: 'Nested card' } }] }] })),
+      badColumns: await codesFor(screen({ component: 'syntari.chart-bars', props: { title: 'Runs', columns: [{ label: 'Mon', a: 140, b: 10 }] } }))
     };
   });
   expect(report.unknown).toContain('error:unknown-component');
@@ -132,6 +156,7 @@ test('validation refuses invented components, missing props, and values outside 
   expect(report.regionNoLabel).toContain('error:invalid-region');
   expect(report.regionBadOpen).toContain('error:wrong-type');
   expect(report.regionNests.some(code => code.startsWith('error'))).toBe(false);
+  expect(report.badColumns).toContain('error:above-maximum');
 });
 
 test('the guide documents exactly the components that carry a prop contract', async ({ page }) => {
@@ -141,7 +166,7 @@ test('the guide documents exactly the components that carry a prop contract', as
   const documented = await list.evaluateAll(links => links.map(link => link.getAttribute('href').replace(/^components\//, '').replace(/\/$/, '')).sort());
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
   expect(documented).toEqual(supported);
-  expect(supported).toHaveLength(10);
+  expect(supported).toHaveLength(16);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
 });
 
@@ -156,7 +181,9 @@ test('leaving an optional prop out never writes "undefined" into the screen', as
       ['card', { title: 'Only a title' }],
       ['banner', { message: 'Only a message' }],
       ['approval-card', { title: 'Review', summary: 'Summary only', detail: 'One place' }],
-      ['streaming-response', { author: 'Agent', text: 'Body only' }]
+      ['streaming-response', { author: 'Agent', text: 'Body only' }],
+      ['chart-bars', { title: 'Bars', columns: [{ label: 'Mon', a: 10, b: 5 }] }],
+      ['stat-row', { stats: [{ label: 'Runs', value: '12' }] }]
     ];
     for (const [slug, props] of cases) {
       const spec = { type: 'screen', layout: 'stack', children: [{ component: `syntari.${slug}`, props }] };
@@ -179,25 +206,22 @@ test('leaving an optional prop out never writes "undefined" into the screen', as
 test('a mounted component keeps the internal rhythm it was authored for', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   await page.locator('[data-ir-output] .ir-screen').waitFor();
-  await page.getByRole('button', { name: 'Weekly report', exact: true }).click();
-  await page.waitForTimeout(1800);
+  await page.waitForTimeout(1200);
   const report = await page.evaluate(() => {
-    const stage = document.querySelector('[data-ir-output] [data-ir-component=metric-and-sparkline]');
-    const rect = selector => stage.querySelector(selector).getBoundingClientRect();
-    const chart = rect('.bar-chart');
-    const labels = rect('.chart-labels');
-    const stats = rect('.mini-stats');
-    const bars = [...stage.querySelectorAll('.bar-chart .bar-fill')].map(bar => bar.getBoundingClientRect().height);
+    const chart = document.querySelector('[data-ir-output] .chart-figure');
+    const columns = chart.querySelector('.chart-columns').getBoundingClientRect();
+    const legend = chart.querySelector('.chart-legend').getBoundingClientRect();
+    const value = chart.querySelector('.column-value').getBoundingClientRect();
+    const pair = chart.querySelector('.column-pair').getBoundingClientRect();
+    const fills = [...chart.querySelectorAll('.column-fill')].map(fill => fill.getBoundingClientRect().height);
     return {
-      labelGap: Math.round(labels.top - chart.bottom),
-      chartGap: Math.round(chart.top - stats.bottom),
-      tallestBar: Math.round(Math.max(...bars)),
-      chartHeight: Math.round(chart.height),
-      statLabels: [...stage.querySelectorAll('.stat > span')].map(span => span.textContent.trim()).join(' ')
+      legendGap: Math.round(legend.top - columns.bottom),
+      valueGap: Math.round(pair.top - value.bottom),
+      tallest: Math.round(Math.max(...fills)),
+      pairHeight: Math.round(pair.height)
     };
   });
-  expect(report.chartGap).toBeGreaterThan(0);
-  expect(report.labelGap).toBeGreaterThanOrEqual(0);
-  expect(report.tallestBar).toBeLessThanOrEqual(report.chartHeight);
-  expect(report.statLabels).toContain('Agent runs');
+  expect(report.legendGap).toBeGreaterThan(0);
+  expect(report.valueGap).toBeGreaterThanOrEqual(0);
+  expect(report.tallest).toBeLessThanOrEqual(report.pairHeight);
 });
