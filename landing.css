@@ -51,8 +51,8 @@
 .landing-footer-links a:hover{color:var(--accent-text)}
 .landing-footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:44px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
 .landing-footer-status{display:flex;align-items:center;gap:8px}
-.landing-wordmark{display:block;width:100%;height:auto;margin-top:14px;color:var(--text);opacity:.05;font-family:var(--font-logo);font-weight:600;letter-spacing:-.045em;user-select:none;pointer-events:none}
-.landing-wordmark text{fill:currentColor}
+.landing-wordmark{display:block;width:100%;height:auto;margin-top:14px;color:var(--text);opacity:.07;font-family:var(--font-logo);font-weight:600;user-select:none;pointer-events:none}
+.landing-wordmark text{fill:currentColor;font-family:var(--font-logo);font-size:200px;font-weight:600;letter-spacing:-9px}
 @media(min-width:880px){.landing-footer-top{grid-template-columns:minmax(230px,1fr) minmax(0,2.1fr)}}
 @media(max-width:1300px){.showcase-wall{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:980px){.showcase-wall{grid-template-columns:repeat(2,minmax(0,1fr))}}
