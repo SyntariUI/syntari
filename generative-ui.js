@@ -1,6 +1,7 @@
 import { render, renderableSlugs } from './ir.js';
 import { getComponents, setTheme } from './syntari.js';
 import { groups } from './docs-data.js';
+import { buildScenario } from './renderer-scenarios.js';
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const screen = (title, layout, children) => ({ version: 'syntari-ir-1', type: 'screen', layout, title, children });
@@ -150,16 +151,71 @@ function paintDiagnostics(diagnostics) {
 async function paint(spec) {
   if (busy) return;
   busy = true;
+  const buttons = document.querySelectorAll('[data-scenario], [data-scenario-controls] button, [data-ir-mode], [data-ir-render]');
+  buttons.forEach(button => { button.disabled = true; });
+  try {
   instance?.destroy();
   instance = await render(spec, $('[data-ir-output]'));
   const drawn = instance.element.querySelectorAll('[data-ir-component]').length;
   const blocked = instance.element.querySelectorAll('[data-ir-status=fallback]').length;
   $('[data-ir-summary]').textContent = blocked ? `${drawn} components rendered · ${blocked} replaced by a fallback` : `${drawn} components rendered`;
   paintDiagnostics(instance.diagnostics);
-  busy = false;
+  paintThemeButton();
+  } finally { busy = false; buttons.forEach(button => { button.disabled = false; }); }
 }
 
+let request = null;
+let selection = 0;
+async function loadScenario(name, period = '') {
+  const ticket = ++selection;
+  request?.abort();
+  request = new AbortController();
+  const status = $('[data-request-status]');
+  const stage = $('[data-ir-output]');
+  status.textContent = 'Requesting example data…';
+  stage.setAttribute('aria-busy', 'true');
+  document.querySelectorAll('[data-scenario]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.scenario === name)));
+  try {
+    const response = await fetch(new URL(`assets/renderer/${name}.json`, import.meta.url), { signal: request.signal });
+    if (!response.ok) throw new Error('The example data could not be loaded.');
+    const data = await response.json();
+    if (ticket !== selection) return;
+    const chosen = period || data.periods.at(-1);
+    const spec = buildScenario(name, data, chosen);
+    $('[data-ir-intent]').textContent = data.question;
+    $('[data-ir-does]').textContent = data.description;
+    $('#ir-spec').value = JSON.stringify(spec, null, 2);
+    document.querySelectorAll('[data-ir-mode]').forEach(button => button.setAttribute('aria-pressed', 'false'));
+    const controls = $('[data-scenario-controls]');
+    controls.hidden = false;
+    controls.replaceChildren();
+    for (const value of data.periods) {
+      const button = document.createElement('button');
+      button.className = `button small${value === chosen ? ' primary' : ''}`;
+      button.textContent = value;
+      button.setAttribute('aria-pressed', String(value === chosen));
+      button.addEventListener('click', () => loadScenario(name, value));
+      controls.append(button);
+    }
+    await paint(spec);
+    if (ticket === selection) status.textContent = `Illustrative data · ${chosen} · Open the evidence below to inspect the sources.`;
+  } catch (error) {
+    if (error.name !== 'AbortError' && ticket === selection) {
+      status.textContent = `${error.message} Select the question again to retry.`;
+    }
+  } finally {
+    if (ticket === selection) stage.removeAttribute('aria-busy');
+  }
+}
+document.querySelectorAll('[data-scenario]').forEach(button => button.addEventListener('click', () => loadScenario(button.dataset.scenario)));
+
 function load(mode) {
+  ++selection;
+  request?.abort();
+  $('[data-scenario-controls]').hidden = true;
+  $('[data-ir-output]').removeAttribute('aria-busy');
+  $('[data-request-status]').textContent = 'Explore a prepared renderer specification.';
+  document.querySelectorAll('[data-scenario]').forEach(button => button.setAttribute('aria-pressed', 'false'));
   const current = modes[mode];
   $('[data-ir-intent]').textContent = current.intent;
   $('[data-ir-does]').textContent = current.does;
@@ -210,4 +266,7 @@ async function paintCatalogue() {
   document.body.dataset.irSupported = supported.join(' ');
 }
 
-load('static').then(paintThemeButton).then(paintCatalogue);
+paintThemeButton();
+/** Auto-render the static report on load (the scenario prompts stay available above).
+ *  Keeps the tested contract: a rendered screen is present without interaction. */
+load('static').then(paintCatalogue).then(paintThemeButton).catch(error => { $('[data-request-status]').textContent = error.message; });

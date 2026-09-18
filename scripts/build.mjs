@@ -27,5 +27,6 @@ await mkdir('downloads',{recursive:true});
 execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{stdio:'pipe'});
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
 for(const file of ['index.html','library.html','gallery.html','landing.css','favicon.svg','docs.css','docs.js','docs-data.js','docs-guides.js','docs-gallery.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
+await copyFile('renderer-scenarios.js','dist/renderer-scenarios.js');
 for(const dir of ['assets','components','guides','downloads','registry'])await cp(dir,'dist/'+dir,{recursive:true});
 console.log(`Built Syntari 0.2.1: ${components.length} component pages, 8 guides, gallery, and installable source archive.`);

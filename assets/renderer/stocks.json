@@ -1,0 +1,22 @@
+{
+  "question": "Compare Microsoft and Salesforce",
+  "description": "Compare the same measures across two companies. Change the year to request another snapshot.",
+  "periods": ["2024", "2025"],
+  "sources": [{"label":"Dataset","value":"Prepared fictional financial snapshots; not live prices."},{"label":"Method","value":"Annual growth and margins shown as percentages."}],
+  "views": {
+    "2024": {
+      "title":"Software companies · 2024",
+      "stats":[{"label":"Microsoft growth","value":"16%","note":"annual revenue","tone":"success"},{"label":"Salesforce growth","value":"11%","note":"annual revenue","tone":"success"}],
+      "caption":"Illustrative annual financial comparison","optionA":"Microsoft","optionB":"Salesforce",
+      "rows":[{"metric":"Revenue growth","a":"16%","b":"11%","advantage":"Microsoft"},{"metric":"Operating margin","a":"43%","b":"19%","advantage":"Microsoft"},{"metric":"Forward P/E","a":"34×","b":"28×","advantage":"Salesforce"}],
+      "findings":[{"label":"Growth","value":"Microsoft has stronger growth in this sample."},{"label":"Valuation","value":"Salesforce has the lower earnings multiple."}]
+    },
+    "2025": {
+      "title":"Software companies · 2025",
+      "stats":[{"label":"Microsoft growth","value":"15%","note":"annual revenue","tone":"success"},{"label":"Salesforce growth","value":"9%","note":"annual revenue","tone":"success"}],
+      "caption":"Illustrative annual financial comparison","optionA":"Microsoft","optionB":"Salesforce",
+      "rows":[{"metric":"Revenue growth","a":"15%","b":"9%","advantage":"Microsoft"},{"metric":"Operating margin","a":"45%","b":"22%","advantage":"Microsoft"},{"metric":"Forward P/E","a":"32×","b":"25×","advantage":"Salesforce"}],
+      "findings":[{"label":"Margins","value":"Both companies improve operating margins in this sample."},{"label":"Tradeoff","value":"Higher growth comes with a higher earnings multiple."}]
+    }
+  }
+}

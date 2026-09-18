@@ -34,7 +34,8 @@
 
 /* Renderer page: one framed stage, the catalogue it draws from, and the words that explain it. */
 .ir-page{background:var(--background-subtle);margin:0}
-.ir-page-header{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1240px;margin:auto;padding:20px 28px}
+/* The header rides the shared site-topbar foundation (see styles.css). */
+.ir-page-header{--topbar-inset:28px}
 .ir-page-home{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500}
 .ir-page-home .brand-mark{width:22px;height:22px}
 .ir-page-home>span:last-child{margin-left:10px;color:var(--muted);font-size:12px;font-weight:400}
@@ -42,6 +43,15 @@
 .ir-page-main{display:grid;gap:36px;max-width:1240px;margin:auto;padding:0 28px 72px}
 .ir-hero{display:grid;gap:18px;max-width:760px}
 .ir-hero .badge{justify-self:start}
+.ir-hero{max-width:none}
+.ir-prompts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ir-prompt{display:grid;gap:10px;text-align:left;padding:22px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--motion-fast)}
+.ir-prompt strong{font-size:14px;font-weight:500}
+.ir-prompt span{font-size:12px;color:var(--muted);line-height:1.7}
+.ir-prompt:hover,.ir-prompt[aria-pressed=true]{background:var(--subtle);border-color:var(--accent-text)}
+.ir-prompt:focus-visible{outline:2px solid var(--accent-text);outline-offset:4px}
+[data-scenario-controls][hidden]{display:none}
+@media(max-width:760px){.ir-prompts{grid-template-columns:1fr}}
 .ir-hero h1{font-size:clamp(34px,5vw,60px);font-weight:500;letter-spacing:-2px;line-height:1.04}
 .ir-hero p{font-size:clamp(14px,1.5vw,17px);line-height:1.65;color:var(--muted);max-width:62ch}
 .ir-switch{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--border);width:max-content}
@@ -55,7 +65,7 @@
 .ir-brief{display:grid;gap:6px;max-width:640px}
 .ir-brief-intent{font-size:14px;line-height:1.6}
 .ir-brief-does{font-size:12px;line-height:1.7;color:var(--muted)}
-.ir-stage{padding:clamp(18px,3vw,40px);border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow-card);min-height:280px;outline:none}
+.ir-stage{padding:clamp(18px,3vw,40px);border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card);min-height:280px;outline:none}
 .ir-stage-foot{display:grid;gap:14px}
 .ir-page-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ir-page-spec{font:11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:320px;resize:vertical;white-space:pre;overflow:auto}
@@ -80,4 +90,7 @@
 .ir-catalog-icon .icon{width:16px;height:16px}
 .ir-catalog-name{min-width:0}
 .ir-catalog-arrow{margin-left:auto;color:var(--fg-2)}
-@media(max-width:760px){.ir-page-main{padding:0 18px 56px}.ir-page-header{padding:16px 18px}.ir-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-name{font-size:11px}}
+/* Shared foundation footer: same tokens as the library footer (see docs.css). */
+.ir-footer{max-width:1240px;margin:0 auto;padding:24px 28px;display:flex;justify-content:space-between;gap:14px;border-top:1px solid var(--border);color:var(--muted);font-size:10px}
+.ir-footer>span{display:flex;align-items:center;gap:9px}
+@media(max-width:760px){.ir-page-main{padding:0 18px 56px}.ir-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-name{font-size:11px}.ir-footer{flex-direction:column;padding:22px 18px}}

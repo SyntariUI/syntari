@@ -31,10 +31,16 @@
   <main class="ir-page-main">
     <section class="ir-hero">
       <span class="badge accent">Renderer</span>
-      <h1>One spec.<br>Every screen.</h1>
-      <p>An agent describes the screen as data. The registry decides what may be drawn. Syntari renders it with the same components a person would use — no markup, no framework, no drift.</p>
+      <h1>A question.<br>The right interface.</h1>
+      <p>Choose a prepared question. Syntari requests the data and builds an interactive report with the same components used throughout the product.</p>
+      <div class="ir-prompts" role="group" aria-label="Prepared questions">
+        <button class="ir-prompt" data-scenario="stocks" aria-pressed="false"><strong>Compare stocks</strong><span>Microsoft and Salesforce: growth, margins and valuation</span></button>
+        <button class="ir-prompt" data-scenario="policies" aria-pressed="false"><strong>Compare policy changes</strong><span>Explore employee handbook changes from 2022 to 2025</span></button>
+        <button class="ir-prompt" data-scenario="absenteeism" aria-pressed="false"><strong>Build an absenteeism report</strong><span>Review absence rates, team patterns and next steps</span></button>
+      </div>
+      <p class="hint">Prepared examples use illustrative data. Select a question to request its dataset.</p>
       <div class="ir-switch" role="group" aria-label="Render mode">
-        <button type="button" data-ir-mode="static" aria-pressed="true">Static</button>
+        <button type="button" data-ir-mode="static" aria-pressed="false">Static</button>
         <button type="button" data-ir-mode="interactive" aria-pressed="false">Interactive</button>
       </div>
       <div class="ir-stats">
@@ -45,16 +51,18 @@
       </div>
     </section>
 
-    <section class="ir-stage-panel">
+    <section class="ir-stage-panel" id="ir-output">
+      <div class="ir-page-bar" data-scenario-controls hidden></div>
+      <p class="hint" data-request-status role="status">Choose a question above, or explore the renderer modes.</p>
       <div class="ir-brief">
         <p class="ir-brief-intent" data-ir-intent></p>
         <p class="ir-brief-does" data-ir-does></p>
       </div>
-      <div class="ir-stage" data-ir-output aria-labelledby="ir-output-heading" tabindex="-1"></div>
+      <div class="ir-stage" data-ir-output aria-labelledby="ir-output-heading" tabindex="-1"><p class="hint">Your report will appear here. Choose one of the three questions to begin.</p></div>
       <div class="ir-stage-foot">
         <div class="ir-page-bar">
           <button type="button" class="button small" data-ir-toggle-spec aria-expanded="false" aria-controls="ir-spec">Show the spec</button>
-          <button type="button" class="button small primary" data-ir-render>Render again</button>
+          <button type="button" class="button small primary" data-ir-render disabled>Render again</button>
           <span class="hint" id="ir-summary" data-ir-summary></span>
         </div>
         <h2 id="ir-output-heading" class="sr-only">Rendered screen</h2>
@@ -79,5 +87,7 @@
       <div class="ir-catalog-grid" data-ir-catalog></div>
     </section>
   </main>
+
+  <footer class="ir-footer"><span><span class="mini-mark"></span> Syntari UI <span class="muted">/</span> Made to work together.</span><span>0.2.1 · HTML, CSS & JavaScript</span></footer>
 </body>
 </html>

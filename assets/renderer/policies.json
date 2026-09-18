@@ -1,0 +1,11 @@
+{
+  "question":"What changed in the employee handbook?",
+  "description":"Compare each edition with the 2022 baseline. Open the clauses for the wording behind each change.",
+  "periods":["2023","2024","2025"],
+  "sources":[{"label":"Documents","value":"Fictional employee handbooks, editions 2022–2025."},{"label":"Method","value":"Compare matching clauses against the 2022 baseline."}],
+  "views":{
+    "2023":{"title":"Policy changes · 2022 to 2023","stats":[{"label":"Changed policies","value":"1","note":"versus 2022","tone":"warning"}],"caption":"Changes against the 2022 handbook","optionA":"2022","optionB":"2023","rows":[{"metric":"Remote work","a":"2 days per week","b":"3 days per week","advantage":"Expanded"},{"metric":"Parental leave","a":"12 paid weeks","b":"12 paid weeks","advantage":"Unchanged"}],"findings":[{"label":"Remote work · 2023","value":"Employees may work remotely three days per week with manager approval."}]},
+    "2024":{"title":"Policy changes · 2022 to 2024","stats":[{"label":"Changed policies","value":"2","note":"versus 2022","tone":"warning"}],"caption":"Changes against the 2022 handbook","optionA":"2022","optionB":"2024","rows":[{"metric":"Remote work","a":"2 days per week","b":"3 days per week","advantage":"Expanded"},{"metric":"Parental leave","a":"12 paid weeks","b":"16 paid weeks","advantage":"Expanded"}],"findings":[{"label":"Parental leave · 2024","value":"Primary caregivers are entitled to sixteen weeks of paid leave."}]},
+    "2025":{"title":"Policy changes · 2022 to 2025","stats":[{"label":"Changed policies","value":"3","note":"versus 2022","tone":"warning"}],"caption":"Changes against the 2022 handbook","optionA":"2022","optionB":"2025","rows":[{"metric":"Remote work","a":"2 days; manager approval","b":"3 days; team agreement","advantage":"Changed"},{"metric":"Parental leave","a":"12 paid weeks","b":"18 paid weeks","advantage":"Expanded"},{"metric":"Travel approval","a":"Always required","b":"Required above €800","advantage":"Threshold added"}],"findings":[{"label":"Remote work · 2022","value":"Employees may work remotely two days per week with manager approval."},{"label":"Remote work · 2025","value":"Employees may work remotely three days per week by team agreement."},{"label":"Parental leave · 2025","value":"Primary caregivers are entitled to eighteen weeks of paid leave."}]}
+  }
+}
