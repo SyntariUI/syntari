@@ -1,0 +1,10 @@
+{
+  "question":"Build an absenteeism report",
+  "description":"Review quarterly absence and compare departments with the prior quarter. All records are illustrative aggregates.",
+  "periods":["Q2 2026","Q3 2026"],
+  "sources":[{"label":"Dataset","value":"Fictional attendance and payroll aggregates for 318 employees."},{"label":"Absence rate","value":"Absent scheduled days divided by total scheduled workdays."},{"label":"Cost","value":"Absent days multiplied by an illustrative average daily cost."}],
+  "views":{
+    "Q2 2026":{"title":"Absenteeism · Q2 2026","stats":[{"label":"Absence rate","value":"4.4%","note":"all departments","tone":"warning"},{"label":"Days lost","value":"493","note":"318 employees"},{"label":"Estimated cost","value":"€215k","note":"illustrative payroll cost"}],"chartTitle":"Absence rate by department (%)","seriesA":"Q2","seriesB":"Q1","columns":[{"label":"Operations","a":6.8,"b":6.4},{"label":"Sales","a":4.9,"b":5.2},{"label":"Engineering","a":3.7,"b":4.1}],"findings":[{"label":"Operations","value":"Review scheduling and workload with the team."},{"label":"Next step","value":"Track quarterly rates before attributing changes to interventions."}]},
+    "Q3 2026":{"title":"Absenteeism · Q3 2026","stats":[{"label":"Absence rate","value":"3.8%","badge":"−0.6 pp","note":"versus Q2","tone":"success"},{"label":"Days lost","value":"426","note":"318 employees"},{"label":"Estimated cost","value":"€184k","note":"illustrative payroll cost"}],"chartTitle":"Absence rate by department (%)","seriesA":"Q3","seriesB":"Q2","columns":[{"label":"Operations","a":6.2,"b":6.8},{"label":"Sales","a":4.5,"b":4.9},{"label":"Engineering","a":3.1,"b":3.7}],"findings":[{"label":"Company trend","value":"Absence declined across all three departments shown."},{"label":"Operations","value":"Highest rate at 6.2%; review workload and offer team support."},{"label":"Next step","value":"Evaluate a flexible scheduling pilot using the next quarter's data."}]}
+  }
+}

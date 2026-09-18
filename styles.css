@@ -116,3 +116,10 @@ header.site-topbar .site-nav+.site-actions{margin-left:0}
 header.site-topbar .site-actions .icon-button{width:34px;height:34px;color:var(--muted)}
 header.site-topbar .site-actions .icon-button:hover{color:var(--text)}
 @media(max-width:760px){header.site-topbar{padding:12px var(--topbar-inset,18px);gap:10px;flex-wrap:wrap;row-gap:8px}header.site-topbar .site-nav{flex:1 1 100%;order:2;margin-left:0}header.site-topbar .site-actions{margin-left:auto}header.site-topbar .site-brand{font-size:16px}header.site-topbar .site-nav a{padding:7px 9px;font-size:12px}}
+
+/* Shared foundation footer for the library and the renderer. The landing keeps
+   its richer marketing footer, but all footers share these tokens: a top border,
+   muted 10px type, and the 14px gap rhythm. Shell stylesheets keep only layout
+   specifics (max-width, insets, responsive stacking). */
+.docs-footer,.ir-footer{border-top:1px solid var(--border);color:var(--muted);font-size:10px}
+.docs-footer>span,.ir-footer>span{display:flex;align-items:center;gap:9px}
