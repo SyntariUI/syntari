@@ -1,3 +1,5 @@
+import { render } from "../ir.js";
+
 const scenarios = {
   q2: {
     request: "Compare Q2 revenue with Q1 and explain why costs increased.",
@@ -17,14 +19,24 @@ const scenarios = {
       ["risk", "read", .99]
     ],
     primary: "syntari.area-chart",
-    supporting: ["syntari.stat-row","syntari.comparison-table","syntari.source-list"],
+    supporting: [
+      "syntari.stat-row",
+      "syntari.streaming-response",
+      "syntari.comparison-table",
+      "syntari.source-list"
+    ],
     route: {
       needsLLM: true,
       title: "Reasoning required",
       copy: "Use the LLM only to explain why costs increased.",
       footer: "Jev routes → LLM"
     },
-    preview: "analytics"
+    streamText: "Costs increased 12.4% quarter over quarter, led by infrastructure and contractor spend. Revenue grew faster than costs, so margin still improved by 2.1 percentage points.",
+    numberAnimation: [
+      { end: 1.84, format: n => "€" + n.toFixed(2) + "M" },
+      { end: 712, format: n => "€" + Math.round(n) + "k" },
+      { end: 61.3, format: n => n.toFixed(1) + "%" }
+    ]
   },
   brief: {
     request: "Prepare a project brief before the weekly product meeting.",
@@ -44,14 +56,23 @@ const scenarios = {
       ["risk", "read", .99]
     ],
     primary: "syntari.stat-row",
-    supporting: ["syntari.metadata-list","syntari.source-list"],
+    supporting: [
+      "syntari.streaming-response",
+      "syntari.metadata-list",
+      "syntari.source-list"
+    ],
     route: {
       needsLLM: true,
       title: "Synthesis required",
       copy: "The LLM summarizes project state after Jev fixes the UI shape.",
       footer: "Jev routes → LLM"
     },
-    preview: "brief"
+    streamText: "The team is shipping the renderer validation work, but two blockers remain. The meeting needs one decision: how low-confidence routing should fall back before Syntari composes the final interface.",
+    numberAnimation: [
+      { end: 18, format: n => String(Math.round(n)) },
+      { end: 3, format: n => String(Math.round(n)) },
+      { end: 2, format: n => String(Math.round(n)) }
+    ]
   },
   delete: {
     request: "Delete the 37 inactive users in this workspace.",
@@ -78,43 +99,240 @@ const scenarios = {
       copy: "No open-ended reasoning is needed. Safety policy wins.",
       footer: "Direct → Syntari IR"
     },
-    preview: "approval"
+    numberAnimation: []
   }
 };
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? 0 : ms));
+
+let generation = 0;
+let activeScenario = "q2";
+let activeRender = null;
 
 function confidenceLabel(value) {
   return Math.round(value * 100) + "%";
 }
 
+function specFor(name) {
+  if (name === "q2") {
+    return {
+      version: "syntari-ir-1",
+      type: "screen",
+      layout: "stack",
+      title: "Q2 performance",
+      children: [
+        {
+          component: "syntari.stat-row",
+          props: {
+            stats: [
+              { label: "Revenue", value: "€1.84M", badge: "+18.6%", note: "versus Q1", tone: "success" },
+              { label: "Operating costs", value: "€712k", badge: "+12.4%", note: "versus Q1", tone: "warning" },
+              { label: "Margin", value: "61.3%", badge: "+2.1 pp", note: "versus Q1", tone: "success" }
+            ]
+          }
+        },
+        {
+          component: "syntari.streaming-response",
+          props: {
+            author: "Analysis agent",
+            status: "Reasoning complete",
+            text: scenarios.q2.streamText,
+            action: "Regenerate",
+            icon: "bot"
+          }
+        },
+        {
+          component: "syntari.area-chart",
+          props: {
+            title: "Revenue trend",
+            note: "Indexed · Q2",
+            chartLabel: "Revenue trend rises through Q2, ending at its strongest point in the period.",
+            points: [
+              { label: "W1", value: 52 }, { label: "W2", value: 58 }, { label: "W3", value: 55 },
+              { label: "W4", value: 63 }, { label: "W5", value: 61 }, { label: "W6", value: 68 },
+              { label: "W7", value: 72 }, { label: "W8", value: 69 }, { label: "W9", value: 76 },
+              { label: "W10", value: 81 }, { label: "W11", value: 79 }, { label: "W12", value: 88 }
+            ]
+          }
+        },
+        {
+          component: "syntari.comparison-table",
+          props: {
+            caption: "Q1 and Q2 measured on the same business outcomes",
+            optionA: "Q1",
+            optionB: "Q2",
+            rows: [
+              { metric: "Revenue", a: "€1.55M", b: "€1.84M", advantage: "Q2" },
+              { metric: "Operating costs", a: "€633k", b: "€712k", advantage: "Q1" },
+              { metric: "Margin", a: "59.2%", b: "61.3%", advantage: "Q2" }
+            ]
+          }
+        },
+        {
+          type: "region",
+          label: "Evidence · 3 sources",
+          open: false,
+          children: [
+            {
+              component: "syntari.source-list",
+              props: {
+                sources: [
+                  { name: "Billing warehouse", share: 58 },
+                  { name: "Finance ledger", share: 27 },
+                  { name: "CRM", share: 15 }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    };
+  }
+
+  if (name === "brief") {
+    return {
+      version: "syntari-ir-1",
+      type: "screen",
+      layout: "stack",
+      title: "Project brief",
+      children: [
+        {
+          component: "syntari.stat-row",
+          props: {
+            stats: [
+              { label: "Open work", value: "18", badge: "5 priority", note: "current sprint", tone: "neutral" },
+              { label: "Decisions needed", value: "3", badge: "meeting", note: "one blocks release", tone: "warning" },
+              { label: "Blockers", value: "2", badge: "active", note: "need owners", tone: "danger" }
+            ]
+          }
+        },
+        {
+          component: "syntari.streaming-response",
+          props: {
+            author: "Briefing agent",
+            status: "Synthesized",
+            text: scenarios.brief.streamText,
+            action: "Regenerate",
+            icon: "bot"
+          }
+        },
+        {
+          component: "syntari.metadata-list",
+          props: {
+            items: [
+              { label: "Focus", value: "Renderer validation and decision-provider fallback" },
+              { label: "Decision", value: "Choose behavior below the confidence threshold" },
+              { label: "Owners", value: "Product · Design engineering · Platform" },
+              { label: "Meeting", value: "Weekly product review" }
+            ]
+          }
+        },
+        {
+          type: "region",
+          label: "Sources · 4 project records",
+          open: false,
+          children: [
+            {
+              component: "syntari.source-list",
+              props: {
+                sources: [
+                  { name: "Project tasks", share: 42 },
+                  { name: "Decision log", share: 28 },
+                  { name: "GitHub activity", share: 19 },
+                  { name: "Meeting notes", share: 11 }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    };
+  }
+
+  return {
+    version: "syntari-ir-1",
+    type: "screen",
+    layout: "stack",
+    title: "Workspace action",
+    children: [
+      {
+        component: "syntari.tool-approval",
+        props: {
+          title: "Destructive action",
+          question: "Delete 37 inactive users from this workspace?",
+          scope: "37 users · workspace access and associated memberships",
+          hint: "This action is irreversible. Explicit human approval is required.",
+          icon: "trash2",
+          approveLabel: "Approve deletion",
+          rejectLabel: "Decline"
+        }
+      }
+    ]
+  };
+}
+
 function renderState(scenario) {
   $("[data-request]").textContent = "“" + scenario.request + "”";
   $("[data-state]").innerHTML = Object.entries(scenario.state)
-    .map(([key,value]) => '<div class="state-item"><span>' + key + '</span><span>' + value + '</span></div>')
+    .map(([key, value]) => '<div class="state-item"><span>' + key + '</span><span>' + value + '</span></div>')
     .join("");
 }
 
-function renderDecisions(scenario) {
-  $("[data-decisions]").innerHTML = scenario.decisions.map(([name,value,confidence]) => `
-    <div class="decision">
-      <span class="decision-name">${name}</span>
-      <strong class="decision-value">${value}</strong>
-      <span class="decision-confidence">${confidenceLabel(confidence)}</span>
-      <div class="decision-bar"><span style="--confidence:${confidence * 100}%"></span></div>
-    </div>
-  `).join("");
-  $("[data-latency]").textContent = scenario.latency;
+function decisionPlaceholder(scenario) {
+  $("[data-decisions]").innerHTML = scenario.decisions.map(([name]) =>
+    '<div class="decision is-pending" data-decision="' + name + '">' +
+      '<span class="decision-name">' + name + '</span>' +
+      '<strong class="decision-value">evaluating…</strong>' +
+      '<span class="decision-confidence">—</span>' +
+      '<div class="decision-bar"><span style="--confidence:0%"></span></div>' +
+    '</div>'
+  ).join("");
+  $("[data-latency]").textContent = "running";
 }
 
-function renderPlan(scenario) {
-  $("[data-primary]").textContent = scenario.primary;
-  $("[data-supporting]").innerHTML = scenario.supporting.length
-    ? scenario.supporting.map(component => '<div class="component-pill">' + component + '</div>').join("")
-    : '<div class="component-pill">No supporting components</div>';
-  $("[data-ir-count]").textContent = (1 + scenario.supporting.length) + " nodes";
+function revealDecision(decision) {
+  const [name, value, confidence] = decision;
+  const row = $('[data-decision="' + name + '"]');
+  if (!row) return;
+  $(".decision-value", row).textContent = value;
+  $(".decision-confidence", row).textContent = confidenceLabel(confidence);
+  $(".decision-bar span", row).style.setProperty("--confidence", (confidence * 100) + "%");
+  row.classList.remove("is-pending");
+  row.classList.add("is-resolved");
+}
+
+function resetPlan() {
+  $("[data-primary]").textContent = "Waiting for Jev…";
+  $("[data-primary]").classList.add("is-waiting");
+  $("[data-supporting]").innerHTML = '<div class="component-pill is-waiting">No components selected yet</div>';
+}
+
+async function revealPlan(scenario, id) {
+  const primary = $("[data-primary]");
+  primary.classList.remove("is-waiting");
+  primary.textContent = scenario.primary;
+  primary.classList.add("jev-pop");
+  await sleep(140);
+  if (id !== generation) return;
+
+  const target = $("[data-supporting]");
+  target.innerHTML = "";
+  if (!scenario.supporting.length) {
+    target.innerHTML = '<div class="component-pill jev-pop">No supporting components</div>';
+    return;
+  }
+
+  for (const component of scenario.supporting) {
+    if (id !== generation) return;
+    const pill = document.createElement("div");
+    pill.className = "component-pill jev-pop";
+    pill.textContent = component;
+    target.append(pill);
+    await sleep(120);
+  }
 }
 
 function renderRoute(scenario) {
@@ -125,152 +343,269 @@ function renderRoute(scenario) {
   $("[data-route-footer]").textContent = scenario.route.footer;
 }
 
-function renderTrace(scenario) {
-  $("[data-trace]").innerHTML = scenario.decisions.map(([name,value,confidence]) => `
-    <div class="trace-row">
-      <span>${name}</span>
-      <em>${confidenceLabel(confidence)}</em>
-      <strong>${value}</strong>
-    </div>
-  `).join("");
+function resetRoute() {
+  const root = $("[data-route-state]");
+  root.classList.add("is-skip");
+  $("[data-route-title]").textContent = "Waiting for policy";
+  $("[data-route-copy]").textContent = "Jev decides whether open-ended reasoning is necessary.";
+  $("[data-route-footer]").textContent = "Route pending";
 }
 
-function analyticsPreview() {
-  return `
-    <section class="generated-screen">
-      <div class="generated-top">
-        <strong>Q2 performance</strong>
-        <span>Generated from Syntari registry</span>
-      </div>
-      <div class="generated-body">
-        <div class="preview-stat-row">
-          <div class="preview-stat"><span>Revenue</span><strong>€1.84M</strong><em>+18.6%</em></div>
-          <div class="preview-stat"><span>Operating costs</span><strong>€712k</strong><em style="color:var(--warning-text)">+12.4%</em></div>
-          <div class="preview-stat"><span>Margin</span><strong>61.3%</strong><em>+2.1 pp</em></div>
-        </div>
-        <div class="preview-grid">
-          <div class="preview-card">
-            <div class="preview-card-head"><strong>Revenue over time</strong><span>Q2 vs Q1</span></div>
-            <svg class="preview-chart" viewBox="0 0 520 145" preserveAspectRatio="none" aria-label="Revenue trend">
-              <path class="grid" d="M0 28H520 M0 72H520 M0 116H520"/>
-              <path class="fill" d="M0 118 C55 102,76 108,118 83 S195 91,235 62 S316 72,356 49 S432 58,520 22 L520 145 L0 145Z"/>
-              <path class="line" d="M0 118 C55 102,76 108,118 83 S195 91,235 62 S316 72,356 49 S432 58,520 22"/>
-            </svg>
-          </div>
-          <div class="preview-card">
-            <div class="preview-card-head"><strong>Q1 → Q2</strong><span>comparison</span></div>
-            <div class="mini-comparison">
-              <div class="comparison-row"><span>Revenue</span><strong>€1.55M</strong><strong>€1.84M</strong></div>
-              <div class="comparison-row"><span>Costs</span><strong>€633k</strong><strong>€712k</strong></div>
-              <div class="comparison-row"><span>Margin</span><strong>59.2%</strong><strong>61.3%</strong></div>
-            </div>
-            <div class="preview-card-head" style="margin-top:18px"><strong>Evidence</strong><span>sources</span></div>
-            <div class="source-row"><span>Billing warehouse</span><strong>58%</strong></div>
-            <div class="source-row"><span>Finance ledger</span><strong>27%</strong></div>
-            <div class="source-row"><span>CRM</span><strong>15%</strong></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  `;
+function resetCompile() {
+  $("[data-ir-count]").textContent = "Waiting";
+  $("[data-registry-status]").textContent = "Waiting";
+  $("[data-registry-status]").className = "";
+  $("[data-validator-status]").textContent = "Waiting";
+  $("[data-validator-status]").className = "";
+  $("[data-renderer-status]").textContent = "Waiting";
+  $("[data-renderer-status]").className = "";
 }
 
-function briefPreview() {
-  return `
-    <section class="generated-screen">
-      <div class="generated-top">
-        <strong>Project brief</strong>
-        <span>Prepared for weekly product meeting</span>
-      </div>
-      <div class="generated-body">
-        <div class="preview-stat-row">
-          <div class="preview-stat"><span>Open work</span><strong>18</strong><em>5 priority</em></div>
-          <div class="preview-stat"><span>Decisions needed</span><strong>3</strong><em style="color:var(--warning-text)">meeting</em></div>
-          <div class="preview-stat"><span>Blockers</span><strong>2</strong><em style="color:var(--danger-text)">active</em></div>
-        </div>
-        <div class="brief-block">
-          <span>What changed</span><strong>Renderer validation landed; registry coverage increased.</strong>
-          <div class="brief-lines"><i></i><i></i><i></i></div>
-        </div>
-        <div class="brief-block">
-          <span>Needs a decision</span><strong>Choose how the decision provider falls back below confidence threshold.</strong>
-          <div class="brief-lines"><i></i><i></i><i></i></div>
-        </div>
-        <div class="brief-block">
-          <span>Sources</span><strong>7 project records used to prepare this brief.</strong>
-        </div>
-      </div>
-    </section>
-  `;
+function addTrace(decision) {
+  const [name, value, confidence] = decision;
+  const row = document.createElement("div");
+  row.className = "trace-row is-new";
+  row.innerHTML =
+    '<span>' + name + '</span>' +
+    '<em>' + confidenceLabel(confidence) + '</em>' +
+    '<strong>' + value + '</strong>';
+  $("[data-trace]").append(row);
 }
 
-function approvalPreview() {
-  return `
-    <section class="generated-screen">
-      <div class="generated-top">
-        <strong>Workspace actions</strong>
-        <span>Human approval required</span>
-      </div>
-      <div class="generated-body">
-        <div class="approval-preview">
-          <div class="approval-head">
-            <div class="approval-icon">!</div>
-            <div><strong>Delete 37 inactive users?</strong><span>Destructive · irreversible</span></div>
-          </div>
-          <div class="approval-copy">
-            This action removes 37 users and their workspace access. Jev classified the request as destructive,
-            so Syntari requires explicit approval before any tool call can continue.
-          </div>
-          <div class="approval-actions">
-            <button>Decline</button>
-            <button class="danger-action">Approve deletion</button>
-          </div>
-        </div>
-      </div>
-    </section>
-  `;
+function stage(name, state) {
+  const node = $('[data-stage="' + name + '"]');
+  if (!node) return;
+  node.classList.toggle("is-processing", state === "processing");
+  node.classList.toggle("is-complete", state === "complete");
 }
 
-function renderPreview(scenario) {
-  const html = scenario.preview === "analytics"
-    ? analyticsPreview()
-    : scenario.preview === "brief"
-      ? briefPreview()
-      : approvalPreview();
-  $("[data-preview]").innerHTML = html;
-  const count = 1 + scenario.supporting.length;
-  $("[data-result-status]").textContent = scenario.preview === "approval"
-    ? "Generated safety interface · approval required"
-    : "Generated from " + count + " selected components";
+function skeleton(status, detail, count) {
+  const blocks = Array.from({ length: Math.max(2, Math.min(count, 5)) }, (_, index) =>
+    '<div class="generation-skeleton-card skeleton-' + (index + 1) + '">' +
+      '<span></span><i></i><i></i><i></i>' +
+    '</div>'
+  ).join("");
+
+  $("[data-preview]").innerHTML =
+    '<div class="generation-shell">' +
+      '<div class="generation-status">' +
+        '<span class="generation-pulse"></span>' +
+        '<div><strong data-generation-status>' + status + '</strong><p data-generation-detail>' + detail + '</p></div>' +
+      '</div>' +
+      '<div class="generation-skeleton">' + blocks + '</div>' +
+    '</div>';
 }
 
-async function animatePipeline() {
-  const stages = $$("[data-stage]");
-  stages.forEach(stage => stage.classList.remove("is-processing"));
+function setSkeletonStatus(status, detail) {
+  const title = $("[data-generation-status]");
+  const copy = $("[data-generation-detail]");
+  if (title) title.textContent = status;
+  if (copy) copy.textContent = detail;
+}
+
+function animateNumbers(scenario, root) {
+  if (reducedMotion || !scenario.numberAnimation.length) return;
+  const values = $$('[data-ir-component="stat-row"] .stat-card strong', root);
+  values.forEach((node, index) => {
+    const config = scenario.numberAnimation[index];
+    if (!config) return;
+    const duration = 760;
+    const started = performance.now();
+    node.textContent = config.format(0);
+    const tick = now => {
+      const progress = Math.min(1, (now - started) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = config.format(config.end * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function animateChart(root) {
   if (reducedMotion) return;
-  for (const stage of stages) {
-    stage.classList.add("is-processing");
-    await new Promise(resolve => setTimeout(resolve, 170));
-    stage.classList.remove("is-processing");
+  const line = $(".area-line", root);
+  const fill = $(".area-fill", root);
+  if (line && typeof line.getTotalLength === "function") {
+    const length = line.getTotalLength();
+    line.style.strokeDasharray = String(length);
+    line.style.strokeDashoffset = String(length);
+    line.animate(
+      [{ strokeDashoffset: length }, { strokeDashoffset: 0 }],
+      { duration: 950, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards", delay: 260 }
+    );
+  }
+  if (fill) {
+    fill.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, fill: "forwards", delay: 420 });
   }
 }
 
-function paint(name, animate = true) {
+function animateBars(root) {
+  if (reducedMotion) return;
+  $$(".rank-fill", root).forEach((bar, index) => {
+    bar.animate(
+      [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 650, easing: "cubic-bezier(.22,1,.36,1)", fill: "both", delay: 500 + index * 70 }
+    );
+    bar.style.transformOrigin = "left center";
+  });
+}
+
+async function typeStreamingText(scenario, root, id) {
+  if (!scenario.streamText) return;
+  const content = $(".stream-content", root);
+  if (!content || reducedMotion) return;
+  content.textContent = "";
+  const text = scenario.streamText;
+  for (let index = 0; index < text.length; index += 2) {
+    if (id !== generation) return;
+    content.textContent = text.slice(0, index + 2);
+    await sleep(12);
+  }
+  content.textContent = text;
+}
+
+async function openEvidence(root, id) {
+  const details = $(".ir-region", root);
+  if (!details) return;
+  await sleep(280);
+  if (id !== generation) return;
+  details.open = true;
+  details.classList.add("jev-evidence-open");
+}
+
+function animateGeneratedNodes(root) {
+  const nodes = $$(".ir-node, .ir-region", root);
+  nodes.forEach((node, index) => {
+    node.classList.add("jev-generated-node");
+    node.style.setProperty("--enter-delay", (index * 110) + "ms");
+  });
+}
+
+async function renderGeneratedInterface(name, scenario, id) {
+  const preview = $("[data-preview]");
+  if (activeRender) {
+    try { activeRender.destroy(); } catch {}
+    activeRender = null;
+  }
+
+  setSkeletonStatus("Compiling Syntari IR", "The selected components are being validated against the registry.");
+  $("[data-ir-count]").textContent = (1 + scenario.supporting.length) + " nodes";
+  await sleep(260);
+  if (id !== generation) return;
+
+  $("[data-registry-status]").textContent = "Passed";
+  $("[data-registry-status]").className = "ok";
+  setSkeletonStatus("Rendering components", "Syntari is mounting the real registry components now.");
+
+  const result = await render(specFor(name), preview);
+  if (id !== generation) {
+    result.destroy();
+    return;
+  }
+
+  activeRender = result;
+  const errors = result.diagnostics.filter(item => item.severity === "error").length;
+  $("[data-validator-status]").textContent = errors ? errors + " errors" : "0 errors";
+  $("[data-validator-status]").className = errors ? "error" : "ok";
+  $("[data-renderer-status]").textContent = errors ? "Partial" : "Ready";
+  $("[data-renderer-status]").className = errors ? "error" : "ok";
+
+  animateGeneratedNodes(result.element);
+  animateNumbers(scenario, result.element);
+  animateChart(result.element);
+  animateBars(result.element);
+
+  const count = result.element.querySelectorAll("[data-ir-component]").length;
+  $("[data-result-status]").textContent = errors
+    ? "Rendered with " + errors + " validation errors"
+    : "Live · " + count + " real Syntari components";
+
+  await Promise.all([
+    typeStreamingText(scenario, result.element, id),
+    openEvidence(result.element, id)
+  ]);
+
+  if (name === "delete") {
+    const approval = $('[data-ir-component="tool-approval"]', result.element);
+    approval?.classList.add("jev-risk-lock");
+  }
+}
+
+async function run(name) {
+  activeScenario = name;
   const scenario = scenarios[name];
+  const id = ++generation;
+
+  $$("[data-scenario]").forEach(button => {
+    button.classList.toggle("is-selected", button.dataset.scenario === name);
+    button.disabled = false;
+  });
+  $("[data-replay]").disabled = true;
+  $("[data-result-status]").textContent = "Generating…";
+
+  $$("[data-stage]").forEach(node => node.classList.remove("is-processing", "is-complete"));
   renderState(scenario);
-  renderDecisions(scenario);
-  renderPlan(scenario);
+  decisionPlaceholder(scenario);
+  resetPlan();
+  resetRoute();
+  resetCompile();
+  $("[data-trace]").innerHTML = "";
+  skeleton("Reading application state", "Collecting only the context needed for this request.", 1 + scenario.supporting.length);
+
+  stage("input", "processing");
+  await sleep(420);
+  if (id !== generation) return;
+  stage("input", "complete");
+
+  stage("jev", "processing");
+  setSkeletonStatus("Jev is deciding", "Typed decisions arrive independently instead of generating prose.");
+  for (const decision of scenario.decisions) {
+    if (id !== generation) return;
+    revealDecision(decision);
+    addTrace(decision);
+    await sleep(185);
+  }
+  $("[data-latency]").textContent = scenario.latency;
+  stage("jev", "complete");
+
+  stage("plan", "processing");
+  setSkeletonStatus("Selecting Syntari components", "The decision space is narrowed to registry components that match the request.");
+  await revealPlan(scenario, id);
+  if (id !== generation) return;
+  stage("plan", "complete");
+
+  stage("route", "processing");
   renderRoute(scenario);
-  renderTrace(scenario);
-  renderPreview(scenario);
-  if (animate) animatePipeline();
+  if (scenario.route.needsLLM) {
+    setSkeletonStatus("LLM reasoning", "The model handles synthesis only; it is not designing the interface.");
+    await sleep(680);
+  } else {
+    setSkeletonStatus("LLM skipped", "This request is fully handled by typed routing and Syntari safety patterns.");
+    await sleep(340);
+  }
+  if (id !== generation) return;
+  stage("route", "complete");
+
+  stage("render", "processing");
+  await renderGeneratedInterface(name, scenario, id);
+  if (id !== generation) return;
+  stage("render", "complete");
+
+  $("[data-replay]").disabled = false;
 }
 
 $$("[data-scenario]").forEach(button => {
-  button.addEventListener("click", () => {
-    $$("[data-scenario]").forEach(item => item.classList.toggle("is-selected", item === button));
-    paint(button.dataset.scenario);
-  });
+  button.addEventListener("click", () => run(button.dataset.scenario));
 });
 
-paint("q2", false);
+$("[data-replay]").addEventListener("click", () => run(activeScenario));
+
+renderState(scenarios.q2);
+decisionPlaceholder(scenarios.q2);
+resetPlan();
+resetRoute();
+resetCompile();
+skeleton("Ready", "The generative canvas will assemble itself from Syntari components.", 5);
+
+setTimeout(() => run("q2"), reducedMotion ? 0 : 380);
