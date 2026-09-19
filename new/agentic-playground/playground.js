@@ -163,6 +163,97 @@ function finishPhases() {
   });
 }
 
+function skeletonSpan(className = '') {
+  return `<span class="skeleton ${className}"></span>`;
+}
+
+function skeletonRows(count = 4) {
+  return Array.from({ length: count }, () => `
+    <div class="sui-loading-list-row">
+      ${skeletonSpan()}
+      ${skeletonSpan()}
+    </div>`).join('');
+}
+
+function skeletonForNode(node) {
+  if (node?.type === 'region') {
+    return `<div class="sui-loading-region">${skeletonSpan()}<span class="sui-loading-region-chevron"></span></div>`;
+  }
+
+  const slug = String(node?.component || '').replace(/^syntari\./, '');
+  if (slug === 'banner') {
+    return `<div class="sui-loading-component sui-loading-banner">
+      ${skeletonSpan('circle')}
+      <div class="sui-loading-copy">${skeletonSpan()}${skeletonSpan()}</div>
+    </div>`;
+  }
+
+  if (slug === 'stat-row') {
+    const count = Math.max(1, Math.min(4, node?.props?.stats?.length || 4));
+    return `<div class="sui-loading-stat-row" style="--loading-columns:${count}">
+      ${Array.from({ length: count }, () => `<div class="sui-loading-component sui-loading-stat">
+        ${skeletonSpan('loading-label')}
+        ${skeletonSpan('loading-value')}
+        ${skeletonSpan('loading-note')}
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (slug === 'area-chart' || slug === 'chart-bars') {
+    return `<div class="sui-loading-component sui-loading-chart">
+      <div class="sui-loading-chart-head">
+        <div>${skeletonSpan('loading-heading')}${skeletonSpan('loading-subheading')}</div>
+        ${skeletonSpan()}
+      </div>
+      <div class="sui-loading-plot">
+        <div class="sui-loading-plot-grid"><span></span><span></span><span></span><span></span></div>
+        <svg class="sui-loading-chart-svg" viewBox="0 0 640 160" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M8 128 C70 114 88 84 150 92 S246 124 304 83 S402 56 454 67 S548 36 632 28"></path>
+          <circle cx="8" cy="128" r="5"></circle><circle cx="150" cy="92" r="5"></circle><circle cx="304" cy="83" r="5"></circle><circle cx="454" cy="67" r="5"></circle><circle cx="632" cy="28" r="5"></circle>
+        </svg>
+        <div class="sui-loading-axis">${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}</div>
+      </div>
+    </div>`;
+  }
+
+  if (slug === 'process-ledger') {
+    const count = Math.max(3, Math.min(5, node?.props?.stages?.length || 4));
+    return `<div class="sui-loading-component sui-loading-ledger">
+      ${Array.from({ length: count }, () => `<div class="sui-loading-row">
+        ${skeletonSpan('circle')}
+        <div class="sui-loading-row-copy">${skeletonSpan()}${skeletonSpan()}</div>
+        ${skeletonSpan()}
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (slug === 'comparison-table') {
+    const rows = Math.max(3, Math.min(5, node?.props?.rows?.length || 4));
+    return `<div class="sui-loading-component sui-loading-table">
+      <div class="sui-loading-table-head">${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}</div>
+      ${Array.from({ length: rows }, () => `<div class="sui-loading-table-row">${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}${skeletonSpan()}</div>`).join('')}
+    </div>`;
+  }
+
+  if (slug === 'metadata-list' || slug === 'source-list') {
+    const source = node?.props?.items || node?.props?.sources || [];
+    const count = Math.max(3, Math.min(5, source.length || 4));
+    return `<div class="sui-loading-component sui-loading-list">${skeletonRows(count)}</div>`;
+  }
+
+  return `<div class="sui-loading-component sui-loading-list">${skeletonRows(3)}</div>`;
+}
+
+function paintSkeleton(spec) {
+  const target = $('[data-generation-skeleton]');
+  const children = Array.isArray(spec?.children) ? spec.children : [];
+  target.innerHTML = `
+    <div class="sui-loading-screen">
+      <div class="sui-loading-title">${skeletonSpan()}</div>
+      <div class="sui-loading-stack">${children.map(skeletonForNode).join('')}</div>
+    </div>`;
+}
+
 function showSkeleton() {
   $('[data-generation-skeleton]').hidden = false;
   const output = $('[data-ir-output]');
@@ -200,6 +291,7 @@ async function generate(key, promptText = examples[key].prompt) {
   $('[data-spec-output]').textContent = JSON.stringify(currentSpec, null, 2);
   $('[data-spec-panel]').hidden = true;
   $('[data-spec-toggle]').textContent = 'Inspect spec';
+  paintSkeleton(currentSpec);
   showSkeleton();
 
   $('[data-conversation]').scrollIntoView({ behavior: 'smooth', block: 'start' });
