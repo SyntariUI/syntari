@@ -8,7 +8,10 @@
   <link rel="icon" href="../../favicon.svg">
   <link rel="stylesheet" href="../../tokens.css">
   <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../controls.css">
   <link rel="stylesheet" href="../new.css">
+  <script src="../../motion.js"></script>
+  <script src="../../controls.js"></script>
   <script type="module" src="../new.js"></script>
 </head>
 <body class="syntari-shot">
@@ -20,14 +23,14 @@
           <h2 id="revenue-title">Revenue</h2>
           <p>Total revenue across all products</p>
         </div>
-        <label class="shot-select">
-          <span class="sr-only">Revenue period</span>
-          <select data-revenue-period aria-label="Revenue period">
-            <option value="7d">Last 7 days</option>
-            <option value="30d" selected>Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
-        </label>
+        <div class="dropdown ds-select period-select" data-revenue-period data-value="30d">
+    <button class="control-trigger" type="button" data-select-toggle aria-label="Revenue period" aria-haspopup="listbox" aria-expanded="false">
+      <span data-select-label>Last 30 days</span><svg class="icon lucide icon-down" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+    </button>
+    <div class="dropdown-panel control-panel" role="listbox" aria-label="Revenue period options" hidden>
+      <button type="button" role="option" aria-selected="false" data-option="Last 7 days" data-value="7d"><svg class="icon lucide icon-calendar" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg><span>Last 7 days</span><span class="option-check"><svg class="icon lucide icon-check" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></button><button type="button" role="option" aria-selected="true" data-option="Last 30 days" data-value="30d"><svg class="icon lucide icon-calendar" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg><span>Last 30 days</span><span class="option-check"><svg class="icon lucide icon-check" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></button><button type="button" role="option" aria-selected="false" data-option="Last 90 days" data-value="90d"><svg class="icon lucide icon-calendar" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg><span>Last 90 days</span><span class="option-check"><svg class="icon lucide icon-check" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></button>
+    </div>
+  </div>
       </header>
 
       <div class="revenue-summary">

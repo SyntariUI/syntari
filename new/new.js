@@ -85,7 +85,7 @@ if(revenueRoot){
     '30d':{total:24532,delta:'+12.4%',last:2840,labels:['Aug 20','Aug 27','Sep 3','Sep 10','Sep 17'],points:[18,34,42,31,29,19,36,40,57,47,39,51,68,73,64,79,66,52,61,83,92,86,100]},
     '90d':{total:68920,delta:'+18.7%',last:4920,labels:['Jun 20','Jul 12','Aug 3','Aug 25','Sep 17'],points:[25,38,31,49,55,46,34,51,63,48,59,72,65,43,52,69,61,78,70,85,74,66,82,91,86,100]}
   };
-  const select=revenueRoot.querySelector('[data-revenue-period]');
+  const period=revenueRoot.querySelector('[data-revenue-period]');
   const value=revenueRoot.querySelector('[data-revenue-value]');
   const delta=revenueRoot.querySelector('[data-revenue-delta]');
   const line=revenueRoot.querySelector('[data-revenue-line]');
@@ -122,7 +122,7 @@ if(revenueRoot){
     point.animate([{opacity:0,transform:'scale(.45)'},{opacity:1,transform:'scale(1)'}],{duration:260,delay:650,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'both'});
   };
   const render=()=>{
-    const data=datasets[select.value];
+    const data=datasets[period.dataset.value];
     const pts=pointsFor(data.points);
     const lineD=smooth(pts);
     const first=pts[0],last=pts[pts.length-1];
@@ -144,7 +144,12 @@ if(revenueRoot){
     await wait(reduced.matches?0:180);
     finishLoading(revenueRoot);
   };
-  select.addEventListener('change',refresh);
+  period.addEventListener('click',event=>{
+    const option=event.target.closest('[data-option][data-value]');
+    if(!option||!period.contains(option)||period.dataset.value===option.dataset.value)return;
+    period.dataset.value=option.dataset.value;
+    refresh();
+  });
   render();
   setTimeout(()=>finishLoading(revenueRoot),reduced.matches?0:430);
 }
@@ -156,7 +161,7 @@ if(reportRoot){
     month:{efficiency:81,delta:'+6.4%',time:438,cost:27900,rows:[['Atlas',88,'148h','€9.8k'],['Pulse',74,'101h','€6.4k'],['Nova',84,'96h','€6.1k'],['Orbit',79,'93h','€5.6k']]},
     quarter:{efficiency:86,delta:'+11.2%',time:1284,cost:82600,rows:[['Atlas',93,'412h','€27.1k'],['Pulse',80,'298h','€18.9k'],['Nova',87,'316h','€20.6k'],['Orbit',83,'258h','€16.0k']]}
   };
-  const select=reportRoot.querySelector('[data-report-period]');
+  const period=reportRoot.querySelector('[data-report-period]');
   const rows=reportRoot.querySelector('[data-report-rows]');
   const efficiency=reportRoot.querySelector('[data-efficiency]');
   const timeSaved=reportRoot.querySelector('[data-time-saved]');
@@ -172,7 +177,7 @@ if(reportRoot){
     });
   };
   const render=()=>{
-    const data=periods[select.value];
+    const data=periods[period.dataset.value];
     animateNumber(efficiency,data.efficiency,n=>Math.round(n)+'%',{initial:firstRender});
     reportRoot.querySelector('[data-efficiency-delta]').textContent=data.delta;
     animateNumber(timeSaved,data.time,n=>integer.format(Math.round(n))+'h',{initial:firstRender});
@@ -188,7 +193,12 @@ if(reportRoot){
     await wait(reduced.matches?0:180);
     finishLoading(reportRoot);
   };
-  select.addEventListener('change',refresh);
+  period.addEventListener('click',event=>{
+    const option=event.target.closest('[data-option][data-value]');
+    if(!option||!period.contains(option)||period.dataset.value===option.dataset.value)return;
+    period.dataset.value=option.dataset.value;
+    refresh();
+  });
   render();
   setTimeout(()=>finishLoading(reportRoot),reduced.matches?0:430);
 }

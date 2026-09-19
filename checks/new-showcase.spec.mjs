@@ -17,7 +17,11 @@ test('new compositions are interactive, animated and responsive',async({page})=>
   await expect(revenue).toHaveAttribute('aria-busy','false');
   const line=page.locator('[data-revenue-line]');
   const before=await line.getAttribute('d');
-  await page.getByLabel('Revenue period').selectOption('90d');
+  const revenuePeriod=page.getByRole('button',{name:'Revenue period'});
+  await expect(revenuePeriod).toHaveClass(/control-trigger/);
+  await revenuePeriod.click();
+  await expect(page.getByRole('listbox',{name:'Revenue period options'})).toBeVisible();
+  await page.getByRole('option',{name:'Last 90 days'}).click();
   await expect(revenue).toHaveAttribute('aria-busy','true');
   await expect(revenue).toHaveAttribute('aria-busy','false');
   await expect(page.locator('[data-revenue-value]')).toHaveText('€68,920');
@@ -29,7 +33,11 @@ test('new compositions are interactive, animated and responsive',async({page})=>
   await expect(report).toHaveAttribute('aria-busy','false');
   await expect(page.locator('.agent-generated .lucide')).toHaveCount(1);
   await expect(page.locator('.metric-label .lucide')).toHaveCount(3);
-  await page.getByLabel('Report period').selectOption('month');
+  const reportPeriod=page.getByRole('button',{name:'Report period'});
+  await expect(reportPeriod).toHaveClass(/control-trigger/);
+  await reportPeriod.click();
+  await expect(page.getByRole('listbox',{name:'Report period options'})).toBeVisible();
+  await page.getByRole('option',{name:'This month'}).click();
   await expect(report).toHaveAttribute('aria-busy','true');
   await expect(report).toHaveAttribute('aria-busy','false');
   await expect(page.locator('[data-efficiency]')).toHaveText('81%');

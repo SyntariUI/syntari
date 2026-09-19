@@ -169,19 +169,35 @@ body.syntari-shot{
   color:var(--muted);
   font-size:13px;
 }
-.shot-select select{
-  min-height:42px;
-  padding:0 38px 0 14px;
-  border:1px solid var(--bg-a3);
-  border-radius:10px;
-  color:var(--text);
-  background:var(--bg-a1);
-  font-size:12px;
-  outline:0;
-  transition:background var(--motion-fast),border-color var(--motion-fast),transform var(--motion-fast) var(--ease-spring);
+.period-select{
+  width:156px;
+  flex:0 0 auto;
+  position:relative;
 }
-.shot-select select:hover{background:var(--bg-a2);transform:translateY(-1px)}
-.shot-select select:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}
+.period-select .control-trigger{
+  min-height:38px;
+  width:100%;
+  white-space:nowrap;
+}
+.period-select .control-trigger>.icon{
+  width:14px;
+  height:14px;
+}
+.period-select .control-panel{
+  min-width:156px;
+}
+.period-select .control-panel [role=option]{
+  font-size:11px;
+}
+.period-select .control-panel [role=option]>.icon:first-child{
+  width:14px;
+  height:14px;
+  color:var(--muted);
+}
+.period-select .option-check .icon{
+  width:13px;
+  height:13px;
+}
 .revenue-summary{margin-top:46px;animation:content-enter 380ms var(--ease-out) 110ms both}
 .revenue-value{
   display:block;
@@ -481,7 +497,8 @@ body.syntari-shot{
   .skeleton-metrics .skeleton-block{height:54px}
 }
 @media(max-width:430px){
-  .shot-select select{max-width:128px;padding-right:26px}
+  .period-select{width:132px}
+  .period-select .control-panel{min-width:148px}
   .analytics-card-head p{font-size:11px}
   .revenue-value{font-size:36px}
   .chart-axis{font-size:9px}
