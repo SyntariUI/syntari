@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test tests/policy.test.mjs",
+    "test": "node --test tests/policy.test.mjs tests/provider.test.mjs",
     "test:live": "node --test tests/live.test.mjs",
     "demo": "node src/demo.mjs"
   },
