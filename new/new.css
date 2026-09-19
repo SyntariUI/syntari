@@ -45,6 +45,8 @@ body.syntari-shot{
 .shot-back:hover{color:var(--text)}
 .shot-component{
   width:min(100%,var(--shot-max));
+  min-width:0;
+  max-width:100%;
   background:var(--shot-surface);
   border:1px solid var(--shot-border);
   border-radius:var(--radius-card);
@@ -290,7 +292,7 @@ body.syntari-shot{
 }
 .report-metric .metric-positive{color:var(--success-text)}
 .report-divider{height:1px;background:var(--border);margin:30px 0 14px}
-.report-table-wrap{overflow:auto}
+.report-table-wrap{width:100%;max-width:100%;min-width:0;overflow:auto}
 .report-table{
   width:100%;
   border-collapse:collapse;
@@ -373,7 +375,16 @@ body.syntari-shot{
   .report-metrics{grid-template-columns:1fr;gap:0;margin-top:26px}
   .report-metric,.report-metric:first-child,.report-metric:last-child{border-left:0;border-top:1px solid var(--border);padding:16px 0}
   .report-metric:first-child{border-top:0;padding-top:0}
-  .report-table{min-width:570px}
+  .report-table-wrap{overflow-x:hidden}
+  .report-table{min-width:0;font-size:10px}
+  .report-table th,.report-table td{padding-left:4px;padding-right:4px}
+  .report-table th:first-child,.report-table td:first-child{padding-left:0}
+  .report-table th:last-child,.report-table td:last-child{padding-right:0}
+  .report-table th:nth-child(1){width:24%}
+  .report-table th:nth-child(2){width:38%}
+  .report-table th:nth-child(3){width:16%}
+  .report-table th:nth-child(4){width:22%}
+  .efficiency-cell{grid-template-columns:31px 1fr;gap:6px}
   .command-item{grid-template-columns:25px 1fr auto}
   .showcase-home h1{font-size:34px}
 }
