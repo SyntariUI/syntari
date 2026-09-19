@@ -47,11 +47,18 @@ body.syntari-shot{
   width:min(100%,var(--shot-max));
   min-width:0;
   max-width:100%;
+  position:relative;
+  overflow:hidden;
   background:var(--shot-surface);
   border:1px solid var(--shot-border);
   border-radius:var(--radius-card);
   box-shadow:0 20px 70px #00000022,inset 0 1px 0 #ffffff05;
   backdrop-filter:blur(18px);
+  animation:component-enter var(--motion-panel) var(--ease-out) both;
+}
+@keyframes component-enter{
+  from{opacity:0;transform:translateY(9px) scale(.994)}
+  to{opacity:1;transform:translateY(0) scale(1)}
 }
 .command-palette{
   --shot-max:760px;
@@ -67,11 +74,13 @@ body.syntari-shot{
   gap:12px;
   padding:0 14px;
   color:var(--muted);
-  transition:border-color var(--motion-fast),background var(--motion-fast);
+  transition:border-color var(--motion-fast),background var(--motion-fast),transform var(--motion-fast) var(--ease-spring);
+  animation:content-enter 320ms var(--ease-out) 40ms both;
 }
 .command-palette-search:focus-within{
   border-color:var(--blue-a3);
   background:var(--bg-a2);
+  transform:translateY(-1px);
 }
 .command-palette-search .icon{width:20px;height:20px;color:var(--fg-3)}
 .command-palette-search input{
@@ -93,7 +102,10 @@ body.syntari-shot{
   padding:5px 9px;
   font-size:10px;
 }
-.command-group{padding-top:20px}
+.command-group{padding-top:20px;animation:content-enter 340ms var(--ease-out) both}
+.command-group:nth-of-type(1){animation-delay:80ms}
+.command-group:nth-of-type(2){animation-delay:130ms}
+.command-group:nth-of-type(3){animation-delay:180ms}
 .command-group-label{
   padding:0 10px 8px;
   color:var(--fg-2);
@@ -113,24 +125,24 @@ body.syntari-shot{
   padding:7px 10px;
   text-align:left;
   color:var(--text);
-  transition:background var(--motion-fast),color var(--motion-fast),transform var(--motion-fast);
+  transition:background var(--motion-fast),color var(--motion-fast),transform var(--motion-fast) var(--ease-spring);
 }
-.command-item:hover,.command-item.is-active{
-  background:var(--green-a1);
-}
+.command-item:hover,.command-item.is-active{background:var(--green-a1)}
+.command-item.is-active{transform:translateX(2px)}
 .command-item:active{transform:scale(.995)}
 .command-icon{
   width:25px;height:25px;
   display:grid;place-items:center;
   color:var(--fg-3);
-  font-size:17px;
 }
+.command-icon .icon{width:17px;height:17px}
 .command-icon.success{
   color:var(--success-text);
   border:1px solid var(--green-a3);
+  background:var(--green-a1);
   border-radius:7px;
-  font-size:19px;
 }
+.command-icon.success .icon{width:15px;height:15px}
 .command-item small{color:var(--fg-2);font-size:11px}
 .command-item[hidden]{display:none}
 .command-group[hidden],.command-divider:has(+ .command-group[hidden]){display:none}
@@ -144,6 +156,7 @@ body.syntari-shot{
   align-items:flex-start;
   justify-content:space-between;
   gap:24px;
+  animation:content-enter 360ms var(--ease-out) 60ms both;
 }
 .analytics-card-head h2{
   font-size:19px;
@@ -165,9 +178,11 @@ body.syntari-shot{
   background:var(--bg-a1);
   font-size:12px;
   outline:0;
+  transition:background var(--motion-fast),border-color var(--motion-fast),transform var(--motion-fast) var(--ease-spring);
 }
+.shot-select select:hover{background:var(--bg-a2);transform:translateY(-1px)}
 .shot-select select:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}
-.revenue-summary{margin-top:46px}
+.revenue-summary{margin-top:46px;animation:content-enter 380ms var(--ease-out) 110ms both}
 .revenue-value{
   display:block;
   font-size:48px;
@@ -186,14 +201,15 @@ body.syntari-shot{
 }
 .revenue-change>span:first-child,.revenue-change strong{color:var(--success-text)}
 .revenue-change>span:first-child{font-size:20px;line-height:1}
-.revenue-change strong{font-weight:600}
+.revenue-change strong{font-weight:600;font-variant-numeric:tabular-nums}
 .revenue-chart{
   position:relative;
   margin:26px 0 0;
+  animation:content-enter 420ms var(--ease-out) 150ms both;
 }
 .revenue-svg{display:block;width:100%;height:auto;overflow:visible}
 .chart-grid line{stroke:var(--border);stroke-width:1;stroke-dasharray:3 7}
-.revenue-area{fill:url(#revenue-fill);stroke:none;transition:d var(--motion-data) var(--ease-out)}
+.revenue-area{fill:url(#revenue-fill);stroke:none;transform-origin:bottom}
 .revenue-line{
   fill:none;
   stroke:var(--green-3);
@@ -201,14 +217,14 @@ body.syntari-shot{
   stroke-linecap:round;
   stroke-linejoin:round;
   filter:drop-shadow(0 0 5px var(--green-a2));
-  transition:d var(--motion-data) var(--ease-out);
 }
 .revenue-point{
   fill:var(--green-3);
   stroke:color-mix(in srgb,var(--green-3) 35%,transparent);
   stroke-width:8;
   paint-order:stroke;
-  transition:cx var(--motion-data) var(--ease-out),cy var(--motion-data) var(--ease-out);
+  transform-box:fill-box;
+  transform-origin:center;
 }
 .revenue-tooltip{
   position:absolute;
@@ -240,6 +256,7 @@ body.syntari-shot{
   justify-content:space-between;
   gap:16px;
   font-size:12px;
+  animation:content-enter 360ms var(--ease-out) 190ms both;
 }
 .analytics-card-foot>a:first-child:hover{text-decoration:underline;text-underline-offset:4px}
 .square-action{
@@ -250,17 +267,18 @@ body.syntari-shot{
   border-radius:10px;
   background:var(--bg-a2);
   border:1px solid var(--border);
-  font-size:20px;
   transition:transform var(--motion-fast) var(--ease-spring),background var(--motion-fast);
 }
-.square-action:hover{transform:translateX(2px);background:var(--bg-a3)}
+.square-action .icon{width:17px;height:17px}
+.square-action:hover{transform:translate(2px,-2px);background:var(--bg-a3)}
 
 .agent-generated{display:flex;align-items:center;gap:7px}
-.agent-generated .status-dot{width:6px;height:6px;box-shadow:0 0 10px var(--green-4)}
+.agent-generated .icon{width:14px;height:14px;color:var(--success-text)}
 .report-metrics{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   margin-top:38px;
+  animation:content-enter 390ms var(--ease-out) 100ms both;
 }
 .report-metric{
   min-width:0;
@@ -269,11 +287,14 @@ body.syntari-shot{
 }
 .report-metric:first-child{padding-left:0;border-left:0}
 .report-metric:last-child{padding-right:0}
-.report-metric>span{
-  display:block;
+.report-metric>.metric-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
   color:var(--muted);
   font-size:12px;
 }
+.metric-label .icon{width:14px;height:14px;color:var(--fg-2)}
 .report-metric>strong{
   display:block;
   margin-top:7px;
@@ -292,7 +313,13 @@ body.syntari-shot{
 }
 .report-metric .metric-positive{color:var(--success-text)}
 .report-divider{height:1px;background:var(--border);margin:30px 0 14px}
-.report-table-wrap{width:100%;max-width:100%;min-width:0;overflow:auto}
+.report-table-wrap{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:auto;
+  animation:content-enter 420ms var(--ease-out) 150ms both;
+}
 .report-table{
   width:100%;
   border-collapse:collapse;
@@ -316,6 +343,11 @@ body.syntari-shot{
   font-variant-numeric:tabular-nums;
   vertical-align:middle;
 }
+.report-table tbody tr{animation:row-enter 300ms var(--ease-out) both}
+.report-table tbody tr:nth-child(1){animation-delay:30ms}
+.report-table tbody tr:nth-child(2){animation-delay:70ms}
+.report-table tbody tr:nth-child(3){animation-delay:110ms}
+.report-table tbody tr:nth-child(4){animation-delay:150ms}
 .report-table th:nth-child(1){width:26%}
 .report-table th:nth-child(2){width:39%}
 .report-table th:nth-child(3){width:15%}
@@ -326,14 +358,70 @@ body.syntari-shot{
   align-items:center;
   gap:12px;
 }
-.efficiency-cell .progress{
-  height:6px;
-  background:var(--bg-a3);
-}
+.efficiency-cell .progress{height:6px;background:var(--bg-a3)}
 .efficiency-cell .progress span{
   background:var(--green-3);
   box-shadow:0 0 8px var(--green-a2);
+  transition:width var(--motion-data) var(--ease-out);
 }
+
+/* Loading skeletons */
+.shot-loading-overlay{
+  position:absolute;
+  inset:1px;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  padding:39px 41px 29px;
+  border-radius:calc(var(--radius-card) - 1px);
+  background:color-mix(in srgb,var(--surface) 97%,transparent);
+  backdrop-filter:blur(16px);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity 170ms ease,visibility 0s linear 170ms;
+  pointer-events:none;
+}
+[data-loading="true"] .shot-loading-overlay{
+  opacity:1;
+  visibility:visible;
+  transition:opacity 160ms ease,visibility 0s;
+}
+.skeleton-block{
+  position:relative;
+  display:block;
+  height:13px;
+  overflow:hidden;
+  border-radius:7px;
+  background:var(--bg-a2);
+}
+.skeleton-block::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-120%);
+  background:linear-gradient(90deg,transparent,#ffffff0a,transparent);
+  animation:shimmer 1.15s linear infinite;
+}
+.skeleton-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.skeleton-value{height:48px;border-radius:11px;margin-top:53px}
+.skeleton-chart{height:220px;border-radius:13px;margin-top:27px}
+.skeleton-axis{margin-top:11px}
+.skeleton-axis span{width:42px;height:8px;border-radius:5px;background:var(--bg-a2)}
+.skeleton-divider{height:1px;background:var(--border);margin:30px 0 22px}
+.skeleton-square{width:40px!important;height:40px;border-radius:10px}
+.skeleton-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:42px}
+.skeleton-metrics .skeleton-block{height:82px;border-radius:10px}
+.skeleton-table{display:grid;gap:13px}
+.skeleton-table .skeleton-block{height:38px;border-radius:8px}
+.w-20{width:20%}.w-22{width:22%}.w-26{width:26%}.w-30{width:30%}.w-32{width:32%}.w-36{width:36%}.w-38{width:38%}.w-42{width:42%}
+@keyframes shimmer{to{transform:translateX(120%)}}
+@keyframes content-enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes row-enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.is-revealing .revenue-summary,.is-revealing .revenue-chart,.is-revealing .report-metrics,.is-revealing .report-table-wrap{
+  animation:refresh-enter 360ms var(--ease-out) both;
+}
+@keyframes refresh-enter{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
 .showcase-home{
   width:min(100% - 40px,820px);
   margin:0 auto;
@@ -369,9 +457,11 @@ body.syntari-shot{
   .shot-back{left:16px;top:16px}
   .command-palette{padding:14px}
   .analytics-card,.agent-report{padding:26px 22px 22px}
+  .shot-loading-overlay{padding:25px 21px 21px}
   .analytics-card-head{gap:14px}
   .revenue-summary{margin-top:36px}
   .revenue-value{font-size:40px}
+  .skeleton-value{margin-top:43px}
   .report-metrics{grid-template-columns:1fr;gap:0;margin-top:26px}
   .report-metric,.report-metric:first-child,.report-metric:last-child{border-left:0;border-top:1px solid var(--border);padding:16px 0}
   .report-metric:first-child{border-top:0;padding-top:0}
@@ -387,6 +477,8 @@ body.syntari-shot{
   .efficiency-cell{grid-template-columns:31px 1fr;gap:6px}
   .command-item{grid-template-columns:25px 1fr auto}
   .showcase-home h1{font-size:34px}
+  .skeleton-metrics{grid-template-columns:1fr;gap:10px;margin-top:28px}
+  .skeleton-metrics .skeleton-block{height:54px}
 }
 @media(max-width:430px){
   .shot-select select{max-width:128px;padding-right:26px}
@@ -397,5 +489,7 @@ body.syntari-shot{
   .command-palette-search input{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){
-  .revenue-area,.revenue-line,.revenue-point{transition:none}
+  .shot-component,.command-palette-search,.command-group,.analytics-card-head,.revenue-summary,.revenue-chart,.analytics-card-foot,.report-metrics,.report-table-wrap,.report-table tbody tr,.is-revealing .revenue-summary,.is-revealing .revenue-chart,.is-revealing .report-metrics,.is-revealing .report-table-wrap{animation:none!important}
+  .skeleton-block::after{animation:none}
+  .efficiency-cell .progress span{transition:none}
 }

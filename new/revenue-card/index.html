@@ -14,7 +14,7 @@
 <body class="syntari-shot">
   <a class="shot-back" href="../">Syntari / new</a>
   <main class="shot-stage">
-    <article class="analytics-card shot-component" data-revenue-card aria-labelledby="revenue-title">
+    <article class="analytics-card shot-component" data-revenue-card data-loading="true" aria-busy="true" aria-labelledby="revenue-title">
       <header class="analytics-card-head">
         <div>
           <h2 id="revenue-title">Revenue</h2>
@@ -62,8 +62,17 @@
 
       <footer class="analytics-card-foot">
         <a href="../team-projects-report/">View detailed analytics</a>
-        <a class="square-action" href="../team-projects-report/" aria-label="View detailed analytics">→</a>
+        <a class="square-action" href="../team-projects-report/" aria-label="View detailed analytics"><svg class="icon lucide " aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
       </footer>
+      <div class="shot-loading-overlay revenue-loading" data-loading-overlay aria-hidden="true">
+  <div class="skeleton-row"><span class="skeleton-block w-32"></span><span class="skeleton-block w-22"></span></div>
+  <span class="skeleton-block skeleton-value w-42"></span>
+  <span class="skeleton-block w-36"></span>
+  <span class="skeleton-block skeleton-chart"></span>
+  <div class="skeleton-row skeleton-axis"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="skeleton-divider"></div>
+  <div class="skeleton-row"><span class="skeleton-block w-30"></span><span class="skeleton-block skeleton-square"></span></div>
+</div>
     </article>
   </main>
 </body>

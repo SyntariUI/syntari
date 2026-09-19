@@ -1,4 +1,40 @@
 const money = new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const integer = new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+function animateNumber(el,to,formatter,{duration=720,initial=false}={}){
+  if(!el)return;
+  const from=initial?0:Number(el.dataset.rawValue??to);
+  el.dataset.rawValue=String(to);
+  el.setAttribute('aria-label',formatter(to));
+  if(reduced.matches||from===to){el.textContent=formatter(to);return}
+  el.getAnimations().forEach(animation=>animation.cancel());
+  const start=performance.now();
+  const frame=now=>{
+    const t=Math.min(1,(now-start)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const current=from+(to-from)*eased;
+    el.textContent=formatter(current);
+    if(t<1)requestAnimationFrame(frame);
+    else el.textContent=formatter(to);
+  };
+  requestAnimationFrame(frame);
+}
+
+function beginLoading(root){
+  root.dataset.loading='true';
+  root.setAttribute('aria-busy','true');
+}
+function finishLoading(root){
+  root.dataset.loading='false';
+  root.setAttribute('aria-busy','false');
+  root.classList.remove('is-revealing');
+  void root.offsetWidth;
+  root.classList.add('is-revealing');
+  setTimeout(()=>root.classList.remove('is-revealing'),450);
+}
 
 const commandRoot=document.querySelector('[data-command-palette]');
 if(commandRoot){
@@ -13,7 +49,8 @@ if(commandRoot){
     activeIndex=(index+visibleItems.length)%visibleItems.length;
     allItems.forEach(item=>{item.classList.remove('is-active');item.setAttribute('aria-selected','false')});
     const item=visibleItems[activeIndex];
-    item.classList.add('is-active');item.setAttribute('aria-selected','true');
+    item.classList.add('is-active');
+    item.setAttribute('aria-selected','true');
     item.scrollIntoView({block:'nearest'});
   };
   const filter=()=>{
@@ -56,7 +93,8 @@ if(revenueRoot){
   const point=revenueRoot.querySelector('[data-revenue-point]');
   const tooltip=revenueRoot.querySelector('[data-revenue-tooltip]');
   const axis=revenueRoot.querySelector('[data-revenue-axis]');
-  const width=624,startX=8,top=28,bottom=198,height=bottom-top;
+  const width=624,startX=8,bottom=198,height=170;
+  let firstRender=true;
 
   const pointsFor=data=>data.map((v,i)=>[startX+(width*i/(data.length-1)),bottom-(v/100)*height]);
   const smooth=pts=>{
@@ -70,40 +108,87 @@ if(revenueRoot){
     }
     return d;
   };
+  const animateChart=()=>{
+    if(reduced.matches)return;
+    line.getAnimations().forEach(animation=>animation.cancel());
+    area.getAnimations().forEach(animation=>animation.cancel());
+    point.getAnimations().forEach(animation=>animation.cancel());
+    const length=line.getTotalLength();
+    line.style.strokeDasharray=String(length);
+    line.style.strokeDashoffset=String(length);
+    const draw=line.animate([{strokeDashoffset:String(length)},{strokeDashoffset:'0'}],{duration:850,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
+    draw.onfinish=()=>{line.style.strokeDashoffset='0'};
+    area.animate([{opacity:0,clipPath:'inset(0 100% 0 0)'},{opacity:1,clipPath:'inset(0 0 0 0)'}],{duration:760,delay:70,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
+    point.animate([{opacity:0,transform:'scale(.45)'},{opacity:1,transform:'scale(1)'}],{duration:260,delay:650,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'both'});
+  };
   const render=()=>{
     const data=datasets[select.value];
     const pts=pointsFor(data.points);
     const lineD=smooth(pts);
     const first=pts[0],last=pts[pts.length-1];
-    value.textContent=money.format(data.total);
+    animateNumber(value,data.total,n=>money.format(Math.round(n)),{initial:firstRender,duration:780});
     delta.textContent=data.delta;
     line.setAttribute('d',lineD);
     area.setAttribute('d',lineD+' L '+last[0].toFixed(2)+' '+bottom+' L '+first[0].toFixed(2)+' '+bottom+' Z');
-    point.setAttribute('cx',last[0]);point.setAttribute('cy',last[1]);
+    point.setAttribute('cx',last[0]);
+    point.setAttribute('cy',last[1]);
     tooltip.textContent=money.format(data.last);
     axis.innerHTML=data.labels.map(label=>'<span>'+label+'</span>').join('');
+    requestAnimationFrame(animateChart);
+    firstRender=false;
   };
-  select.addEventListener('change',render);
+  const refresh=async()=>{
+    beginLoading(revenueRoot);
+    await wait(reduced.matches?0:260);
+    render();
+    await wait(reduced.matches?0:180);
+    finishLoading(revenueRoot);
+  };
+  select.addEventListener('change',refresh);
   render();
+  setTimeout(()=>finishLoading(revenueRoot),reduced.matches?0:430);
 }
 
 const reportRoot=document.querySelector('[data-team-report]');
 if(reportRoot){
   const periods={
-    week:{efficiency:'84%',delta:'+9.8%',time:'126h',cost:'€8,420',rows:[['Atlas',91,'42h','€3.2k'],['Pulse',78,'31h','€2.1k'],['Nova',86,'27h','€1.8k'],['Orbit',81,'26h','€1.3k']]},
-    month:{efficiency:'81%',delta:'+6.4%',time:'438h',cost:'€27,900',rows:[['Atlas',88,'148h','€9.8k'],['Pulse',74,'101h','€6.4k'],['Nova',84,'96h','€6.1k'],['Orbit',79,'93h','€5.6k']]},
-    quarter:{efficiency:'86%',delta:'+11.2%',time:'1,284h',cost:'€82,600',rows:[['Atlas',93,'412h','€27.1k'],['Pulse',80,'298h','€18.9k'],['Nova',87,'316h','€20.6k'],['Orbit',83,'258h','€16.0k']]}
+    week:{efficiency:84,delta:'+9.8%',time:126,cost:8420,rows:[['Atlas',91,'42h','€3.2k'],['Pulse',78,'31h','€2.1k'],['Nova',86,'27h','€1.8k'],['Orbit',81,'26h','€1.3k']]},
+    month:{efficiency:81,delta:'+6.4%',time:438,cost:27900,rows:[['Atlas',88,'148h','€9.8k'],['Pulse',74,'101h','€6.4k'],['Nova',84,'96h','€6.1k'],['Orbit',79,'93h','€5.6k']]},
+    quarter:{efficiency:86,delta:'+11.2%',time:1284,cost:82600,rows:[['Atlas',93,'412h','€27.1k'],['Pulse',80,'298h','€18.9k'],['Nova',87,'316h','€20.6k'],['Orbit',83,'258h','€16.0k']]}
   };
   const select=reportRoot.querySelector('[data-report-period]');
   const rows=reportRoot.querySelector('[data-report-rows]');
+  const efficiency=reportRoot.querySelector('[data-efficiency]');
+  const timeSaved=reportRoot.querySelector('[data-time-saved]');
+  const costSaved=reportRoot.querySelector('[data-cost-saved]');
+  let firstRender=true;
+
+  const animateBars=()=>{
+    if(reduced.matches)return;
+    [...rows.querySelectorAll('.progress>span')].forEach((bar,index)=>{
+      const target=bar.style.width;
+      bar.style.width='0%';
+      requestAnimationFrame(()=>setTimeout(()=>{bar.style.width=target},index*45));
+    });
+  };
   const render=()=>{
     const data=periods[select.value];
-    reportRoot.querySelector('[data-efficiency]').textContent=data.efficiency;
+    animateNumber(efficiency,data.efficiency,n=>Math.round(n)+'%',{initial:firstRender});
     reportRoot.querySelector('[data-efficiency-delta]').textContent=data.delta;
-    reportRoot.querySelector('[data-time-saved]').textContent=data.time;
-    reportRoot.querySelector('[data-cost-saved]').textContent=data.cost;
+    animateNumber(timeSaved,data.time,n=>integer.format(Math.round(n))+'h',{initial:firstRender});
+    animateNumber(costSaved,data.cost,n=>money.format(Math.round(n)),{initial:firstRender,duration:820});
     rows.innerHTML=data.rows.map(row=>'<tr><td>'+row[0]+'</td><td><span class="efficiency-cell"><span>'+row[1]+'%</span><span class="progress" aria-label="'+row[0]+' efficiency '+row[1]+' percent"><span style="width:'+row[1]+'%"></span></span></span></td><td>'+row[2]+'</td><td>'+row[3]+'</td></tr>').join('');
+    requestAnimationFrame(animateBars);
+    firstRender=false;
   };
-  select.addEventListener('change',render);
+  const refresh=async()=>{
+    beginLoading(reportRoot);
+    await wait(reduced.matches?0:260);
+    render();
+    await wait(reduced.matches?0:180);
+    finishLoading(reportRoot);
+  };
+  select.addEventListener('change',refresh);
   render();
+  setTimeout(()=>finishLoading(reportRoot),reduced.matches?0:430);
 }
