@@ -7,6 +7,7 @@
   <meta name="description" content="Interactive visualisation of Jev as a decision layer for SyntariUI.">
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../ir.css">
   <link rel="stylesheet" href="./visual.css">
 </head>
 <body class="jev-page">
@@ -137,15 +138,15 @@
           </div>
           <div class="compile-line">
             <span>Registry check</span>
-            <strong class="ok">Passed</strong>
+            <strong data-registry-status>Waiting</strong>
           </div>
           <div class="compile-line">
             <span>Validator</span>
-            <strong class="ok">0 errors</strong>
+            <strong data-validator-status>Waiting</strong>
           </div>
           <div class="compile-line">
             <span>Renderer</span>
-            <strong class="ok">Ready</strong>
+            <strong data-renderer-status>Waiting</strong>
           </div>
         </div>
         <footer>Syntari remains authoritative</footer>
@@ -155,12 +156,13 @@
     <section class="result-section" aria-labelledby="result-title">
       <div class="result-heading">
         <div>
-          <span class="eyebrow">Tangible result</span>
-          <h2 id="result-title">The interface Syntari chooses to build</h2>
+          <span class="eyebrow">Live generator</span>
+          <h2 id="result-title">Watch Syntari build the interface</h2>
         </div>
         <div class="result-meta">
           <span class="status-dot"></span>
-          <span data-result-status>Generated from 4 selected components</span>
+          <span data-result-status>Ready to generate</span>
+          <button class="replay-button" data-replay type="button">Replay</button>
         </div>
       </div>
 
