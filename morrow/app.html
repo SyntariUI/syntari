@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#181925">
+  <title>Morrow — Receivables workspace</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="product-app">
+  <aside class="app-sidebar" id="sidebar">
+    <a class="app-brand" href="./"><span class="brand-mark inverted">M</span><span>Morrow</span></a>
+    <nav class="app-nav" aria-label="Workspace">
+      <button class="nav-item active" data-view="overview"><span>⌂</span>Overview</button>
+      <button class="nav-item" data-view="invoices"><span>▤</span>Invoices <em>8</em></button>
+      <button class="nav-item" data-view="followups"><span>↗</span>Follow-ups <em>3</em></button>
+      <button class="nav-item" data-view="clients"><span>◎</span>Clients</button>
+      <button class="nav-item" data-view="activity"><span>◷</span>Activity</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="workspace-person"><span>GT</span><div><b>Giovani Studio</b><small>Independent</small></div></div><a href="./">← Landing page</a></div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-topbar"><button class="mobile-menu" id="menu-button" aria-label="Open menu">☰</button><div class="breadcrumbs"><span>Workspace</span><b>/</b><strong id="crumb">Overview</strong></div><div class="top-actions"><button class="command">⌘ K <span>Search</span></button><button class="round" id="theme-toggle" aria-label="Toggle theme">◐</button><span class="user-avatar">GT</span></div></header>
+
+    <main class="app-content" id="app-content">
+      <section class="app-view" data-view-panel="overview">
+        <div class="page-title"><div><span class="page-kicker">RECEIVABLES</span><h1>Good morning, Giovani.</h1><p>Three items need your attention. Everything else is moving.</p></div><button class="button dark" data-toast="Invoice import is a demo interaction">+ Import invoices</button></div>
+        <div class="metric-grid">
+          <article class="metric-card balance"><span>Outstanding balance</span><strong>$18,420</strong><p>8 open invoices</p><div class="metric-bar"><i style="width:46%"></i><i style="width:31%"></i><i style="width:23%"></i></div><small><b>46%</b> current · 31% 1–14d · 23% 15d+</small></article>
+          <article class="metric-card"><span>Overdue</span><strong>$6,980</strong><p class="warning">3 invoices need attention</p><small>Oldest: 18 days</small></article>
+          <article class="metric-card"><span>Collected this month</span><strong>$42,900</strong><p class="success">↑ 14% vs last month</p><small>11 invoices closed</small></article>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="workspace-card attention-card"><div class="card-title"><div><span class="spark">✦</span><div><h2>Your next moves</h2><p>Only the items that need a decision.</p></div></div><span class="badge">3 items</span></div>
+            <div class="attention-list">
+              <article class="attention-row"><span class="client-avatar ink">AC</span><div class="attention-main"><b>Acme Studio</b><p>$3,200 · 7 days overdue · draft ready</p></div><span class="priority red">Overdue</span><button class="button small" data-review="Acme Studio">Review draft</button></article>
+              <article class="attention-row"><span class="client-avatar">NO</span><div class="attention-main"><b>Northstar</b><p>$1,850 · client replied 2 hours ago</p></div><span class="priority amber">Reply</span><button class="button small" data-toast="Conversation opened">Open reply</button></article>
+              <article class="attention-row"><span class="client-avatar green">KO</span><div class="attention-main"><b>Koto Office</b><p>$980 · marked paid manually</p></div><span class="priority green">Verify</span><button class="button small" data-toast="Payment confirmed. Follow-ups stopped.">Confirm payment</button></article>
+            </div>
+          </section>
+
+          <aside class="workspace-card control-card"><div class="card-title"><div><span class="spark">↗</span><div><h2>Follow-up control</h2><p>What Morrow is handling next.</p></div></div></div><div class="control-number"><strong>5</strong><span>active sequences</span></div><div class="control-line"><span>Waiting for approval</span><b>1</b></div><div class="control-line"><span>Scheduled</span><b>3</b></div><div class="control-line"><span>Paused on reply</span><b>1</b></div><div class="next-send"><span>Next scheduled</span><b>Tomorrow · 09:30</b><small>Onda Agency · friendly reminder</small></div></aside>
+        </div>
+
+        <section class="workspace-card invoice-card"><div class="card-title"><div><h2>Open invoices</h2><p>Current balances and follow-up state.</p></div><button class="button ghost small" data-view-jump="invoices">View all →</button></div><div class="invoice-table"><div class="invoice-tr head"><span>Client</span><span>Invoice</span><span>Status</span><span>Due</span><span>Amount</span><span></span></div><div class="invoice-tr"><span><i class="client-avatar ink">AC</i><b>Acme Studio</b></span><span>#INV-2048</span><span><em class="status overdue">7 days overdue</em></span><span>Sep 12</span><strong>$3,200</strong><button class="dots" data-review="Acme Studio">•••</button></div><div class="invoice-tr"><span><i class="client-avatar">NO</i><b>Northstar</b></span><span>#INV-2051</span><span><em class="status review">Review draft</em></span><span>Sep 16</span><strong>$1,850</strong><button class="dots" data-review="Northstar">•••</button></div><div class="invoice-tr"><span><i class="client-avatar blue">OA</i><b>Onda Agency</b></span><span>#INV-2054</span><span><em class="status scheduled">Scheduled</em></span><span>Sep 23</span><strong>$4,400</strong><button class="dots" data-toast="Invoice details opened">•••</button></div></div></section>
+      </section>
+
+      <section class="app-view hidden" data-view-panel="invoices"><div class="page-title"><div><span class="page-kicker">INVOICES</span><h1>Every balance, one place.</h1><p>Search, filter, and see exactly what happens next.</p></div><button class="button dark" data-toast="Invoice import is a demo interaction">+ Import invoices</button></div><section class="workspace-card simple-panel"><div class="panel-toolbar"><input type="search" id="invoice-search" placeholder="Search client or invoice…"><div class="filters"><button class="filter active">All</button><button class="filter">Overdue</button><button class="filter">Scheduled</button><button class="filter">Review</button></div></div><div class="large-ledger" id="large-ledger"></div></section></section>
+
+      <section class="app-view hidden" data-view-panel="followups"><div class="page-title"><div><span class="page-kicker">FOLLOW-UPS</span><h1>Professional by default.</h1><p>Review tone, timing, and every sequence currently in motion.</p></div></div><div class="followup-grid"><section class="workspace-card followup-compose"><div class="card-title"><div><h2>Sequence preview</h2><p>Acme Studio · #INV-2048</p></div><span class="badge purple">Draft</span></div><div class="tone-picker"><button class="active">Friendly</button><button>Neutral</button><button>Firm</button></div><div class="email-preview"><span>Subject</span><b>Quick follow-up on invoice #INV-2048</b><hr><p>Hi Maya,</p><p>Just a quick follow-up on invoice #INV-2048 for $3,200, which was due on September 12.</p><p>Could you let me know when I should expect payment? Happy to resend anything you need.</p><p>Thanks,<br>Giovani</p></div><div class="compose-actions"><button class="button">Edit draft</button><button class="button dark" data-toast="Reminder approved and scheduled for tomorrow at 09:30">Approve & schedule</button></div></section><aside class="workspace-card sequence-card"><div class="card-title"><div><h2>Sequence</h2><p>Stops on payment or reply.</p></div></div><div class="timeline"><div class="done"><i>✓</i><span><b>Invoice due</b><small>Sep 12</small></span></div><div class="done"><i>✓</i><span><b>Friendly nudge</b><small>Sep 15 · sent</small></span></div><div class="now"><i>2</i><span><b>Second reminder</b><small>Ready for approval</small></span></div><div><i>3</i><span><b>Firm reminder</b><small>+7 days if still unpaid</small></span></div></div></aside></div></section>
+
+      <section class="app-view hidden" data-view-panel="clients"><div class="page-title"><div><span class="page-kicker">CLIENTS</span><h1>Know who pays how.</h1><p>A lightweight memory of balances, timing, and communication history.</p></div></div><div class="client-grid" id="client-grid"></div></section>
+      <section class="app-view hidden" data-view-panel="activity"><div class="page-title"><div><span class="page-kicker">ACTIVITY</span><h1>Nothing happens invisibly.</h1><p>Every approval, pause, reminder, and payment is recorded.</p></div></div><section class="workspace-card activity-panel" id="activity-list"></section></section>
+    </main>
+  </div>
+
+  <dialog id="review-dialog" class="review-dialog"><form method="dialog"><div class="dialog-head"><div><span class="page-kicker">REMINDER REVIEW</span><h2 id="dialog-client">Acme Studio</h2></div><button class="round" value="cancel" aria-label="Close">×</button></div><div class="dialog-balance"><span>Open balance</span><strong>$3,200</strong><small>#INV-2048 · 7 days overdue</small></div><div class="dialog-field"><label>Tone</label><div class="tone-picker"><button type="button" class="active">Friendly</button><button type="button">Neutral</button><button type="button">Firm</button></div></div><div class="dialog-field"><label for="message">Message</label><textarea id="message" rows="8">Hi Maya,\n\nJust a quick follow-up on invoice #INV-2048 for $3,200, which was due on September 12.\n\nCould you let me know when I should expect payment? Happy to resend anything you need.\n\nThanks,\nGiovani</textarea></div><label class="confirm-row"><input type="checkbox" id="balance-confirm"> I’ve confirmed this balance is still unpaid.</label><div class="dialog-actions"><button class="button" value="cancel">Cancel</button><button class="button dark" id="approve-button" type="button" disabled>Approve & schedule</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

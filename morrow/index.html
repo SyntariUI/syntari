@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Morrow — premium invoice follow-up for independent businesses.">
+  <meta name="theme-color" content="#181925">
+  <title>Morrow — Keep your cash flowing</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="landing">
+  <header class="marketing-nav">
+    <a class="brand" href="./" aria-label="Morrow home"><span class="brand-mark">M</span><span>Morrow</span></a>
+    <nav aria-label="Primary"><a href="#product">Product</a><a href="#controls">Controls</a><a href="#pricing">Pricing</a></nav>
+    <div class="nav-actions"><span class="built-with">Built with Syntari</span><a class="button dark" href="app.html">Explore demo <span>↗</span></a></div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span> Receivables for independent businesses</div>
+        <h1>Keep your<br>cash flowing.</h1>
+        <p class="hero-lede">A premium follow-up workspace that keeps invoices moving without making you become the collections department.</p>
+        <div class="hero-actions"><a class="button mint large" href="app.html">Explore the workspace <span>↗</span></a><a class="text-link" href="#product">See how it works <span>↓</span></a></div>
+        <p class="hero-note">Track what’s owed · Review the next message · Stop automatically when paid</p>
+      </div>
+
+      <div class="hero-product" aria-label="Morrow product preview">
+        <div class="preview-window">
+          <div class="preview-topbar"><div class="preview-brand"><span class="brand-mark small">M</span>Morrow</div><span class="demo-pill">Interactive preview</span><span class="avatar-mini">GT</span></div>
+          <div class="preview-body">
+            <div class="preview-heading"><div><span>Receivables</span><h2>Good morning, Alex.</h2></div><button class="mini-button">+ Import invoices</button></div>
+            <div class="preview-metrics">
+              <div><span>Outstanding</span><strong>$18,420</strong><small>8 open invoices</small></div>
+              <div><span>Overdue</span><strong>$6,980</strong><small class="warn">3 need attention</small></div>
+              <div><span>Collected this month</span><strong>$42,900</strong><small class="good">↑ 14% vs last month</small></div>
+            </div>
+            <div class="preview-table">
+              <div class="preview-row header"><span>Client</span><span>Status</span><span>Due</span><span>Amount</span></div>
+              <div class="preview-row"><span class="client"><i>AC</i><b>Acme Studio<small>#INV-2048</small></b></span><span><em class="status overdue">7 days overdue</em></span><span>Sep 12</span><strong>$3,200</strong></div>
+              <div class="preview-row"><span class="client"><i>NO</i><b>Northstar<small>#INV-2051</small></b></span><span><em class="status review">Review draft</em></span><span>Sep 16</span><strong>$1,850</strong></div>
+              <div class="preview-row"><span class="client"><i>OA</i><b>Onda Agency<small>#INV-2054</small></b></span><span><em class="status scheduled">Scheduled</em></span><span>Sep 23</span><strong>$4,400</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-review">
+          <div class="float-label"><span class="spark">✦</span> NEXT MOVE</div>
+          <h3>Acme Studio is 7 days overdue.</h3>
+          <p>A concise follow-up is ready in your normal tone.</p>
+          <div class="float-actions"><span>Friendly · today</span><a href="app.html#review">Review →</a></div>
+        </div>
+        <div class="floating-paid"><span class="paid-check">✓</span><div><strong>Payment confirmed</strong><small>Follow-ups stopped automatically</small></div></div>
+      </div>
+    </section>
+
+    <section class="audience-bar"><span>BUILT FOR</span><b>Freelancers</b><i></i><b>Solo consultants</b><i></i><b>Small studios</b><i></i><b>1–3 person agencies</b></section>
+
+    <section class="statement shell"><p class="eyebrow plain">One job, done exceptionally well</p><h2>A finance operation.<br><span>Minus the finance team.</span></h2><p>Morrow turns unpaid invoices into a calm, visible workflow. No generic AI dashboard. No sprawling accounting suite. Just the next action required to get paid.</p></section>
+
+    <section class="product-section shell" id="product">
+      <div class="section-heading"><div><p class="eyebrow plain">The Morrow workflow</p><h2>From “sent” to “paid”<br>without the awkward chase.</h2></div><p>Every invoice moves through a small number of explicit states. You stay in control of tone and approvals; Morrow handles the repetitive work.</p></div>
+      <div class="workflow-card">
+        <div class="workflow-tabs" role="tablist">
+          <button class="workflow-tab active" data-workflow="owed"><span>01</span> See what’s owed</button>
+          <button class="workflow-tab" data-workflow="move"><span>02</span> Move it forward</button>
+          <button class="workflow-tab" data-workflow="close"><span>03</span> Close the loop</button>
+        </div>
+        <div class="workflow-content">
+          <div class="workflow-copy"><span class="step-kicker">STEP 01</span><h3 id="workflow-title">One clear view of your receivables.</h3><p id="workflow-copy">Import invoices and instantly see what is outstanding, overdue, scheduled, or waiting for your review.</p><ul id="workflow-list"><li>Age every open invoice automatically</li><li>Surface only items that need attention</li><li>Keep client context beside the balance</li></ul><a class="text-link" href="app.html">Open the workspace <span>↗</span></a></div>
+          <div class="workflow-visual" id="workflow-visual">
+            <div class="ledger-head"><span>Open balance</span><b>$18,420</b><small>Across 8 invoices</small></div>
+            <div class="aging"><span class="aging-current" style="width:46%"></span><span class="aging-mid" style="width:31%"></span><span class="aging-late" style="width:23%"></span></div>
+            <div class="aging-labels"><span><i class="current"></i> Current $8.4k</span><span><i class="mid"></i> 1–14d $5.7k</span><span><i class="late"></i> 15d+ $4.2k</span></div>
+            <div class="mini-ledger"><div><b>Acme Studio</b><span class="status overdue">7 days overdue</span><strong>$3,200</strong></div><div><b>Northstar</b><span class="status review">Review draft</span><strong>$1,850</strong></div><div><b>Onda Agency</b><span class="status scheduled">Scheduled</span><strong>$4,400</strong></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="control-section" id="controls">
+      <div class="shell control-grid">
+        <div><p class="eyebrow light">Automation with judgment</p><h2>Polite by default.<br>Controlled by you.</h2><p class="control-lede">The awkward part of collections isn’t sending email. It’s knowing when to send, what to say, and when to stop. Morrow makes those rules visible.</p><div class="control-stats"><div><strong>3</strong><span>tone levels</span></div><div><strong>0</strong><span>messages after payment</span></div><div><strong>1</strong><span>place to review</span></div></div></div>
+        <div class="rules-card">
+          <div class="rules-head"><span>Follow-up controls</span><span>Workspace default</span></div>
+          <div class="rule"><span class="rule-icon">↗</span><div><b>Start after the due date</b><p>First reminder waits 3 days unless you choose otherwise.</p></div><em>3 days</em></div>
+          <div class="rule"><span class="rule-icon">✦</span><div><b>Match your voice</b><p>Friendly, neutral, or firm — with every draft editable.</p></div><em>Friendly</em></div>
+          <div class="rule"><span class="rule-icon">Ⅱ</span><div><b>Pause on client reply</b><p>No follow-up is sent while a conversation needs your attention.</p></div><em>Always</em></div>
+          <div class="rule"><span class="rule-icon">✓</span><div><b>Stop when payment lands</b><p>Verified payments close the sequence automatically.</p></div><em>Automatic</em></div>
+          <div class="rules-note">Manual / CSV invoices ask you to confirm payment status before any follow-up.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing shell" id="pricing">
+      <div class="section-heading pricing-heading"><div><p class="eyebrow plain">Proposed launch pricing</p><h2>Small by design.<br>Not by value.</h2></div><p>Price the avoided admin, delayed cash, and uncomfortable follow-ups — not AI tokens.</p></div>
+      <div class="pricing-grid">
+        <article class="price-card"><span class="plan-label">INDEPENDENT</span><h3>For people who bill clients directly.</h3><p>Everything needed to keep a solo receivables workflow moving.</p><div class="price"><sup>$</sup>29<span>/ month</span></div><a href="app.html" class="button dark full">Explore Independent</a><ul><li>Up to 50 open invoices</li><li>Smart follow-up sequences</li><li>3 tone profiles</li><li>CSV + manual import</li></ul></article>
+        <article class="price-card featured"><span class="recommended">FOR SMALL STUDIOS</span><span class="plan-label">STUDIO</span><h3>For teams managing client work together.</h3><p>Add shared visibility and approvals without adding finance software.</p><div class="price"><sup>$</sup>59<span>/ month</span></div><a href="app.html" class="button mint full">Explore Studio</a><ul><li>Everything in Independent</li><li>Up to 250 open invoices</li><li>Shared workspace</li><li>Approval roles</li></ul></article>
+      </div>
+      <p class="pricing-note">Illustrative pricing for product exploration. No subscription or payment is currently available.</p>
+    </section>
+
+    <section class="closing"><div class="shell closing-inner"><div><p class="eyebrow light">Morrow</p><h2>Do the work.<br>Get paid for it.</h2></div><a href="app.html" class="button mint large">Explore the demo <span>↗</span></a></div></section>
+  </main>
+
+  <footer class="marketing-footer shell"><a class="brand" href="./"><span class="brand-mark">M</span><span>Morrow</span></a><nav><a href="#product">Product</a><a href="#controls">Controls</a><a href="#pricing">Pricing</a><a href="../">SyntariUI</a></nav><span>Concept · sample data only</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
