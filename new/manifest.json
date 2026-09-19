@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "namespace": "new",
+  "theme": "dark",
+  "foundation": {
+    "css": [
+      "tokens.css",
+      "styles.css"
+    ],
+    "principles": [
+      "use semantic Syntari tokens",
+      "retain accessible native controls",
+      "prefer existing primitives before creating new ones"
+    ]
+  },
+  "compositions": [
+    {
+      "id": "command-palette",
+      "route": "/new/command-palette/",
+      "purpose": "Search and execute quick actions, navigation, and recent destinations.",
+      "primitives": [
+        "command-palette",
+        "input",
+        "kbd",
+        "button"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.surface.subtle",
+        "color.border.default",
+        "color.text.primary",
+        "color.text.secondary",
+        "color.status.success",
+        "radius.card",
+        "space.2",
+        "space.3",
+        "space.4"
+      ],
+      "states": [
+        "default",
+        "filtered",
+        "keyboard-active",
+        "selected"
+      ]
+    },
+    {
+      "id": "revenue-card",
+      "route": "/new/revenue-card/",
+      "purpose": "Summarize revenue and show the selected period as a readable trend with both rises and falls.",
+      "primitives": [
+        "card",
+        "area-chart",
+        "chart-toolbar",
+        "headline-metric"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.border.default",
+        "color.text.primary",
+        "color.text.secondary",
+        "color.status.success",
+        "radius.card",
+        "motion.duration.data"
+      ],
+      "states": [
+        "7d",
+        "30d",
+        "90d"
+      ]
+    },
+    {
+      "id": "team-projects-report",
+      "route": "/new/team-projects-report/",
+      "purpose": "Agent-generated report of project efficiency, time saved, and cost saved.",
+      "primitives": [
+        "card",
+        "metric-strip",
+        "table",
+        "progress"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.surface.subtle",
+        "color.border.default",
+        "color.text.primary",
+        "color.text.secondary",
+        "color.status.success",
+        "radius.card",
+        "space.3",
+        "space.4"
+      ],
+      "states": [
+        "week",
+        "month",
+        "quarter"
+      ]
+    }
+  ]
+}

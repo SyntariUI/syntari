@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Syntari revenue analytics card.">
+  <title>Revenue card — Syntari UI</title>
+  <link rel="icon" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../new.css">
+  <script type="module" src="../new.js"></script>
+</head>
+<body class="syntari-shot">
+  <a class="shot-back" href="../">Syntari / new</a>
+  <main class="shot-stage">
+    <article class="analytics-card shot-component" data-revenue-card aria-labelledby="revenue-title">
+      <header class="analytics-card-head">
+        <div>
+          <h2 id="revenue-title">Revenue</h2>
+          <p>Total revenue across all products</p>
+        </div>
+        <label class="shot-select">
+          <span class="sr-only">Revenue period</span>
+          <select data-revenue-period aria-label="Revenue period">
+            <option value="7d">Last 7 days</option>
+            <option value="30d" selected>Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+          </select>
+        </label>
+      </header>
+
+      <div class="revenue-summary">
+        <strong class="revenue-value" data-revenue-value>€24,532</strong>
+        <div class="revenue-change"><span aria-hidden="true">↑</span><strong data-revenue-delta>+12.4%</strong><span>vs. previous period</span></div>
+      </div>
+
+      <figure class="revenue-chart" aria-labelledby="revenue-chart-caption">
+        <figcaption id="revenue-chart-caption" class="sr-only">Revenue trend for the selected period, with several rises and falls.</figcaption>
+        <svg class="revenue-svg" viewBox="0 0 640 220" role="img" aria-label="Revenue trend">
+          <defs>
+            <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--green-4)" stop-opacity=".26"></stop>
+              <stop offset="100%" stop-color="var(--green-4)" stop-opacity=".02"></stop>
+            </linearGradient>
+          </defs>
+          <g class="chart-grid" aria-hidden="true">
+            <line x1="8" y1="48" x2="632" y2="48"></line>
+            <line x1="8" y1="98" x2="632" y2="98"></line>
+            <line x1="8" y1="148" x2="632" y2="148"></line>
+            <line x1="8" y1="198" x2="632" y2="198"></line>
+          </g>
+          <path class="revenue-area" data-revenue-area d=""></path>
+          <path class="revenue-line" data-revenue-line d=""></path>
+          <circle class="revenue-point" data-revenue-point cx="0" cy="0" r="5"></circle>
+        </svg>
+        <div class="revenue-tooltip" data-revenue-tooltip>€2,840</div>
+        <div class="chart-axis" data-revenue-axis>
+          <span>Aug 20</span><span>Aug 27</span><span>Sep 3</span><span>Sep 10</span><span>Sep 17</span>
+        </div>
+      </figure>
+
+      <footer class="analytics-card-foot">
+        <a href="../team-projects-report/">View detailed analytics</a>
+        <a class="square-action" href="../team-projects-report/" aria-label="View detailed analytics">→</a>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
