@@ -143,3 +143,63 @@ body.jev-page{min-width:320px;background:
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
 }
+
+
+/* Live generative runtime */
+.replay-button{margin-left:8px;border:1px solid var(--jev-border);border-radius:999px;padding:6px 10px;background:var(--surface);color:var(--text);font-size:9px;transition:transform var(--motion-fast),background var(--motion-fast)}
+.replay-button:hover:not(:disabled){background:var(--bg-2);transform:translateY(-1px)}
+.replay-button:disabled{opacity:.4;cursor:default}
+.runtime-stage.is-complete{border-color:color-mix(in srgb,var(--green-4) 28%,var(--jev-border))}
+.runtime-stage.is-complete>header::after{content:"✓";margin-left:auto;display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--green-a1);color:var(--success-text);font-size:9px}
+.runtime-stage.is-complete .model-pill{margin-left:0}
+.decision.is-pending{opacity:.55}
+.decision.is-pending .decision-bar span{animation:none}
+.decision.is-resolved{animation:decision-resolve .26s var(--ease-spring)}
+.primary-component.is-waiting,.component-pill.is-waiting{color:var(--fg-2);border-style:dashed;background:transparent}
+.jev-pop{animation:jev-pop .3s var(--ease-spring) both}
+.compile-line strong.error{color:var(--danger-text)}
+
+.generation-shell{width:100%;min-height:500px;border:1px solid var(--jev-border);border-radius:14px;background:var(--surface);box-shadow:0 24px 60px #0003;overflow:hidden;position:relative}
+.generation-status{height:66px;border-bottom:1px solid var(--jev-border);display:flex;align-items:center;gap:12px;padding:0 18px;background:color-mix(in srgb,var(--surface) 94%,transparent)}
+.generation-status strong{display:block;font-size:11px;font-weight:500}
+.generation-status p{margin-top:3px;font-size:9px;color:var(--muted)}
+.generation-pulse{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--blue-a2);animation:generation-pulse 1.2s ease-out infinite}
+.generation-skeleton{padding:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.generation-skeleton-card{min-height:120px;border:1px solid var(--jev-border);border-radius:11px;padding:14px;position:relative;overflow:hidden;background:var(--bg-a1)}
+.generation-skeleton-card::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,var(--bg-a3) 48%,transparent 76%);transform:translateX(-100%);animation:skeleton-scan 1.2s linear infinite}
+.generation-skeleton-card span,.generation-skeleton-card i{display:block;border-radius:4px;background:var(--bg-a3)}
+.generation-skeleton-card span{width:34%;height:8px;margin-bottom:20px}
+.generation-skeleton-card i{height:7px;margin-top:9px}
+.generation-skeleton-card i:nth-of-type(1){width:86%}
+.generation-skeleton-card i:nth-of-type(2){width:64%}
+.generation-skeleton-card i:nth-of-type(3){width:76%}
+.generation-skeleton-card.skeleton-1{grid-column:1/-1;min-height:108px}
+.generation-skeleton-card.skeleton-2{min-height:180px}
+.generation-skeleton-card.skeleton-3{min-height:180px}
+
+.ui-canvas{position:relative;min-height:560px}
+.ui-canvas>.ir-screen{align-self:flex-start;width:100%;padding:20px;border:1px solid var(--jev-border);border-radius:14px;background:var(--surface);box-shadow:0 24px 60px #0003;overflow:hidden}
+.ui-canvas .ir-screen-title{font-size:17px;padding-bottom:4px}
+.ui-canvas .ir-node,.ui-canvas .ir-region{will-change:transform,opacity}
+.ui-canvas .jev-generated-node{opacity:0;transform:translateY(12px) scale(.992);animation:generated-node-in .5s var(--ease-spring) var(--enter-delay,0ms) forwards}
+.ui-canvas .ir-region.jevv-evidence-open,.ui-canvas .ir-region.jev-evidence-open{animation:evidence-open .35s var(--ease-out)}
+.ui-canvas .stream-content{min-height:48px}
+.ui-canvas [data-ir-component="streaming-response"] .agent-surface{border-color:var(--blue-a3);box-shadow:0 0 0 1px var(--blue-a1)}
+.ui-canvas [data-ir-component="tool-approval"].jev-risk-lock .agent-surface{animation:risk-lock .55s var(--ease-spring);box-shadow:0 0 0 1px var(--red-a2),0 18px 44px #0002}
+.ui-canvas .rank-fill{transform-origin:left center}
+.trace-row.is-new{animation:trace-in .24s var(--ease-out) both}
+
+@keyframes decision-resolve{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes jev-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes generation-pulse{0%{box-shadow:0 0 0 0 var(--blue-a2)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes skeleton-scan{to{transform:translateX(100%)}}
+@keyframes generated-node-in{to{opacity:1;transform:none}}
+@keyframes evidence-open{from{transform:translateY(-4px);opacity:.72}to{transform:none;opacity:1}}
+@keyframes risk-lock{0%{transform:scale(.985);opacity:.6}65%{transform:scale(1.01)}100%{transform:none;opacity:1}}
+@keyframes trace-in{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:none}}
+
+@media(max-width:820px){
+  .generation-skeleton{grid-template-columns:1fr}
+  .generation-skeleton-card.skeleton-1{grid-column:auto}
+  .result-meta{flex-wrap:wrap}
+}
