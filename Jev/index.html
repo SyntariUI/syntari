@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Jev × SyntariUI — Decision Layer</title>
+  <meta name="description" content="Interactive visualisation of Jev as a decision layer for SyntariUI.">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./visual.css">
+</head>
+<body class="jev-page">
+  <header class="jev-topbar">
+    <a class="jev-brand" href="../">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>Syntari</span>
+      <span class="jev-slash">/</span>
+      <span class="jev-section">Jev experiment</span>
+    </a>
+    <div class="jev-status">
+      <span class="status-dot"></span>
+      Decision layer prototype
+    </div>
+  </header>
+
+  <main class="jev-shell">
+    <section class="jev-hero">
+      <div>
+        <div class="jev-kicker">SYSTEM ONE × GENERATIVE UI</div>
+        <h1>Jev decides.<br>Syntari renders.</h1>
+        <p>
+          Jev does not generate the interface. It makes small, typed decisions that constrain
+          what Syntari is allowed to build.
+        </p>
+      </div>
+
+      <div class="jev-thesis" aria-label="Architecture summary">
+        <span>state</span>
+        <i>→</i>
+        <strong>decision</strong>
+        <i>→</i>
+        <span>UI plan</span>
+        <i>→</i>
+        <strong>validated interface</strong>
+      </div>
+    </section>
+
+    <section class="scenario-picker" aria-labelledby="scenario-title">
+      <div class="section-copy">
+        <span class="eyebrow">Input</span>
+        <h2 id="scenario-title">Choose a request</h2>
+      </div>
+      <div class="scenario-list" role="list">
+        <button class="scenario-chip is-selected" data-scenario="q2">
+          <span class="chip-index">01</span>
+          <span>Compare Q2 performance</span>
+        </button>
+        <button class="scenario-chip" data-scenario="brief">
+          <span class="chip-index">02</span>
+          <span>Prepare a project brief</span>
+        </button>
+        <button class="scenario-chip" data-scenario="delete">
+          <span class="chip-index">03</span>
+          <span>Delete inactive users</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="runtime" aria-label="Jev to Syntari runtime">
+      <div class="runtime-rail" aria-hidden="true"></div>
+
+      <article class="runtime-stage input-stage" data-stage="input">
+        <header>
+          <span class="stage-number">01</span>
+          <span class="stage-type">STATE</span>
+        </header>
+        <div class="stage-body">
+          <div class="request-bubble" data-request></div>
+          <div class="state-grid" data-state></div>
+        </div>
+        <footer>User + application context</footer>
+      </article>
+
+      <article class="runtime-stage jev-stage" data-stage="jev">
+        <header>
+          <span class="stage-number">02</span>
+          <span class="stage-type">JEV</span>
+          <span class="model-pill">System One</span>
+        </header>
+        <div class="stage-body">
+          <div class="decision-list" data-decisions></div>
+        </div>
+        <footer>
+          <span>Typed decisions</span>
+          <span class="latency" data-latency></span>
+        </footer>
+      </article>
+
+      <article class="runtime-stage plan-stage" data-stage="plan">
+        <header>
+          <span class="stage-number">03</span>
+          <span class="stage-type">SYNTARI POLICY</span>
+        </header>
+        <div class="stage-body">
+          <div class="plan-label">Primary</div>
+          <div class="primary-component" data-primary></div>
+          <div class="plan-label">Supporting</div>
+          <div class="component-stack" data-supporting></div>
+        </div>
+        <footer>Only approved registry components</footer>
+      </article>
+
+      <article class="runtime-stage route-stage" data-stage="route">
+        <header>
+          <span class="stage-number">04</span>
+          <span class="stage-type">ROUTING</span>
+        </header>
+        <div class="stage-body">
+          <div class="route-state" data-route-state>
+            <div class="route-orb"></div>
+            <strong data-route-title></strong>
+            <p data-route-copy></p>
+          </div>
+        </div>
+        <footer data-route-footer></footer>
+      </article>
+
+      <article class="runtime-stage render-stage" data-stage="render">
+        <header>
+          <span class="stage-number">05</span>
+          <span class="stage-type">SYNTHESIS</span>
+        </header>
+        <div class="stage-body">
+          <div class="compile-line">
+            <span>IR generated</span>
+            <strong data-ir-count></strong>
+          </div>
+          <div class="compile-line">
+            <span>Registry check</span>
+            <strong class="ok">Passed</strong>
+          </div>
+          <div class="compile-line">
+            <span>Validator</span>
+            <strong class="ok">0 errors</strong>
+          </div>
+          <div class="compile-line">
+            <span>Renderer</span>
+            <strong class="ok">Ready</strong>
+          </div>
+        </div>
+        <footer>Syntari remains authoritative</footer>
+      </article>
+    </section>
+
+    <section class="result-section" aria-labelledby="result-title">
+      <div class="result-heading">
+        <div>
+          <span class="eyebrow">Tangible result</span>
+          <h2 id="result-title">The interface Syntari chooses to build</h2>
+        </div>
+        <div class="result-meta">
+          <span class="status-dot"></span>
+          <span data-result-status>Generated from 4 selected components</span>
+        </div>
+      </div>
+
+      <div class="result-layout">
+        <aside class="trace-panel">
+          <div class="trace-head">
+            <span>Decision trace</span>
+            <span>confidence</span>
+          </div>
+          <div data-trace></div>
+          <div class="trace-note">
+            The trace is inspectable for developers. The end user sees only the resulting interface.
+          </div>
+        </aside>
+
+        <div class="ui-canvas" data-preview aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="principle-grid" aria-label="Integration principles">
+      <article>
+        <span>Jev</span>
+        <strong>What should happen?</strong>
+        <p>Classifies intent, representation, evidence, reasoning and risk.</p>
+      </article>
+      <article>
+        <span>Syntari registry</span>
+        <strong>What is allowed?</strong>
+        <p>Defines valid components, semantics, constraints and composition rules.</p>
+      </article>
+      <article>
+        <span>LLM</span>
+        <strong>What needs reasoning?</strong>
+        <p>Only enters the path when synthesis or explanation is actually required.</p>
+      </article>
+      <article>
+        <span>Syntari renderer</span>
+        <strong>What does the user see?</strong>
+        <p>Validated IR becomes a consistent interface using the design system.</p>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="./visual.js"></script>
+</body>
+</html>
