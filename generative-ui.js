@@ -44,7 +44,7 @@ const examples = {
     prompt: 'Generate project management brief',
     label: 'Project brief',
     spec: screen('Project Atlas · Delivery brief', 'stack', [
-      { component: 'syntari.banner', props: { message: 'On track, with one dependency at risk', detail: 'Design and frontend are inside plan. The data migration owner needs a decision before Thursday.', tone: 'info', icon: 'workflow' } },
+      { component: 'syntari.banner', props: { message: 'On track, with one dependency at risk', detail: 'Design and frontend are inside plan. The data migration owner needs a decision before Thursday.', tone: 'info', icon: 'list' } },
       { component: 'syntari.stat-row', props: { stats: [
         { label: 'Progress', value: '68%', badge: '+11%', note: 'this week', tone: 'success' },
         { label: 'Open tasks', value: '24', badge: '-8', note: 'since Monday', tone: 'success' },
@@ -58,7 +58,7 @@ const examples = {
           { title: 'Product definition', detail: 'Scope, requirements and success measures', time: '100%', mark: 'check', state: 'done' },
           { title: 'Design and prototype', detail: 'Core flows approved and documented', time: '92%', mark: 'check', state: 'done' },
           { title: 'Implementation', detail: 'Frontend and API work in progress', time: '64%', mark: 'code', state: 'current' },
-          { title: 'Data migration', detail: 'Decision required on ownership and fallback', time: '42%', mark: 'database', state: 'current' },
+          { title: 'Data migration', detail: 'Decision required on ownership and fallback', time: '42%', mark: 'info', state: 'current' },
           { title: 'Launch readiness', detail: 'QA, rollout and enablement', time: '18%', mark: 'clock', state: 'pending' }
         ]
       } },
@@ -86,7 +86,7 @@ const examples = {
     prompt: 'Generate team brief before meeting',
     label: 'Team brief',
     spec: screen('Team brief · Product & Design sync', 'stack', [
-      { component: 'syntari.banner', props: { message: 'Three decisions are worth the room', detail: 'Most updates can stay async. Use the meeting for rollout, research scope and the Atlas dependency.', tone: 'info', icon: 'users' } },
+      { component: 'syntari.banner', props: { message: 'Three decisions are worth the room', detail: 'Most updates can stay async. Use the meeting for rollout, research scope and the Atlas dependency.', tone: 'info', icon: 'info' } },
       { component: 'syntari.stat-row', props: { stats: [
         { label: 'Decisions', value: '3', badge: 'today', note: 'need alignment', tone: 'warning' },
         { label: 'Blockers', value: '1', badge: 'Atlas', note: 'migration owner', tone: 'warning' },
@@ -97,9 +97,9 @@ const examples = {
         total: '30m',
         budget: 'meeting plan',
         stages: [
-          { title: 'Decide rollout', detail: 'Choose 25% or 50% initial exposure', time: '8m', mark: 'target', state: 'current' },
-          { title: 'Resolve Atlas ownership', detail: 'Assign migration rollback owner', time: '8m', mark: 'usercheck', state: 'current' },
-          { title: 'Set research scope', detail: 'Approve five interviews for onboarding', time: '7m', mark: 'messagesquare', state: 'pending' },
+          { title: 'Decide rollout', detail: 'Choose 25% or 50% initial exposure', time: '8m', mark: 'star', state: 'current' },
+          { title: 'Resolve Atlas ownership', detail: 'Assign migration rollback owner', time: '8m', mark: 'info', state: 'current' },
+          { title: 'Set research scope', detail: 'Approve five interviews for onboarding', time: '7m', mark: 'list', state: 'pending' },
           { title: 'Close with owners', detail: 'State decisions, dates and follow-ups', time: '7m', mark: 'check', state: 'pending' }
         ]
       } },
