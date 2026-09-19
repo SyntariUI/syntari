@@ -84,7 +84,7 @@ The live suite records:
 
 ## Current offline result
 
-**11/11 tests pass** after adding the provider-contract checks.
+**10/10 tests pass** after adding the provider-contract check.
 
 This proves the Syntari side of the architecture is coherent. It does **not** yet prove Jev's live classification quality; that requires `TYPESAFE_API_KEY`.
 
