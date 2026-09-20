@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fbfbfa">
+  <meta name="description" content="Art Atlas — explore, collect and remember the art you see.">
+  <title>Art Atlas — SyntariUI prototype</title>
+  <link rel="icon" href="../favicon.svg">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../controls.css">
+  <link rel="stylesheet" href="../motion.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body class="atlas-app">
+  <a class="skip" href="#map">Skip to map</a>
+
+  <header class="atlas-topbar">
+    <a class="atlas-brand" href="./" aria-label="Art Atlas home">Art Atlas</a>
+
+    <label class="atlas-search input-shell" aria-label="Search art">
+      <i data-lucide="search" class="icon"></i>
+      <input id="global-search" autocomplete="off" placeholder="Search cities, museums, artists or artworks…">
+      <kbd>⌘ K</kbd>
+    </label>
+
+    <div class="segmented atlas-segments" role="tablist" aria-label="Explore views">
+      <button class="active" data-view="map" role="tab" aria-selected="true">Map</button>
+      <button data-view="timeline" role="tab">Timeline</button>
+      <button data-view="artists" role="tab">Artists</button>
+      <button data-view="museums" role="tab">Museums</button>
+    </div>
+
+    <div class="atlas-actions">
+      <button class="icon-button passport-button" id="passport-button" aria-label="Open passport">
+        <i data-lucide="book-open" class="icon"></i>
+        <span id="passport-count" class="action-count">0</span>
+      </button>
+      <button class="icon-button" id="filter-button" aria-label="Filter artworks" aria-expanded="false">
+        <i data-lucide="sliders-horizontal" class="icon"></i>
+      </button>
+    </div>
+
+    <div class="search-results" id="search-results" hidden></div>
+  </header>
+
+  <main class="atlas-stage">
+    <section id="map" class="atlas-map" aria-label="Interactive art map"></section>
+
+    <section class="map-status" id="map-status" aria-live="polite">
+      <span id="status-count">0 works</span>
+      <span class="status-sep">·</span>
+      <span id="status-period">1400–1900</span>
+      <span class="status-sep">·</span>
+      <button id="status-filter">All art <i data-lucide="chevron-down" class="icon"></i></button>
+    </section>
+
+    <aside class="filter-sheet" id="filter-sheet" aria-label="Art filters" hidden>
+      <div class="sheet-head">
+        <div>
+          <strong>Filter by</strong>
+          <span id="filter-summary">All art</span>
+        </div>
+        <button class="icon-button" id="filter-close" aria-label="Close filters"><i data-lucide="x" class="icon"></i></button>
+      </div>
+      <div class="filter-list">
+        <button data-filter="period"><i data-lucide="clock-3" class="icon"></i><span>Period</span><em id="filter-period-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+        <button data-filter="movement"><i data-lucide="sparkles" class="icon"></i><span>Movement</span><em id="filter-movement-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+        <button data-filter="artist"><i data-lucide="user-round" class="icon"></i><span>Artist</span><em id="filter-artist-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+        <button data-filter="museum"><i data-lucide="landmark" class="icon"></i><span>Museum</span><em id="filter-museum-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+        <button data-filter="country"><i data-lucide="globe-2" class="icon"></i><span>Country</span><em id="filter-country-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+        <button data-filter="decade"><i data-lucide="calendar-days" class="icon"></i><span>Decade</span><em id="filter-decade-label">Any</em><i data-lucide="chevron-right" class="icon"></i></button>
+      </div>
+      <div class="filter-options" id="filter-options" hidden></div>
+      <button class="button secondary full-width" id="clear-filters">Clear filters</button>
+    </aside>
+
+    <aside class="museum-sheet" id="museum-sheet" hidden aria-live="polite">
+      <button class="sheet-close icon-button" id="museum-close" aria-label="Close museum"><i data-lucide="x" class="icon"></i></button>
+      <div class="museum-art-stack" id="museum-art-stack"></div>
+      <div class="museum-copy">
+        <span class="eyebrow" id="museum-city">Paris, France</span>
+        <h2 id="museum-name">Musée du Louvre</h2>
+        <p id="museum-description"></p>
+        <div class="museum-meta">
+          <span><strong id="museum-works">0</strong> essential works</span>
+          <span><strong id="museum-artists">0</strong> artists</span>
+        </div>
+        <div class="museum-actions">
+          <button class="button primary" id="visit-museum"><i data-lucide="check" class="icon"></i><span>I’ve been here</span></button>
+          <button class="button" id="museum-details">View museum</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="nearby-rail" id="nearby-rail" aria-label="Nearby artworks">
+      <div class="nearby-head">
+        <div><strong>Nearby works</strong><span id="nearby-context">Europe</span></div>
+        <button class="icon-button" id="nearby-collapse" aria-label="Collapse nearby works"><i data-lucide="chevron-down" class="icon"></i></button>
+      </div>
+      <div class="nearby-track" id="nearby-track"></div>
+    </section>
+
+    <section class="view-overlay" id="view-overlay" hidden>
+      <div class="view-overlay-head">
+        <div>
+          <span class="eyebrow">Art Atlas</span>
+          <h1 id="view-title">Timeline</h1>
+          <p id="view-subtitle"></p>
+        </div>
+        <button class="icon-button" id="view-close" aria-label="Back to map"><i data-lucide="x" class="icon"></i></button>
+      </div>
+      <div id="view-content" class="view-content"></div>
+    </section>
+
+    <section class="passport-view" id="passport-view" hidden>
+      <header class="passport-head">
+        <div>
+          <span class="eyebrow">Your collection</span>
+          <h1>Your Art Passport</h1>
+          <p>A personal record of the museums, artworks and artists that have moved you.</p>
+        </div>
+        <button class="icon-button" id="passport-close" aria-label="Close passport"><i data-lucide="x" class="icon"></i></button>
+      </header>
+
+      <div class="passport-stats" id="passport-stats"></div>
+
+      <div class="passport-section">
+        <div class="section-row"><h2>Museum stamps</h2><span id="museum-stamp-count"></span></div>
+        <div class="stamp-grid" id="stamp-grid"></div>
+      </div>
+
+      <div class="passport-section">
+        <div class="section-row"><h2>Artist journeys</h2><span>Essential works seen</span></div>
+        <div class="artist-journeys" id="artist-journeys"></div>
+      </div>
+    </section>
+
+    <section class="journal-view" id="journal-view" hidden>
+      <header class="passport-head">
+        <div>
+          <span class="eyebrow">Private by default</span>
+          <h1>Your Journal</h1>
+          <p>The art you saw, and what stayed with you.</p>
+        </div>
+        <button class="icon-button" id="journal-close" aria-label="Close journal"><i data-lucide="x" class="icon"></i></button>
+      </header>
+      <div class="journal-list" id="journal-list"></div>
+    </section>
+  </main>
+
+  <nav class="mobile-tabbar" aria-label="Primary">
+    <button class="active" data-mobile-view="explore"><i data-lucide="map" class="icon"></i><span>Explore</span></button>
+    <button data-mobile-view="search"><i data-lucide="search" class="icon"></i><span>Search</span></button>
+    <button data-mobile-view="passport"><i data-lucide="book-open" class="icon"></i><span>Passport</span></button>
+    <button data-mobile-view="journal"><i data-lucide="user-round" class="icon"></i><span>You</span></button>
+  </nav>
+
+  <dialog id="artwork-dialog" class="artwork-dialog">
+    <button class="art-dialog-close icon-button" data-dialog-close aria-label="Close artwork"><i data-lucide="x" class="icon"></i></button>
+    <div class="artwork-hero">
+      <img id="artwork-image" alt="">
+      <div class="artwork-image-actions">
+        <button class="icon-button" id="save-artwork" aria-label="Save artwork"><i data-lucide="bookmark" class="icon"></i></button>
+        <button class="icon-button" id="share-artwork" aria-label="Share artwork"><i data-lucide="share-2" class="icon"></i></button>
+      </div>
+    </div>
+    <div class="artwork-detail">
+      <span class="eyebrow" id="artwork-kicker"></span>
+      <h2 id="artwork-title"></h2>
+      <p class="artist-line" id="artwork-artist"></p>
+      <button class="museum-link" id="artwork-museum"></button>
+      <div class="artwork-facts" id="artwork-facts"></div>
+      <div class="segmented artwork-tabs">
+        <button class="active" data-art-tab="about">About</button>
+        <button data-art-tab="reflection">Reflection</button>
+        <button data-art-tab="related">Related</button>
+      </div>
+      <div class="artwork-tab-panel" id="artwork-tab-panel"></div>
+      <button class="button primary seen-button" id="seen-artwork"><i data-lucide="check" class="icon"></i><span>I’ve seen this</span></button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="atlas-toast" hidden><i data-lucide="check-circle-2" class="icon"></i><span></span></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
