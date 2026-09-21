@@ -1,204 +1,534 @@
-const money = new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR',maximumFractionDigits:0});
-const integer = new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+import { initialize, getComponents, mount } from "../syntari.js";
 
-const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const page = document.body.dataset.newPage;
+const $ = (selector, root=document) => root.querySelector(selector);
+const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
-function animateNumber(el,to,formatter,{duration=720,initial=false}={}){
-  if(!el)return;
-  const from=initial?0:Number(el.dataset.rawValue??to);
-  el.dataset.rawValue=String(to);
-  el.setAttribute('aria-label',formatter(to));
-  if(reduced.matches||from===to){el.textContent=formatter(to);return}
-  el.getAnimations().forEach(animation=>animation.cancel());
-  const start=performance.now();
-  const frame=now=>{
-    const t=Math.min(1,(now-start)/duration);
-    const eased=1-Math.pow(1-t,3);
-    const current=from+(to-from)*eased;
-    el.textContent=formatter(current);
-    if(t<1)requestAnimationFrame(frame);
-    else el.textContent=formatter(to);
-  };
-  requestAnimationFrame(frame);
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[char]);
 }
 
-function beginLoading(root){
-  root.dataset.loading='true';
-  root.setAttribute('aria-busy','true');
-}
-function finishLoading(root){
-  root.dataset.loading='false';
-  root.setAttribute('aria-busy','false');
-  root.classList.remove('is-revealing');
-  void root.offsetWidth;
-  root.classList.add('is-revealing');
-  setTimeout(()=>root.classList.remove('is-revealing'),450);
+function themeIcon(theme){
+  return theme === "dark"
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
 }
 
-const commandRoot=document.querySelector('[data-command-palette]');
-if(commandRoot){
-  const input=commandRoot.querySelector('[data-command-input]');
-  const status=commandRoot.querySelector('[data-command-status]');
-  const allItems=[...commandRoot.querySelectorAll('.command-item')];
-  let visibleItems=allItems;
-  let activeIndex=0;
-
-  const setActive=index=>{
-    if(!visibleItems.length)return;
-    activeIndex=(index+visibleItems.length)%visibleItems.length;
-    allItems.forEach(item=>{item.classList.remove('is-active');item.setAttribute('aria-selected','false')});
-    const item=visibleItems[activeIndex];
-    item.classList.add('is-active');
-    item.setAttribute('aria-selected','true');
-    item.scrollIntoView({block:'nearest'});
-  };
-  const filter=()=>{
-    const term=input.value.trim().toLowerCase();
-    allItems.forEach(item=>{item.hidden=!!term&&!item.dataset.commandValue.toLowerCase().includes(term)});
-    commandRoot.querySelectorAll('[data-command-group]').forEach(group=>{
-      group.hidden=![...group.querySelectorAll('.command-item')].some(item=>!item.hidden);
+function setupTheme(){
+  $$("[data-theme-toggle]").forEach(button => {
+    const paint = () => {
+      const theme = document.documentElement.dataset.theme || "dark";
+      button.innerHTML = themeIcon(theme);
+      button.setAttribute("aria-label", "Switch to " + (theme === "dark" ? "light" : "dark") + " theme");
+    };
+    button.addEventListener("click", () => {
+      const next = (document.documentElement.dataset.theme || "dark") === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("syntari-theme", next); } catch {}
+      paint();
     });
-    visibleItems=allItems.filter(item=>!item.hidden);
-    setActive(0);
-  };
-  input.addEventListener('input',filter);
-  input.addEventListener('keydown',event=>{
-    if(event.key==='ArrowDown'){event.preventDefault();setActive(activeIndex+1)}
-    if(event.key==='ArrowUp'){event.preventDefault();setActive(activeIndex-1)}
-    if(event.key==='Enter'&&visibleItems.length){event.preventDefault();visibleItems[activeIndex].click()}
-    if(event.key==='Escape'){input.value='';filter();input.blur()}
-  });
-  allItems.forEach(item=>item.addEventListener('click',()=>{
-    status.textContent=item.dataset.commandValue+' selected.';
-    setActive(visibleItems.indexOf(item));
-  }));
-  document.addEventListener('keydown',event=>{
-    if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();input.focus();input.select()}
+    paint();
   });
 }
 
-const revenueRoot=document.querySelector('[data-revenue-card]');
-if(revenueRoot){
-  const datasets={
-    '7d':{total:7860,delta:'+6.1%',last:1320,labels:['Sep 11','Sep 13','Sep 14','Sep 16','Sep 17'],points:[32,49,38,61,44,67,58,76,63,87,72,92]},
-    '30d':{total:24532,delta:'+12.4%',last:2840,labels:['Aug 20','Aug 27','Sep 3','Sep 10','Sep 17'],points:[18,34,42,31,29,19,36,40,57,47,39,51,68,73,64,79,66,52,61,83,92,86,100]},
-    '90d':{total:68920,delta:'+18.7%',last:4920,labels:['Jun 20','Jul 12','Aug 3','Aug 25','Sep 17'],points:[25,38,31,49,55,46,34,51,63,48,59,72,65,43,52,69,61,78,70,85,74,66,82,91,86,100]}
-  };
-  const period=revenueRoot.querySelector('[data-revenue-period]');
-  const value=revenueRoot.querySelector('[data-revenue-value]');
-  const delta=revenueRoot.querySelector('[data-revenue-delta]');
-  const line=revenueRoot.querySelector('[data-revenue-line]');
-  const area=revenueRoot.querySelector('[data-revenue-area]');
-  const point=revenueRoot.querySelector('[data-revenue-point]');
-  const tooltip=revenueRoot.querySelector('[data-revenue-tooltip]');
-  const axis=revenueRoot.querySelector('[data-revenue-axis]');
-  const width=624,startX=8,bottom=198,height=170;
-  let firstRender=true;
+function setupMagnetic(){
+  if(matchMedia("(pointer:coarse)").matches || reduced.matches) return;
+  $$("[data-magnetic]").forEach(button => {
+    button.addEventListener("pointermove", event => {
+      const rect = button.getBoundingClientRect();
+      const x = (event.clientX - rect.left - rect.width/2) * .08;
+      const y = (event.clientY - rect.top - rect.height/2) * .1;
+      button.style.transform = `translate3d(${x}px,${y}px,0)`;
+    });
+    button.addEventListener("pointerleave", () => { button.style.transform = ""; });
+  });
+}
 
-  const pointsFor=data=>data.map((v,i)=>[startX+(width*i/(data.length-1)),bottom-(v/100)*height]);
-  const smooth=pts=>{
-    if(!pts.length)return'';
-    let d='M '+pts[0][0].toFixed(2)+' '+pts[0][1].toFixed(2);
-    for(let i=0;i<pts.length-1;i++){
-      const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
-      const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6;
-      const c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6;
-      d+=' C '+c1x.toFixed(2)+' '+c1y.toFixed(2)+', '+c2x.toFixed(2)+' '+c2y.toFixed(2)+', '+p2[0].toFixed(2)+' '+p2[1].toFixed(2);
+function setupSoftCursor(stage){
+  if(!stage || matchMedia("(pointer:coarse)").matches || reduced.matches) return;
+  const cursor = $("[data-soft-cursor]", stage);
+  if(!cursor) return;
+  let tx=-40,ty=-40,x=-40,y=-40,raf=0;
+  const loop = () => {
+    x += (tx-x)*.19;
+    y += (ty-y)*.19;
+    cursor.style.transform = `translate3d(${x-12}px,${y-12}px,0)`;
+    raf = requestAnimationFrame(loop);
+  };
+  stage.addEventListener("pointerenter", () => {
+    cursor.classList.add("is-visible");
+    if(!raf) loop();
+  });
+  stage.addEventListener("pointerleave", () => cursor.classList.remove("is-visible"));
+  stage.addEventListener("pointermove", event => {
+    const rect = stage.getBoundingClientRect();
+    tx = event.clientX - rect.left + stage.scrollLeft;
+    ty = event.clientY - rect.top + stage.scrollTop;
+    cursor.classList.toggle("is-hot", !!event.target.closest("button,a,input,textarea,select,[role=button]"));
+  });
+}
+
+async function copyText(text, button){
+  try { await navigator.clipboard.writeText(text); } catch { return; }
+  if(!button) return;
+  const label = button.querySelector("span") || button;
+  const original = button.dataset.copyLabel || label.textContent;
+  button.dataset.copyLabel = original;
+  label.textContent = "Copied";
+  setTimeout(() => { label.textContent = original; }, 1000);
+}
+
+setupTheme();
+setupMagnetic();
+
+/* ---------------- Renderer ---------------- */
+if(page === "renderer"){
+  const scenarios = {
+    dashboard:{
+      label:"Revenue health",
+      prompt:"Create a calm revenue health dashboard for a finance lead. Show ARR, month-over-month trend, channel contribution and anomalies.",
+      intent:"Revenue health dashboard for a finance lead, prioritising ARR and the evidence behind change.",
+      pattern:"Metric overview",
+      confidence:94,
+      slugs:["headline-metric","metric-strip","area-chart","source-list"],
+      validation:[
+        "Hierarchy has one dominant metric.",
+        "Every comparison names its period.",
+        "Chart values remain available as text.",
+        "Semantic state is never color-only."
+      ]
+    },
+    onboarding:{
+      label:"Workspace setup",
+      prompt:"Create a workspace setup review with progress, owners, completed steps and the next action.",
+      intent:"A setup review that makes progress, ownership and the next action immediately legible.",
+      pattern:"Guided setup review",
+      confidence:91,
+      slugs:["progress-and-score","selectable-cards","metadata-list","activity-list"],
+      validation:[
+        "Progress has a textual equivalent.",
+        "Next action remains explicit.",
+        "Completed work stays visible.",
+        "Interactive choices expose focus state."
+      ]
+    },
+    review:{
+      label:"Project review",
+      prompt:"Create a project decision screen that summarizes status, evidence, recent activity and the next decision.",
+      intent:"Project review focused on evidence, current state and a clear next decision.",
+      pattern:"Decision workspace",
+      confidence:89,
+      slugs:["banner","stat-row","activity-list","tabs"],
+      validation:[
+        "Decision context appears before actions.",
+        "Status is written, not implied.",
+        "Activity uses chronological labels.",
+        "Secondary actions remain visually quiet."
+      ]
+    },
+    verification:{
+      label:"Verification",
+      prompt:"Create a secure one-time-code verification step with a clear error state and recovery path.",
+      intent:"A focused verification step with obvious completion, error and recovery states.",
+      pattern:"Verification step",
+      confidence:96,
+      slugs:["otp-input","text-input","banner","button"],
+      validation:[
+        "Code slots expose focus state.",
+        "Error state is announced in text.",
+        "Recovery action remains reachable.",
+        "No hidden destructive action."
+      ]
     }
-    return d;
   };
-  const animateChart=()=>{
-    if(reduced.matches)return;
-    line.getAnimations().forEach(animation=>animation.cancel());
-    area.getAnimations().forEach(animation=>animation.cancel());
-    point.getAnimations().forEach(animation=>animation.cancel());
-    const length=line.getTotalLength();
-    line.style.strokeDasharray=String(length);
-    line.style.strokeDashoffset=String(length);
-    const draw=line.animate([{strokeDashoffset:String(length)},{strokeDashoffset:'0'}],{duration:850,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
-    draw.onfinish=()=>{line.style.strokeDashoffset='0'};
-    area.animate([{opacity:0,clipPath:'inset(0 100% 0 0)'},{opacity:1,clipPath:'inset(0 0 0 0)'}],{duration:760,delay:70,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
-    point.animate([{opacity:0,transform:'scale(.45)'},{opacity:1,transform:'scale(1)'}],{duration:260,delay:650,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'both'});
-  };
-  const render=()=>{
-    const data=datasets[period.dataset.value];
-    const pts=pointsFor(data.points);
-    const lineD=smooth(pts);
-    const first=pts[0],last=pts[pts.length-1];
-    animateNumber(value,data.total,n=>money.format(Math.round(n)),{initial:firstRender,duration:780});
-    delta.textContent=data.delta;
-    line.setAttribute('d',lineD);
-    area.setAttribute('d',lineD+' L '+last[0].toFixed(2)+' '+bottom+' L '+first[0].toFixed(2)+' '+bottom+' Z');
-    point.setAttribute('cx',last[0]);
-    point.setAttribute('cy',last[1]);
-    tooltip.textContent=money.format(data.last);
-    axis.innerHTML=data.labels.map(label=>'<span>'+label+'</span>').join('');
-    requestAnimationFrame(animateChart);
-    firstRender=false;
-  };
-  const refresh=async()=>{
-    beginLoading(revenueRoot);
-    await wait(reduced.matches?0:260);
-    render();
-    await wait(reduced.matches?0:180);
-    finishLoading(revenueRoot);
-  };
-  period.addEventListener('click',event=>{
-    const option=event.target.closest('[data-option][data-value]');
-    if(!option||!period.contains(option)||period.dataset.value===option.dataset.value)return;
-    period.dataset.value=option.dataset.value;
-    refresh();
+
+  let catalog=[];
+  let mounted=[];
+  let activeScenario="dashboard";
+  let rendering=false;
+
+  const componentBySlug = slug => catalog.find(component => component.slug === slug);
+  const exists = slug => !!componentBySlug(slug);
+
+  function fallback(index, used){
+    const preferred=["headline-metric","metric-and-sparkline","card","progress-and-score","metadata-list","activity-list","text-input","switch"];
+    for(const slug of preferred){
+      if(exists(slug) && !used.includes(slug)) return slug;
+    }
+    const component = catalog.find(item => !used.includes(item.slug));
+    return component?.slug || catalog[index % Math.max(1,catalog.length)]?.slug || null;
+  }
+
+  function destroyMounted(){
+    mounted.forEach(instance => { try{ instance.destroy(); }catch{} });
+    mounted=[];
+  }
+
+  function resolveSlugs(scenario){
+    const resolved=[];
+    scenario.slugs.forEach((slug,index) => {
+      const candidate = exists(slug) ? slug : fallback(index,resolved);
+      if(candidate && !resolved.includes(candidate)) resolved.push(candidate);
+    });
+    while(resolved.length < 4){
+      const candidate=fallback(resolved.length,resolved);
+      if(!candidate || resolved.includes(candidate)) break;
+      resolved.push(candidate);
+    }
+    return resolved;
+  }
+
+  function renderTrace(scenario,resolved){
+    $("[data-output-title]").textContent=scenario.label;
+    $("[data-trace-intent]").textContent=scenario.intent;
+    $("[data-trace-pattern]").textContent=scenario.pattern;
+    $("[data-trace-confidence]").textContent=scenario.confidence+"%";
+    $("[data-confidence-fill]").style.width=scenario.confidence+"%";
+    $("[data-component-count]").textContent=resolved.length+" primitives";
+
+    $("[data-trace-components]").innerHTML=resolved.map((slug,index)=>{
+      const component=componentBySlug(slug);
+      return `<div class="trace-component"><i>0${index+1}</i><div><strong>${escapeHTML(component?.name||slug)}</strong><span>${escapeHTML(component?.category||"Primitive")}</span></div></div>`;
+    }).join("");
+
+    $("[data-validation-list]").innerHTML=scenario.validation.map(item =>
+      `<div class="validation-item"><i></i><span>${escapeHTML(item)}</span></div>`
+    ).join("");
+
+    const ir={
+      version:"0.2",
+      intent:scenario.intent,
+      pattern:scenario.pattern,
+      confidence:scenario.confidence/100,
+      composition:resolved.map((slug,index)=>({
+        slot:index===0?"primary":index===2?"evidence":"support-"+index,
+        component:slug
+      })),
+      rules:[
+        "dominant-metric-first",
+        "explicit-comparison-period",
+        "no-color-only-meaning"
+      ],
+      validation:{status:"pass",blockingIssues:0}
+    };
+    $("[data-ir-code]").textContent=JSON.stringify(ir,null,2);
+  }
+
+  async function renderScenario(scenario,{animate=true}={}){
+    if(rendering) return;
+    rendering=true;
+    const frame=$("[data-runtime]");
+    const screen=$("[data-render-screen]");
+    const loading=$("[data-render-loading]");
+    const loadingLabel=$("[data-loading-label]");
+    const steps=["ask","decide","compose","verify","render"];
+    const labels=["Understanding intent","Selecting a valid pattern","Composing trusted primitives","Validating against Syntari","Rendering interface"];
+
+    frame.classList.add("is-running");
+    screen.classList.add("is-leaving");
+    loading.hidden=false;
+    $$("[data-runtime-step]").forEach(node=>node.classList.remove("is-active","is-complete"));
+
+    if(animate && !reduced.matches){
+      for(let i=0;i<steps.length;i++){
+        const node=$(`[data-runtime-step="${steps[i]}"]`);
+        node.classList.add("is-active");
+        loadingLabel.textContent=labels[i];
+        await wait(i===0?240:310);
+        node.classList.remove("is-active");
+        node.classList.add("is-complete");
+      }
+    }else{
+      $$("[data-runtime-step]").forEach(node=>node.classList.add("is-complete"));
+    }
+
+    destroyMounted();
+    screen.innerHTML="";
+    const resolved=resolveSlugs(scenario);
+
+    for(let i=0;i<resolved.length;i++){
+      const cell=document.createElement("div");
+      cell.className="render-cell"+(i===2?" wide":"");
+      screen.append(cell);
+      try{
+        const instance=await mount(resolved[i],cell);
+        mounted.push(instance);
+      }catch{
+        cell.innerHTML=`<div class="trace-component"><i>UI</i><div><strong>${escapeHTML(resolved[i])}</strong><span>Trusted primitive</span></div></div>`;
+      }
+    }
+
+    renderTrace(scenario,resolved);
+    screen.classList.remove("is-leaving");
+    loading.hidden=true;
+    $$("[data-runtime-step]").forEach(node=>node.classList.add("is-complete"));
+    $$(".render-cell",screen).forEach((cell,index)=>{
+      setTimeout(()=>cell.classList.add("is-in"),80+index*90);
+    });
+    setTimeout(()=>frame.classList.remove("is-running"),600);
+    rendering=false;
+  }
+
+  function selectScenario(key){
+    if(!scenarios[key]) return;
+    activeScenario=key;
+    $("[data-intent]").value=scenarios[key].prompt;
+    $$("[data-scenario]").forEach(button => button.setAttribute("aria-pressed",button.dataset.scenario===key?"true":"false"));
+  }
+
+  async function bootRenderer(){
+    await initialize();
+    catalog=await getComponents();
+    setupSoftCursor($("[data-render-viewport]"));
+
+    $$("[data-scenario]").forEach(button=>button.addEventListener("click",()=>selectScenario(button.dataset.scenario)));
+
+    $("[data-intent-form]").addEventListener("submit",event=>{
+      event.preventDefault();
+      const scenario={...scenarios[activeScenario]};
+      const prompt=$("[data-intent]").value.trim();
+      if(prompt){ scenario.prompt=prompt; scenario.intent=prompt; }
+      renderScenario(scenario,{animate:true});
+    });
+
+    $("[data-replay-render]").addEventListener("click",()=>renderScenario(scenarios[activeScenario],{animate:true}));
+
+    $$("[data-trace-tab]").forEach((button,index)=>{
+      button.addEventListener("click",()=>{
+        $$("[data-trace-tab]").forEach(item=>item.setAttribute("aria-selected","false"));
+        button.setAttribute("aria-selected","true");
+        $(".rail-tab-indicator").style.setProperty("--tab-x",(index*100)+"%");
+        $$("[data-trace-view]").forEach(view=>{ view.hidden=view.dataset.traceView!==button.dataset.traceTab; });
+      });
+    });
+
+    $("[data-copy-ir]").addEventListener("click",event=>copyText($("[data-ir-code]").textContent,event.currentTarget));
+
+    document.addEventListener("keydown",event=>{
+      if((event.metaKey||event.ctrlKey)&&event.key==="Enter"){
+        event.preventDefault();
+        $("[data-intent-form]").requestSubmit();
+      }
+    });
+
+    await renderScenario(scenarios.dashboard,{animate:false});
+  }
+
+  bootRenderer().catch(error=>{
+    console.error(error);
+    const screen=$("[data-render-screen]");
+    if(screen) screen.innerHTML='<div class="render-cell wide is-in"><div><strong>Syntari runtime unavailable</strong><p>Reload to reconnect the component registry.</p></div></div>';
   });
-  render();
-  setTimeout(()=>finishLoading(revenueRoot),reduced.matches?0:430);
 }
 
-const reportRoot=document.querySelector('[data-team-report]');
-if(reportRoot){
-  const periods={
-    week:{efficiency:84,delta:'+9.8%',time:126,cost:8420,rows:[['Atlas',91,'42h','€3.2k'],['Pulse',78,'31h','€2.1k'],['Nova',86,'27h','€1.8k'],['Orbit',81,'26h','€1.3k']]},
-    month:{efficiency:81,delta:'+6.4%',time:438,cost:27900,rows:[['Atlas',88,'148h','€9.8k'],['Pulse',74,'101h','€6.4k'],['Nova',84,'96h','€6.1k'],['Orbit',79,'93h','€5.6k']]},
-    quarter:{efficiency:86,delta:'+11.2%',time:1284,cost:82600,rows:[['Atlas',93,'412h','€27.1k'],['Pulse',80,'298h','€18.9k'],['Nova',87,'316h','€20.6k'],['Orbit',83,'258h','€16.0k']]}
-  };
-  const period=reportRoot.querySelector('[data-report-period]');
-  const rows=reportRoot.querySelector('[data-report-rows]');
-  const efficiency=reportRoot.querySelector('[data-efficiency]');
-  const timeSaved=reportRoot.querySelector('[data-time-saved]');
-  const costSaved=reportRoot.querySelector('[data-cost-saved]');
-  let firstRender=true;
+/* ---------------- Components ---------------- */
+if(page === "components"){
+  let catalog=[];
+  let selected=null;
+  let selectedIndex=0;
+  let activeMount=null;
+  let query="";
 
-  const animateBars=()=>{
-    if(reduced.matches)return;
-    [...rows.querySelectorAll('.progress>span')].forEach((bar,index)=>{
-      const target=bar.style.width;
-      bar.style.width='0%';
-      requestAnimationFrame(()=>setTimeout(()=>{bar.style.width=target},index*45));
+  function tokensFor(component){
+    if(Array.isArray(component.tokens)&&component.tokens.length) return component.tokens.slice(0,10);
+    const matches=String(component.html||"").match(/var\(--[a-z0-9-]+\)/g)||[];
+    return [...new Set(matches.map(token=>token.slice(4,-1)))].slice(0,10);
+  }
+
+  function groupsFor(items){
+    const groups={};
+    items.forEach(component=>{
+      const category=component.category||"Other";
+      (groups[category] ||= []).push(component);
     });
-  };
-  const render=()=>{
-    const data=periods[period.dataset.value];
-    animateNumber(efficiency,data.efficiency,n=>Math.round(n)+'%',{initial:firstRender});
-    reportRoot.querySelector('[data-efficiency-delta]').textContent=data.delta;
-    animateNumber(timeSaved,data.time,n=>integer.format(Math.round(n))+'h',{initial:firstRender});
-    animateNumber(costSaved,data.cost,n=>money.format(Math.round(n)),{initial:firstRender,duration:820});
-    rows.innerHTML=data.rows.map(row=>'<tr><td>'+row[0]+'</td><td><span class="efficiency-cell"><span>'+row[1]+'%</span><span class="progress" aria-label="'+row[0]+' efficiency '+row[1]+' percent"><span style="width:'+row[1]+'%"></span></span></span></td><td>'+row[2]+'</td><td>'+row[3]+'</td></tr>').join('');
-    requestAnimationFrame(animateBars);
-    firstRender=false;
-  };
-  const refresh=async()=>{
-    beginLoading(reportRoot);
-    await wait(reduced.matches?0:260);
-    render();
-    await wait(reduced.matches?0:180);
-    finishLoading(reportRoot);
-  };
-  period.addEventListener('click',event=>{
-    const option=event.target.closest('[data-option][data-value]');
-    if(!option||!period.contains(option)||period.dataset.value===option.dataset.value)return;
-    period.dataset.value=option.dataset.value;
-    refresh();
+    return groups;
+  }
+
+  function renderNav(){
+    const term=query.trim().toLowerCase();
+    const visible=catalog.filter(component=>{
+      const haystack=(component.name+" "+component.category+" "+(component.description||"")).toLowerCase();
+      return !term||haystack.includes(term);
+    });
+    const groups=groupsFor(visible);
+    let html="";
+    Object.keys(groups).sort().forEach(category=>{
+      html+=`<div class="nav-category">${escapeHTML(category)}</div>`;
+      groups[category].forEach(component=>{
+        const active=selected?.slug===component.slug;
+        html+=`<button class="nav-component" type="button" data-component-slug="${escapeHTML(component.slug)}" aria-current="${active?"true":"false"}"><span>${escapeHTML(component.name)}</span><span>↗</span></button>`;
+      });
+    });
+    $("[data-component-nav]").innerHTML=html||'<div class="nav-category">No matches</div>';
+    $$("[data-component-slug]").forEach(button=>button.addEventListener("click",()=>selectComponent(button.dataset.componentSlug,{animate:true})));
+  }
+
+  function renderDocs(component){
+    $("[data-docs-category]").textContent=String(component.category||"Component").toUpperCase();
+    $("[data-docs-title]").textContent=component.name;
+    $("[data-docs-description]").textContent=component.description||"A trusted Syntari primitive.";
+    $("[data-registry-id]").textContent=component.slug;
+    $("[data-code-title]").textContent=component.name;
+    $("[data-code-file]").textContent=component.slug+".html";
+    $("[data-component-code]").textContent=component.html||"<!-- Component markup is provided by the Syntari runtime. -->";
+    $("[data-runtime-snippet]").textContent=`await mount("${component.slug}", "#target")`;
+    $("[data-install-command]").textContent=`npx syntari add ${component.slug}`;
+
+    const tokens=tokensFor(component);
+    $("[data-token-list]").innerHTML=tokens.length
+      ? tokens.map(token=>`<div class="docs-token-item"><code>${escapeHTML(token)}</code><span style="--token-color:var(${escapeHTML(token)})"></span></div>`).join("")
+      : '<p>No component-specific tokens. Uses the shared semantic layer.</p>';
+
+    const docs=$("[data-docs-scroll]");
+    if(docs?.animate && !reduced.matches){
+      docs.animate(
+        [{opacity:.38,transform:"translateY(7px)"},{opacity:1,transform:"none"}],
+        {duration:420,easing:"cubic-bezier(.16,1,.3,1)"}
+      );
+    }
+  }
+
+  async function selectComponent(slug,{animate=true}={}){
+    const component=catalog.find(item=>item.slug===slug);
+    if(!component) return;
+    selected=component;
+    selectedIndex=catalog.indexOf(component);
+    renderNav();
+    renderDocs(component);
+    closeCode();
+    closeInstall();
+
+    const host=$("[data-component-mount]");
+    if(animate&&!reduced.matches) host.classList.add("is-changing");
+    await wait(animate&&!reduced.matches?210:0);
+
+    if(activeMount){ try{activeMount.destroy();}catch{} activeMount=null; }
+    host.innerHTML="";
+    try{
+      activeMount=await mount(component.slug,host);
+      $("[data-preview-status]").textContent="Live preview";
+    }catch{
+      host.innerHTML=`<div class="docs-meta-grid"><div><span>Preview</span><strong>${escapeHTML(component.name)}</strong></div><div><span>Status</span><strong>Unavailable</strong></div></div>`;
+      $("[data-preview-status]").textContent="Preview unavailable";
+    }
+
+    if(animate&&!reduced.matches) setTimeout(()=>host.classList.remove("is-changing"),360);
+    try{ history.replaceState(null,"","#"+component.slug); }catch{}
+  }
+
+  function openCode(){
+    $("[data-docs-rail]").classList.add("is-code-open");
+    $("[data-code-sheet]").setAttribute("aria-hidden","false");
+  }
+  function closeCode(){
+    $("[data-docs-rail]")?.classList.remove("is-code-open");
+    $("[data-code-sheet]")?.setAttribute("aria-hidden","true");
+  }
+
+  function openInstall(){
+    const cluster=$("[data-install-cluster]");
+    cluster.dataset.open="true";
+    $("[data-install-toggle]").setAttribute("aria-expanded","true");
+    $("[data-install-expanded]").setAttribute("aria-hidden","false");
+  }
+  function closeInstall(){
+    const cluster=$("[data-install-cluster]");
+    if(!cluster) return;
+    cluster.dataset.open="false";
+    $("[data-install-toggle]").setAttribute("aria-expanded","false");
+    $("[data-install-expanded]").setAttribute("aria-hidden","true");
+  }
+
+  function renderCommand(term=""){
+    const q=term.toLowerCase();
+    const items=catalog.filter(component=>!q||(component.name+" "+component.category).toLowerCase().includes(q)).slice(0,18);
+    $("[data-command-results]").innerHTML=items.map(component=>
+      `<button class="command-result" type="button" data-command-slug="${escapeHTML(component.slug)}"><span>${escapeHTML(component.name)}</span><span>${escapeHTML(component.category||"")}</span></button>`
+    ).join("");
+    $$("[data-command-slug]").forEach(button=>button.addEventListener("click",()=>{
+      selectComponent(button.dataset.commandSlug,{animate:true});
+      closeCommand();
+    }));
+  }
+  function openCommand(){
+    const palette=$("[data-command-palette]");
+    palette.hidden=false;
+    const input=$("[data-command-input]");
+    input.value="";
+    renderCommand("");
+    requestAnimationFrame(()=>input.focus());
+  }
+  function closeCommand(){ $("[data-command-palette]").hidden=true; }
+
+  function toggleFocus(){ $("[data-component-frame]").classList.toggle("is-focused"); }
+
+  async function bootComponents(){
+    await initialize();
+    catalog=(await getComponents()).slice().sort((a,b)=>
+      (a.category||"").localeCompare(b.category||"")||a.name.localeCompare(b.name)
+    );
+    $("[data-total-components]").textContent=catalog.length;
+    renderNav();
+
+    let initial=location.hash?location.hash.slice(1):"otp-input";
+    if(!catalog.some(item=>item.slug===initial)) initial=catalog[0]?.slug||"";
+    if(initial) await selectComponent(initial,{animate:false});
+
+    setupSoftCursor($("[data-preview-stage]"));
+
+    $("[data-component-search]").addEventListener("input",event=>{ query=event.target.value; renderNav(); });
+
+    $$("[data-open-code]").forEach(button=>button.addEventListener("click",openCode));
+    $("[data-close-code]").addEventListener("click",closeCode);
+
+    $("[data-install-toggle]").addEventListener("click",()=>{
+      $("[data-install-cluster]").dataset.open==="true"?closeInstall():openInstall();
+    });
+    $("[data-install-close]").addEventListener("click",closeInstall);
+    $("[data-copy-install]").addEventListener("click",event=>copyText($("[data-install-command]").textContent,event.currentTarget));
+    $("[data-copy-runtime]").addEventListener("click",event=>copyText($("[data-runtime-snippet]").textContent,event.currentTarget));
+    $("[data-copy-code]").addEventListener("click",event=>copyText($("[data-component-code]").textContent,event.currentTarget));
+
+    $("[data-replay-component]").addEventListener("click",()=>selected&&selectComponent(selected.slug,{animate:true}));
+    $("[data-focus-preview]").addEventListener("click",toggleFocus);
+
+    $("[data-command-input]").addEventListener("input",event=>renderCommand(event.target.value));
+    $("[data-command-palette]").addEventListener("click",event=>{ if(event.target===event.currentTarget) closeCommand(); });
+
+    document.addEventListener("keydown",event=>{
+      const typing=event.target.matches("input,textarea,select");
+      if(event.key==="Escape"){
+        if(!$("[data-command-palette]").hidden) closeCommand();
+        else if($("[data-docs-rail]").classList.contains("is-code-open")) closeCode();
+        else if($("[data-install-cluster]").dataset.open==="true") closeInstall();
+        else $("[data-component-frame]").classList.remove("is-focused");
+        return;
+      }
+      if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){
+        event.preventDefault(); openCommand(); return;
+      }
+      if(event.key==="/"&&!typing){
+        event.preventDefault(); $("[data-component-search]").focus(); return;
+      }
+      if(!typing&&event.altKey&&event.key==="ArrowRight"&&selected){
+        event.preventDefault();
+        const next=(selectedIndex+1)%catalog.length;
+        selectComponent(catalog[next].slug,{animate:true});
+      }
+      if(!typing&&event.altKey&&event.key==="ArrowLeft"&&selected){
+        event.preventDefault();
+        const prev=(selectedIndex-1+catalog.length)%catalog.length;
+        selectComponent(catalog[prev].slug,{animate:true});
+      }
+    });
+  }
+
+  bootComponents().catch(error=>{
+    console.error(error);
+    $("[data-component-nav]").innerHTML='<div class="nav-category">Runtime unavailable</div>';
   });
-  render();
-  setTimeout(()=>finishLoading(reportRoot),reduced.matches?0:430);
 }
