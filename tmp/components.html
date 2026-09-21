@@ -3,153 +3,165 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Explore Syntari components in a tactile split-view workspace.">
-  <title>Syntari — Components preview</title>
+  <meta name="description" content="Syntari component workspace prototype.">
+  <title>Syntari — Component workspace</title>
   <link rel="icon" href="../favicon.svg">
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="./tmp.css">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
 </head>
-<body class="tmp-body components-body" data-tmp-page="components">
-  <header class="tmp-topbar">
-    <a class="tmp-brand" href="./" aria-label="Syntari home">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span>Syntari</span>
-      <span class="preview-pill">Preview</span>
-    </a>
-    <nav class="tmp-nav" aria-label="Preview navigation">
-      <a href="./">Renderer</a>
-      <a href="./components.html" aria-current="page">Components</a>
-    </nav>
-    <div class="tmp-actions">
-      <button class="tmp-icon-button" type="button" data-command aria-label="Search components">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      </button>
-      <a class="tmp-icon-button" href="https://github.com/SyntariUI/syntari" aria-label="Open GitHub">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.7.8-1.1 1.9-1 3v4"/><path d="M9 18c-4.5 2-5-2-7-2"/></svg>
-      </a>
-      <button class="tmp-icon-button" type="button" data-theme-toggle aria-label="Switch theme"></button>
-    </div>
-  </header>
-
-  <div class="component-app" data-component-app data-inspector="closed">
-    <aside class="component-sidebar">
-      <div class="sidebar-top">
-        <div class="sidebar-title"><strong>Components</strong><span data-total-components>—</span></div>
-        <label class="component-search">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-          <input type="search" placeholder="Search components" autocomplete="off" data-component-search>
-          <kbd>/</kbd>
-        </label>
+<body class="tmp-body tmp-workbench-body" data-tmp-page="components">
+  <div class="workbench-shell">
+    <aside class="workbench-sidebar">
+      <div class="side-brand-row">
+        <a class="side-brand" href="./" aria-label="Syntari home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Syntari</span>
+        </a>
+        <span class="prototype-badge">TMP</span>
       </div>
-      <nav class="component-nav" aria-label="Component categories" data-component-nav></nav>
-      <div class="sidebar-foot">
+
+      <div class="side-section-heading">
+        <strong>Components</strong>
+        <span data-total-components>—</span>
+      </div>
+
+      <label class="side-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" placeholder="Search" autocomplete="off" data-component-search>
+        <kbd>/</kbd>
+      </label>
+
+      <nav class="workbench-nav" aria-label="Components" data-component-nav></nav>
+
+      <div class="side-bottom">
+        <a href="./"><span>Renderer</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
         <a href="../registry/index.json"><span>Registry</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
-        <a href="../guides/getting-started/"><span>Getting started</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </div>
     </aside>
 
-    <main class="component-main">
-      <header class="component-toolbar">
-        <div class="component-breadcrumb">
-          <span data-selected-category>Form controls</span>
-          <i>/</i>
-          <strong data-selected-name>OTP input</strong>
-        </div>
-        <div class="component-toolbar-actions">
-          <button class="toolbar-button" type="button" data-replay-component>
+    <main class="component-canvas-column">
+      <div class="preview-frame">
+        <div class="preview-toolbar">
+          <button class="preview-tool preview-tool-primary" type="button" data-copy-runtime>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2"/><rect x="5" y="8" width="10" height="11" rx="2"/></svg>
+            <span>Install</span>
+          </button>
+          <button class="preview-tool" type="button" data-replay-component aria-label="Replay component">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-            <span>Replay</span>
           </button>
-          <button class="toolbar-button" type="button" data-toggle-inspector aria-expanded="false">
+          <button class="preview-tool" type="button" data-fullscreen-preview aria-label="Focus preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+          <button class="preview-tool" type="button" data-open-code aria-label="Open implementation">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>
-            <span>Implementation</span>
           </button>
         </div>
-      </header>
 
-      <section class="component-stage">
-        <div class="stage-meta">
-          <span class="stage-kicker" data-stage-kicker>INPUT</span>
-          <h1 data-stage-title>OTP input</h1>
-          <p data-stage-description>One-time code input with clear states and keyboard support.</p>
+        <div class="preview-stage" data-preview-stage>
+          <div class="preview-component-wrap">
+            <div class="preview-component" data-component-mount></div>
+          </div>
+          <div class="preview-caption">
+            <span data-preview-status>Live preview</span>
+            <span>Try it directly</span>
+          </div>
+          <div class="soft-cursor" aria-hidden="true" data-soft-cursor><i></i></div>
         </div>
-        <div class="stage-mount-wrap" data-stage-mount-wrap>
-          <div class="component-mount" data-component-mount></div>
-        </div>
-        <p class="stage-hint">This is the live component. Click, type, hover and use the keyboard.</p>
-        <div class="cursor-orbit" aria-hidden="true"><i></i></div>
-      </section>
-
-      <footer class="component-bottom-bar">
-        <div class="component-index">
-          <span data-component-position>01</span>
-          <i></i>
-          <span data-component-total>—</span>
-        </div>
-        <div class="bottom-nav">
-          <button type="button" data-prev-component aria-label="Previous component">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button type="button" data-next-component aria-label="Next component">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-        </div>
-      </footer>
+      </div>
     </main>
 
-    <aside class="component-inspector" aria-label="Component implementation" data-component-inspector>
-      <header class="inspector-head">
-        <div><span>Implementation</span><strong data-inspector-title>OTP input</strong></div>
-        <button class="tmp-icon-button" type="button" data-close-inspector aria-label="Close implementation panel">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
-        </button>
-      </header>
+    <aside class="component-docs" data-docs-panel>
+      <div class="docs-scroll" data-docs-scroll>
+        <header class="docs-head">
+          <div class="docs-title-row">
+            <div>
+              <span class="docs-kicker" data-docs-category>INPUT</span>
+              <h1 data-docs-title>OTP input</h1>
+            </div>
+            <div class="docs-actions">
+              <button class="docs-icon-button" type="button" data-open-code aria-label="View source">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>
+              </button>
+              <button class="docs-icon-button" type="button" data-theme-toggle aria-label="Switch theme"></button>
+            </div>
+          </div>
+          <p class="docs-description" data-docs-description></p>
+        </header>
 
-      <div class="inspector-tabs" role="tablist" aria-label="Implementation details">
-        <button type="button" role="tab" aria-selected="true" data-inspector-tab="overview">Overview</button>
-        <button type="button" role="tab" aria-selected="false" data-inspector-tab="code">Code</button>
-        <button type="button" role="tab" aria-selected="false" data-inspector-tab="tokens">Tokens</button>
-        <span class="tab-indicator" aria-hidden="true"></span>
-      </div>
+        <section class="docs-section">
+          <span class="docs-label">Component</span>
+          <div class="component-meta-card">
+            <div>
+              <span>Registry id</span>
+              <strong data-registry-id>otp-input</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong><i class="status-dot-mini"></i> Ready</strong>
+            </div>
+          </div>
+        </section>
 
-      <section class="inspector-view is-active" data-inspector-view="overview">
-        <div class="inspector-section">
-          <span class="inspector-label">What it does</span>
-          <p data-inspector-description></p>
-        </div>
-        <div class="inspector-section">
-          <span class="inspector-label">Interaction</span>
-          <div class="interaction-note"><i></i><p>Use the preview directly. Focus, pointer and keyboard states are all live.</p></div>
-        </div>
-        <div class="inspector-section">
-          <span class="inspector-label">Runtime</span>
-          <div class="runtime-snippet">
+        <section class="docs-section">
+          <span class="docs-label">Interaction type</span>
+          <p data-interaction-copy>Direct manipulation. Focus, pointer and keyboard states remain visible and predictable.</p>
+          <div class="interaction-demo-row">
+            <span><i></i> Pointer</span>
+            <span><i></i> Keyboard</span>
+            <span><i></i> Focus</span>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Implementation</span>
+          <div class="runtime-install">
             <code data-runtime-snippet></code>
             <button type="button" data-copy-runtime>Copy</button>
           </div>
-        </div>
-        <div class="inspector-section">
-          <span class="inspector-label">Registry</span>
-          <a class="inspector-link" href="../registry/index.json">Open machine-readable component index <span>↗</span></a>
-        </div>
-      </section>
+        </section>
 
-      <section class="inspector-view" data-inspector-view="code" hidden>
-        <div class="code-toolbar">
+        <section class="docs-section">
+          <span class="docs-label">Props & rules</span>
+          <div class="props-table">
+            <div class="props-row props-head"><span>Prop</span><span>Type</span><span>Description</span></div>
+            <div class="props-row"><code>state</code><code>string</code><span>Controls the visible component state.</span></div>
+            <div class="props-row"><code>disabled</code><code>boolean</code><span>Prevents interaction while keeping context visible.</span></div>
+            <div class="props-row"><code>onAction</code><code>event</code><span>Connects application behaviour to the primitive.</span></div>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Tokens</span>
+          <div class="docs-token-list" data-token-list></div>
+        </section>
+
+        <section class="docs-section docs-end">
+          <span class="docs-label">Agent guidance</span>
+          <p>Prefer the simplest valid state. Preserve local context. Do not add a second action when the current component already communicates the next step.</p>
+        </section>
+      </div>
+
+      <div class="code-sheet" data-code-sheet aria-hidden="true">
+        <header class="code-sheet-head">
+          <div>
+            <span>Implementation</span>
+            <strong data-code-title>OTP input</strong>
+          </div>
+          <div class="code-sheet-actions">
+            <button type="button" data-copy-code>Copy</button>
+            <button class="docs-icon-button" type="button" data-close-code aria-label="Close source">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+        </header>
+        <div class="code-file-row">
+          <span data-code-file>otp-input.html</span>
           <span>HTML</span>
-          <button type="button" data-copy-code>Copy code</button>
         </div>
-        <pre class="implementation-code"><code data-component-code></code></pre>
-      </section>
-
-      <section class="inspector-view" data-inspector-view="tokens" hidden>
-        <div class="inspector-section">
-          <span class="inspector-label">Design tokens</span>
-          <div class="token-list" data-token-list></div>
-        </div>
-      </section>
+        <pre class="code-sheet-pre"><code data-component-code></code></pre>
+      </div>
     </aside>
   </div>
 
