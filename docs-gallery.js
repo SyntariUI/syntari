@@ -65,11 +65,10 @@ function prepareCursorGrid(root) {
   root.addEventListener('pointerdown', event => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     updatePoint(event);
-    const rect = root.getBoundingClientRect();
     const pulse = document.createElement('span');
     pulse.className = 'docs-cursor-pulse';
-    pulse.style.left = `${event.clientX - rect.left}px`;
-    pulse.style.top = `${event.clientY - rect.top}px`;
+    pulse.style.left = `${event.clientX}px`;
+    pulse.style.top = `${event.clientY}px`;
     pulse.setAttribute('aria-hidden', 'true');
     root.append(pulse);
     pulse.addEventListener('animationend', () => pulse.remove(), {once: true});

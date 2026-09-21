@@ -25,11 +25,13 @@ export default async page => {
   check(await page.locator('.specimen').count()===22,'Category filters twenty-two form controls');
   const otp=page.locator('[data-component="OTP input"]'),otpDigits=otp.locator('.otp-digit');
   for(const [index,digit] of ['6','5','4','3','2','1'].entries())await otpDigits.nth(index).fill(digit);
+  await otp.getByRole('button',{name:'Verify code'}).click();
   await page.waitForFunction(()=>document.querySelector('[data-component="OTP input"] [data-otp-form]')?.dataset.otpState==='error');
   check(await otp.locator('[data-otp-form]').getAttribute('data-otp-state')==='error','OTP exposes the reject state');
-  await page.waitForFunction(()=>{const form=document.querySelector('[data-component="OTP input"] [data-otp-form]');return form?.dataset.otpState==='idle'&&[...form.querySelectorAll('.otp-digit')].every(input=>!input.value)});
+  await page.waitForFunction(()=>{const form=document.querySelector('[data-component="OTP input"] [data-otp-form]');return form?.dataset.otpState==='error'&&[...form.querySelectorAll('.otp-digit')].every(input=>!input.value)&&[...form.querySelectorAll('.otp-digit')].every(input=>!input.readOnly)});
   check(await otpDigits.evaluateAll(inputs=>inputs.every(input=>!input.value)),'OTP reject drains digits');
   for(const [index,digit] of ['1','2','3','4','5','6'].entries())await otpDigits.nth(index).fill(digit);
+  await otp.getByRole('button',{name:'Verify code'}).click();
   await page.waitForFunction(()=>document.querySelector('[data-component="OTP input"] [data-otp-form]')?.dataset.otpState==='success');
   check(await otp.locator('[data-otp-form]').getAttribute('data-otp-state')==='success','OTP merges into the verified state');
   await page.locator('.docs-sidebar [data-view="gallery"]').click();
