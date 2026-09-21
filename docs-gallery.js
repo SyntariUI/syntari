@@ -41,16 +41,51 @@ export function galleryPage(state, catalog) {
       <label class="docs-gallery-search">${icon('search')}<input id="search" type="search" placeholder="Find a component…" aria-label="Find a component" value="${escape(state.query)}"><kbd>/</kbd></label>
       <span>${catalog.length} components <span aria-hidden="true">·</span> Light & dark</span>
     </div>
-    <section id="gallery"><div class="section-heading"><h2 id="section-name"></h2><span>Live, interactive examples</span></div><div id="component-grid" class="component-grid"></div>
+    <section id="gallery" class="docs-component-gallery"><div class="docs-cursor-grid" aria-hidden="true"></div><div class="section-heading"><h2 id="section-name"></h2><span>Live, interactive examples</span></div><div id="component-grid" class="component-grid"></div>
       <div id="empty" hidden>${icon('search')}<h2>No components found</h2><p>Try a different name or choose another category.</p><button class="button" id="clear-search">Clear search</button></div></section>` : `<section id="${state.view}"></section>`}
   </section>`;
 }
 
-export function prepareGallery(state) {
-  if (state.view === 'gallery') return window.SyntariGallery.render({
-    root: document.querySelector('#gallery'), category: state.category, query: state.query, categoryOrder: Object.keys(groups),
-    componentURL: c => new URL(`components/${slugify(c.name)}/`, base).href
+function prepareCursorGrid(root) {
+  if (!root || root.dataset.cursorGridReady) return;
+  const layer = root.querySelector('.docs-cursor-grid');
+  if (!layer) return;
+  root.dataset.cursorGridReady = '';
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!finePointer) return;
+  const updatePoint = event => {
+    const rect = root.getBoundingClientRect();
+    root.style.setProperty('--cursor-grid-x', `${event.clientX - rect.left}px`);
+    root.style.setProperty('--cursor-grid-y', `${event.clientY - rect.top}px`);
+    root.dataset.cursorGridActive = '';
+  };
+  root.addEventListener('pointerenter', updatePoint);
+  root.addEventListener('pointermove', updatePoint, {passive: true});
+  root.addEventListener('pointerleave', () => root.removeAttribute('data-cursor-grid-active'));
+  root.addEventListener('pointerdown', event => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    updatePoint(event);
+    const rect = root.getBoundingClientRect();
+    const pulse = document.createElement('span');
+    pulse.className = 'docs-cursor-pulse';
+    pulse.style.left = `${event.clientX - rect.left}px`;
+    pulse.style.top = `${event.clientY - rect.top}px`;
+    pulse.setAttribute('aria-hidden', 'true');
+    root.append(pulse);
+    pulse.addEventListener('animationend', () => pulse.remove(), {once: true});
   });
+}
+
+export function prepareGallery(state) {
+  if (state.view === 'gallery') {
+    const root = document.querySelector('#gallery');
+    const count = window.SyntariGallery.render({
+      root, category: state.category, query: state.query, categoryOrder: Object.keys(groups),
+      componentURL: c => new URL(`components/${slugify(c.name)}/`, base).href
+    });
+    prepareCursorGrid(root);
+    return count;
+  }
   if (state.view === 'screens') window.SyntariStarter.renderScreen(state.screen, document.querySelector('#screens'));
   else window.SyntariGallery.foundations(document.querySelector('#foundations'));
 }

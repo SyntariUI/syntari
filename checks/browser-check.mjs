@@ -5,6 +5,11 @@ export default async page => {
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4318/gallery.html');
   await page.locator('.specimen').first().waitFor();
+  check(await page.locator('.docs-cursor-grid').count()===1,'Gallery cursor grid renders once');
+  if(await page.evaluate(()=>matchMedia('(hover: hover) and (pointer: fine)').matches)){
+    const gallerySurface=page.locator('#gallery');await gallerySurface.hover({position:{x:80,y:80}});
+    check(await gallerySurface.getAttribute('data-cursor-grid-active')!==null,'Gallery cursor grid follows pointer');
+  }
   const catalogSize=await page.evaluate(async()=>(await import('/syntari.js')).getComponents().then(list=>list.length));check(await page.locator('.specimen').count()===catalogSize,catalogSize+' component families render');
   await setTheme(page,'dark');
   check(await page.locator('html').getAttribute('data-theme')==='dark','Dark theme switches');
@@ -18,6 +23,15 @@ export default async page => {
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
   await page.locator('[data-category="Form controls"]').click();
   check(await page.locator('.specimen').count()===22,'Category filters twenty-two form controls');
+  const otp=page.locator('[data-component="OTP input"]'),otpDigits=otp.locator('.otp-digit');
+  for(const [index,digit] of ['6','5','4','3','2','1'].entries())await otpDigits.nth(index).fill(digit);
+  await page.waitForFunction(()=>document.querySelector('[data-component="OTP input"] [data-otp-form]')?.dataset.otpState==='error');
+  check(await otp.locator('[data-otp-form]').getAttribute('data-otp-state')==='error','OTP exposes the reject state');
+  await page.waitForFunction(()=>{const form=document.querySelector('[data-component="OTP input"] [data-otp-form]');return form?.dataset.otpState==='idle'&&[...form.querySelectorAll('.otp-digit')].every(input=>!input.value)});
+  check(await otpDigits.evaluateAll(inputs=>inputs.every(input=>!input.value)),'OTP reject drains digits');
+  for(const [index,digit] of ['1','2','3','4','5','6'].entries())await otpDigits.nth(index).fill(digit);
+  await page.waitForFunction(()=>document.querySelector('[data-component="OTP input"] [data-otp-form]')?.dataset.otpState==='success');
+  check(await otp.locator('[data-otp-form]').getAttribute('data-otp-state')==='success','OTP merges into the verified state');
   await page.locator('.docs-sidebar [data-view="gallery"]').click();
   const segmented=page.locator('[data-component="Segmented control"]');
   await segmented.getByRole('button',{name:'List',exact:true}).click();
