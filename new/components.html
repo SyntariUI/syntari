@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Syntari components — a live, inspectable component workbench.">
+  <title>Syntari — Components</title>
+  <link rel="icon" href="../favicon.svg">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./new.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
+</head>
+<body class="next-body" data-new-page="components">
+  <div class="next-shell component-shell">
+    <aside class="next-sidebar component-sidebar">
+      <div class="sidebar-brand-row">
+        <a class="sidebar-brand" href="./" aria-label="Syntari">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Syntari</span>
+        </a>
+        <span class="next-badge">NEXT</span>
+      </div>
+
+      <div class="sidebar-section-title">
+        <strong>Components</strong>
+        <span data-total-components>—</span>
+      </div>
+
+      <label class="component-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" placeholder="Search" autocomplete="off" data-component-search>
+        <kbd>/</kbd>
+      </label>
+
+      <nav class="component-navigation" aria-label="Component navigation" data-component-nav></nav>
+
+      <div class="sidebar-links">
+        <a href="./"><span>Renderer</span><span>↗</span></a>
+        <a href="../registry/index.json"><span>Registry</span><span>↗</span></a>
+      </div>
+    </aside>
+
+    <main class="next-stage-column">
+      <section class="component-frame" data-component-frame>
+        <div class="component-toolbar">
+          <div class="install-cluster" data-install-cluster data-open="false">
+            <button class="install-button" type="button" data-install-toggle aria-expanded="false">
+              <span data-install-label>Install</span>
+            </button>
+            <div class="install-expanded" data-install-expanded aria-hidden="true">
+              <button class="install-close" type="button" data-install-close aria-label="Close install">×</button>
+              <button class="package-manager" type="button" aria-label="Package manager">npm⌄</button>
+              <code data-install-command>npx syntari add otp-input</code>
+              <button class="install-copy" type="button" data-copy-install>Copy</button>
+            </div>
+          </div>
+
+          <button class="icon-control" type="button" data-replay-component aria-label="Replay component">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+          <button class="icon-control" type="button" data-focus-preview aria-label="Focus preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+          <button class="icon-control" type="button" data-open-code aria-label="View source">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>
+          </button>
+          <button class="icon-control" type="button" data-theme-toggle aria-label="Switch theme"></button>
+        </div>
+
+        <div class="component-preview-stage" data-preview-stage>
+          <div class="component-preview-wrap">
+            <div class="component-preview" data-component-mount></div>
+          </div>
+
+          <div class="preview-status">
+            <span data-preview-status>Live preview</span>
+            <span>Try it directly</span>
+          </div>
+
+          <div class="soft-cursor" aria-hidden="true" data-soft-cursor><i></i></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="next-rail docs-rail" data-docs-rail>
+      <div class="docs-scroll" data-docs-scroll>
+        <header class="docs-header">
+          <div class="docs-title-row">
+            <div>
+              <span class="docs-kicker" data-docs-category>INPUT</span>
+              <h1 data-docs-title>OTP input</h1>
+            </div>
+            <button class="icon-control docs-code-button" type="button" data-open-code aria-label="View source">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>
+            </button>
+          </div>
+          <p class="docs-description" data-docs-description></p>
+        </header>
+
+        <section class="docs-section">
+          <span class="docs-label">Component</span>
+          <div class="docs-meta-grid">
+            <div><span>Registry id</span><strong data-registry-id>otp-input</strong></div>
+            <div><span>Status</span><strong><i></i> Ready</strong></div>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Interaction type</span>
+          <p>Direct manipulation. Focus, pointer and keyboard states remain visible and predictable.</p>
+          <div class="interaction-badges">
+            <span><i></i> Pointer</span>
+            <span><i></i> Keyboard</span>
+            <span><i></i> Focus</span>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Implementation</span>
+          <div class="runtime-row">
+            <code data-runtime-snippet></code>
+            <button type="button" data-copy-runtime>Copy</button>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Props & rules</span>
+          <div class="props-table">
+            <div class="props-row props-head"><span>Prop</span><span>Type</span><span>Description</span></div>
+            <div class="props-row"><code>state</code><code>string</code><span>Controls the visible state.</span></div>
+            <div class="props-row"><code>disabled</code><code>boolean</code><span>Prevents interaction without hiding context.</span></div>
+            <div class="props-row"><code>onAction</code><code>event</code><span>Connects the primitive to product behaviour.</span></div>
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <span class="docs-label">Tokens</span>
+          <div class="docs-token-list" data-token-list></div>
+        </section>
+
+        <section class="docs-section docs-end">
+          <span class="docs-label">Agent guidance</span>
+          <p>Prefer the simplest valid state. Preserve local context. Do not introduce a second control when the current component already communicates the next step.</p>
+        </section>
+      </div>
+
+      <div class="code-sheet" data-code-sheet aria-hidden="true">
+        <header class="code-sheet-head">
+          <div>
+            <span>Implementation</span>
+            <strong data-code-title>OTP input</strong>
+          </div>
+          <div class="code-actions">
+            <button type="button" data-copy-code>Copy</button>
+            <button class="icon-control" type="button" data-close-code aria-label="Close source">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+        </header>
+        <div class="code-file-row">
+          <span data-code-file>otp-input.html</span>
+          <span>HTML</span>
+        </div>
+        <pre class="code-sheet-pre"><code data-component-code></code></pre>
+      </div>
+    </aside>
+  </div>
+
+  <div class="command-palette" data-command-palette hidden>
+    <div class="command-shell">
+      <div class="command-input-row">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" placeholder="Jump to a component…" autocomplete="off" data-command-input>
+        <kbd>Esc</kbd>
+      </div>
+      <div class="command-results" data-command-results></div>
+    </div>
+  </div>
+
+  <script type="module" src="./new.js"></script>
+</body>
+</html>
