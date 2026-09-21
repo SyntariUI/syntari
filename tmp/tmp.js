@@ -1,287 +1,502 @@
-import { render } from '../ir.js';
-import { initialize, mount, setTheme } from '../syntari.js';
+import { initialize, getComponents, mount } from "../syntari.js";
 
-const $ = (selector, scope = document) => scope.querySelector(selector);
-const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? 0 : ms));
-const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-
-const scenarios = {
-  q2: {
-    prompt: 'Compare Q2 revenue with Q1 and explain why costs increased.',
-    title: 'Performance comparison',
-    pattern: 'Performance comparison',
-    patternConfidence: .91,
-    decisions: [
-      ['intent','analytics',.98],
-      ['representation','trend + comparison',.91],
-      ['comparison','required',.97],
-      ['evidence','required',.84],
-      ['reasoning','required',.88],
-      ['risk','read-only',.99]
-    ],
-    rules: ['Registry components only','Evidence remains inspectable','Read-only task requires no approval'],
-    spec: {
-      version:'syntari-ir-1', type:'screen', layout:'stack', title:'Q2 performance',
-      children:[
-        {component:'syntari.stat-row',props:{stats:[
-          {label:'Revenue',value:'€1.84M',badge:'+18.6%',note:'versus Q1',tone:'success'},
-          {label:'Operating costs',value:'€712k',badge:'+12.4%',note:'versus Q1',tone:'warning'},
-          {label:'Margin',value:'61.3%',badge:'+2.1 pp',note:'versus Q1',tone:'success'}
-        ]}},
-        {component:'syntari.streaming-response',props:{author:'Analysis agent',status:'Reasoning complete',text:'Costs increased 12.4% quarter over quarter, led by infrastructure and contractor spend. Revenue grew faster than costs, so margin still improved by 2.1 percentage points.',action:'Regenerate',icon:'bot'}},
-        {component:'syntari.area-chart',props:{title:'Revenue trend',note:'Indexed · Q2',chartLabel:'Revenue rises through Q2 and ends at its strongest point in the period.',points:[
-          {label:'W1',value:52},{label:'W2',value:58},{label:'W3',value:55},{label:'W4',value:63},{label:'W5',value:61},{label:'W6',value:68},
-          {label:'W7',value:72},{label:'W8',value:69},{label:'W9',value:76},{label:'W10',value:81},{label:'W11',value:79},{label:'W12',value:88}
-        ]}},
-        {component:'syntari.comparison-table',props:{caption:'Q1 and Q2 measured on the same business outcomes',optionA:'Q1',optionB:'Q2',rows:[
-          {metric:'Revenue',a:'€1.55M',b:'€1.84M',advantage:'Q2'},
-          {metric:'Operating costs',a:'€633k',b:'€712k',advantage:'Q1'},
-          {metric:'Margin',a:'59.2%',b:'61.3%',advantage:'Q2'}
-        ]}},
-        {type:'region',label:'Evidence · 3 sources',open:false,children:[
-          {component:'syntari.source-list',props:{sources:[
-            {name:'Billing warehouse',share:58},{name:'Finance ledger',share:27},{name:'CRM',share:15}
-          ]}}
-        ]}
-      ]
-    }
-  },
-  brief: {
-    prompt: 'Prepare a project brief before the weekly product meeting.',
-    title: 'Project brief',
-    pattern: 'Decision-ready project summary',
-    patternConfidence: .89,
-    decisions: [
-      ['intent','workflow',.94],
-      ['representation','summary',.89],
-      ['comparison','not needed',.92],
-      ['evidence','required',.79],
-      ['reasoning','required',.95],
-      ['risk','read-only',.99]
-    ],
-    rules: ['Summarize before details','Keep provenance available','No destructive actions'],
-    spec: {
-      version:'syntari-ir-1', type:'screen', layout:'stack', title:'Project brief',
-      children:[
-        {component:'syntari.stat-row',props:{stats:[
-          {label:'Open work',value:'18',badge:'5 priority',note:'current sprint',tone:'neutral'},
-          {label:'Decisions needed',value:'3',badge:'meeting',note:'one blocks release',tone:'warning'},
-          {label:'Blockers',value:'2',badge:'active',note:'need owners',tone:'danger'}
-        ]}},
-        {component:'syntari.streaming-response',props:{author:'Briefing agent',status:'Synthesized',text:'The team is shipping the renderer validation work, but two blockers remain. The meeting needs one decision: how low-confidence routing should fall back before Syntari composes the final interface.',action:'Regenerate',icon:'bot'}},
-        {component:'syntari.metadata-list',props:{items:[
-          {label:'Focus',value:'Renderer validation and decision-provider fallback'},
-          {label:'Decision',value:'Choose behavior below the confidence threshold'},
-          {label:'Owners',value:'Product · Design engineering · Platform'},
-          {label:'Meeting',value:'Weekly product review'}
-        ]}},
-        {type:'region',label:'Sources · 4 project records',open:false,children:[
-          {component:'syntari.source-list',props:{sources:[
-            {name:'Project tasks',share:42},{name:'Decision log',share:28},{name:'GitHub activity',share:19},{name:'Meeting notes',share:11}
-          ]}}
-        ]}
-      ]
-    }
-  },
-  delete: {
-    prompt: 'Delete the 37 inactive users in this workspace.',
-    title: 'Protected action',
-    pattern: 'Human approval gate',
-    patternConfidence: .99,
-    decisions: [
-      ['intent','action',.99],
-      ['representation','approval',.98],
-      ['comparison','not needed',.99],
-      ['evidence','not needed',.87],
-      ['reasoning','not needed',.94],
-      ['risk','destructive',.99]
-    ],
-    rules: ['Destructive action requires confirmation','Consequence must be explicit','Irreversible scope must be visible'],
-    spec: {
-      version:'syntari-ir-1', type:'screen', layout:'stack', title:'Workspace action',
-      children:[
-        {component:'syntari.tool-approval',props:{
-          title:'Approval required',
-          question:'Delete 37 inactive users from this workspace?',
-          scope:'37 users · access, history, and ownership may be affected',
-          hint:'This operation is destructive and cannot be undone automatically.',
-          icon:'triangle-alert',
-          approveLabel:'Approve deletion',
-          rejectLabel:'Cancel'
-        }}
-      ]
-    }
-  }
-};
-
-let activeRender = null;
-let activeScenario = 'q2';
-let runId = 0;
-
-function chooseScenario(text) {
-  const input = String(text || '').toLowerCase();
-  if (/(delete|remove|inactive|destroy|purge)/.test(input)) return 'delete';
-  if (/(brief|meeting|project|summary|prepare)/.test(input)) return 'brief';
-  return 'q2';
-}
-
-function componentsFromSpec(spec) {
-  const found = [];
-  const walk = nodes => (nodes || []).forEach(node => {
-    if (node.component) found.push(node.component.replace(/^syntari\./,''));
-    if (node.children) walk(node.children);
+const page = document.body.dataset.tmpPage;
+const $ = function(selector, root) { return (root || document).querySelector(selector); };
+const $$ = function(selector, root) { return Array.from((root || document).querySelectorAll(selector)); };
+const wait = function(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); };
+const escapeHtml = function(value) {
+  return String(value).replace(/[&<>"']/g, function(char) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char];
   });
-  walk(spec.children);
-  return [...new Set(found)];
-}
-
-function paintInspector(scenario, diagnostics) {
-  $('[data-pattern-name]').textContent = scenario.pattern;
-  $('[data-pattern-confidence]').textContent = Math.round(scenario.patternConfidence * 100) + '%';
-  $('[data-render-title]').textContent = scenario.title;
-
-  $('[data-decision-list]').innerHTML = scenario.decisions.map(item =>
-    '<div class="decision-row"><span>' + esc(item[0]) + '</span><strong>' + esc(item[1]) + '</strong><span class="confidence">' + Math.round(item[2] * 100) + '%</span></div>'
-  ).join('');
-
-  const components = componentsFromSpec(scenario.spec);
-  $('[data-component-count]').textContent = components.length + ' selected';
-  $('[data-component-list]').innerHTML = components.map((slug,index) =>
-    '<a class="component-row" href="../components/' + esc(slug) + '/"><span class="component-icon">' + String(index + 1).padStart(2,'0') + '</span><div><strong>syntari.' + esc(slug) + '</strong><span>registry component</span></div></a>'
-  ).join('');
-
-  $('[data-ir-code]').textContent = JSON.stringify(scenario.spec,null,2);
-
-  const issues = diagnostics || [];
-  const clean = [
-    ['Registry','All selected components exist in the registry'],
-    ['Props','Values match declared component contracts'],
-    ['Composition','The screen stays inside Syntari IR'],
-    ['Policy',scenario.rules[0]]
-  ];
-  if (!issues.length) {
-    $('[data-validation-count]').textContent = '0 issues';
-    $('[data-validation-list]').innerHTML = clean.map(item =>
-      '<div class="validation-row"><span class="validation-mark">✓</span><div><strong>' + esc(item[0]) + '</strong><br><span>' + esc(item[1]) + '</span></div></div>'
-    ).join('');
-  } else {
-    $('[data-validation-count]').textContent = issues.length + (issues.length === 1 ? ' issue' : ' issues');
-    $('[data-validation-list]').innerHTML = issues.map(item =>
-      '<div class="validation-row is-' + esc(item.severity) + '"><span class="validation-mark">!</span><div><strong>' + esc(item.code) + '</strong><br><span>' + esc(item.message) + '</span></div></div>'
-    ).join('');
-  }
-}
-
-function resetSteps() {
-  $$('.runtime-step').forEach(step => step.classList.remove('is-active','is-complete'));
-}
-
-async function advanceStep(name, status, id) {
-  if (id !== runId) return false;
-  $$('.runtime-step').forEach(step => step.classList.remove('is-active'));
-  const step = $('[data-step="' + name + '"]');
-  step.classList.add('is-active');
-  $('[data-render-status]').textContent = status;
-  await sleep(260);
-  if (id !== runId) return false;
-  step.classList.remove('is-active');
-  step.classList.add('is-complete');
-  return true;
-}
-
-async function runRenderer(forcedScenario) {
-  const id = ++runId;
-  const prompt = $('#renderer-prompt').value.trim();
-  const key = forcedScenario || chooseScenario(prompt);
-  const scenario = scenarios[key];
-  activeScenario = key;
-  resetSteps();
-  $('[data-render-output]').innerHTML = '<div class="render-placeholder"><span class="spinner-mark" aria-hidden="true"></span><strong>Understanding intent…</strong><p>Matching the request to Syntari patterns.</p></div>';
-  paintInspector(scenario, []);
-
-  if (!await advanceStep('ask','Understanding intent…',id)) return;
-  if (!await advanceStep('decide','Selecting pattern…',id)) return;
-  if (!await advanceStep('compose','Composing trusted primitives…',id)) return;
-  if (!await advanceStep('verify','Validating against the registry…',id)) return;
-
-  activeRender?.destroy();
-  activeRender = await render(scenario.spec, $('[data-render-output]'));
-  paintInspector(scenario, activeRender.diagnostics);
-  if (!await advanceStep('render','Rendered with Syntari',id)) return;
-  $('[data-render-status]').textContent = activeRender.diagnostics.some(item => item.severity === 'error') ? 'Rendered with fallbacks' : 'Validated · rendered';
-}
-
-$$('[data-scenario]').forEach(button => button.addEventListener('click', () => {
-  const key = button.dataset.scenario;
-  $$('.prompt-chip').forEach(chip => chip.classList.toggle('is-selected', chip === button));
-  $('#renderer-prompt').value = scenarios[key].prompt;
-  runRenderer(key);
-}));
-
-$('[data-render-button]').addEventListener('click', () => {
-  $$('.prompt-chip').forEach(chip => chip.classList.remove('is-selected'));
-  runRenderer();
-});
-
-$('#renderer-prompt').addEventListener('keydown', event => {
-  if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') runRenderer();
-});
-
-$$('[data-tab]').forEach(tab => tab.addEventListener('click', () => {
-  const name = tab.dataset.tab;
-  $$('[data-tab]').forEach(button => button.setAttribute('aria-selected', String(button === tab)));
-  $$('[data-panel]').forEach(panel => { panel.hidden = panel.dataset.panel !== name; });
-}));
-
-$('[data-copy-ir]').addEventListener('click', async event => {
-  try {
-    await navigator.clipboard.writeText($('[data-ir-code]').textContent);
-    const original = event.currentTarget.textContent;
-    event.currentTarget.textContent = 'Copied';
-    setTimeout(() => { event.currentTarget.textContent = original; }, 1200);
-  } catch {}
-});
-
-const themeButton = $('[data-theme-toggle]');
-const themeIcons = {
-  light:'<svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>',
-  dark:'<svg class="icon lucide" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
 };
-function paintTheme() {
-  const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-  themeButton.innerHTML = themeIcons[current === 'dark' ? 'light' : 'dark'];
-  themeButton.setAttribute('aria-label','Switch to ' + (current === 'dark' ? 'light' : 'dark') + ' theme');
-}
-themeButton.addEventListener('click', () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  setTheme(next);
-  try { localStorage.setItem('syntari-theme',next); } catch {}
-  paintTheme();
-});
 
-async function mountGalleryCard(card) {
-  if (card.dataset.mounted) return;
-  card.dataset.mounted = 'true';
-  try { await mount(card.dataset.gallerySlug, $('.preview-mount', card)); }
-  catch { card.classList.add('is-unavailable'); }
-}
-
-async function start() {
-  await initialize();
-  paintTheme();
-  const cards = $$('.component-preview');
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      observer.unobserve(entry.target);
-      mountGalleryCard(entry.target);
-    }), {rootMargin:'120px'});
-    cards.forEach(card => observer.observe(card));
-  } else {
-    cards.forEach(mountGalleryCard);
+function iconTheme(theme) {
+  if (theme === "dark") {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>';
   }
-  runRenderer('q2');
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
 }
-start();
+
+function setupTheme() {
+  var button = $("[data-theme-toggle]");
+  if (!button) return;
+  function paint() {
+    var theme = document.documentElement.dataset.theme || "dark";
+    button.innerHTML = iconTheme(theme);
+    button.setAttribute("aria-label", "Switch to " + (theme === "dark" ? "light" : "dark") + " theme");
+  }
+  button.addEventListener("click", function() {
+    var next = (document.documentElement.dataset.theme || "dark") === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("syntari-theme", next); } catch (error) {}
+    paint();
+  });
+  paint();
+}
+
+function setupMagnetic() {
+  if (matchMedia("(pointer: coarse)").matches) return;
+  $$("[data-magnetic]").forEach(function(button) {
+    button.addEventListener("pointermove", function(event) {
+      var rect = button.getBoundingClientRect();
+      var x = (event.clientX - rect.left - rect.width / 2) * 0.07;
+      var y = (event.clientY - rect.top - rect.height / 2) * 0.09;
+      button.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+    });
+    button.addEventListener("pointerleave", function() { button.style.transform = ""; });
+  });
+}
+
+function setupCursor(stage) {
+  if (!stage || matchMedia("(pointer: coarse)").matches) return;
+  var cursor = $(".cursor-orbit", stage);
+  if (!cursor) return;
+  var targetX = -40, targetY = -40, x = -40, y = -40, raf = 0;
+  function loop() {
+    x += (targetX - x) * 0.19;
+    y += (targetY - y) * 0.19;
+    cursor.style.transform = "translate3d(" + (x - 13) + "px," + (y - 13) + "px,0)";
+    raf = requestAnimationFrame(loop);
+  }
+  stage.addEventListener("pointerenter", function() {
+    cursor.classList.add("is-visible");
+    if (!raf) loop();
+  });
+  stage.addEventListener("pointerleave", function() {
+    cursor.classList.remove("is-visible");
+  });
+  stage.addEventListener("pointermove", function(event) {
+    var rect = stage.getBoundingClientRect();
+    targetX = event.clientX - rect.left + stage.scrollLeft;
+    targetY = event.clientY - rect.top + stage.scrollTop;
+    var hot = !!event.target.closest("button,a,input,textarea,select,[role=button]");
+    cursor.classList.toggle("is-hot", hot);
+  });
+}
+
+function copyText(text, button) {
+  navigator.clipboard.writeText(text).then(function() {
+    if (!button) return;
+    var old = button.textContent;
+    button.textContent = "Copied";
+    setTimeout(function() { button.textContent = old; }, 1100);
+  }).catch(function() {});
+}
+
+setupTheme();
+setupMagnetic();
+
+if (page === "home") {
+  var scenarios = {
+    dashboard: {
+      label: "Revenue health",
+      prompt: "Create a calm revenue health dashboard for a finance lead. Show ARR, month-over-month trend, channel contribution and anomalies.",
+      intent: "Revenue health dashboard for a finance lead, prioritising ARR and its explanation.",
+      pattern: "Metric overview",
+      confidence: 94,
+      slugs: ["headline-metric","metric-and-sparkline","chart-bars","source-list"],
+      validation: ["Hierarchy has one dominant metric","Every comparison names its period","Chart values remain available as text","Semantic status is not color-only"]
+    },
+    onboarding: {
+      label: "Workspace setup",
+      prompt: "Create a workspace setup review with progress, owners, completed steps and the next action.",
+      intent: "A setup review that makes progress and ownership immediately legible.",
+      pattern: "Guided setup review",
+      confidence: 91,
+      slugs: ["progress-and-score","metadata-list","activity-list","selectable-cards"],
+      validation: ["Progress has a textual equivalent","Next action remains explicit","Completed work stays visible","Interactive choices have focus states"]
+    },
+    review: {
+      label: "Project review",
+      prompt: "Create a project decision screen that summarizes status, evidence, activity and the next decision.",
+      intent: "Project review focused on evidence, state and a clear next decision.",
+      pattern: "Decision workspace",
+      confidence: 89,
+      slugs: ["banner","metadata-list","activity-list","tabs"],
+      validation: ["Decision context appears before actions","Status is written, not implied","Activity uses chronological labels","Secondary actions are visually quiet"]
+    },
+    verification: {
+      label: "Verification",
+      prompt: "Create a secure one-time-code verification step with a clear error state and recovery path.",
+      intent: "A focused verification step with obvious completion and recovery states.",
+      pattern: "Verification step",
+      confidence: 96,
+      slugs: ["otp-input","banner","button","alert"],
+      validation: ["Code slots expose focus state","Error state is announced in text","Recovery action remains reachable","No hidden destructive action"]
+    }
+  };
+
+  var activeScenario = "dashboard";
+  var catalog = [];
+  var mounted = [];
+  var rendering = false;
+
+  function availableSlug(slug) {
+    return catalog.some(function(item) { return item.slug === slug; });
+  }
+
+  function findFallback(index) {
+    var preferred = ["headline-metric","metric-and-sparkline","progress-and-score","metadata-list","activity-list","card","switch","text-input"];
+    for (var i = index; i < preferred.length; i += 1) {
+      if (availableSlug(preferred[i])) return preferred[i];
+    }
+    return catalog[index % Math.max(catalog.length,1)] ? catalog[index % catalog.length].slug : null;
+  }
+
+  function destroyMounted() {
+    mounted.forEach(function(instance) { try { instance.destroy(); } catch (error) {} });
+    mounted = [];
+  }
+
+  function renderTrace(scenario, resolved) {
+    $("[data-output-title]").textContent = scenario.label;
+    $("[data-trace-intent]").textContent = scenario.intent;
+    $("[data-trace-pattern]").textContent = scenario.pattern;
+    $("[data-trace-confidence]").textContent = scenario.confidence + "%";
+    $("[data-confidence-fill]").style.width = scenario.confidence + "%";
+    $("[data-component-count]").textContent = resolved.length + " primitives";
+    $("[data-trace-components]").innerHTML = resolved.map(function(slug, index) {
+      var component = catalog.find(function(item) { return item.slug === slug; });
+      var name = component ? component.name : slug;
+      var category = component ? component.category : "Primitive";
+      return '<div class="trace-component"><i>0' + (index + 1) + '</i><div><strong>' + escapeHtml(name) + '</strong><span>' + escapeHtml(category) + '</span></div></div>';
+    }).join("");
+    $("[data-validation-list]").innerHTML = scenario.validation.map(function(item) {
+      return '<div class="validation-item"><i></i><span>' + escapeHtml(item) + '</span></div>';
+    }).join("");
+    var ir = {
+      version: "0.2",
+      intent: scenario.intent,
+      pattern: scenario.pattern,
+      confidence: scenario.confidence / 100,
+      composition: resolved.map(function(slug, index) {
+        return {slot:index === 0 ? "primary" : "support-" + index, component:slug};
+      }),
+      validation: {status:"pass", blockingIssues:0}
+    };
+    $("[data-ir-code]").textContent = JSON.stringify(ir, null, 2);
+  }
+
+  async function mountScenario(scenario, animate) {
+    if (rendering) return;
+    rendering = true;
+    var runtime = $("[data-runtime]");
+    var screen = $("[data-render-screen]");
+    var loading = $("[data-render-loading]");
+    var loadingLabel = $("[data-loading-label]");
+    var steps = ["ask","decide","compose","verify","render"];
+    runtime.classList.add("is-running");
+    screen.classList.add("is-leaving");
+    loading.hidden = false;
+    $$("[data-runtime-step]").forEach(function(node) {
+      node.classList.remove("is-active","is-complete");
+    });
+
+    if (animate !== false) {
+      var labels = ["Understanding intent","Selecting valid patterns","Composing trusted primitives","Validating against Syntari","Rendering interface"];
+      for (var s = 0; s < steps.length; s += 1) {
+        var stepNode = $('[data-runtime-step="' + steps[s] + '"]');
+        stepNode.classList.add("is-active");
+        loadingLabel.textContent = labels[s];
+        await wait(s === 0 ? 260 : 330);
+        stepNode.classList.remove("is-active");
+        stepNode.classList.add("is-complete");
+      }
+    } else {
+      $$("[data-runtime-step]").forEach(function(node) { node.classList.add("is-complete"); });
+    }
+
+    destroyMounted();
+    screen.innerHTML = "";
+    var resolved = [];
+    scenario.slugs.forEach(function(slug, index) {
+      var actual = availableSlug(slug) ? slug : findFallback(index);
+      if (actual && resolved.indexOf(actual) === -1) resolved.push(actual);
+    });
+    while (resolved.length < 4 && catalog[resolved.length]) {
+      var candidate = catalog[resolved.length].slug;
+      if (resolved.indexOf(candidate) === -1) resolved.push(candidate);
+    }
+
+    for (var i = 0; i < resolved.length; i += 1) {
+      var cell = document.createElement("div");
+      cell.className = "render-cell" + (i === 2 ? " wide" : "");
+      screen.appendChild(cell);
+      try {
+        var instance = await mount(resolved[i], cell);
+        mounted.push(instance);
+      } catch (error) {
+        cell.innerHTML = '<div class="trace-component"><i>0' + (i + 1) + '</i><div><strong>' + escapeHtml(resolved[i]) + '</strong><span>Trusted primitive</span></div></div>';
+      }
+    }
+
+    renderTrace(scenario, resolved);
+    screen.classList.remove("is-leaving");
+    loading.hidden = true;
+    $("[data-validation-summary]").textContent = "Validated";
+    $$(".render-cell", screen).forEach(function(cell, index) {
+      setTimeout(function() { cell.classList.add("is-in"); }, 80 + index * 95);
+    });
+    setTimeout(function() { runtime.classList.remove("is-running"); }, 700);
+    rendering = false;
+  }
+
+  function selectScenario(key) {
+    if (!scenarios[key]) return;
+    activeScenario = key;
+    $("[data-intent]").value = scenarios[key].prompt;
+    $$("[data-scenario]").forEach(function(button) {
+      button.setAttribute("aria-pressed", button.dataset.scenario === key ? "true" : "false");
+    });
+  }
+
+  async function bootHome() {
+    try {
+      await initialize();
+      catalog = await getComponents();
+      setupCursor($("[data-render-viewport]"));
+      $$("[data-scenario]").forEach(function(button) {
+        button.addEventListener("click", function() { selectScenario(button.dataset.scenario); });
+      });
+      $("[data-intent-form]").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var scenario = Object.assign({}, scenarios[activeScenario]);
+        scenario.prompt = $("[data-intent]").value.trim() || scenario.prompt;
+        scenario.intent = scenario.prompt;
+        mountScenario(scenario, true);
+      });
+      $("[data-replay-render]").addEventListener("click", function() { mountScenario(scenarios[activeScenario], true); });
+      $$("[data-trace-tab]").forEach(function(button, index) {
+        button.addEventListener("click", function() {
+          $$("[data-trace-tab]").forEach(function(item) { item.setAttribute("aria-selected","false"); });
+          button.setAttribute("aria-selected","true");
+          $(".trace-tabs .tab-indicator").style.setProperty("--tab-x", (index * 100) + "%");
+          $$("[data-trace-view]").forEach(function(view) {
+            var active = view.dataset.traceView === button.dataset.traceTab;
+            view.hidden = !active;
+            view.classList.toggle("is-active", active);
+          });
+        });
+      });
+      $("[data-copy-ir]").addEventListener("click", function(event) {
+        copyText($("[data-ir-code]").textContent, event.currentTarget);
+      });
+      await mountScenario(scenarios.dashboard, false);
+    } catch (error) {
+      console.error(error);
+      $("[data-render-screen]").innerHTML = '<div class="render-cell wide is-in"><div><strong>Syntari runtime unavailable</strong><p class="stage-hint">The preview shell loaded, but the component runtime did not.</p></div></div>';
+    }
+  }
+
+  bootHome();
+}
+
+if (page === "components") {
+  var componentCatalog = [];
+  var filteredCatalog = [];
+  var selected = null;
+  var selectedIndex = 0;
+  var activeMount = null;
+  var currentCategory = "All";
+  var currentQuery = "";
+
+  function componentTokens(component) {
+    if (Array.isArray(component.tokens) && component.tokens.length) return component.tokens;
+    var matches = String(component.html || "").match(/var\(--[a-z0-9-]+\)/g) || [];
+    var tokens = matches.map(function(value) { return value.slice(4,-1); });
+    return Array.from(new Set(tokens)).slice(0,10);
+  }
+
+  function groupCatalog(items) {
+    var groups = {};
+    items.forEach(function(component) {
+      var key = component.category || "Other";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(component);
+    });
+    return groups;
+  }
+
+  function renderNav() {
+    var base = componentCatalog.filter(function(component) {
+      var haystack = (component.name + " " + component.category + " " + (component.description || "")).toLowerCase();
+      return !currentQuery || haystack.indexOf(currentQuery.toLowerCase()) !== -1;
+    });
+    filteredCatalog = base;
+    var groups = groupCatalog(base);
+    var html = "";
+    Object.keys(groups).sort().forEach(function(category) {
+      html += '<div class="nav-category">' + escapeHtml(category) + '</div>';
+      groups[category].forEach(function(component) {
+        var active = selected && component.slug === selected.slug;
+        html += '<button type="button" class="nav-component" data-component-slug="' + escapeHtml(component.slug) + '" aria-current="' + (active ? "true" : "false") + '"><span>' + escapeHtml(component.name) + '</span><span>↗</span></button>';
+      });
+    });
+    $("[data-component-nav]").innerHTML = html || '<div class="nav-category">No matches</div>';
+    $$("[data-component-slug]").forEach(function(button) {
+      button.addEventListener("click", function() { selectComponent(button.dataset.componentSlug, true); });
+    });
+  }
+
+  function renderInspector(component) {
+    $("[data-inspector-title]").textContent = component.name;
+    $("[data-inspector-description]").textContent = component.description || "A trusted Syntari primitive.";
+    $("[data-component-code]").textContent = component.html || "<!-- Component markup is generated by the Syntari runtime. -->";
+    var runtime = 'import { mount } from "/syntari.js";\nawait mount("' + component.slug + '", "#target");';
+    $("[data-runtime-snippet]").textContent = runtime;
+    var tokens = componentTokens(component);
+    $("[data-token-list]").innerHTML = tokens.length ? tokens.map(function(token) {
+      return '<div class="token-item"><code>' + escapeHtml(token) + '</code><span style="--token-color:var(' + escapeHtml(token) + ')"></span></div>';
+    }).join("") : '<p class="stage-hint">Uses shared Syntari semantic tokens.</p>';
+  }
+
+  async function selectComponent(slug, animate) {
+    var component = componentCatalog.find(function(item) { return item.slug === slug; });
+    if (!component) return;
+    selected = component;
+    selectedIndex = componentCatalog.indexOf(component);
+    currentCategory = component.category || "Other";
+    renderNav();
+    $("[data-selected-category]").textContent = component.category || "Component";
+    $("[data-selected-name]").textContent = component.name;
+    $("[data-stage-kicker]").textContent = String(component.category || "Component").toUpperCase();
+    $("[data-stage-title]").textContent = component.name;
+    $("[data-stage-description]").textContent = component.description || "A trusted Syntari primitive.";
+    $("[data-component-position]").textContent = String(selectedIndex + 1).padStart(2,"0");
+    renderInspector(component);
+    var host = $("[data-component-mount]");
+    if (animate !== false) host.classList.add("is-changing");
+    await wait(animate === false ? 0 : 190);
+    if (activeMount) {
+      try { activeMount.destroy(); } catch (error) {}
+      activeMount = null;
+    }
+    host.innerHTML = "";
+    try {
+      activeMount = await mount(component.slug, host);
+    } catch (error) {
+      host.innerHTML = '<div class="trace-component"><i>UI</i><div><strong>' + escapeHtml(component.name) + '</strong><span>Preview unavailable</span></div></div>';
+    }
+    if (animate !== false) setTimeout(function() { host.classList.remove("is-changing"); }, 290);
+    try { history.replaceState(null,"","#" + component.slug); } catch (error) {}
+  }
+
+  function setInspector(open) {
+    var app = $("[data-component-app]");
+    app.dataset.inspector = open ? "open" : "closed";
+    $("[data-toggle-inspector]").setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function selectInspectorTab(name, index) {
+    $$("[data-inspector-tab]").forEach(function(button) {
+      button.setAttribute("aria-selected", button.dataset.inspectorTab === name ? "true" : "false");
+    });
+    $(".inspector-tabs .tab-indicator").style.setProperty("--tab-x", (index * 100) + "%");
+    $$("[data-inspector-view]").forEach(function(view) {
+      var active = view.dataset.inspectorView === name;
+      view.hidden = !active;
+      view.classList.toggle("is-active", active);
+    });
+  }
+
+  function openCommand() {
+    var panel = $("[data-command-panel]");
+    panel.hidden = false;
+    var input = $("[data-command-input]");
+    input.value = "";
+    renderCommand("");
+    requestAnimationFrame(function() { input.focus(); });
+  }
+
+  function closeCommand() {
+    $("[data-command-panel]").hidden = true;
+  }
+
+  function renderCommand(query) {
+    var list = componentCatalog.filter(function(component) {
+      return !query || (component.name + " " + component.category).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+    }).slice(0,16);
+    $("[data-command-results]").innerHTML = list.map(function(component) {
+      return '<button type="button" class="command-result" data-command-slug="' + escapeHtml(component.slug) + '"><span>' + escapeHtml(component.name) + '</span><span>' + escapeHtml(component.category || "") + '</span></button>';
+    }).join("");
+    $$("[data-command-slug]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        selectComponent(button.dataset.commandSlug, true);
+        closeCommand();
+      });
+    });
+  }
+
+  async function bootComponents() {
+    try {
+      await initialize();
+      componentCatalog = (await getComponents()).slice().sort(function(a,b) {
+        return (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name);
+      });
+      $("[data-total-components]").textContent = componentCatalog.length;
+      $("[data-component-total]").textContent = String(componentCatalog.length).padStart(2,"0");
+      renderNav();
+      var initialSlug = location.hash ? location.hash.slice(1) : "otp-input";
+      if (!componentCatalog.some(function(item) { return item.slug === initialSlug; })) {
+        initialSlug = componentCatalog[0] ? componentCatalog[0].slug : "";
+      }
+      if (initialSlug) await selectComponent(initialSlug, false);
+      setupCursor($(".component-stage"));
+
+      $("[data-component-search]").addEventListener("input", function(event) {
+        currentQuery = event.target.value;
+        renderNav();
+      });
+      $("[data-toggle-inspector]").addEventListener("click", function() {
+        setInspector($("[data-component-app]").dataset.inspector !== "open");
+      });
+      $("[data-close-inspector]").addEventListener("click", function() { setInspector(false); });
+      $("[data-replay-component]").addEventListener("click", function() {
+        if (selected) selectComponent(selected.slug, true);
+      });
+      $("[data-prev-component]").addEventListener("click", function() {
+        var next = (selectedIndex - 1 + componentCatalog.length) % componentCatalog.length;
+        selectComponent(componentCatalog[next].slug, true);
+      });
+      $("[data-next-component]").addEventListener("click", function() {
+        var next = (selectedIndex + 1) % componentCatalog.length;
+        selectComponent(componentCatalog[next].slug, true);
+      });
+      $$("[data-inspector-tab]").forEach(function(button, index) {
+        button.addEventListener("click", function() { selectInspectorTab(button.dataset.inspectorTab, index); });
+      });
+      $("[data-copy-runtime]").addEventListener("click", function(event) {
+        copyText($("[data-runtime-snippet]").textContent, event.currentTarget);
+      });
+      $("[data-copy-code]").addEventListener("click", function(event) {
+        copyText($("[data-component-code]").textContent, event.currentTarget);
+      });
+      $("[data-command]").addEventListener("click", openCommand);
+      $("[data-command-input]").addEventListener("input", function(event) { renderCommand(event.target.value); });
+      $("[data-command-panel]").addEventListener("click", function(event) {
+        if (event.target === event.currentTarget) closeCommand();
+      });
+
+      document.addEventListener("keydown", function(event) {
+        var typing = event.target.matches("input,textarea,select");
+        if (event.key === "/" && !typing && $("[data-command-panel]").hidden) {
+          event.preventDefault();
+          openCommand();
+        } else if (event.key === "Escape" && !$("[data-command-panel]").hidden) {
+          closeCommand();
+        } else if (event.key === "ArrowRight" && !typing && $("[data-command-panel]").hidden && selected) {
+          var n = (selectedIndex + 1) % componentCatalog.length;
+          selectComponent(componentCatalog[n].slug, true);
+        } else if (event.key === "ArrowLeft" && !typing && $("[data-command-panel]").hidden && selected) {
+          var p = (selectedIndex - 1 + componentCatalog.length) % componentCatalog.length;
+          selectComponent(componentCatalog[p].slug, true);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      $("[data-component-nav]").innerHTML = '<div class="nav-category">Runtime unavailable</div>';
+    }
+  }
+
+  bootComponents();
+}
