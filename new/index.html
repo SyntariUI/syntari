@@ -3,37 +3,158 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="New Syntari UI component compositions.">
-  <title>New compositions — Syntari UI</title>
+  <meta name="description" content="Syntari Renderer — from intent to a validated interface using trusted primitives.">
+  <title>Syntari — From intent to interface</title>
   <link rel="icon" href="../favicon.svg">
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="./new.css">
-  <script
-    src="https://app.kobbe.io/tracker.js"
-    data-token="01b288b6.Nx0YyvTQEED6n-xflmasSvpRFosUDlsw"
-    defer
-  ></script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
 </head>
-<body class="syntari-shot showcase-index">
-  <main class="showcase-home">
-    <div class="showcase-kicker"><span class="status-dot"></span>Syntari / new</div>
-    <h1>Three product-ready compositions.</h1>
-    <p class="showcase-lead">Built from Syntari foundations and existing component contracts. Dark by default, responsive, keyboard-safe, and ready to inspect.</p>
-    <div class="showcase-links">
-      <a class="showcase-link" href="./command-palette/">
-        <span><strong>Command palette</strong><small>Overlay · search · shortcuts</small></span>
-        <span aria-hidden="true">↗</span>
-      </a>
-      <a class="showcase-link" href="./revenue-card/">
-        <span><strong>Revenue card</strong><small>Card · area chart · period select</small></span>
-        <span aria-hidden="true">↗</span>
-      </a>
-      <a class="showcase-link" href="./team-projects-report/">
-        <span><strong>Team projects report</strong><small>Agent report · metrics · table</small></span>
-        <span aria-hidden="true">↗</span>
-      </a>
-    </div>
-  </main>
+<body class="next-body" data-new-page="renderer">
+  <div class="next-shell renderer-shell">
+    <aside class="next-sidebar">
+      <div class="sidebar-brand-row">
+        <a class="sidebar-brand" href="./" aria-label="Syntari">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Syntari</span>
+        </a>
+        <span class="next-badge">NEXT</span>
+      </div>
+
+      <div class="sidebar-section-title">
+        <strong>Renderer</strong>
+        <span>01</span>
+      </div>
+
+      <nav class="sidebar-primary" aria-label="Syntari">
+        <a href="./" aria-current="page"><span>Renderer</span><small>⌘↵</small></a>
+        <a href="./components.html"><span>Components</span><small>↗</small></a>
+      </nav>
+
+      <div class="sidebar-label">Try an intent</div>
+      <div class="scenario-list">
+        <button type="button" data-scenario="dashboard" aria-pressed="true"><i></i><span>Revenue health</span></button>
+        <button type="button" data-scenario="onboarding" aria-pressed="false"><i></i><span>Workspace setup</span></button>
+        <button type="button" data-scenario="review" aria-pressed="false"><i></i><span>Project review</span></button>
+        <button type="button" data-scenario="verification" aria-pressed="false"><i></i><span>Verification</span></button>
+      </div>
+
+      <div class="sidebar-system-note">
+        <span>ASK → DECIDE → COMPOSE → VERIFY → RENDER</span>
+        <p>Bounded by Syntari patterns, primitives and validation.</p>
+      </div>
+
+      <div class="sidebar-links">
+        <a href="../registry/index.json"><span>Registry</span><span>↗</span></a>
+        <a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a>
+      </div>
+    </aside>
+
+    <main class="next-stage-column">
+      <section class="renderer-frame" data-runtime>
+        <header class="renderer-floating-head">
+          <div class="sequence-pill" aria-label="Renderer sequence">
+            <div class="sequence-step is-complete" data-runtime-step="ask"><span>01</span><strong>Ask</strong></div>
+            <i></i>
+            <div class="sequence-step is-complete" data-runtime-step="decide"><span>02</span><strong>Decide</strong></div>
+            <i></i>
+            <div class="sequence-step is-complete" data-runtime-step="compose"><span>03</span><strong>Compose</strong></div>
+            <i></i>
+            <div class="sequence-step is-complete" data-runtime-step="verify"><span>04</span><strong>Verify</strong></div>
+            <i></i>
+            <div class="sequence-step is-complete" data-runtime-step="render"><span>05</span><strong>Render</strong></div>
+          </div>
+
+          <div class="frame-tools">
+            <span class="validation-pill"><i></i><span data-validation-summary>Validated</span></span>
+            <button class="icon-control" type="button" data-replay-render aria-label="Replay render">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button class="icon-control" type="button" data-theme-toggle aria-label="Switch theme"></button>
+          </div>
+        </header>
+
+        <div class="renderer-stage" data-render-viewport>
+          <div class="stage-context">
+            <span>Rendered interface</span>
+            <strong data-output-title>Revenue health</strong>
+          </div>
+
+          <div class="render-screen" data-render-screen></div>
+
+          <div class="render-loading" data-render-loading hidden>
+            <div class="loader-rings"><i></i><i></i></div>
+            <span data-loading-label>Understanding intent</span>
+          </div>
+
+          <form class="renderer-composer" data-intent-form>
+            <div class="composer-copy">
+              <label for="intent">Describe what you want to build</label>
+              <textarea id="intent" rows="2" spellcheck="false" data-intent>Create a calm revenue health dashboard for a finance lead. Show ARR, month-over-month trend, channel contribution and anomalies.</textarea>
+            </div>
+            <button class="composer-submit" type="submit" data-magnetic aria-label="Render interface">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </form>
+
+          <div class="soft-cursor" aria-hidden="true" data-soft-cursor><i></i></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="next-rail renderer-rail">
+      <div class="rail-tabs" role="tablist" aria-label="Inspect render">
+        <button type="button" role="tab" aria-selected="true" data-trace-tab="decision">Decision</button>
+        <button type="button" role="tab" aria-selected="false" data-trace-tab="ir">Screen IR</button>
+        <button type="button" role="tab" aria-selected="false" data-trace-tab="validation">Validation</button>
+        <span class="rail-tab-indicator" aria-hidden="true"></span>
+      </div>
+
+      <div class="rail-scroll">
+        <section class="trace-view" data-trace-view="decision">
+          <div class="trace-intro">
+            <span>WHY THIS INTERFACE?</span>
+            <p data-trace-intent>Revenue health dashboard for a finance lead, prioritising ARR and its explanation.</p>
+          </div>
+
+          <div class="trace-section">
+            <div class="trace-row"><span>Pattern selected</span><strong data-trace-pattern>Metric overview</strong></div>
+            <div class="trace-row"><span>Confidence</span><strong data-trace-confidence>94%</strong></div>
+            <div class="confidence-track"><i data-confidence-fill style="width:94%"></i></div>
+          </div>
+
+          <div class="trace-section">
+            <div class="trace-section-head"><span>Composition</span><em data-component-count>4 primitives</em></div>
+            <div class="trace-components" data-trace-components></div>
+          </div>
+
+          <div class="trace-section">
+            <div class="trace-section-head"><span>Rules applied</span><em>03</em></div>
+            <ul class="rule-list">
+              <li><i></i>One dominant metric before supporting evidence.</li>
+              <li><i></i>Comparison values always name their period.</li>
+              <li><i></i>Color never carries meaning alone.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="trace-view" data-trace-view="ir" hidden>
+          <div class="trace-section-head sticky"><span>Screen IR</span><button type="button" data-copy-ir>Copy</button></div>
+          <pre class="trace-code"><code data-ir-code></code></pre>
+        </section>
+
+        <section class="trace-view" data-trace-view="validation" hidden>
+          <div class="validation-hero">
+            <span>✓</span>
+            <div><strong>Ready to render</strong><p>All blocking rules passed.</p></div>
+          </div>
+          <div class="validation-list" data-validation-list></div>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="./new.js"></script>
 </body>
 </html>
