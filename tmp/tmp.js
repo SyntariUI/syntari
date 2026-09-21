@@ -400,14 +400,16 @@ if (page === "components") {
   }
 
   function flashCopy(button, text) {
-    copyText(text, button);
+    navigator.clipboard.writeText(text).catch(function(){});
     if (!button) return;
-    var original = button.dataset.originalLabel || button.textContent;
+    var label = button.querySelector("span");
+    var original = button.dataset.originalLabel || (label ? label.textContent : button.textContent);
     button.dataset.originalLabel = original;
-    if (button.querySelector("span")) button.querySelector("span").textContent = "Copied";
+    if (label) label.textContent = "Copied";
     else button.textContent = "Copied";
     setTimeout(function() {
-      if (button.querySelector("span")) button.querySelector("span").textContent = original.trim();
+      var currentLabel = button.querySelector("span");
+      if (currentLabel) currentLabel.textContent = original;
       else button.textContent = original;
     }, 950);
   }
