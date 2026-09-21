@@ -19,8 +19,11 @@ async function injectKobbeTracking(file) {
   if (tracked !== html) await writeFile(file, tracked);
 }
 
+const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
+
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
+    if (entry.isDirectory() && kobbeIgnoredDirs.has(entry.name)) continue;
     const path = `${dir}/${entry.name}`;
     if (entry.isDirectory()) await injectKobbeTrackingTree(path);
     else if (entry.isFile() && entry.name.endsWith('.html')) await injectKobbeTracking(path);
@@ -28,12 +31,7 @@ async function injectKobbeTrackingTree(dir) {
 }
 
 async function injectKobbeTrackingIntoSite() {
-  for (const file of ['landing.html','docs.html','index.html','library.html','gallery.html','preview.html','generative-ui.html','support.html']) {
-    await injectKobbeTracking(file);
-  }
-  for (const dir of ['components','guides','new','Jev','art-atlas']) {
-    await injectKobbeTrackingTree(dir);
-  }
+  await injectKobbeTrackingTree('.');
 }
 const components=await catalog();
 const runtime=['syntari.js','support.html','ir.js','ir.css','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
