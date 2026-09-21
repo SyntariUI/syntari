@@ -1,6 +1,40 @@
-import { mkdir, copyFile, cp, rm, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, copyFile, cp, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { catalog } from './catalog.mjs';
+
+const kobbeTracker = `  <script
+    src="https://app.kobbe.io/tracker.js"
+    data-token="01b288b6.Nx0YyvTQEED6n-xflmasSvpRFosUDlsw"
+    defer
+  ></script>`;
+
+function withKobbeTracker(html) {
+  if (html.includes('https://app.kobbe.io/tracker.js')) return html;
+  return html.replace('</head>', `${kobbeTracker}\n</head>`);
+}
+
+async function injectKobbeTracking(file) {
+  const html = await readFile(file, 'utf8');
+  const tracked = withKobbeTracker(html);
+  if (tracked !== html) await writeFile(file, tracked);
+}
+
+async function injectKobbeTrackingTree(dir) {
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) await injectKobbeTrackingTree(path);
+    else if (entry.isFile() && entry.name.endsWith('.html')) await injectKobbeTracking(path);
+  }
+}
+
+async function injectKobbeTrackingIntoSite() {
+  for (const file of ['landing.html','docs.html','index.html','library.html','gallery.html','preview.html','generative-ui.html','support.html']) {
+    await injectKobbeTracking(file);
+  }
+  for (const dir of ['components','guides','new','Jev','art-atlas']) {
+    await injectKobbeTrackingTree(dir);
+  }
+}
 const components=await catalog();
 const runtime=['syntari.js','support.html','ir.js','ir.css','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
 const landing=await readFile('landing.html','utf8');
@@ -23,6 +57,7 @@ for(const c of components){
  await writeFile(dir+'/index.html',page);
 }
 for(const id of ['getting-started','installation','theming','motion','generative-ui','composition','api','migration']){await mkdir(`guides/${id}`,{recursive:true});await writeFile(`guides/${id}/index.html`,docs.replace('<head>','<head><base href="../../">'));}
+await injectKobbeTrackingIntoSite();
 await mkdir('downloads',{recursive:true});
 execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{stdio:'pipe'});
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
