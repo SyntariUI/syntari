@@ -332,8 +332,41 @@ if (page === "components") {
     });
     $("[data-component-nav]").innerHTML = html || '<div class="nav-category">No matches</div>';
     $$("[data-component-slug]").forEach(function(button) {
-      button.addEventListener("click", function() { selectComponent(button.dataset.componentSlug, true); });
+      button.addEventListener("click", function() {
+        var nextComponent = componentCatalog.find(function(item) { return item.slug === button.dataset.componentSlug; });
+        if (nextComponent) paintRawPreview(nextComponent);
+        selectComponent(button.dataset.componentSlug, true);
+      });
     });
+  }
+
+  function paintRawPreview(component) {
+    var host = $("[data-component-mount]");
+    if (!host || !component) return null;
+
+    if (activeMount) {
+      try { activeMount.destroy(); } catch (error) {}
+      activeMount = null;
+    }
+    host.replaceChildren();
+
+    var element = document.createElement("div");
+    element.dataset.syntariComponent = component.slug;
+    element.className = "specimen-body syntari-component workbench-preview-surface is-preview-ready";
+    element.innerHTML = component.html || '<div class="preview-error-card"><strong>Empty component</strong><p>No preview markup is registered for this primitive.</p></div>';
+    host.appendChild(element);
+
+    activeMount = {
+      element: element,
+      destroy: function() { element.remove(); }
+    };
+
+    var status = $("[data-preview-status]");
+    var output = $("[data-preview-output]");
+    if (status) status.textContent = "Live preview";
+    var controls = previewControls(host);
+    if (output) output.textContent = controls.length ? controls.length + (controls.length === 1 ? " interactive control" : " interactive controls") : "Rendered output";
+    return element;
   }
 
   function renderDocs(component) {
@@ -630,7 +663,11 @@ if (page === "components") {
       if (!componentCatalog.some(function(item){return item.slug===initial;})) {
         initial=componentCatalog[0] ? componentCatalog[0].slug : "";
       }
-      if (initial) await selectComponent(initial,false);
+      if (initial) {
+        var initialComponent = componentCatalog.find(function(item){ return item.slug === initial; });
+        if (initialComponent) paintRawPreview(initialComponent);
+        await selectComponent(initial,false);
+      }
       setupSoftCursor();
 
       var previewHost = $("[data-component-mount]");
