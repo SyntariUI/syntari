@@ -641,3 +641,36 @@ html{scroll-behavior:smooth}
   .preview-component .workbench-preview-surface{min-height:280px!important;padding:30px 22px!important;border-radius:16px}
   .preview-event{right:14px;bottom:48px;max-width:calc(100% - 28px)}
 }
+
+
+/* --- Inspector readability pass --- */
+.workbench-shell{
+  grid-template-columns:238px minmax(520px,1fr) minmax(390px,460px)
+}
+.docs-head{padding:30px 26px 26px}
+.docs-kicker{font-size:10px;letter-spacing:.12em;margin-bottom:11px}
+.docs-head h1{font-size:25px;line-height:1.08}
+.docs-description{font-size:13px;line-height:1.68;max-width:38ch}
+.docs-section{padding:22px 26px}
+.docs-label{font-size:9px;margin-bottom:12px}
+.docs-section>p{font-size:11.5px;line-height:1.72}
+.component-meta-card span{font-size:9px}
+.component-meta-card strong{font-size:10.5px}
+.component-meta-card>div{padding:13px 14px}
+.interaction-demo-row span{font-size:9px;padding:6px 8px}
+.runtime-install{padding:11px 12px}
+.runtime-install code{font-size:9.5px;line-height:1.55}
+.runtime-install button,.code-sheet-actions>button:first-child{font-size:9px;padding:6px 8px}
+.props-row{
+  grid-template-columns:82px 70px 1fr;
+  gap:12px;padding:11px 0;font-size:9.5px;line-height:1.55
+}
+.props-row code{font-size:9.5px}
+.docs-token-item{padding:10px 11px}
+.docs-token-item code{font-size:9.5px}
+.docs-icon-button{width:34px;height:34px}
+.docs-icon-button svg{width:15px;height:15px}
+.docs-end{padding-bottom:48px}
+@media(max-width:1180px){
+  .workbench-shell{grid-template-columns:210px minmax(440px,1fr) 390px}
+}
