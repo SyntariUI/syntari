@@ -85,6 +85,60 @@ async function copyText(text, button){
 setupTheme();
 setupMagnetic();
 
+/* Standalone command palette composition */
+if (document.querySelector("[data-command-palette]") && !document.body.dataset.newPage) {
+  const palette=document.querySelector("[data-command-palette]");
+  const input=palette.querySelector("[data-command-input]");
+  const status=palette.querySelector("[data-command-status]");
+  const items=[...palette.querySelectorAll(".command-item")];
+  let visible=[];
+  let active=0;
+
+  const paintActive=()=>{
+    visible.forEach((item,index)=>{
+      const selected=index===active;
+      item.classList.toggle("is-active",selected);
+      item.setAttribute("aria-selected",String(selected));
+    });
+  };
+
+  const filter=()=>{
+    const query=input.value.trim().toLowerCase();
+    visible=[];
+    items.forEach(item=>{
+      const matches=!query || (item.dataset.commandValue||item.textContent).toLowerCase().includes(query);
+      item.hidden=!matches;
+      if(matches) visible.push(item);
+    });
+    palette.querySelectorAll("[data-command-group]").forEach(group=>{
+      group.hidden=!group.querySelector(".command-item:not([hidden])");
+    });
+    palette.querySelectorAll(".command-divider").forEach(divider=>{
+      const before=divider.previousElementSibling;
+      const after=divider.nextElementSibling;
+      divider.hidden=!!before?.hidden || !!after?.hidden;
+    });
+    active=0;
+    paintActive();
+  };
+
+  const choose=item=>{
+    if(!item) return;
+    const value=item.dataset.commandValue||item.textContent.trim();
+    if(status) status.textContent=value+" selected.";
+  };
+
+  input?.addEventListener("input",filter);
+  input?.addEventListener("keydown",event=>{
+    if(!visible.length) return;
+    if(event.key==="ArrowDown"){event.preventDefault();active=(active+1)%visible.length;paintActive();visible[active].scrollIntoView({block:"nearest"});}
+    if(event.key==="ArrowUp"){event.preventDefault();active=(active-1+visible.length)%visible.length;paintActive();visible[active].scrollIntoView({block:"nearest"});}
+    if(event.key==="Enter"){event.preventDefault();choose(visible[active]);}
+  });
+  items.forEach(item=>item.addEventListener("click",()=>choose(item)));
+  filter();
+}
+
 /* ---------------- Renderer ---------------- */
 if(page === "renderer"){
   const scenarios = {
