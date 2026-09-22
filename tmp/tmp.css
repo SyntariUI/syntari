@@ -853,3 +853,20 @@ html{scroll-behavior:smooth}
     padding:12px!important;
   }
 }
+
+
+/* --- Final desktop preview width contract --- */
+.tmp-workbench-body .preview-component-wrap{
+  flex:0 1 720px!important;
+  width:720px!important;
+  max-width:100%!important;
+  min-width:420px!important;
+}
+@media(max-width:720px){
+  .tmp-workbench-body .preview-component-wrap{
+    flex:1 1 auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+  }
+}
