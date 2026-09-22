@@ -799,3 +799,57 @@ html{scroll-behavior:smooth}
 /* --- Never let the demo cursor read as component output --- */
 .soft-cursor:not(.is-visible){visibility:hidden}
 [data-static-preview]{opacity:1!important;transform:none!important;filter:none!important}
+
+
+/* --- Workbench preview geometry: do not allow shrink-to-fit collapse --- */
+.tmp-workbench-body .preview-stage{
+  position:absolute!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:84px 48px 64px!important;
+  overflow:auto!important;
+}
+.tmp-workbench-body .preview-component-wrap{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  transform:none!important;
+  width:min(760px,calc(100% - 32px))!important;
+  max-width:760px!important;
+  min-width:320px!important;
+  min-height:520px!important;
+  margin:0 auto!important;
+  padding:36px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.tmp-workbench-body .preview-component{
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  min-height:360px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.tmp-workbench-body .preview-component .workbench-preview-surface{
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:720px){
+  .tmp-workbench-body .preview-stage{padding:72px 14px 54px!important}
+  .tmp-workbench-body .preview-component-wrap{
+    width:100%!important;
+    min-width:0!important;
+    min-height:390px!important;
+    padding:12px!important;
+  }
+}
