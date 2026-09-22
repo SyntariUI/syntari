@@ -11,7 +11,11 @@ const cards = [
   ['prediction-card', '[data-extra-kind="prediction"]'],
   ['selectable-cards', '.selectable-cards label:nth-of-type(2)>span'],
   ['approval-card', '[data-agent-kind="approval"]'],
-  ['tool-approval', '[data-agent-kind="approval"]']
+  ['tool-approval', '[data-agent-kind="approval"]'],
+  ['stat-row', '.stat-card'],
+  ['feature-grid', '.feature-card'],
+  ['rotating-carousel', '.carousel-stage'],
+  ['live-readout', '.live-readout']
 ];
 
 test('all card surfaces inherit the Session card visual contract', async ({ page }) => {
