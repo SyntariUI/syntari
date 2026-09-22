@@ -1,4 +1,4 @@
-import { initialize, getComponents, mount } from "../syntari.js";
+import { initialize, getComponents, mount, prepare } from "../syntari.js";
 
 const page = document.body.dataset.tmpPage;
 const $ = function(selector, root) { return (root || document).querySelector(selector); };
@@ -456,6 +456,41 @@ if (page === "components") {
     if (token === previewDemoToken) cursor.classList.remove("is-auto", "is-visible", "is-hot");
   }
 
+  async function paintWorkspaceComponent(component, host) {
+    if (activeMount) {
+      try { activeMount.destroy(); } catch (error) {}
+      activeMount = null;
+    }
+
+    host.getAnimations({subtree:true}).forEach(function(animation) {
+      try { animation.cancel(); } catch (error) {}
+    });
+    host.replaceChildren();
+
+    var element = document.createElement("div");
+    element.dataset.syntariComponent = component.slug;
+    element.className = "specimen-body syntari-component workbench-preview-surface";
+    element.innerHTML = component.html || '<div class="preview-error-card"><strong>Empty component</strong><p>No preview markup is registered for this primitive.</p></div>';
+    host.appendChild(element);
+
+    // Paint first, enhance second. A runtime enhancement error must never erase the preview.
+    try {
+      await prepare(element);
+    } catch (error) {
+      console.error("Syntari preview enhancement failed for", component.slug, error);
+      element.classList.add("is-preview-degraded");
+    }
+
+    activeMount = {
+      element: element,
+      destroy: function() {
+        try { element.getAnimations({subtree:true}).forEach(function(animation){ animation.cancel(); }); } catch (error) {}
+        element.remove();
+      }
+    };
+    return activeMount;
+  }
+
   async function selectComponent(slug, animate) {
     var component = componentCatalog.find(function(item) { return item.slug === slug; });
     if (!component) return;
@@ -473,27 +508,20 @@ if (page === "components") {
     if (animate !== false) host.classList.add("is-changing");
     await wait(animate === false ? 0 : 215);
 
-    if (activeMount) {
-      try { activeMount.destroy(); } catch (error) {}
-      activeMount = null;
-    }
-    host.innerHTML = "";
     try {
-      activeMount = await mount(component.slug, host);
+      activeMount = await paintWorkspaceComponent(component, host);
       var surface = activeMount && activeMount.element;
-      if (surface) {
-        surface.classList.add("workbench-preview-surface");
-        requestAnimationFrame(function() { surface.classList.add("is-preview-ready"); });
-      }
+      if (surface) requestAnimationFrame(function() { surface.classList.add("is-preview-ready"); });
       var controls = previewControls(host);
-      $("[data-preview-status]").textContent = "Live preview";
+      $("[data-preview-status]").textContent = surface && surface.classList.contains("is-preview-degraded") ? "Live preview · limited enhancement" : "Live preview";
       if (previewOutput) previewOutput.textContent = controls.length ? controls.length + (controls.length === 1 ? " interactive control" : " interactive controls") : "Rendered output";
       playPreviewDemo(component, host);
     } catch (error) {
-      host.innerHTML = '<div class="preview-error-card"><span>Preview</span><strong>' + escapeHtml(component.name) + '</strong><p>The runtime could not mount this primitive. The documentation is still available in the inspector.</p></div>';
+      console.error(error);
+      host.innerHTML = '<div class="preview-error-card"><span>Preview</span><strong>' + escapeHtml(component.name) + '</strong><p>The component markup could not be painted. Check the registry entry for this primitive.</p></div>';
       $("[data-preview-status]").textContent = "Preview unavailable";
-      if (previewOutput) previewOutput.textContent = "Runtime error";
-      showPreviewEvent("Mount failed · " + component.name);
+      if (previewOutput) previewOutput.textContent = "Render error";
+      showPreviewEvent("Render failed · " + component.name);
     }
     if (animate !== false) setTimeout(function(){ host.classList.remove("is-changing"); }, 350);
     try { history.replaceState(null, "", "#" + component.slug); } catch (error) {}
