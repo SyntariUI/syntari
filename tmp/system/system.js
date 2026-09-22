@@ -53,6 +53,23 @@ function sizeMode(component) {
   return "default";
 }
 
+function cleanPreview(surface) {
+  if (!surface) return;
+
+  const instructionPattern = /^(hover|focus|click|tap|scroll|swipe|drag|press|choose|try|use |use the|local preview|take a peek)/i;
+  [...surface.querySelectorAll(".label-caption,.hint,[data-preview-instruction]")].forEach(node => {
+    const text = node.textContent.trim();
+    if (instructionPattern.test(text) || /hover or focus|arrow keys|nothing is sent|swipe left/i.test(text)) {
+      node.remove();
+    }
+  });
+
+  const directButtons = [...surface.querySelectorAll(":scope > .button,:scope > [data-extra-kind] > .button")];
+  directButtons.forEach(button => button.classList.add("sys-centered-button"));
+
+  surface.querySelectorAll('[data-extra-kind="action"]').forEach(node => node.classList.add("sys-centered-action"));
+}
+
 function renderInspector(component) {
   $("[data-inspector-kicker]").textContent = component.category || "Component";
   $("[data-inspector-title]").textContent = component.name;
@@ -67,7 +84,8 @@ function renderInspector(component) {
 }
 
 function setStatus(text) {
-  $("[data-status]").textContent = text;
+  const node = $("[data-status]");
+  if (node) node.textContent = text;
 }
 
 async function select(slug, animate = true) {
@@ -105,6 +123,7 @@ async function select(slug, animate = true) {
       surface.style.setProperty("filter", "none", "important");
       surface.style.setProperty("transform", "none", "important");
       surface.style.setProperty("animation", "none", "important");
+      cleanPreview(surface);
     }
   } catch (error) {
     host.innerHTML = '<div style="font-size:13px;color:var(--muted)">Preview unavailable</div>';
@@ -222,9 +241,12 @@ function shortcuts(event) {
 
 async function boot() {
   await initialize();
-  catalog = (await getComponents()).slice().sort((a,b) =>
-    (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name)
-  );
+  catalog = (await getComponents())
+    .filter(component => component.slug !== "data-table")
+    .slice()
+    .sort((a,b) =>
+      (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name)
+    );
   $("[data-component-count]").textContent = catalog.length;
   nav();
 
