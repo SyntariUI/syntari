@@ -97,6 +97,15 @@ async function select(slug, animate = true) {
 
   try {
     activeMount = await mount(component.slug, host);
+    const surface = activeMount?.element;
+    if (surface) {
+      surface.removeAttribute("data-syntari-delay");
+      surface.style.setProperty("opacity", "1", "important");
+      surface.style.setProperty("visibility", "visible", "important");
+      surface.style.setProperty("filter", "none", "important");
+      surface.style.setProperty("transform", "none", "important");
+      surface.style.setProperty("animation", "none", "important");
+    }
   } catch (error) {
     host.innerHTML = '<div style="font-size:13px;color:var(--muted)">Preview unavailable</div>';
     setStatus("Could not mount " + component.name);
