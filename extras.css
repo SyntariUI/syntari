@@ -95,6 +95,23 @@
 .column-fill{display:block;width:min(14px,38%);height:var(--fill,20%);min-height:4px;border-radius:6px 6px 2px 2px;background:var(--series,var(--accent));animation:chart-grow var(--motion-data) var(--ease-out) backwards}
 .chart-column .column-label{font-size:10px;color:var(--muted)}
 @keyframes chart-grow{from{height:0}}
+
+/* Modern comparative bars: dense, readable, and value-first. */
+.chart-bars-modern{max-width:680px;gap:18px}
+.chart-bars-modern figcaption{align-items:flex-start}
+.chart-bars-modern figcaption>div{display:grid;gap:3px}
+.chart-bars-modern figcaption strong{font-size:14px}
+.chart-subtitle,.chart-total{font-size:10px;color:var(--muted);font-weight:400}
+.bar-compare-list{display:grid;gap:10px;padding:2px 0}
+.bar-compare-row{display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:center}
+.bar-year{font:10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar-series{display:grid;grid-template-columns:minmax(0,1fr) 30px;gap:8px;align-items:center}
+.bar-series strong{font-size:10px;font-weight:500;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar-track{display:block;height:8px;border-radius:999px;background:var(--bg-2);overflow:hidden}
+.bar-fill{display:block;width:var(--bar);height:100%;border-radius:999px;background:var(--series,var(--accent));transform-origin:left;animation:bar-compare-in var(--motion-data) var(--ease-out) backwards}
+@keyframes bar-compare-in{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.chart-bars-modern .chart-legend{padding-top:2px}
+
 .chart-legend{list-style:none;display:flex;flex-wrap:wrap;gap:14px;padding:0;margin:0;font-size:11px;color:var(--muted)}
 .chart-legend li{display:flex;align-items:center;gap:6px}
 .legend-swatch{width:9px;height:9px;border-radius:3px;background:var(--series,var(--accent));flex-shrink:0}
