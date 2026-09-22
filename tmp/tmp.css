@@ -549,7 +549,7 @@ html{scroll-behavior:smooth}
 }
 .preview-toolbar{z-index:60;opacity:1}
 .preview-component-wrap{
-  width:min(820px,92%);min-height:520px;padding:36px;display:grid;place-items:center
+  width:min(820px,92%);min-height:520px;padding:32px;display:grid;place-items:center
 }
 .preview-component{
   min-height:360px;display:grid;place-items:center
