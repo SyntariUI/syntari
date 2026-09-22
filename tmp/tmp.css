@@ -794,3 +794,8 @@ html{scroll-behavior:smooth}
 .docs-token-item code{font-size:10.5px}
 .docs-icon-button{width:36px;height:36px}
 .docs-icon-button svg{width:16px;height:16px}
+
+
+/* --- Never let the demo cursor read as component output --- */
+.soft-cursor:not(.is-visible){visibility:hidden}
+[data-static-preview]{opacity:1!important;transform:none!important;filter:none!important}
