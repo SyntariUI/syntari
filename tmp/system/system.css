@@ -112,6 +112,11 @@ button,input{font:inherit}
   padding:0!important;
   background:transparent!important;
   box-shadow:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+  transform:none!important;
+  animation:none!important;
 }
 .sys-preview-host>[data-syntari-component]>.row{justify-content:center}
 .sys-preview-host>[data-syntari-component]>.stack{max-width:100%}
