@@ -339,7 +339,11 @@
   .wallet-surface,
   .extra-demo[data-extra-kind="prediction"],
   .agent-surface[data-agent-kind="approval"],
-  .selectable-cards label>span
+  .selectable-cards label>span,
+  .stat-card,
+  .feature-card,
+  .carousel-stage,
+  .live-readout
 ){
   background:var(--card-shell-bg)!important;
   border:1px solid var(--card-shell-border)!important;
@@ -506,4 +510,86 @@
 .selectable-cards .selection-check{
   right:10px!important;
   top:10px!important;
+}
+
+
+/* Data/content surfaces that are cards semantically use the same shell contract. */
+.stat-row{gap:8px!important}
+.stat-card{
+  padding:var(--card-shell-padding)!important;
+  gap:var(--card-shell-gap)!important;
+}
+.stat-card .stat-label{
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  padding:7px 9px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.stat-card strong{
+  padding:9px 9px 2px;
+  font-size:21px;
+}
+.stat-card .badge{margin:0 9px}
+.stat-card small{padding:2px 9px 9px}
+
+.feature-grid{gap:8px!important}
+.feature-card{
+  padding:var(--card-shell-padding)!important;
+  gap:var(--card-shell-gap)!important;
+}
+.feature-card .feature-mark{
+  width:100%;
+  height:38px;
+  justify-content:flex-start;
+  padding:0 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.feature-card h3{margin:9px 10px 0;font-size:13px}
+.feature-card p{margin:3px 10px 8px;line-height:1.55}
+.feature-card small{
+  margin:0 4px;
+  padding:8px 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+  font-style:normal;
+}
+
+.carousel-stage{
+  min-height:180px!important;
+  padding:var(--card-shell-padding)!important;
+  background:var(--card-shell-bg)!important;
+}
+.carousel-card{
+  min-height:168px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.carousel-card h3{margin:12px 0 4px!important;font-size:13px}
+.carousel-card p{margin:0!important;max-width:30ch;line-height:1.55!important}
+
+.live-readout{
+  padding:var(--card-shell-padding)!important;
+  gap:var(--card-shell-gap)!important;
+}
+.live-readout .readout-head{
+  min-height:40px;
+  padding:8px 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.live-readout .readout-values{
+  gap:var(--card-shell-gap)!important;
+}
+.live-readout .readout-values>div{
+  padding:10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
 }
