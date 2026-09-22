@@ -29,7 +29,7 @@ button{cursor:pointer}
 .renderer-copy{max-width:760px;margin-bottom:28px}
 .jev-kicker,.eyebrow{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-2);font-weight:600}
 .renderer-copy h1{font-size:clamp(28px,3.25vw,48px);line-height:1.04;letter-spacing:-.04em;font-weight:500;margin:10px 0 10px}
-.renderer-copy p{max-width:700px;color:var(--muted);font-size:14px;line-height:1.55;margin:0}
+.renderer-copy p{max-width:700px;color:var(--muted);font-size:16px;line-height:1.6;margin:0}
 
 .intent-form{height:54px;border:1px solid var(--jev-line-strong);border-radius:5px;display:flex;align-items:center;background:color-mix(in srgb,var(--surface) 48%,transparent);margin-bottom:10px;transition:border-color .16s ease,background .16s ease}
 .intent-form:focus-within{border-color:color-mix(in srgb,var(--text) 42%,var(--border));background:color-mix(in srgb,var(--surface) 72%,transparent)}
@@ -62,20 +62,19 @@ button{cursor:pointer}
 .pane-head span:last-child{text-transform:none;letter-spacing:0;color:var(--muted)}
 .ir-stream{margin:0;padding:16px;overflow:auto;flex:1;background:color-mix(in srgb,var(--canvas) 92%,#000);color:var(--jev-code);font:11px/1.62 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;tab-size:2;white-space:pre}
 .ir-stream code{font:inherit;color:inherit}
-.ir-stream.is-updating code{animation:code-pulse .18s ease}
 .ui-canvas{padding:18px;overflow:auto;flex:1;min-height:0;background:color-mix(in srgb,var(--canvas) 91%,var(--surface));display:flex;align-items:flex-start;justify-content:center}
 .ui-canvas>[data-ir-screen],.ui-canvas>.ir-screen{width:100%;max-width:820px}
 .workbench-footer{height:35px;padding:0 12px;border-top:1px solid var(--jev-line);font-size:9px;color:var(--fg-2)}
 .footer-runtime{color:var(--muted)}
 
-.below-indicator{width:max-content;max-width:100%;margin:18px auto 0;display:grid;grid-template-columns:auto auto;gap:4px 9px;align-items:center;text-decoration:none;color:var(--muted);font-size:10px;text-align:center}
+.below-indicator{width:max-content;max-width:100%;margin:18px auto 0;display:grid;grid-template-columns:auto auto;gap:4px 9px;align-items:center;text-decoration:none;color:var(--muted);font-size:13px;text-align:center}
 .below-indicator span:nth-child(2){font-size:13px}
-.below-indicator small{grid-column:1/-1;color:var(--fg-2);font-size:9px;font-weight:400}
+.below-indicator small{grid-column:1/-1;color:var(--fg-2);font-size:14px;line-height:1.45;font-weight:400}
 
 .under-renderer{padding-top:84px}
 .section-intro{max-width:720px;margin-bottom:34px}
 .section-intro h2,.trace-heading h2{font-size:25px;letter-spacing:-.025em;font-weight:500;margin:8px 0 8px}
-.section-intro p{font-size:13px;line-height:1.6;color:var(--muted);margin:0}
+.section-intro p{font-size:16px;line-height:1.6;color:var(--muted);margin:0}
 
 .runtime{border-top:1px solid var(--jev-line);border-bottom:1px solid var(--jev-line);display:grid;grid-template-columns:1.02fr 1.12fr 1fr .84fr .95fr;margin-bottom:92px}
 .runtime-stage{min-width:0;border-right:1px solid var(--jev-line);display:flex;flex-direction:column;min-height:320px;background:transparent;transition:background .2s ease}
@@ -87,9 +86,9 @@ button{cursor:pointer}
 .stage-type{font-size:9px;letter-spacing:.08em;color:var(--muted)}
 .model-pill{margin-left:auto;color:var(--fg-2);font-size:8px}
 .stage-body{padding:13px;flex:1;min-height:0}
-.runtime-stage>footer{min-height:38px;border-top:1px solid var(--jev-line);padding:0 12px;display:flex;align-items:center;justify-content:space-between;color:var(--fg-2);font-size:8px}
+.runtime-stage>footer{min-height:48px;border-top:1px solid var(--jev-line);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;color:var(--fg-2);font-size:14px;line-height:1.35}
 
-.request-bubble{font-size:12px;line-height:1.55;color:var(--text);padding:0 0 12px;border-bottom:1px solid var(--jev-line)}
+.request-bubble{font-size:14px;line-height:1.55;color:var(--text);padding:0 0 12px;border-bottom:1px solid var(--jev-line)}
 .state-grid{display:grid;margin-top:4px}
 .state-item{display:flex;justify-content:space-between;gap:8px;font-size:8px;padding:7px 0;border-bottom:1px solid var(--jev-line)}
 .state-item span:first-child{color:var(--fg-2)}.state-item span:last-child{text-align:right;color:var(--muted)}
@@ -109,8 +108,8 @@ button{cursor:pointer}
 .is-waiting{color:var(--fg-2)!important}
 
 .route-state{height:100%;display:flex;flex-direction:column;justify-content:center;padding:2px 0}
-.route-state strong{font-size:11px;font-weight:500}
-.route-state p{font-size:9px;line-height:1.6;color:var(--muted);margin:7px 0 0}
+.route-state strong{font-size:14px;font-weight:500}
+.route-state p{font-size:14px;line-height:1.6;color:var(--muted);margin:8px 0 0}
 .compile-line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--jev-line);font-size:8px;color:var(--muted)}
 .compile-line strong{font-weight:500;color:var(--text)}
 .compile-line strong.ok{color:var(--success-text)}
@@ -135,13 +134,13 @@ button{cursor:pointer}
 .principle-grid article{padding:22px 20px 28px;border-right:1px solid var(--jev-line)}
 .principle-grid article:last-child{border-right:0}
 .principle-grid span{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2);margin-bottom:26px}
-.principle-grid strong{display:block;font-size:12px;font-weight:500;margin-bottom:8px}
-.principle-grid p{font-size:10px;line-height:1.55;color:var(--muted);margin:0}
+.principle-grid strong{display:block;font-size:14px;font-weight:500;margin-bottom:8px}
+.principle-grid p{font-size:14px;line-height:1.6;color:var(--muted);margin:0}
 
 .generation-shell{width:100%;max-width:820px}
-.generation-status{height:52px;border-bottom:1px solid var(--jev-line);display:flex;align-items:center;gap:10px;padding:0 2px;margin-bottom:12px}
-.generation-status strong{display:block;font-size:10px;font-weight:500}
-.generation-status p{font-size:8px;color:var(--fg-2);margin:3px 0 0}
+.generation-status{min-height:66px;border-bottom:1px solid var(--jev-line);display:flex;align-items:center;gap:10px;padding:10px 2px;margin-bottom:14px}
+.generation-status strong{display:block;font-size:14px;font-weight:500}
+.generation-status p{font-size:14px;line-height:1.45;color:var(--fg-2);margin:4px 0 0}
 .generation-pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1s ease-in-out infinite}
 .generation-skeleton{display:grid;gap:10px}
 .generation-skeleton-card{border-bottom:1px solid var(--jev-line);padding:13px 0;min-height:70px}
@@ -149,10 +148,8 @@ button{cursor:pointer}
 .generation-skeleton-card span{width:28%}.generation-skeleton-card i:nth-child(2){width:72%}.generation-skeleton-card i:nth-child(3){width:56%}.generation-skeleton-card i:nth-child(4){width:38%}
 .jev-pop{animation:pop .2s ease both}
 .jev-generated-node{animation:node-in .34s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--enter-delay,0ms)}
-.jev-risk-lock{outline:1px solid color-mix(in srgb,var(--danger-text) 32%,transparent)}
 .jev-evidence-open{animation:node-in .28s ease both}
 
-@keyframes code-pulse{from{opacity:.45;transform:translateY(2px)}to{opacity:1;transform:none}}
 @keyframes grow-confidence{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes trace-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @keyframes node-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
@@ -175,7 +172,7 @@ button{cursor:pointer}
   .jev-shell{padding:0 14px 70px}
   .renderer-first{padding-top:28px}
   .renderer-copy h1{font-size:31px}
-  .renderer-copy p{font-size:13px}
+  .renderer-copy p{font-size:15px}
   .result-layout{display:block;height:auto;min-height:0}
   .ir-pane{height:330px;border-right:0;border-bottom:1px solid var(--jev-line)}
   .render-pane{min-height:520px}
@@ -194,3 +191,5 @@ button{cursor:pointer}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
 }
+/* Progressive renderer: keep the existing interface stable while the next Syntari node enters. */
+.jev-progressive-screen>.jev-generated-node{will-change:opacity,transform}
