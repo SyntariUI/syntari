@@ -71,7 +71,16 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
 
   await page.goto(`${origin}/tmp/system/#chart-bars`);
   await expect(page.locator('.chart-bars-modern')).toBeVisible();
-  await expect(page.locator('.bar-compare-row')).toHaveCount(6);
+  await expect(page.locator('.chart-bars-modern .chart-column')).toHaveCount(6);
+  const barsAreHorizontal = await page.evaluate(() => {
+    const column = document.querySelector('.chart-bars-modern .chart-column');
+    const pair = document.querySelector('.chart-bars-modern .column-pair');
+    if (!column || !pair) return false;
+    const columnStyle = getComputedStyle(column);
+    const pairStyle = getComputedStyle(pair);
+    return columnStyle.gridTemplateColumns.split(' ').length >= 3 && pairStyle.display === 'grid';
+  });
+  expect(barsAreHorizontal).toBe(true);
 
   await page.goto(`${origin}/tmp/system/#action-swap`);
   const actionCentered = await page.evaluate(() => {
