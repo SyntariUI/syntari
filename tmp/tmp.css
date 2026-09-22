@@ -870,3 +870,31 @@ html{scroll-behavior:smooth}
     min-width:0!important;
   }
 }
+
+
+/* --- Non-collapsing preview geometry --- */
+.tmp-workbench-body .preview-component-wrap{
+  left:50%!important;
+  right:auto!important;
+  top:50%!important;
+  width:min(820px,calc(100% - 96px))!important;
+  max-width:none!important;
+  min-width:320px!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+}
+.tmp-workbench-body .preview-component{
+  width:100%!important;
+  min-width:0!important;
+}
+.tmp-workbench-body .preview-component .workbench-preview-surface{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+@media(max-width:720px){
+  .tmp-workbench-body .preview-component-wrap{
+    width:calc(100% - 32px)!important;
+    min-width:0!important;
+  }
+}
