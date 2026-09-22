@@ -227,12 +227,14 @@ test('a mounted component keeps the internal rhythm it was authored for', async 
     const fills = [...chart.querySelectorAll('.column-fill')].map(fill => fill.getBoundingClientRect().height);
     return {
       legendGap: Math.round(legend.top - columns.bottom),
-      valueGap: Math.round(pair.top - value.bottom),
+      valueGap: Math.round(pair.left - value.right),
       tallest: Math.round(Math.max(...fills)),
-      pairHeight: Math.round(pair.height)
+      pairHeight: Math.round(pair.height),
+      pairWidth: Math.round(pair.width)
     };
   });
   expect(report.legendGap).toBeGreaterThan(0);
   expect(report.valueGap).toBeGreaterThanOrEqual(0);
+  expect(report.pairWidth).toBeGreaterThan(120);
   expect(report.tallest).toBeLessThanOrEqual(report.pairHeight);
 });
