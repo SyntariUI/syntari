@@ -69,7 +69,7 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
   await expect(page.locator('[data-slug="data-table"]')).toHaveCount(0);
   await expect(page.locator('.sys-stage-status')).toBeHidden();
 
-  await page.goto(`${origin}/tmp/system/#chart-bars`);
+  await page.goto(`${origin}/tmp/system/?case=chart-bars#chart-bars`);
   await expect(page.locator('.chart-bars-modern')).toBeVisible();
   await expect(page.locator('.chart-bars-modern .chart-column')).toHaveCount(6);
   const barsAreHorizontal = await page.evaluate(() => {
@@ -82,7 +82,7 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
   });
   expect(barsAreHorizontal).toBe(true);
 
-  await page.goto(`${origin}/tmp/system/#action-swap`);
+  await page.goto(`${origin}/tmp/system/?case=action-swap#action-swap`);
   const actionCentered = await page.evaluate(() => {
     const stage = document.querySelector('.sys-preview-host');
     const button = document.querySelector('[data-extra-kind="action"] > .button');
@@ -93,10 +93,10 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
   });
   expect(actionCentered).toBe(true);
 
-  await page.goto(`${origin}/tmp/system/#tooltip`);
+  await page.goto(`${origin}/tmp/system/?case=tooltip#tooltip`);
   await expect(page.locator('.sys-preview-host')).not.toContainText('Hover or focus to take a peek');
 
-  await page.goto(`${origin}/tmp/system/#metric-strip`);
+  await page.goto(`${origin}/tmp/system/?case=metric-strip#metric-strip`);
   const secondMetric = page.locator('[data-metric]').nth(1);
   const valueBefore = await secondMetric.locator('.metric-value').textContent();
   await secondMetric.click();
