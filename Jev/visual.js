@@ -111,6 +111,28 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? 0
 let generation = 0;
 let activeScenario = "q2";
 let activeRender = null;
+const promptInput = $("[data-prompt]");
+
+function scenarioFromPrompt(value) {
+  const prompt = String(value || "").toLowerCase();
+  if (/delete|remove|inactive|destructive|revoke/.test(prompt)) return "delete";
+  if (/brief|meeting|project|summary|prepare/.test(prompt)) return "brief";
+  return "q2";
+}
+
+function paintIR(spec, label = "streaming") {
+  const code = $("[data-ir-code]");
+  const progress = $("[data-ir-progress]");
+  const pane = $(".ir-stream");
+  if (code) code.textContent = JSON.stringify(spec, null, 2);
+  if (progress) progress.textContent = label;
+  if (pane && !reducedMotion) {
+    pane.classList.remove("is-updating");
+    void pane.offsetWidth;
+    pane.classList.add("is-updating");
+  }
+}
+
 
 function confidenceLabel(value) {
   return Math.round(value * 100) + "%";
@@ -484,122 +506,121 @@ function animateGeneratedNodes(root) {
 
 async function renderGeneratedInterface(name, scenario, id) {
   const preview = $("[data-preview]");
+  const validationLabel = $("[data-validation-label]");
+  const fullSpec = specFor(name);
+
   if (activeRender) {
     try { activeRender.destroy(); } catch {}
     activeRender = null;
   }
 
-  setSkeletonStatus("Compiling Syntari IR", "The selected components are being validated against the registry.");
-  $("[data-ir-count]").textContent = (1 + scenario.supporting.length) + " nodes";
-  await sleep(260);
+  paintIR({ version: fullSpec.version, type: fullSpec.type, layout: fullSpec.layout, title: fullSpec.title, children: [] }, "planning");
+  setSkeletonStatus("Compiling Screen IR", "Jev fixed the interface shape. Syntari is checking the selected primitives.");
+  $("[data-ir-count]").textContent = fullSpec.children.length + " top-level nodes";
+  if (validationLabel) validationLabel.textContent = "checking registry";
+  await sleep(180);
   if (id !== generation) return;
 
   $("[data-registry-status]").textContent = "Passed";
   $("[data-registry-status]").className = "ok";
-  setSkeletonStatus("Rendering components", "Syntari is mounting the real registry components now.");
+  if (validationLabel) validationLabel.textContent = "registry passed";
 
-  const result = await render(specFor(name), preview);
-  if (id !== generation) {
-    result.destroy();
-    return;
+  let lastResult = null;
+
+  for (let index = 0; index < fullSpec.children.length; index += 1) {
+    if (id !== generation) return;
+
+    const partialSpec = {
+      ...fullSpec,
+      children: fullSpec.children.slice(0, index + 1)
+    };
+
+    paintIR(partialSpec, (index + 1) + " / " + fullSpec.children.length + " nodes");
+    setSkeletonStatus(
+      "Rendering " + (index + 1) + " of " + fullSpec.children.length,
+      "The interface is mounting from validated Syntari components as the IR arrives."
+    );
+
+    if (lastResult) {
+      try { lastResult.destroy(); } catch {}
+    }
+
+    const result = await render(partialSpec, preview);
+    if (id !== generation) {
+      result.destroy();
+      return;
+    }
+
+    lastResult = result;
+    activeRender = result;
+
+    const nodes = $$(".ir-node, .ir-region", result.element);
+    const newest = nodes[nodes.length - 1];
+    if (newest) {
+      newest.classList.add("jev-generated-node");
+      newest.style.setProperty("--enter-delay", "0ms");
+    }
+
+    await sleep(index === fullSpec.children.length - 1 ? 210 : 330);
   }
 
-  activeRender = result;
-  const errors = result.diagnostics.filter(item => item.severity === "error").length;
+  if (!lastResult) return;
+
+  const errors = lastResult.diagnostics.filter(item => item.severity === "error").length;
   $("[data-validator-status]").textContent = errors ? errors + " errors" : "0 errors";
   $("[data-validator-status]").className = errors ? "error" : "ok";
   $("[data-renderer-status]").textContent = errors ? "Partial" : "Ready";
   $("[data-renderer-status]").className = errors ? "error" : "ok";
+  if (validationLabel) validationLabel.textContent = errors ? "validation issues" : "validated";
 
-  animateGeneratedNodes(result.element);
-  animateNumbers(scenario, result.element);
-  animateChart(result.element);
-  animateBars(result.element);
+  animateNumbers(scenario, lastResult.element);
+  animateChart(lastResult.element);
+  animateBars(lastResult.element);
 
-  const count = result.element.querySelectorAll("[data-ir-component]").length;
+  const count = lastResult.element.querySelectorAll("[data-ir-component]").length;
   $("[data-result-status]").textContent = errors
     ? "Rendered with " + errors + " validation errors"
-    : "Live · " + count + " real Syntari components";
+    : "Live · " + count + " trusted Syntari components";
 
   await Promise.all([
-    typeStreamingText(scenario, result.element, id),
-    openEvidence(result.element, id)
+    typeStreamingText(scenario, lastResult.element, id),
+    openEvidence(lastResult.element, id)
   ]);
 
   if (name === "delete") {
-    const approval = $('[data-ir-component="tool-approval"]', result.element);
+    const approval = $('[data-ir-component="tool-approval"]', lastResult.element);
     approval?.classList.add("jev-risk-lock");
   }
+
+  paintIR(fullSpec, "complete");
 }
 
-async function run(name) {
+async function run(name, requestOverride = "") {
   activeScenario = name;
-  const scenario = scenarios[name];
+  const scenario = { ...scenarios[name], request: requestOverride.trim() || scenarios[name].request };
   const id = ++generation;
+  if (promptInput && document.activeElement !== promptInput) promptInput.value = scenario.request;
 
   $$("[data-scenario]").forEach(button => {
-    button.classList.toggle("is-selected", button.dataset.scenario === name);
-    button.disabled = false;
+  button.addEventListener("click", () => {
+    const name = button.dataset.scenario;
+    const request = scenarios[name].request;
+    if (promptInput) promptInput.value = request;
+    run(name, request);
   });
-  $("[data-replay]").disabled = true;
-  $("[data-result-status]").textContent = "Generating…";
-
-  $$("[data-stage]").forEach(node => node.classList.remove("is-processing", "is-complete"));
-  renderState(scenario);
-  decisionPlaceholder(scenario);
-  resetPlan();
-  resetRoute();
-  resetCompile();
-  $("[data-trace]").innerHTML = "";
-  skeleton("Reading application state", "Collecting only the context needed for this request.", 1 + scenario.supporting.length);
-
-  stage("input", "processing");
-  await sleep(420);
-  if (id !== generation) return;
-  stage("input", "complete");
-
-  stage("jev", "processing");
-  setSkeletonStatus("Jev is deciding", "Typed decisions arrive independently instead of generating prose.");
-  for (const decision of scenario.decisions) {
-    if (id !== generation) return;
-    revealDecision(decision);
-    addTrace(decision);
-    await sleep(185);
-  }
-  $("[data-latency]").textContent = scenario.latency;
-  stage("jev", "complete");
-
-  stage("plan", "processing");
-  setSkeletonStatus("Selecting Syntari components", "The decision space is narrowed to registry components that match the request.");
-  await revealPlan(scenario, id);
-  if (id !== generation) return;
-  stage("plan", "complete");
-
-  stage("route", "processing");
-  renderRoute(scenario);
-  if (scenario.route.needsLLM) {
-    setSkeletonStatus("LLM reasoning", "The model handles synthesis only; it is not designing the interface.");
-    await sleep(680);
-  } else {
-    setSkeletonStatus("LLM skipped", "This request is fully handled by typed routing and Syntari safety patterns.");
-    await sleep(340);
-  }
-  if (id !== generation) return;
-  stage("route", "complete");
-
-  stage("render", "processing");
-  await renderGeneratedInterface(name, scenario, id);
-  if (id !== generation) return;
-  stage("render", "complete");
-
-  $("[data-replay]").disabled = false;
-}
-
-$$("[data-scenario]").forEach(button => {
-  button.addEventListener("click", () => run(button.dataset.scenario));
 });
 
-$("[data-replay]").addEventListener("click", () => run(activeScenario));
+$("[data-prompt-form]")?.addEventListener("submit", event => {
+  event.preventDefault();
+  const request = promptInput?.value.trim();
+  if (!request) return;
+  run(scenarioFromPrompt(request), request);
+});
+
+$("[data-replay]").addEventListener("click", () => {
+  const request = promptInput?.value.trim() || scenarios[activeScenario].request;
+  run(activeScenario, request);
+});
 
 renderState(scenarios.q2);
 decisionPlaceholder(scenarios.q2);
@@ -608,4 +629,4 @@ resetRoute();
 resetCompile();
 skeleton("Ready", "The generative canvas will assemble itself from Syntari components.", 5);
 
-setTimeout(() => run("q2"), reducedMotion ? 0 : 380);
+setTimeout(() => run("q2", promptInput?.value || scenarios.q2.request), reducedMotion ? 0 : 420);
