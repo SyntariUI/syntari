@@ -139,6 +139,96 @@ if (document.querySelector("[data-command-palette]") && !document.body.dataset.n
   filter();
 }
 
+/* Standalone analytics compositions */
+{
+  const revenueCard=document.querySelector("[data-revenue-card]");
+  if(revenueCard && !document.body.dataset.newPage){
+    const revenueSeries={
+      "7d":{value:"€8,940",delta:"+6.8%",points:[28,42,35,55,49,66,74]},
+      "30d":{value:"€24,532",delta:"+12.4%",points:[22,28,35,31,44,50,47,58,64,60,71,76]},
+      "90d":{value:"€68,920",delta:"+18.7%",points:[18,24,21,32,29,41,38,52,48,61,57,69,66,78]}
+    };
+    const line=revenueCard.querySelector("[data-revenue-line]");
+    const area=revenueCard.querySelector("[data-revenue-area]");
+    const point=revenueCard.querySelector("[data-revenue-point]");
+    const valueNode=revenueCard.querySelector("[data-revenue-value]");
+    const deltaNode=revenueCard.querySelector("[data-revenue-delta]");
+    const overlay=revenueCard.querySelector("[data-loading-overlay]");
+    let updateTimer=0;
+
+    const pathFor=points=>{
+      const width=624,height=154,left=8,top=34;
+      const min=Math.min(...points),max=Math.max(...points);
+      const x=i=>left+i*((width-left)/Math.max(1,points.length-1));
+      const y=v=>top+(max-v)/Math.max(1,max-min)*height;
+      return points.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+","+y(v).toFixed(1)).join(" ");
+    };
+    const paint=(key)=>{
+      const data=revenueSeries[key]||revenueSeries["30d"];
+      const d=pathFor(data.points);
+      line?.setAttribute("d",d);
+      if(area) area.setAttribute("d",d+" L632,212 L8,212 Z");
+      if(point){
+        const last=data.points.length-1;
+        const parts=d.trim().split(" ");
+        const xy=parts[last].slice(1).split(",");
+        point.setAttribute("cx",xy[0]); point.setAttribute("cy",xy[1]);
+      }
+      if(valueNode) valueNode.textContent=data.value;
+      if(deltaNode) deltaNode.textContent=data.delta;
+    };
+    const busy=value=>{
+      revenueCard.dataset.loading=String(value);
+      revenueCard.setAttribute("aria-busy",String(value));
+      if(overlay) overlay.setAttribute("aria-hidden",String(!value));
+    };
+
+    paint("30d");
+    busy(false);
+    document.addEventListener("click",event=>{
+      const option=event.target.closest("[data-revenue-period] [data-option]");
+      if(!option) return;
+      const key=option.dataset.value||"30d";
+      clearTimeout(updateTimer);
+      busy(true);
+      updateTimer=setTimeout(()=>{paint(key);busy(false);},260);
+    });
+  }
+
+  const report=document.querySelector("[data-team-report]");
+  if(report && !document.body.dataset.newPage){
+    const data={
+      week:{efficiency:"84%",delta:"+9.8%",time:"126h",cost:"€8,420"},
+      month:{efficiency:"81%",delta:"+6.4%",time:"438h",cost:"€27,900"},
+      quarter:{efficiency:"86%",delta:"+11.2%",time:"1,284h",cost:"€82,600"}
+    };
+    const overlay=report.querySelector("[data-loading-overlay]");
+    let updateTimer=0;
+    const busy=value=>{
+      report.dataset.loading=String(value);
+      report.setAttribute("aria-busy",String(value));
+      if(overlay) overlay.setAttribute("aria-hidden",String(!value));
+    };
+    const paint=key=>{
+      const current=data[key]||data.week;
+      report.querySelector("[data-efficiency]").textContent=current.efficiency;
+      report.querySelector("[data-efficiency-delta]").textContent=current.delta;
+      report.querySelector("[data-time-saved]").textContent=current.time;
+      report.querySelector("[data-cost-saved]").textContent=current.cost;
+    };
+    paint("week");
+    busy(false);
+    document.addEventListener("click",event=>{
+      const option=event.target.closest("[data-report-period] [data-option]");
+      if(!option) return;
+      const key=option.dataset.value||"week";
+      clearTimeout(updateTimer);
+      busy(true);
+      updateTimer=setTimeout(()=>{paint(key);busy(false);},260);
+    });
+  }
+}
+
 /* ---------------- Renderer ---------------- */
 if(page === "renderer"){
   const scenarios = {
