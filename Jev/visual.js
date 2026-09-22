@@ -580,7 +580,7 @@ async function renderGeneratedInterface(name, scenario, id) {
   const count = lastResult.element.querySelectorAll("[data-ir-component]").length;
   $("[data-result-status]").textContent = errors
     ? "Rendered with " + errors + " validation errors"
-    : "Live · " + count + " trusted Syntari components";
+    : "Live · " + count + " real Syntari components · validated";
 
   await Promise.all([
     typeStreamingText(scenario, lastResult.element, id),
@@ -599,9 +599,70 @@ async function run(name, requestOverride = "") {
   activeScenario = name;
   const scenario = { ...scenarios[name], request: requestOverride.trim() || scenarios[name].request };
   const id = ++generation;
+
   if (promptInput && document.activeElement !== promptInput) promptInput.value = scenario.request;
 
   $$("[data-scenario]").forEach(button => {
+    button.classList.toggle("is-selected", button.dataset.scenario === name);
+    button.disabled = false;
+  });
+
+  $("[data-replay]").disabled = true;
+  $("[data-result-status]").textContent = "Jev is deciding…";
+
+  $$("[data-stage]").forEach(node => node.classList.remove("is-processing", "is-complete"));
+  renderState(scenario);
+  decisionPlaceholder(scenario);
+  resetPlan();
+  resetRoute();
+  resetCompile();
+  $("[data-trace]").innerHTML = "";
+  skeleton("Reading application state", "Collecting only the context needed for this request.", 1 + scenario.supporting.length);
+  paintIR({ intent: scenario.request, state: "reading context", screenIR: "pending" }, "reading state");
+
+  stage("input", "processing");
+  await sleep(190);
+  if (id !== generation) return;
+  stage("input", "complete");
+
+  stage("jev", "processing");
+  setSkeletonStatus("Jev is deciding", "Typed decisions arrive independently instead of generating prose.");
+  for (const decision of scenario.decisions) {
+    if (id !== generation) return;
+    revealDecision(decision);
+    addTrace(decision);
+    await sleep(105);
+  }
+  $("[data-latency]").textContent = scenario.latency;
+  stage("jev", "complete");
+
+  stage("plan", "processing");
+  setSkeletonStatus("Selecting Syntari components", "The decision space is narrowed to registry components that match the request.");
+  await revealPlan(scenario, id);
+  if (id !== generation) return;
+  stage("plan", "complete");
+
+  stage("route", "processing");
+  renderRoute(scenario);
+  if (scenario.route.needsLLM) {
+    setSkeletonStatus("LLM reasoning", "The model handles synthesis only; it is not designing the interface.");
+    await sleep(360);
+  } else {
+    setSkeletonStatus("LLM skipped", "This request is fully handled by typed routing and Syntari safety patterns.");
+    await sleep(210);
+  }
+  if (id !== generation) return;
+  stage("route", "complete");
+
+  stage("render", "processing");
+  await renderGeneratedInterface(name, scenario, id);
+  if (id !== generation) return;
+  stage("render", "complete");
+
+  $("[data-replay]").disabled = false;
+}
+
+$$("[data-scenario]").forEach(button => {
   button.addEventListener("click", () => {
     const name = button.dataset.scenario;
     const request = scenarios[name].request;
@@ -627,6 +688,7 @@ decisionPlaceholder(scenarios.q2);
 resetPlan();
 resetRoute();
 resetCompile();
-skeleton("Ready", "The generative canvas will assemble itself from Syntari components.", 5);
+skeleton("Ready", "The renderer will assemble itself from validated Syntari components.", 5);
+paintIR({ intent: scenarios.q2.request, screenIR: "ready" }, "ready");
 
 setTimeout(() => run("q2", promptInput?.value || scenarios.q2.request), reducedMotion ? 0 : 420);
