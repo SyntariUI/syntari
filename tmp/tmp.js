@@ -297,6 +297,8 @@ if (page === "components") {
   var selectedIndex = 0;
   var activeMount = null;
   var currentQuery = "";
+  var previewDemoToken = 0;
+  var previewEventTimer = 0;
 
   function getTokens(component) {
     if (Array.isArray(component.tokens) && component.tokens.length) return component.tokens.slice(0,10);
@@ -339,6 +341,10 @@ if (page === "components") {
     $("[data-docs-title]").textContent = component.name;
     $("[data-docs-description]").textContent = component.description || "A trusted Syntari primitive.";
     $("[data-registry-id]").textContent = component.slug;
+    var stageCategory = $("[data-stage-category]");
+    var stageName = $("[data-stage-name]");
+    if (stageCategory) stageCategory.textContent = String(component.category || "Component").toUpperCase();
+    if (stageName) stageName.textContent = component.name;
     $("[data-code-title]").textContent = component.name;
     $("[data-code-file]").textContent = component.slug + ".html";
     $("[data-component-code]").textContent = component.html || "<!-- Component markup is provided by the Syntari runtime. -->";
@@ -357,6 +363,99 @@ if (page === "components") {
     }
   }
 
+  function previewControls(host) {
+    if (!host) return [];
+    return $("button,a,input,textarea,select,[role=button],[role=tab],[role=switch]", host).filter(function(node) {
+      if (node.disabled || node.getAttribute("aria-disabled") === "true") return false;
+      var rect = node.getBoundingClientRect();
+      return rect.width > 4 && rect.height > 4;
+    });
+  }
+
+  function previewControlLabel(node) {
+    if (!node) return "Component";
+    var labelled = node.getAttribute("aria-label");
+    if (labelled) return labelled;
+    var label = node.closest("label");
+    if (label) {
+      var text = label.textContent.trim().replace(/\s+/g, " ");
+      if (text) return text.slice(0, 54);
+    }
+    var own = node.textContent.trim().replace(/\s+/g, " ");
+    if (own) return own.slice(0, 54);
+    return node.tagName.toLowerCase();
+  }
+
+  function showPreviewEvent(message) {
+    var eventBox = $("[data-preview-event]");
+    var eventText = $("[data-preview-event-text]");
+    if (!eventBox || !eventText) return;
+    eventText.textContent = message;
+    eventBox.hidden = false;
+    eventBox.classList.remove("is-showing");
+    void eventBox.offsetWidth;
+    eventBox.classList.add("is-showing");
+    clearTimeout(previewEventTimer);
+    previewEventTimer = setTimeout(function() {
+      eventBox.classList.remove("is-showing");
+      setTimeout(function() { eventBox.hidden = true; }, 220);
+    }, 1250);
+  }
+
+  function stopPreviewDemo() {
+    previewDemoToken += 1;
+    var cursor = $("[data-soft-cursor]");
+    if (cursor) cursor.classList.remove("is-auto", "is-visible", "is-hot");
+    $(".is-preview-demo").forEach(function(node) { node.classList.remove("is-preview-demo"); });
+  }
+
+  async function playPreviewDemo(component, host) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(pointer:coarse)").matches) return;
+    var token = ++previewDemoToken;
+    var stage = $("[data-preview-stage]");
+    var cursor = $("[data-soft-cursor]");
+    if (!stage || !cursor) return;
+    await wait(520);
+    if (token !== previewDemoToken) return;
+
+    var controls = previewControls(host).slice(0, 4);
+    if (!controls.length) {
+      showPreviewEvent("Rendered · " + component.name);
+      return;
+    }
+
+    cursor.classList.add("is-visible", "is-auto");
+    for (var index = 0; index < controls.length; index += 1) {
+      if (token !== previewDemoToken) return;
+      var control = controls[index];
+      var stageRect = stage.getBoundingClientRect();
+      var rect = control.getBoundingClientRect();
+      var x = rect.left - stageRect.left + stage.scrollLeft + rect.width / 2;
+      var y = rect.top - stageRect.top + stage.scrollTop + rect.height / 2;
+      cursor.style.transform = "translate3d(" + (x - 12) + "px," + (y - 12) + "px,0)";
+      cursor.classList.toggle("is-hot", rect.width > 42 || rect.height > 42);
+      control.classList.add("is-preview-demo");
+      try { control.focus({preventScroll:true}); } catch (error) {}
+      showPreviewEvent("Focus · " + previewControlLabel(control));
+      await wait(620);
+      if (token !== previewDemoToken) return;
+
+      var text = previewControlLabel(control).toLowerCase();
+      var dangerous = /(delete|remove|archive|approve|reject|send|purchase|danger|destroy)/.test(text);
+      var toggle = control.hasAttribute("aria-pressed") ||
+        control.matches('input[type="checkbox"],input[type="radio"]') ||
+        !!control.closest("[data-segment]");
+      if (toggle && !dangerous) {
+        try { control.click(); } catch (error) {}
+        showPreviewEvent("Changed · " + previewControlLabel(control));
+        await wait(360);
+      }
+      control.classList.remove("is-preview-demo");
+    }
+    await wait(280);
+    if (token === previewDemoToken) cursor.classList.remove("is-auto", "is-visible", "is-hot");
+  }
+
   async function selectComponent(slug, animate) {
     var component = componentCatalog.find(function(item) { return item.slug === slug; });
     if (!component) return;
@@ -367,6 +466,10 @@ if (page === "components") {
     closeCode();
 
     var host = $("[data-component-mount]");
+    stopPreviewDemo();
+    $("[data-preview-status]").textContent = "Mounting " + component.name + "…";
+    var previewOutput = $("[data-preview-output]");
+    if (previewOutput) previewOutput.textContent = "Preparing interaction demo";
     if (animate !== false) host.classList.add("is-changing");
     await wait(animate === false ? 0 : 215);
 
@@ -377,10 +480,20 @@ if (page === "components") {
     host.innerHTML = "";
     try {
       activeMount = await mount(component.slug, host);
+      var surface = activeMount && activeMount.element;
+      if (surface) {
+        surface.classList.add("workbench-preview-surface");
+        requestAnimationFrame(function() { surface.classList.add("is-preview-ready"); });
+      }
+      var controls = previewControls(host);
       $("[data-preview-status]").textContent = "Live preview";
+      if (previewOutput) previewOutput.textContent = controls.length ? controls.length + (controls.length === 1 ? " interactive control" : " interactive controls") : "Rendered output";
+      playPreviewDemo(component, host);
     } catch (error) {
-      host.innerHTML = '<div class="component-meta-card"><div><span>Preview</span><strong>' + escapeHtml(component.name) + '</strong></div><div><span>Status</span><strong>Unavailable</strong></div></div>';
+      host.innerHTML = '<div class="preview-error-card"><span>Preview</span><strong>' + escapeHtml(component.name) + '</strong><p>The runtime could not mount this primitive. The documentation is still available in the inspector.</p></div>';
       $("[data-preview-status]").textContent = "Preview unavailable";
+      if (previewOutput) previewOutput.textContent = "Runtime error";
+      showPreviewEvent("Mount failed · " + component.name);
     }
     if (animate !== false) setTimeout(function(){ host.classList.remove("is-changing"); }, 350);
     try { history.replaceState(null, "", "#" + component.slug); } catch (error) {}
@@ -432,6 +545,8 @@ if (page === "components") {
       raf=requestAnimationFrame(loop);
     }
     stage.addEventListener("pointerenter", function() {
+      previewDemoToken += 1;
+      cursor.classList.remove("is-auto");
       cursor.classList.add("is-visible");
       if (!raf) loop();
     });
@@ -486,6 +601,18 @@ if (page === "components") {
       }
       if (initial) await selectComponent(initial,false);
       setupSoftCursor();
+
+      var previewHost = $("[data-component-mount]");
+      if (previewHost) {
+        previewHost.addEventListener("click", function(event) {
+          var control = event.target.closest("button,a,input,textarea,select,[role=button],[role=tab],[role=switch]");
+          if (control && previewHost.contains(control)) showPreviewEvent("Action · " + previewControlLabel(control));
+        });
+        previewHost.addEventListener("change", function(event) {
+          var control = event.target.closest("input,select,textarea,[role=switch]");
+          if (control) showPreviewEvent("Changed · " + previewControlLabel(control));
+        });
+      }
 
       $("[data-component-search]").addEventListener("input",function(event){
         currentQuery=event.target.value;
