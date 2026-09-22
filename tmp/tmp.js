@@ -398,7 +398,7 @@ if (page === "components") {
 
   function previewControls(host) {
     if (!host) return [];
-    return $("button,a,input,textarea,select,[role=button],[role=tab],[role=switch]", host).filter(function(node) {
+    return $$("button,a,input,textarea,select,[role=button],[role=tab],[role=switch]", host).filter(function(node) {
       if (node.disabled || node.getAttribute("aria-disabled") === "true") return false;
       var rect = node.getBoundingClientRect();
       return rect.width > 4 && rect.height > 4;
