@@ -24,7 +24,7 @@ test('all card surfaces inherit the Session card visual contract', async ({ page
   let northStar = null;
 
   for (const [slug, selector] of cards) {
-    await page.goto(`${origin}/tmp/system/#${slug}`);
+    await page.goto(`${origin}/tmp/system/?card=${encodeURIComponent(slug)}#${slug}`);
     const card = page.locator(selector).first();
     await card.waitFor({ state: 'visible', timeout: 15000 });
 
