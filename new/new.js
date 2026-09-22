@@ -532,3 +532,39 @@ if(page === "components"){
     $("[data-component-nav]").innerHTML='<div class="nav-category">Runtime unavailable</div>';
   });
 }
+
+
+/* ---------------- Gallery ---------------- */
+if(page === "gallery"){
+  let instances=[];
+
+  async function bootGallery(){
+    await initialize();
+    const cards=$$("[data-gallery-slug]");
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(async entry=>{
+        if(!entry.isIntersecting) return;
+        const card=entry.target;
+        observer.unobserve(card);
+        const host=$("[data-gallery-mount]",card);
+        try{
+          const instance=await mount(card.dataset.gallerySlug,host);
+          instances.push(instance);
+          card.classList.add("is-entering");
+          setTimeout(()=>card.classList.remove("is-entering"),760);
+        }catch{
+          host.innerHTML='<div class="docs-meta-grid"><div><span>Component</span><strong>'+escapeHTML(card.dataset.gallerySlug)+'</strong></div><div><span>Status</span><strong>Preview unavailable</strong></div></div>';
+        }
+      });
+    },{rootMargin:"180px 0px",threshold:.08});
+
+    cards.forEach(card=>observer.observe(card));
+  }
+
+  bootGallery().catch(error=>{
+    console.error(error);
+    $$("[data-gallery-mount]").forEach(host=>{
+      host.innerHTML='<div class="docs-meta-grid"><div><span>Gallery</span><strong>Runtime unavailable</strong></div></div>';
+    });
+  });
+}
