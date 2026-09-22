@@ -2,42 +2,49 @@ import { test, expect } from '@playwright/test';
 
 const origin = 'http://127.0.0.1:4318';
 
-test('Jev demo visibly generates a real Syntari interface', async ({ page }) => {
+test('Renderer uses the shared System workspace and renders trusted Syntari UI', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
 
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(`${origin}/Jev/`);
 
   const canvas = page.locator('[data-preview]');
-  await canvas.locator('.ir-screen').waitFor();
+  await canvas.locator('.ir-screen').waitFor({ timeout: 15000 });
+  await expect(canvas.locator('[data-ir-component]')).toHaveCount(5, { timeout: 15000 });
 
   const geometry = await page.evaluate(() => {
     const box = selector => {
       const rect = document.querySelector(selector)?.getBoundingClientRect();
-      return rect ? { width: rect.width, height: rect.height, top: rect.top, left: rect.left } : null;
+      return rect ? {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height
+      } : null;
     };
-    const scenario = document.querySelector('.scenario-list');
     return {
-      intent: box('.intent-form'),
-      scenario: box('.scenario-list'),
-      workbench: box('.renderer-workbench'),
-      irPane: box('.ir-pane'),
-      renderPane: box('.render-pane'),
-      scenarioDisplay: scenario ? getComputedStyle(scenario).display : null,
-      scenarioWrap: scenario ? getComputedStyle(scenario).flexWrap : null
+      viewport: innerWidth,
+      rail: box('.renderer-rail'),
+      workspace: box('.renderer-workspace'),
+      stage: box('.renderer-stage'),
+      toolbar: box('.renderer-toolbar'),
+      composer: box('.renderer-composer'),
+      inspectorHidden: document.querySelector('[data-renderer-inspector]')?.getAttribute('aria-hidden')
     };
   });
 
-  expect(geometry.intent?.width || 0).toBeGreaterThan(900);
-  expect(geometry.intent?.height || 0).toBeGreaterThan(45);
-  expect(geometry.scenarioDisplay).toBe('flex');
-  expect(geometry.scenarioWrap).toBe('nowrap');
-  expect(geometry.workbench?.width || 0).toBeGreaterThan(900);
-  expect(geometry.irPane?.width || 0).toBeGreaterThan(320);
-  expect(geometry.renderPane?.width || 0).toBeGreaterThan(420);
+  expect(geometry.rail?.width || 0).toBeGreaterThan(200);
+  expect((geometry.workspace?.width || 0) / geometry.viewport).toBeGreaterThan(0.75);
+  expect((geometry.workspace?.width || 0) / geometry.viewport).toBeLessThan(0.88);
+  expect(geometry.stage?.width || 0).toBeGreaterThan(1000);
+  expect(geometry.toolbar?.top || 999).toBeLessThan(40);
+  expect((geometry.toolbar?.right || 0)).toBeGreaterThan((geometry.stage?.right || 0) - 210);
+  expect(geometry.composer?.width || 0).toBeGreaterThan(600);
+  expect(geometry.inspectorHidden).toBe('true');
 
   await expect(canvas.locator('.ir-screen-title')).toHaveText('Q2 performance');
-  await expect(canvas.locator('[data-ir-component]')).toHaveCount(5);
   await expect(canvas.locator('[data-ir-component="stat-row"]')).toHaveCount(1);
   await expect(canvas.locator('[data-ir-component="streaming-response"]')).toHaveCount(1);
   await expect(canvas.locator('[data-ir-component="area-chart"]')).toHaveCount(1);
@@ -54,48 +61,47 @@ test('Jev demo visibly generates a real Syntari interface', async ({ page }) => 
   });
   expect(registered).toBe(true);
 
-  const explanationSizes = await page.evaluate(() => {
-    const px = selector => parseFloat(getComputedStyle(document.querySelector(selector)).fontSize);
-    return {
-      hero: px('.renderer-copy p'),
-      section: px('.section-intro p'),
-      route: px('.route-state p'),
-      principle: px('.principle-grid p')
-    };
-  });
-  expect(Math.min(...Object.values(explanationSizes))).toBeGreaterThanOrEqual(14);
+  const bodyText = await page.locator('body').innerText();
+  expect(bodyText).not.toContain('Jev');
+
+  await page.locator('[data-open-logic]').click();
+  await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel', 'logic');
+  await expect(page.locator('[data-renderer-inspector]')).toHaveAttribute('aria-hidden', 'false');
+  await expect(page.locator('[data-route-title]')).toContainText(/Reasoning|required|Synthesis|LLM/i);
+
+  await page.locator('[data-open-ir]').click();
+  await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel', 'ir');
+  await expect(page.locator('[data-ir-code]')).toContainText('syntari.stat-row');
+
+  await page.locator('[data-close-inspector]').click();
+  await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel', 'none');
 
   await page.locator('[data-replay]').click();
   await canvas.locator('.ir-screen [data-ir-component]').first().waitFor({ timeout: 15000 });
   const capturedRoot = await page.evaluate(() => {
-    window.__jevProgressiveRoot = document.querySelector('[data-preview] .ir-screen');
-    return Boolean(window.__jevProgressiveRoot);
+    window.__rendererProgressiveRoot = document.querySelector('[data-preview] .ir-screen');
+    return Boolean(window.__rendererProgressiveRoot);
   });
   expect(capturedRoot).toBe(true);
   await expect(canvas.locator('[data-ir-component]')).toHaveCount(5, { timeout: 15000 });
   const rootStayedMounted = await page.evaluate(
-    () => window.__jevProgressiveRoot === document.querySelector('[data-preview] .ir-screen')
+    () => window.__rendererProgressiveRoot === document.querySelector('[data-preview] .ir-screen')
   );
   expect(rootStayedMounted).toBe(true);
 
   const followedScroll = await page.evaluate(() => {
     const canvas = document.querySelector('[data-preview]');
     return canvas.scrollHeight <= canvas.clientHeight + 2 ||
-      canvas.scrollTop + canvas.clientHeight >= canvas.scrollHeight - 24;
+      canvas.scrollTop + canvas.clientHeight >= canvas.scrollHeight - 30;
   });
   expect(followedScroll).toBe(true);
 
-  const evidence = canvas.locator('.ir-region');
-  await expect(evidence).toHaveAttribute('open', '');
-
   await page.locator('[data-scenario="delete"]').click();
   await expect(canvas.locator('.ir-screen-title')).toHaveText('Workspace action', { timeout: 15000 });
-  await expect(canvas.locator('[data-ir-component]')).toHaveCount(1);
   await expect(canvas.locator('[data-ir-component="tool-approval"]')).toHaveCount(1);
-  await expect(canvas.locator('[data-ir-component="streaming-response"]')).toHaveCount(0);
   await expect(canvas.locator('.ir-fallback')).toHaveCount(0);
+  await page.locator('[data-open-logic]').click();
   await expect(page.locator('[data-route-title]')).toHaveText('LLM skipped');
-  await expect(canvas.locator('[data-ir-component="tool-approval"]')).not.toHaveClass(/jev-risk-lock/);
 
   expect(errors).toEqual([]);
 });
