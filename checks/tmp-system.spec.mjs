@@ -11,12 +11,13 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
 
   const workspace = page.locator('[data-workspace]');
   const preview = page.locator('[data-component-mount] > [data-syntari-component]');
-  await preview.waitFor({ timeout: 15000 });
+  await preview.waitFor({ state: 'attached', timeout: 15000 });
 
   await expect(page.locator('.sys-rail')).toBeVisible();
   await expect(workspace).toBeVisible();
   await expect(page.locator('.sys-toolbar')).toBeVisible();
   await expect(preview).toHaveCount(1);
+  await expect(page.locator('[data-status]')).toContainText('real Syntari component');
 
   const geometry = await page.evaluate(() => {
     const box = selector => {
