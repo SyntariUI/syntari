@@ -439,7 +439,7 @@ if (page === "components") {
     previewDemoToken += 1;
     var cursor = $("[data-soft-cursor]");
     if (cursor) cursor.classList.remove("is-auto", "is-visible", "is-hot");
-    $(".is-preview-demo").forEach(function(node) { node.classList.remove("is-preview-demo"); });
+    $$(".is-preview-demo").forEach(function(node) { node.classList.remove("is-preview-demo"); });
   }
 
   async function playPreviewDemo(component, host) {
