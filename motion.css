@@ -45,14 +45,14 @@ dialog.is-closing::backdrop{animation:backdrop-exit 140ms ease forwards}
 .gallery-toolbar.is-stuck{box-shadow:0 7px 12px -10px #18192535}
 .motion-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .motion-actions .button{font-size:11px}
-.session-card{width:100%;padding:6px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-card)}
+.session-card{width:100%;padding:var(--card-shell-padding);border:1px solid var(--card-shell-border);border-radius:var(--card-shell-radius);background:var(--card-shell-bg);box-shadow:var(--card-shell-shadow)}
 .session-heading{font-size:10px;color:var(--muted);padding:6px 7px 10px}
-.session-card details{background:var(--subtle);border:0;border-radius:9px;margin-bottom:3px}
+.session-card details{background:var(--card-inset-bg);border:0;border-radius:var(--card-inset-radius);margin-bottom:var(--card-shell-gap)}
 .session-card summary{padding:10px;font-size:12px;align-items:center}
 .session-card summary>.icon:first-child{color:var(--fg-2)}
 .session-card summary .amount{margin-left:auto;color:var(--success-text);font-size:11px}
 .session-card details p{padding:0 11px 11px;font-size:10px}
-.session-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--subtle);border-radius:9px;font-size:11px}
+.session-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--card-inset-bg);border-radius:var(--card-inset-radius);font-size:11px}
 .session-row .icon{width:15px;color:var(--fg-2)}
 .session-row>span:last-child{margin-left:auto;color:var(--muted)}
 .session-footer{display:flex;align-items:center;gap:6px;padding:11px 8px 5px;font-size:10px;color:var(--muted)}
