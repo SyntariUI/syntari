@@ -64,5 +64,35 @@ test('tmp System is a persistent component workspace', async ({ page }) => {
   await expect(workspace).toHaveAttribute('data-panel', 'code');
   await expect(page.locator('[data-source]')).not.toBeEmpty();
 
+
+  // Refinement guardrails for the System workspace.
+  await expect(page.locator('[data-slug="data-table"]')).toHaveCount(0);
+  await expect(page.locator('.sys-stage-status')).toBeHidden();
+
+  await page.goto(`${origin}/tmp/system/#chart-bars`);
+  await expect(page.locator('.chart-bars-modern')).toBeVisible();
+  await expect(page.locator('.bar-compare-row')).toHaveCount(6);
+
+  await page.goto(`${origin}/tmp/system/#action-swap`);
+  const actionCentered = await page.evaluate(() => {
+    const stage = document.querySelector('.sys-preview-host');
+    const button = document.querySelector('[data-extra-kind="action"] > .button');
+    if (!stage || !button) return false;
+    const s = stage.getBoundingClientRect();
+    const b = button.getBoundingClientRect();
+    return Math.abs((b.left + b.width / 2) - (s.left + s.width / 2)) < 8;
+  });
+  expect(actionCentered).toBe(true);
+
+  await page.goto(`${origin}/tmp/system/#tooltip`);
+  await expect(page.locator('.sys-preview-host')).not.toContainText('Hover or focus to take a peek');
+
+  await page.goto(`${origin}/tmp/system/#metric-strip`);
+  const secondMetric = page.locator('[data-metric]').nth(1);
+  const valueBefore = await secondMetric.locator('.metric-value').textContent();
+  await secondMetric.click();
+  await expect(secondMetric).toHaveAttribute('aria-pressed', 'true');
+  await expect(secondMetric.locator('.metric-value')).toHaveText(valueBefore || '');
+
   expect(errors).toEqual([]);
 });
