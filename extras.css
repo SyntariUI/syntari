@@ -269,3 +269,183 @@
 .rank-track{height:18px;border-radius:6px;background:var(--bg-2);overflow:hidden}
 .rank-fill{display:block;height:100%;width:var(--share,50%);border-radius:6px;background:var(--accent)}
 .rank-share{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+
+
+/* Shared card language — Session card is the north star.
+   Cards are quiet shells with compact inset rows, not floating marketing panels. */
+:is(
+  .session-card,
+  .mini-card,
+  .syntari-tilt,
+  .project-folder,
+  .wallet-surface,
+  .extra-demo[data-extra-kind="prediction"],
+  .agent-surface[data-agent-kind="approval"],
+  .selectable-cards label>span
+){
+  background:var(--card-shell-bg)!important;
+  border:1px solid var(--card-shell-border)!important;
+  border-radius:var(--card-shell-radius)!important;
+  box-shadow:var(--card-shell-shadow)!important;
+  color:var(--text);
+}
+
+.mini-card{
+  padding:var(--card-shell-padding)!important;
+}
+.mini-card>.row:first-child{
+  padding:10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.mini-card h3{
+  margin:13px 10px 0!important;
+  font-size:13px;
+  font-weight:500;
+}
+.mini-card p{
+  margin:6px 10px 12px!important;
+  color:var(--muted);
+}
+.mini-card>.button{
+  width:calc(100% - 8px);
+  margin:0 4px 4px;
+  justify-content:center;
+}
+
+.syntari-tilt{
+  padding:16px!important;
+  box-shadow:var(--card-shell-shadow)!important;
+}
+.syntari-tilt:hover{
+  border-color:var(--card-shell-border)!important;
+  box-shadow:var(--card-shell-shadow)!important;
+}
+.syntari-tilt h3{font-size:14px;font-weight:500;margin:12px 0 5px}
+.syntari-tilt p{margin:0 0 14px!important;color:var(--muted)}
+
+.project-folder{
+  padding:var(--card-shell-padding)!important;
+}
+.project-folder>summary{
+  min-height:46px;
+  padding:10px!important;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.project-folder>div{
+  gap:var(--card-shell-gap)!important;
+  margin-top:var(--card-shell-gap)!important;
+}
+.project-folder>div>.button{
+  min-height:38px;
+  padding:8px 10px;
+  border:0;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+  box-shadow:none;
+}
+
+.wallet-surface{
+  padding:var(--card-shell-padding)!important;
+  gap:var(--card-shell-gap)!important;
+}
+.wallet-surface>.row{
+  min-height:42px;
+  padding:8px 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.wallet-surface>strong{
+  padding:14px 10px 0;
+  font-size:28px;
+}
+.wallet-surface>.hint{
+  padding:0 10px 13px;
+  margin:0;
+}
+
+.extra-demo[data-extra-kind="prediction"]{
+  padding:var(--card-shell-padding)!important;
+}
+.extra-demo[data-extra-kind="prediction"]>h3{
+  margin:0!important;
+  padding:11px 10px 4px;
+  font-size:14px;
+  font-weight:500;
+}
+.extra-demo[data-extra-kind="prediction"]>.hint{
+  margin:0!important;
+  padding:0 10px 12px;
+}
+.extra-demo[data-extra-kind="prediction"]>.prediction-meter{
+  margin:0 10px 10px;
+  height:7px;
+}
+.extra-demo[data-extra-kind="prediction"]>.row.spread{
+  margin:0 4px var(--card-shell-gap);
+  padding:9px 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.extra-demo[data-extra-kind="prediction"]>.row:last-of-type{
+  margin:0!important;
+  padding:4px;
+  gap:4px;
+}
+.extra-demo[data-extra-kind="prediction"]>.row:last-of-type .button{
+  flex:1;
+  justify-content:center;
+}
+
+.agent-surface[data-agent-kind="approval"]{
+  padding:var(--card-shell-padding)!important;
+}
+.agent-surface[data-agent-kind="approval"]>.agent-heading{
+  min-height:44px;
+  margin:0 0 var(--card-shell-gap)!important;
+  padding:9px 10px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.agent-surface[data-agent-kind="approval"]>p{
+  margin:10px!important;
+}
+.agent-surface[data-agent-kind="approval"]>.agent-inset{
+  margin:0 4px;
+  padding:10px!important;
+  border-radius:var(--card-inset-radius)!important;
+  background:var(--card-inset-bg)!important;
+}
+.agent-surface[data-agent-kind="approval"]>.agent-decision:not(:empty){
+  margin:var(--card-shell-gap) 4px 0!important;
+  border-radius:var(--card-inset-radius)!important;
+}
+.agent-surface[data-agent-kind="approval"]>.agent-footer{
+  margin:var(--card-shell-gap) 0 0!important;
+  padding:4px;
+  border-radius:var(--card-inset-radius);
+  background:var(--card-inset-bg);
+}
+.agent-surface[data-agent-kind="approval"]>.agent-footer .button:last-child{
+  margin-left:auto;
+}
+
+.selectable-cards{
+  gap:8px!important;
+}
+.selectable-cards label>span{
+  min-height:100%;
+  padding:14px!important;
+  gap:7px!important;
+  transition:background var(--motion-fast) var(--ease-out),border-color var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast) var(--ease-out)!important;
+}
+.selectable-cards input:checked+span{
+  background:var(--card-inset-bg)!important;
+  border-color:var(--card-shell-border)!important;
+  box-shadow:var(--card-shell-shadow),inset 0 0 0 1px var(--blue-a3)!important;
+}
+.selectable-cards .selection-check{
+  right:10px!important;
+  top:10px!important;
+}
