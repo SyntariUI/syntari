@@ -1,4 +1,4 @@
-import { render } from "../ir.js";
+import { render, validate } from "../ir.js";
 
 const scenarios = {
   q2: {
@@ -110,7 +110,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? 0
 
 let generation = 0;
 let activeScenario = "q2";
-let activeRender = null;
+let activeRenders = [];
 const promptInput = $("[data-prompt]");
 
 function scenarioFromPrompt(value) {
@@ -120,17 +120,48 @@ function scenarioFromPrompt(value) {
   return "q2";
 }
 
+function destroyActiveRenders() {
+  for (const result of activeRenders) {
+    try { result.destroy(); } catch {}
+  }
+  activeRenders = [];
+}
+
+function componentIds(node, found = []) {
+  if (!node || typeof node !== "object") return found;
+  if (typeof node.component === "string") found.push(node.component);
+  for (const child of node.children ?? []) componentIds(child, found);
+  return found;
+}
+
+function followRender(container) {
+  if (!container) return;
+  requestAnimationFrame(() => {
+    container.scrollTo({
+      top: Math.max(0, container.scrollHeight - container.clientHeight),
+      behavior: reducedMotion ? "auto" : "smooth"
+    });
+  });
+}
+
+function followIR() {
+  const pane = $(".ir-stream");
+  if (!pane) return;
+  requestAnimationFrame(() => {
+    pane.scrollTo({
+      top: Math.max(0, pane.scrollHeight - pane.clientHeight),
+      behavior: reducedMotion ? "auto" : "smooth"
+    });
+  });
+}
+
 function paintIR(spec, label = "streaming") {
   const code = $("[data-ir-code]");
   const progress = $("[data-ir-progress]");
   const pane = $(".ir-stream");
   if (code) code.textContent = JSON.stringify(spec, null, 2);
   if (progress) progress.textContent = label;
-  if (pane && !reducedMotion) {
-    pane.classList.remove("is-updating");
-    void pane.offsetWidth;
-    pane.classList.add("is-updating");
-  }
+  followIR();
 }
 
 
@@ -476,15 +507,18 @@ function animateBars(root) {
 async function typeStreamingText(scenario, root, id) {
   if (!scenario.streamText) return;
   const content = $(".stream-content", root);
+  const preview = root.closest("[data-preview]");
   if (!content || reducedMotion) return;
   content.textContent = "";
   const text = scenario.streamText;
   for (let index = 0; index < text.length; index += 2) {
     if (id !== generation) return;
     content.textContent = text.slice(0, index + 2);
+    if (index % 16 === 0) followRender(preview);
     await sleep(12);
   }
   content.textContent = text;
+  followRender(preview);
 }
 
 async function openEvidence(root, id) {
@@ -494,6 +528,7 @@ async function openEvidence(root, id) {
   if (id !== generation) return;
   details.open = true;
   details.classList.add("jev-evidence-open");
+  followRender(root.closest("[data-preview]"));
 }
 
 function animateGeneratedNodes(root) {
@@ -509,89 +544,122 @@ async function renderGeneratedInterface(name, scenario, id) {
   const validationLabel = $("[data-validation-label]");
   const fullSpec = specFor(name);
 
-  if (activeRender) {
-    try { activeRender.destroy(); } catch {}
-    activeRender = null;
-  }
+  destroyActiveRenders();
 
-  paintIR({ version: fullSpec.version, type: fullSpec.type, layout: fullSpec.layout, title: fullSpec.title, children: [] }, "planning");
-  setSkeletonStatus("Compiling Screen IR", "Jev fixed the interface shape. Syntari is checking the selected primitives.");
+  paintIR(
+    { version: fullSpec.version, type: fullSpec.type, layout: fullSpec.layout, title: fullSpec.title, children: [] },
+    "planning"
+  );
+  setSkeletonStatus("Validating Screen IR", "Every component is checked against the Syntari registry before anything is mounted.");
   $("[data-ir-count]").textContent = fullSpec.children.length + " top-level nodes";
-  if (validationLabel) validationLabel.textContent = "checking registry";
-  await sleep(180);
+  if (validationLabel) validationLabel.textContent = "checking Syntari registry";
+
+  const ids = componentIds(fullSpec);
+  const foreignIds = ids.filter(component => !component.startsWith("syntari."));
+  const preflight = await validate(fullSpec);
+  const preflightErrors = preflight.diagnostics.filter(item => item.severity === "error");
+
   if (id !== generation) return;
+
+  if (foreignIds.length || preflightErrors.length) {
+    $("[data-registry-status]").textContent = "Blocked";
+    $("[data-registry-status]").className = "error";
+    $("[data-validator-status]").textContent = preflightErrors.length + foreignIds.length + " errors";
+    $("[data-validator-status]").className = "error";
+    $("[data-renderer-status]").textContent = "Stopped";
+    $("[data-renderer-status]").className = "error";
+    if (validationLabel) validationLabel.textContent = "blocked by registry";
+    preview.innerHTML =
+      '<div class="generation-shell"><div class="generation-status">' +
+        '<span class="generation-pulse"></span><div><strong>Render blocked</strong>' +
+        '<p>Jev can only render components that pass the Syntari registry and component contracts.</p></div>' +
+      '</div></div>';
+    return;
+  }
 
   $("[data-registry-status]").textContent = "Passed";
   $("[data-registry-status]").className = "ok";
-  if (validationLabel) validationLabel.textContent = "registry passed";
+  if (validationLabel) validationLabel.textContent = "Syntari registry passed";
 
-  let lastResult = null;
+  const progressiveRoot = document.createElement("div");
+  progressiveRoot.className = "ir-screen jev-progressive-screen";
+  progressiveRoot.dataset.irLayout = fullSpec.layout || "stack";
+  progressiveRoot.dataset.jevGeneration = String(id);
+
+  if (fullSpec.title) {
+    const heading = document.createElement("h2");
+    heading.className = "ir-screen-title";
+    heading.textContent = fullSpec.title;
+    progressiveRoot.append(heading);
+  }
+
+  preview.replaceChildren(progressiveRoot);
+  preview.scrollTop = 0;
+
+  const diagnostics = [];
 
   for (let index = 0; index < fullSpec.children.length; index += 1) {
     if (id !== generation) return;
 
-    const partialSpec = {
+    const currentSpec = {
       ...fullSpec,
       children: fullSpec.children.slice(0, index + 1)
     };
+    paintIR(currentSpec, (index + 1) + " / " + fullSpec.children.length + " nodes");
 
-    paintIR(partialSpec, (index + 1) + " / " + fullSpec.children.length + " nodes");
-    setSkeletonStatus(
-      "Rendering " + (index + 1) + " of " + fullSpec.children.length,
-      "The interface is mounting from validated Syntari components as the IR arrives."
-    );
+    const nodeSpec = {
+      version: fullSpec.version,
+      type: "screen",
+      layout: fullSpec.layout,
+      children: [fullSpec.children[index]]
+    };
 
-    if (lastResult) {
-      try { lastResult.destroy(); } catch {}
-    }
+    const scratch = document.createElement("div");
+    const result = await render(nodeSpec, scratch);
 
-    const result = await render(partialSpec, preview);
     if (id !== generation) {
       result.destroy();
       return;
     }
 
-    lastResult = result;
-    activeRender = result;
+    activeRenders.push(result);
+    diagnostics.push(...result.diagnostics);
 
-    const nodes = $$(".ir-node, .ir-region", result.element);
-    const newest = nodes[nodes.length - 1];
+    const appended = [...result.element.children];
+    for (const node of appended) progressiveRoot.append(node);
+
+    const newest = appended[appended.length - 1];
     if (newest) {
       newest.classList.add("jev-generated-node");
       newest.style.setProperty("--enter-delay", "0ms");
     }
 
-    await sleep(index === fullSpec.children.length - 1 ? 210 : 330);
+    followRender(preview);
+    await sleep(index === fullSpec.children.length - 1 ? 220 : 360);
   }
 
-  if (!lastResult) return;
-
-  const errors = lastResult.diagnostics.filter(item => item.severity === "error").length;
+  const errors = diagnostics.filter(item => item.severity === "error").length;
   $("[data-validator-status]").textContent = errors ? errors + " errors" : "0 errors";
   $("[data-validator-status]").className = errors ? "error" : "ok";
   $("[data-renderer-status]").textContent = errors ? "Partial" : "Ready";
   $("[data-renderer-status]").className = errors ? "error" : "ok";
-  if (validationLabel) validationLabel.textContent = errors ? "validation issues" : "validated";
+  if (validationLabel) validationLabel.textContent = errors ? "validation issues" : "validated by Syntari";
 
-  animateNumbers(scenario, lastResult.element);
-  animateChart(lastResult.element);
-  animateBars(lastResult.element);
+  animateNumbers(scenario, progressiveRoot);
+  animateChart(progressiveRoot);
+  animateBars(progressiveRoot);
 
-  const count = lastResult.element.querySelectorAll("[data-ir-component]").length;
+  const count = progressiveRoot.querySelectorAll("[data-ir-component]").length;
   $("[data-result-status]").textContent = errors
     ? "Rendered with " + errors + " validation errors"
     : "Live · " + count + " real Syntari components · validated";
 
   await Promise.all([
-    typeStreamingText(scenario, lastResult.element, id),
-    openEvidence(lastResult.element, id)
+    typeStreamingText(scenario, progressiveRoot, id),
+    openEvidence(progressiveRoot, id)
   ]);
 
-  if (name === "delete") {
-    const approval = $('[data-ir-component="tool-approval"]', lastResult.element);
-    approval?.classList.add("jev-risk-lock");
-  }
-
+  followRender(preview);
   paintIR(fullSpec, "complete");
 }
 
