@@ -2,11 +2,22 @@ import { test, expect } from '@playwright/test';
 const origin='http://127.0.0.1:4318';
 
 test('tmp component workspace mounts a visible Syntari component', async ({page}) => {
-  const errors=[]; page.on('pageerror',error=>errors.push(error.message));
+  const errors=[]; const consoles=[]; const failed=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',msg=>consoles.push(msg.type()+': '+msg.text()));
+  page.on('requestfailed',request=>failed.push(request.url()+' :: '+request.failure()?.errorText));
+
   await page.goto(origin+'/tmp/components.html#button');
-  await page.locator('[data-docs-title]').waitFor();
-  await expect(page.locator('[data-docs-title]')).toHaveText('Button');
-  await page.waitForTimeout(1400);
+  await page.waitForTimeout(1800);
+
+  const moduleProbe=await page.evaluate(async()=>{
+    try {
+      const mod=await import('/tmp/tmp.js?probe=1');
+      return {ok:true,exports:Object.keys(mod)};
+    } catch(error) {
+      return {ok:false,name:error?.name,message:error?.message,stack:error?.stack};
+    }
+  });
 
   const debug=await page.evaluate(()=>{
     const host=document.querySelector('[data-component-mount]');
@@ -16,7 +27,9 @@ test('tmp component workspace mounts a visible Syntari component', async ({page}
     const hostBox=host?.getBoundingClientRect();
     const wrap=document.querySelector('.preview-component-wrap')?.getBoundingClientRect();
     return {
-      hostHTML: host?.innerHTML?.slice(0,1200),
+      title:document.querySelector('[data-docs-title]')?.textContent,
+      total:document.querySelector('[data-total-components]')?.textContent,
+      hostHTML:host?.innerHTML?.slice(0,1200),
       mounted: mounted?.dataset?.syntariComponent || null,
       mountedClasses: mounted?.className || null,
       buttonCount:buttons.length,
@@ -28,10 +41,16 @@ test('tmp component workspace mounts a visible Syntari component', async ({page}
       output:document.querySelector('[data-preview-output]')?.textContent
     };
   });
+
+  console.log('TMP MODULE PROBE',JSON.stringify(moduleProbe));
   console.log('TMP COMPONENT DEBUG',JSON.stringify(debug));
   console.log('TMP PAGE ERRORS',JSON.stringify(errors));
+  console.log('TMP CONSOLE',JSON.stringify(consoles));
+  console.log('TMP FAILED REQUESTS',JSON.stringify(failed));
 
+  expect(moduleProbe.ok).toBe(true);
   expect(errors).toEqual([]);
+  expect(debug.title).toBe('Button');
   expect(debug.mounted).toBe('button');
   expect(debug.buttonCount).toBeGreaterThanOrEqual(4);
   expect(debug.mountedBox?.width || 0).toBeGreaterThan(250);
