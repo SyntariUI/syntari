@@ -67,7 +67,19 @@
           </div>
 
           <div class="preview-component-wrap">
-            <div class="preview-component" data-component-mount></div>
+            <div class="preview-component" data-component-mount>
+              <div class="specimen-body syntari-component workbench-preview-surface is-preview-ready" data-syntari-component="button" data-static-preview>
+                <div class="row">
+                  <button class="button primary" type="button">Get started →</button>
+                  <button class="button secondary" type="button">Secondary</button>
+                </div>
+                <div class="row">
+                  <button class="button ghost" type="button">Ghost</button>
+                  <button class="button danger" type="button">Delete</button>
+                  <button class="button" type="button" disabled>Disabled</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="preview-event" data-preview-event aria-live="polite" hidden>
@@ -76,8 +88,8 @@
           </div>
 
           <div class="preview-caption">
-            <span data-preview-status>Mounting preview…</span>
-            <span data-preview-output>Interactive output</span>
+            <span data-preview-status>Live preview</span>
+            <span data-preview-output>5 interactive controls</span>
           </div>
           <div class="soft-cursor" aria-hidden="true" data-soft-cursor><i></i></div>
         </div>
