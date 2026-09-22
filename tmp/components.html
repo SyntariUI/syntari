@@ -60,12 +60,24 @@
         </div>
 
         <div class="preview-stage" data-preview-stage>
+          <div class="preview-stage-meta" aria-hidden="true">
+            <span data-stage-category>ACTION</span>
+            <strong data-stage-name>Icon button</strong>
+            <p>Live Syntari primitive · real runtime</p>
+          </div>
+
           <div class="preview-component-wrap">
             <div class="preview-component" data-component-mount></div>
           </div>
+
+          <div class="preview-event" data-preview-event aria-live="polite" hidden>
+            <span>Interaction</span>
+            <strong data-preview-event-text></strong>
+          </div>
+
           <div class="preview-caption">
-            <span data-preview-status>Live preview</span>
-            <span>Try it directly</span>
+            <span data-preview-status>Mounting preview…</span>
+            <span data-preview-output>Interactive output</span>
           </div>
           <div class="soft-cursor" aria-hidden="true" data-soft-cursor><i></i></div>
         </div>
