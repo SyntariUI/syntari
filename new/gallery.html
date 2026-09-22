@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Syntari component gallery — live primitives and expressive compositions.">
+  <title>Syntari — Gallery</title>
+  <link rel="icon" href="../favicon.svg">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./new.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
+</head>
+<body class="next-body gallery-body" data-new-page="gallery">
+  <div class="gallery-shell">
+    <aside class="next-sidebar gallery-sidebar">
+      <div class="sidebar-brand-row">
+        <a class="sidebar-brand" href="./" aria-label="Syntari">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Syntari</span>
+        </a>
+        <span class="next-badge">NEXT</span>
+      </div>
+
+      <div class="sidebar-section-title">
+        <strong>Gallery</strong>
+        <span>LIVE</span>
+      </div>
+
+      <nav class="sidebar-primary" aria-label="Syntari">
+        <a href="./"><span>Renderer</span><small>↗</small></a>
+        <a href="./components.html"><span>Components</span><small>↗</small></a>
+        <a href="./gallery.html" aria-current="page"><span>Gallery</span><small>↗</small></a>
+      </nav>
+
+      <div class="sidebar-system-note">
+        <span>LIVE PRIMITIVES</span>
+        <p>Every specimen below is the real component, not a screenshot.</p>
+      </div>
+
+      <div class="sidebar-links">
+        <a href="../registry/index.json"><span>Registry</span><span>↗</span></a>
+        <a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a>
+      </div>
+    </aside>
+
+    <main class="gallery-main">
+      <header class="gallery-intro">
+        <div>
+          <span class="gallery-kicker">Trusted primitives</span>
+          <h1>Components with behavior.</h1>
+        </div>
+        <p>Not a wall of static cards. Each object keeps its interaction, state and motion so you can judge how it actually behaves before using it.</p>
+      </header>
+
+      <section class="gallery-grid" data-gallery-grid>
+        <a class="gallery-card gallery-card-xl" href="./components.html#card-and-project-folder" data-gallery-slug="card-and-project-folder">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Card & project folder</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-sm" href="./components.html#status-island" data-gallery-slug="status-island">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Status island</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-sm" href="./components.html#morphing-search" data-gallery-slug="morphing-search">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Morphing search</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-md" href="./components.html#rotating-carousel" data-gallery-slug="rotating-carousel">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Rotating carousel</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-md" href="./components.html#agent-questions" data-gallery-slug="agent-questions">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Agent questions</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-sm gallery-card-accent" href="./components.html#bloom-menu" data-gallery-slug="bloom-menu">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Bloom menu</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-xl" href="./components.html#masonry-grid" data-gallery-slug="masonry-grid">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Masonry grid</span><strong>↗</strong></footer>
+        </a>
+
+        <a class="gallery-card gallery-card-sm" href="./components.html#action-swap" data-gallery-slug="action-swap">
+          <div class="gallery-live" data-gallery-mount></div>
+          <footer><span>Action swap</span><strong>↗</strong></footer>
+        </a>
+      </section>
+    </main>
+
+    <button class="gallery-theme icon-control" type="button" data-theme-toggle aria-label="Switch theme"></button>
+  </div>
+
+  <script type="module" src="./new.js"></script>
+</body>
+</html>
