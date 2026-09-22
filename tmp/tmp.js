@@ -456,31 +456,34 @@ if (page === "components") {
     if (token === previewDemoToken) cursor.classList.remove("is-auto", "is-visible", "is-hot");
   }
 
-  async function paintWorkspaceComponent(component, host) {
+  function paintWorkspaceComponent(component, host) {
     if (activeMount) {
       try { activeMount.destroy(); } catch (error) {}
       activeMount = null;
     }
 
-    host.getAnimations({subtree:true}).forEach(function(animation) {
-      try { animation.cancel(); } catch (error) {}
-    });
+    try {
+      host.getAnimations({subtree:true}).forEach(function(animation) {
+        try { animation.cancel(); } catch (error) {}
+      });
+    } catch (error) {}
     host.replaceChildren();
 
     var element = document.createElement("div");
     element.dataset.syntariComponent = component.slug;
-    element.className = "specimen-body syntari-component workbench-preview-surface";
+    element.className = "specimen-body syntari-component workbench-preview-surface is-preview-ready";
     element.innerHTML = component.html || '<div class="preview-error-card"><strong>Empty component</strong><p>No preview markup is registered for this primitive.</p></div>';
     host.appendChild(element);
-    element.classList.add("is-preview-ready");
 
-    // Paint first, enhance second. A runtime enhancement error must never erase the preview.
-    try {
-      await prepare(element);
-    } catch (error) {
-      console.error("Syntari preview enhancement failed for", component.slug, error);
-      element.classList.add("is-preview-degraded");
-    }
+    // The catalog markup is the preview. Enhancement is progressive and must never block paint.
+    Promise.resolve()
+      .then(function() { return prepare(element); })
+      .catch(function(error) {
+        console.error("Syntari preview enhancement failed for", component.slug, error);
+        element.classList.add("is-preview-degraded");
+        var status = $("[data-preview-status]");
+        if (status) status.textContent = "Live preview · limited enhancement";
+      });
 
     activeMount = {
       element: element,
@@ -507,12 +510,11 @@ if (page === "components") {
     var previewOutput = $("[data-preview-output]");
     if (previewOutput) previewOutput.textContent = "Preparing interaction demo";
     if (animate !== false) host.classList.add("is-changing");
-    await wait(animate === false ? 0 : 215);
 
     try {
-      activeMount = await paintWorkspaceComponent(component, host);
+      activeMount = paintWorkspaceComponent(component, host);
       var surface = activeMount && activeMount.element;
-      if (surface) requestAnimationFrame(function() { surface.classList.add("is-preview-ready"); });
+      if (surface) surface.classList.add("is-preview-ready");
       var controls = previewControls(host);
       $("[data-preview-status]").textContent = surface && surface.classList.contains("is-preview-degraded") ? "Live preview · limited enhancement" : "Live preview";
       if (previewOutput) previewOutput.textContent = controls.length ? controls.length + (controls.length === 1 ? " interactive control" : " interactive controls") : "Rendered output";
