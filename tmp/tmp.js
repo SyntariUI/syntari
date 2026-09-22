@@ -472,6 +472,7 @@ if (page === "components") {
     element.className = "specimen-body syntari-component workbench-preview-surface";
     element.innerHTML = component.html || '<div class="preview-error-card"><strong>Empty component</strong><p>No preview markup is registered for this primitive.</p></div>';
     host.appendChild(element);
+    element.classList.add("is-preview-ready");
 
     // Paint first, enhance second. A runtime enhancement error must never erase the preview.
     try {
