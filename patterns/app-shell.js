@@ -3,7 +3,7 @@ const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => 
 export function mount(target, options = {}) {
   const root = typeof target === 'string' ? document.querySelector(target) : target;
   if (!root) throw new Error('Syntari app-shell target was not found.');
-  const id = `syntari-shell-${Math.random().toString(36).slice(2, 9)}`;
+  const id = `syntari-shell-${++mount.sequence}`;
   const title = escapeHtml(options.title || 'Workspace');
   const account = escapeHtml(options.account || 'Account');
   const groups = options.groups || [{ label: 'Workspace', items: [{ label: 'Overview', href: '#overview', icon: '◫' }, { label: 'Projects', href: '#projects', icon: '▦' }] }];
@@ -22,7 +22,7 @@ export function mount(target, options = {}) {
   const open = root.querySelector('[data-nav-open]');
   const collapse = root.querySelector('[data-nav-collapse]');
   const onOpen = () => { shell.dataset.open = 'true'; open.setAttribute('aria-expanded', 'true'); panel.inert = false; };
-  const onClose = () => { shell.dataset.open = 'false'; open.setAttribute('aria-expanded', 'false'); };
+  const onClose = () => { shell.dataset.open = 'false'; open.setAttribute('aria-expanded', 'false'); panel.inert = matchMedia('(max-width: 700px)').matches; };
   const onCollapse = () => { shell.dataset.collapsed = String(shell.dataset.collapsed !== 'true'); collapse.setAttribute('aria-expanded', String(shell.dataset.collapsed !== 'true')); };
   const onResize = () => { panel.inert = matchMedia('(max-width: 700px)').matches && shell.dataset.open !== 'true'; };
   open.addEventListener('click', onOpen);
@@ -32,3 +32,4 @@ export function mount(target, options = {}) {
   onResize();
   return { element: shell, destroy() { removeEventListener('resize', onResize); root.replaceChildren(); } };
 }
+mount.sequence = 0;
