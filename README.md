@@ -1,25 +1,51 @@
 # Syntari
 
-A design system that agents can understand, use, verify, and evolve.
+A renderer-first design system that agents can understand, use, verify, and evolve.
 
-Interactive components, design tokens, and agent-native patterns, with a machine-readable registry that agents can query, compose, validate, and safely evolve. Open source. Open code. **Use it to build your own agent-native interface library.**
+Syntari turns intent into interfaces using trusted components, design tokens, patterns, Screen IR, and a machine-readable registry. The UI source is open and editable.
 
 ![Syntari — components and agent patterns](preview.png)
 
 ## Documentation
 
-Visit **[syntariui.github.io/syntari](https://syntariui.github.io/syntari/)** for the landing page, library, guides, and component documentation.
+Human-facing product and documentation:
+
+- [syntariui.giovanitier.com](https://syntariui.giovanitier.com/)
+
+Stable machine-readable and install surfaces:
+
+- [Component gallery](https://syntariui.github.io/syntari/gallery.html)
+- [Library](https://syntariui.github.io/syntari/library.html)
+- [Registry](https://syntariui.github.io/syntari/registry/index.json)
+- [Generative UI](https://syntariui.github.io/syntari/generative-ui.html)
+
+## Install Syntari source
+
+Syntari 0.2 is a **copy-source CLI**, not a package you import with `import ... from "syntari-ui"`.
+
+From the consuming project:
+
+```sh
+npm exec --yes --package="https://syntariui.github.io/syntari/downloads/syntari-ui-0.2.1.tgz" -- syntari add app-shell
+```
+
+That creates `./components/syntari` with the selected component entry plus the shared runtime and registry.
+
+Use the copied module:
+
+```js
+import { mount } from './components/syntari/app-shell.js';
+
+const shell = await mount('#app');
+```
+
+Run the same package command with `syntari list` to inspect available component slugs. The CLI never overwrites customized component files.
 
 ## Components
 
-125 component families and 250 authored preview states and layouts, covering actions, form controls, navigation, data display, charts, overlays, tables, page blocks, chat, and agent interfaces.
+125 component families and 250 authored preview states and layouts cover actions, form controls, navigation, data display, charts, overlays, tables, page blocks, chat, and agent interfaces.
 
-- [Component gallery](https://syntariui.github.io/syntari/gallery.html) — live, interactive examples
-- [Library](https://syntariui.github.io/syntari/library.html) — documentation and guides
-- [Registry](https://syntariui.github.io/syntari/registry/index.json) — the machine-readable components, tokens, and schemas ([guide](./registry/README.md))
-- [Generative UI](https://syntariui.github.io/syntari/guides/generative-ui/) — the screen spec an agent can render, with a [live demo](https://syntariui.github.io/syntari/generative-ui.html)
-
-Every component page includes Preview / Usage / Code, its element contract, runtime API, and guidelines. All examples use the same editable HTML, CSS, and JavaScript runtime included in the source archive.
+Every component page includes Preview / Usage / Code, its element contract, runtime API, and guidelines. Installed examples use the same editable HTML, CSS, JavaScript runtime, tokens, and registry used by Syntari itself.
 
 ## Development
 
