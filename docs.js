@@ -2,7 +2,7 @@ import { getComponents, mount, slugify, setTheme } from './syntari.js';
 import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI, wideStage } from './docs-data.js';
 import { guideContent } from './docs-guides.js';
 import { galleryURL, galleryState, galleryPage, prepareGallery } from './docs-gallery.js';
-const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.1.tgz',base).href, libraryURL=new URL('library.html',base).href;
+const base=new URL('.',import.meta.url), archive='https://syntariui.github.io/syntari/downloads/syntari-ui-0.2.1.tgz', libraryURL=new URL('library.html',base).href;
 // Keep relative links stable when history changes the current route.
 const baseElement=document.querySelector('base')||document.head.insertBefore(document.createElement('base'),document.head.firstChild);
 baseElement.href=base.href;
