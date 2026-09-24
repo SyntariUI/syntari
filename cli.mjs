@@ -45,6 +45,9 @@ async function getCatalog(registry) {
   try { return await readJson(join(kitRoot, 'catalog.json')); }
   catch { return registry.components ?? []; }
 }
+async function getPatterns() {
+  return readJson(join(await getRegistryDir(), 'patterns', 'index.json'));
+}
 function emit(data) {
   if (jsonOutput) console.log(JSON.stringify(data, null, 2));
   else if (typeof data === 'string') console.log(data);
@@ -70,10 +73,11 @@ function parseOptions(argv) {
   }
   return { values, dir };
 }
-async function componentDetails(id, registry, catalog) {
+async function componentDetails(id, registry, catalog, patternIndex) {
   const entry = (registry.components ?? []).find((item) => item.id === id);
+  const pattern = (patternIndex.patterns ?? []).find((item) => item.id === id);
   const catalogEntry = catalog.find((item) => item.slug === id || item.id === id);
-  if (!entry && !catalogEntry) fail(`Unknown registry entry “${id}”. Run syntari search <query>.`, 'NOT_FOUND');
+  if (!entry && !catalogEntry && !pattern) fail(`Unknown registry entry “${id}”. Run syntari search <query>.`, 'NOT_FOUND');
   const base = await getRegistryDir();
   let manifest = null;
   if (entry?.manifest) {
@@ -81,21 +85,24 @@ async function componentDetails(id, registry, catalog) {
     if (manifestPath.startsWith(base + sep) && await exists(manifestPath)) manifest = await readJson(manifestPath);
   }
   const files = [];
-  for (const ext of ['js', 'html']) {
-    const path = join(kitRoot, 'components', `${id}.${ext}`);
-    if (await exists(path)) files.push(`components/${id}.${ext}`);
+  const kind = pattern ? 'pattern' : 'component';
+  const requestedFiles = pattern?.files ?? ['js', 'html'].map((ext) => `components/${id}.${ext}`);
+  for (const file of requestedFiles) {
+    const path = pattern ? join(kitRoot, 'patterns', `${id}.${file.endsWith('.css') ? 'css' : 'js'}`) : join(kitRoot, file);
+    if (await exists(path)) files.push(file);
   }
   return {
-    ...(entry ?? {}),
-    name: entry?.name ?? catalogEntry?.name,
+    ...(entry ?? pattern ?? {}),
+    kind,
+    name: entry?.name ?? catalogEntry?.name ?? pattern?.name,
     category: entry?.category ?? catalogEntry?.category,
     packageVersion: (await getPackage()).version,
     manifest: manifest ?? undefined,
-    dependencies: manifest?.dependencies ?? [],
-    tokens: manifest?.tokens ?? entry?.tokens ?? [],
-    examples: manifest?.examples ?? {},
-    files,
-    installable: files.includes(`components/${id}.js`) && files.includes(`components/${id}.html`)
+    dependencies: manifest?.dependencies ?? pattern?.dependencies ?? [],
+    tokens: manifest?.tokens ?? entry?.tokens ?? pattern?.tokens ?? [],
+    examples: manifest?.examples ?? pattern?.examples ?? {},
+    files: files.length ? files : requestedFiles,
+    installable: pattern ? Boolean(pattern.installable && files.length === requestedFiles.length) : files.includes(`components/${id}.js`) && files.includes(`components/${id}.html`)
   };
 }
 async function checkInstallation(dir) {
@@ -118,6 +125,7 @@ async function main() {
   const pkg = await getPackage();
   const registry = await getRegistry();
   const catalog = await getCatalog(registry);
+  const patternIndex = await getPatterns();
 
   if (command === 'list') {
     const items = catalog.map((item) => ({
@@ -137,12 +145,12 @@ async function main() {
   if (command === 'info') {
     const { values } = parseOptions(rest);
     if (values.length !== 1 || !safeId(values[0])) fail('Provide one component name.', 'INVALID_ARGUMENT');
-    return emit(await componentDetails(values[0], registry, catalog));
+    return emit(await componentDetails(values[0], registry, catalog, patternIndex));
   }
   if (command === 'registry') {
     const { values } = parseOptions(rest);
     if (values.length > 1) fail('Use syntari registry [component].', 'INVALID_ARGUMENT');
-    if (values[0]) return emit(await componentDetails(values[0], registry, catalog));
+    if (values[0]) return emit(await componentDetails(values[0], registry, catalog, patternIndex));
     return emit(registry);
   }
   if (command === 'patterns') {
@@ -187,8 +195,9 @@ async function main() {
   if (command === 'add') {
     const { values: names, dir } = parseOptions(rest);
     const output = dir ?? './components/syntari';
-    if (!names.length) fail('Choose at least one component.', 'INVALID_ARGUMENT');
-    for (const name of names) if (!safeId(name) || !catalog.some((item) => (item.slug ?? item.id) === name)) fail(`Unknown component: ${name}. Run syntari list.`, 'NOT_FOUND');
+    if (!names.length) fail('Choose at least one component or installable pattern.', 'INVALID_ARGUMENT');
+    const patterns = patternIndex.patterns ?? [];
+    for (const name of names) if (!safeId(name) || (!catalog.some((item) => (item.slug ?? item.id) === name) && !patterns.some((item) => item.id === name && item.installable))) fail(`Unknown or non-installable entry: ${name}. Run syntari list or syntari patterns.`, 'NOT_FOUND');
     const target = resolve(output);
     const markerPath = join(target, 'syntari.json');
     if (await exists(target)) {
@@ -196,17 +205,29 @@ async function main() {
       try { marker = await readJson(markerPath); } catch {}
       if (!marker || marker.version !== pkg.version) fail('Destination exists and is not a matching Syntari installation. Choose a new --dir.', 'DESTINATION_CONFLICT');
     }
-    for (const name of names) for (const ext of ['js', 'html']) {
-      if (await exists(join(target, `${name}.${ext}`))) fail(`${name}.${ext} already exists. Existing files were preserved.`, 'DESTINATION_CONFLICT');
-      if (!await exists(join(kitRoot, 'components', `${name}.${ext}`))) fail(`Packaged file is missing: components/${name}.${ext}. Run syntari doctor.`, 'PACKAGE_INCOMPLETE');
+    for (const name of names) {
+      const pattern = patterns.find((item) => item.id === name && item.installable);
+      const files = pattern ? pattern.files : ['js', 'html'].map((ext) => `${name}.${ext}`);
+      for (const file of files) {
+        const source = pattern ? join(kitRoot, 'patterns', `${name}.${file.endsWith('.css') ? 'css' : 'js'}`) : join(kitRoot, 'components', file);
+        if (await exists(join(target, file))) fail(`${file} already exists. Existing files were preserved.`, 'DESTINATION_CONFLICT');
+        if (!await exists(source)) fail(`Packaged file is missing: ${file}. Run syntari doctor.`, 'PACKAGE_INCOMPLETE');
+      }
     }
     if (!(await exists(target))) {
       await mkdir(target, { recursive: true });
       await cp(join(kitRoot, 'runtime'), join(target, 'runtime'), { recursive: true, errorOnExist: true, force: false });
       await writeFile(markerPath, JSON.stringify({ version: pkg.version, registryVersion: registry.version }, null, 2) + '\n');
     }
-    for (const name of names) for (const ext of ['js', 'html']) await cp(join(kitRoot, 'components', `${name}.${ext}`), join(target, `${name}.${ext}`), { errorOnExist: true, force: false });
-    return emit(jsonOutput ? { ok: true, version: pkg.version, components: names, directory: target } : `Added ${names.join(', ')} to ${target}.\nImport { mount } from './${names[0]}.js' and call await mount('#preview').`);
+    for (const name of names) {
+      const pattern = patterns.find((item) => item.id === name && item.installable);
+      const files = pattern ? pattern.files : ['js', 'html'].map((ext) => `${name}.${ext}`);
+      for (const file of files) {
+        const source = pattern ? join(kitRoot, 'patterns', `${name}.${file.endsWith('.css') ? 'css' : 'js'}`) : join(kitRoot, 'components', file);
+        await cp(source, join(target, file), { errorOnExist: true, force: false });
+      }
+    }
+    return emit(jsonOutput ? { ok: true, version: pkg.version, components: names, directory: target } : `Added ${names.join(', ')} to ${target}.`);
   }
   fail(`Unknown command: ${command}.\n\n${usage}`, 'INVALID_COMMAND');
 }
