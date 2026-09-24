@@ -1,9 +1,10 @@
-import { writeFile, access, mkdir } from 'node:fs/promises';
+import { writeFile, access, mkdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 
 const registry = resolve('registry');
 const componentsDir = resolve(registry, 'components');
+const releaseVersion = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version;
 
 async function exists(path) {
   try { await access(path); return true; } catch { return false; }
@@ -14,7 +15,7 @@ function skeleton(component) {
     $schema: '../schema/component.schema.json',
     id: component.slug,
     name: component.name,
-    version: '0.2.1',
+    version: releaseVersion,
     category: component.category,
     status: 'generated',
     purpose: component.description,
@@ -37,7 +38,7 @@ await mkdir(componentsDir, { recursive: true });
 
 const index = {
   $id: 'https://syntariui.github.io/syntari/registry/index.json',
-  version: '0.2.1',
+  version: releaseVersion,
   components: []
 };
 
@@ -53,7 +54,7 @@ for (const component of components) {
     id: component.slug,
     name: component.name,
     category: component.category,
-    version: '0.2.1',
+    version: releaseVersion,
     description: component.description,
     tokens: component.tokens || [],
     source: `components/${component.slug}/`,
