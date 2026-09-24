@@ -41,7 +41,7 @@ await writeFile('index.html',landing);
 await writeFile('library.html',docs);
 await writeFile('gallery.html',docs.replace('<title>Syntari — Component library</title>','<title>Gallery — Syntari UI</title>'));
 await rm('kit',{recursive:true,force:true});
-await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});
+await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
 for(const file of runtime)await copyFile(file,'kit/runtime/'+file);
 await cp('assets','kit/runtime/assets',{recursive:true});
 await cp('registry','kit/runtime/registry',{recursive:true});
@@ -61,4 +61,5 @@ execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{stdio:'
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
 for(const file of ['index.html','library.html','gallery.html','landing.css','favicon.svg','docs.css','docs.js','docs-data.js','docs-guides.js','docs-gallery.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
 for(const dir of ['assets','components','guides','downloads','registry','new','Jev','art-atlas','tmp'])await cp(dir,'dist/'+dir,{recursive:true});
-console.log(`Built Syntari 0.2.1: ${components.length} component pages, 8 guides, gallery, Jev experiment, Art Atlas prototype, and installable source archive.`);
+const packageMetadata=JSON.parse(await readFile('package.json','utf8'));
+console.log(`Built Syntari ${packageMetadata.version}: ${components.length} component pages, 8 guides, gallery, Jev experiment, Art Atlas prototype, and installable source archive.`);
