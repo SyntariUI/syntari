@@ -41,3 +41,16 @@ node scripts/generate-registry.mjs
 - Include the checks you ran.
 - Match the existing code style, naming, and accessibility conventions.
 - Keep commit messages clear and publishable.
+
+## Installer releases
+
+The source archive under `downloads/syntari-ui-<version>.tgz` is immutable once deployed.
+
+If a change modifies `cli.mjs`, the generated `kit/`, runtime files, component source, registry data shipped in the archive, or installation behavior:
+
+1. bump the version in `package.json` and `package-lock.json`;
+2. update any release-facing documentation for that version;
+3. never publish different bytes under an already deployed archive URL.
+
+This matters for coding agents and CI because npm may cache URL packages by version. Reusing an archive version can make an agent install stale Syntari source even when the website shows newer code.
+

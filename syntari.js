@@ -1,4 +1,4 @@
-/** Syntari 0.2.1 · HTML, CSS and DOM interactions. No framework runtime required. */
+/** Syntari runtime · HTML, CSS and DOM interactions. No framework runtime required. */
 const base = new URL('.', import.meta.url);
 let ready;
 const scripts = ['motion.js', 'numbers.js', 'app.js', 'controls.js', 'navigation.js', 'starter.js', 'agents.js', 'extras.js'];
