@@ -1,9 +1,10 @@
-import { writeFile, access, mkdir } from 'node:fs/promises';
+import { writeFile, access, mkdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 
 const registry = resolve('registry');
 const componentsDir = resolve(registry, 'components');
+const releaseVersion = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version;
 
 async function exists(path) {
   try { await access(path); return true; } catch { return false; }
@@ -14,7 +15,7 @@ function skeleton(component) {
     $schema: '../schema/component.schema.json',
     id: component.slug,
     name: component.name,
-    version: '0.2.1',
+    version: releaseVersion,
     category: component.category,
     status: 'generated',
     purpose: component.description,
@@ -26,6 +27,9 @@ function skeleton(component) {
     accessibility: { role: '', keyboard: [], accessibleNameRequired: false },
     rules: [],
     tokens: component.tokens || [],
+    dependencies: [],
+    examples: { good: [], bad: [], boundary: [] },
+    files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],
     compatibleWith: [],
     avoidWhen: [],
     source: `components/${component.slug}/`
@@ -37,7 +41,7 @@ await mkdir(componentsDir, { recursive: true });
 
 const index = {
   $id: 'https://syntariui.github.io/syntari/registry/index.json',
-  version: '0.2.1',
+  version: releaseVersion,
   components: []
 };
 
@@ -46,19 +50,24 @@ const slug = process.argv[3];
 
 for (const component of components) {
   const manifestPath = resolve(componentsDir, `${component.slug}.json`);
-  const authored = await exists(manifestPath);
-  if (arg === '--skeleton' && slug !== undefined && slug !== component.slug) continue;
+  const manifest = await exists(manifestPath) ? JSON.parse(await readFile(manifestPath, 'utf8')) : null;
+  const authored = manifest?.status === 'authored';
+  if (arg === '--skeleton' && slug !== undefined && slug !== 'all' && slug !== component.slug) continue;
 
   index.components.push({
     id: component.slug,
     name: component.name,
     category: component.category,
-    version: '0.2.1',
+    version: releaseVersion,
     description: component.description,
     tokens: component.tokens || [],
     source: `components/${component.slug}/`,
     manifest: `components/${component.slug}.json`,
-    status: authored ? 'authored' : 'generated'
+    status: authored ? 'authored' : 'generated',
+    dependencies: manifest?.dependencies ?? [],
+    examples: manifest?.examples ?? { good: [], bad: [], boundary: [] },
+    files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],
+    preview: `https://syntariui.github.io/syntari/components/${component.slug}/`
   });
 
   if (arg === '--skeleton' && (slug === 'all' || slug === component.slug) && !authored) {

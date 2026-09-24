@@ -2,17 +2,28 @@
   "name": "syntari-ui",
   "version": "0.2.1",
   "private": false,
-  "description": "Syntari: an agentic design system with interactive components, tokens, patterns, and a machine-readable registry.",
+  "description": "Syntari design system runtime, deterministic installer CLI, and machine-readable component registry for agents.",
   "homepage": "https://syntariui.giovanitier.com/",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/SyntariUI/syntari.git"
+  },
+  "keywords": [
+    "design-system",
+    "agent-ui",
+    "components",
+    "registry",
+    "renderer"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "test": "playwright test",
+    "test": "npm run build && node --test",
     "figma:extract": "node scripts/extract-figma.mjs"
   },
   "engines": {
@@ -25,7 +36,9 @@
     "syntari": "cli.mjs"
   },
   "files": [
-    "kit",
-    "cli.mjs"
+    "cli.mjs",
+    "kit/",
+    "README.md",
+    "LICENSE"
   ]
 }
