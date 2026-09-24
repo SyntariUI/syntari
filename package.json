@@ -1,6 +1,6 @@
 {
   "name": "syntari-ui",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "description": "Syntari: renderer-first agentic UI with a copy-source CLI, interactive components, tokens, patterns, and a machine-readable registry.",
   "homepage": "https://syntariui.giovanitier.com/",
