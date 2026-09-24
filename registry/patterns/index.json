@@ -1,0 +1,163 @@
+{
+  "$schema": "../schema/patterns.schema.json",
+  "version": "0.2.1",
+  "patterns": [
+    {
+      "id": "app-shell",
+      "name": "Application shell",
+      "type": "layout",
+      "description": "Responsive workspace frame with grouped navigation, utility settings, account footer, collapsible desktop sidebar, and mobile drawer.",
+      "status": "authored",
+      "dependencies": [],
+      "tokens": [
+        "surface",
+        "canvas",
+        "text",
+        "muted",
+        "border",
+        "accent",
+        "radius.card"
+      ],
+      "files": [
+        "patterns/app-shell.js",
+        "patterns/app-shell.css"
+      ],
+      "examples": [
+        "mount('#app', { title: 'Studio' })"
+      ],
+      "installable": true
+    },
+    {
+      "id": "clarification",
+      "name": "Clarification",
+      "type": "interaction",
+      "description": "Ask the user to clarify ambiguous input or confirm intent.",
+      "status": "documented",
+      "dependencies": [
+        "dialog",
+        "button"
+      ],
+      "tokens": [
+        "color.text.primary",
+        "color.border.default"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "Present one focused question with the choices that resolve the ambiguity."
+      ],
+      "installable": false
+    },
+    {
+      "id": "uncertainty",
+      "name": "Uncertainty",
+      "type": "interaction",
+      "description": "Express uncertainty and confidence levels to the user.",
+      "status": "documented",
+      "dependencies": [
+        "banner",
+        "tooltip"
+      ],
+      "tokens": [
+        "color.text.secondary",
+        "color.border.default"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "State the confidence and explain what evidence would change the result."
+      ],
+      "installable": false
+    },
+    {
+      "id": "delegation",
+      "name": "Delegation",
+      "type": "interaction",
+      "description": "Hand off tasks to the AI or recommend expert involvement.",
+      "status": "documented",
+      "dependencies": [
+        "button",
+        "card"
+      ],
+      "tokens": [
+        "color.action.primary",
+        "color.text.primary"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "Make the handoff owner and next action visible."
+      ],
+      "installable": false
+    },
+    {
+      "id": "recovery",
+      "name": "Recovery",
+      "type": "interaction",
+      "description": "Handle errors gracefully and offer corrective actions.",
+      "status": "documented",
+      "dependencies": [
+        "banner",
+        "button"
+      ],
+      "tokens": [
+        "color.status.danger",
+        "color.action.primary"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "Explain what failed and offer a safe retry or undo."
+      ],
+      "installable": false
+    },
+    {
+      "id": "memory",
+      "name": "Memory",
+      "type": "interaction",
+      "description": "Maintain context and remember user interactions over time.",
+      "status": "documented",
+      "dependencies": [
+        "card",
+        "button"
+      ],
+      "tokens": [
+        "color.text.primary",
+        "color.surface.raised"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "Show remembered information and let the user edit or remove it."
+      ],
+      "installable": false
+    },
+    {
+      "id": "generation",
+      "name": "Generation",
+      "type": "interaction",
+      "description": "Create and suggest new content or solutions.",
+      "status": "documented",
+      "dependencies": [
+        "streaming-response",
+        "button"
+      ],
+      "tokens": [
+        "color.text.primary",
+        "motion.duration.fast"
+      ],
+      "files": [
+        "ai-behavioural-patterns.html"
+      ],
+      "examples": [
+        "Separate the rendered result from the action that requested it."
+      ],
+      "installable": false
+    }
+  ]
+}
