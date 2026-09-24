@@ -47,7 +47,7 @@ const slug = process.argv[3];
 
 for (const component of components) {
   const manifestPath = resolve(componentsDir, `${component.slug}.json`);
-  const authored = await exists(manifestPath);
+  const authored = await exists(manifestPath) && (await readJson(manifestPath)).status === 'authored';
   if (arg === '--skeleton' && slug !== undefined && slug !== 'all' && slug !== component.slug) continue;
 
   index.components.push({
