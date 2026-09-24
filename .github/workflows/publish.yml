@@ -19,7 +19,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
       - run: npm test
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
