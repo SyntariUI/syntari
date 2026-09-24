@@ -43,18 +43,17 @@ npm start
 
 `npm test` builds the package and runs CLI installation and registry checks. The build creates the package-ready `kit/` directory and the static website in `dist/`.
 
-## Cloudflare Pages deployment
+## Cloudflare Pages migration
 
-The production site is deployed to Cloudflare Pages from GitHub Actions after the build and checks pass on `main`. The Cloudflare Pages project name is `syntariui`; the Wrangler config and workflow both publish `dist/`.
-
-Before the first production deploy:
+The Cloudflare Pages project is named `syntariui`; Wrangler and the GitHub Actions workflow publish the built `dist/` directory. Cloudflare deployment is staged behind the repository Actions variable `CLOUDFLARE_PAGES_READY` so the existing GitHub Pages deploy remains available during setup and verification.
 
 1. Create a Cloudflare Pages Direct Upload project named `syntariui` with production branch `main`.
 2. Add GitHub Actions repository secrets `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`. The token needs Cloudflare Pages edit access.
-3. In Cloudflare Pages, add `syntariui.giovanitier.com` as a custom domain and confirm its DNS record points to the Pages project.
-4. Merge the deployment workflow to `main`; subsequent successful main builds publish automatically.
+3. Set the repository Actions variable `CLOUDFLARE_PAGES_READY` to `true`. The next successful main build deploys to `syntariui.pages.dev`.
+4. Verify the Cloudflare Pages deployment, then add `syntariui.giovanitier.com` as its custom domain in Cloudflare Pages and confirm the DNS record points to the Pages project.
+5. After the custom domain serves the Cloudflare deployment, disable the GitHub Pages deployment job in `.github/workflows/publish.yml`.
 
-Direct Upload is used so the existing GitHub Actions build and release checks stay authoritative. GitHub Pages is no longer the production deploy target once this workflow is merged. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
+Direct Upload keeps the existing GitHub Actions build authoritative. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
 
 ## Documentation
 
