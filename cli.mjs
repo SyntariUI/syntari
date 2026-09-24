@@ -5,6 +5,31 @@ import { dirname, resolve, join } from 'node:path';
 const packageRoot=dirname(fileURLToPath(import.meta.url));
 const kit=join(packageRoot,'kit');
 const args=process.argv.slice(2);
+const localGuide=`# Using Syntari in this project
+
+This directory is an editable, local Syntari source installation. Syntari 0.2 is a copy-source system, not an npm runtime dependency.
+
+## Use installed components
+
+Import the component entry file from this directory and mount it into an existing element:
+
+\`\`\`js
+import { mount } from './app-shell.js';
+
+await mount('#app');
+\`\`\`
+
+Replace \`app-shell.js\` with any installed component entry.
+
+## Agent rules
+
+- Prefer installed Syntari components and patterns over recreating lookalike markup from memory.
+- Read \`./runtime/registry/index.json\` to discover valid component contracts and supported composition.
+- Shared tokens, styles, interactions, navigation, and Lucide-compatible icons live under \`./runtime\`.
+- Treat files in this directory as project-owned source. The Syntari CLI will not overwrite customized files.
+- If a requested component is missing, run \`syntari list\` through the same versioned package command before inventing a replacement.
+`;
+
 try {
   const catalog=JSON.parse(await readFile(join(kit,'catalog.json'),'utf8'));
   if(args[0]==='list') {console.log(catalog.map(c=>`${c.slug.padEnd(30)} ${c.category}`).join('\n'));process.exit(0)}
@@ -15,9 +40,9 @@ try {
   for(const name of names)if(!catalog.some(c=>c.slug===name))throw Error(`Unknown component: ${name}. Run syntari list to see available names.`);
   const target=resolve(output),runtime=join(target,'runtime');
   let existing=false;try{await access(target);existing=true}catch{}
-  if(existing){let version;try{version=JSON.parse(await readFile(join(target,'syntari.json'),'utf8')).version}catch{throw Error('The destination already exists and is not an Syntari installation. Choose a new --dir.')}if(version!=='0.2.1')throw Error('This destination contains another Syntari version. Choose a new --dir.');}
+  if(existing){let version;try{version=JSON.parse(await readFile(join(target,'syntari.json'),'utf8')).version}catch{throw Error('The destination already exists and is not a Syntari installation. Choose a new --dir.')}if(version!=='0.2.1')throw Error('This destination contains another Syntari version. Choose a new --dir.');}
   for(const name of names)for(const extension of ['.js','.html']){try{await access(join(target,name+extension));throw Error(`${name}${extension} already exists. Your changes have been preserved.`)}catch(error){if(error.code!=='ENOENT')throw error;}}
-  if(!existing){await mkdir(target,{recursive:true});await cp(join(kit,'runtime'),runtime,{recursive:true,errorOnExist:true,force:false});await writeFile(join(target,'syntari.json'),JSON.stringify({version:'0.2.1'},null,2));}
+  if(!existing){await mkdir(target,{recursive:true});await cp(join(kit,'runtime'),runtime,{recursive:true,errorOnExist:true,force:false});await writeFile(join(target,'syntari.json'),JSON.stringify({version:'0.2.1',mode:'copy-source',registry:'./runtime/registry/index.json',docs:'https://syntariui.giovanitier.com/'},null,2));await writeFile(join(target,'AGENTS.md'),localGuide);}
   for(const name of names) {
     await cp(join(kit,'components',name+'.js'),join(target,name+'.js'),{errorOnExist:true,force:false});
     await cp(join(kit,'components',name+'.html'),join(target,name+'.html'),{errorOnExist:true,force:false});
