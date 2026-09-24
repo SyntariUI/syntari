@@ -27,6 +27,9 @@ function skeleton(component) {
     accessibility: { role: '', keyboard: [], accessibleNameRequired: false },
     rules: [],
     tokens: component.tokens || [],
+    dependencies: [],
+    examples: { good: [], bad: [], boundary: [] },
+    files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],
     compatibleWith: [],
     avoidWhen: [],
     source: `components/${component.slug}/`
@@ -47,7 +50,8 @@ const slug = process.argv[3];
 
 for (const component of components) {
   const manifestPath = resolve(componentsDir, `${component.slug}.json`);
-  const authored = await exists(manifestPath) && JSON.parse(await readFile(manifestPath, 'utf8')).status === 'authored';
+  const manifest = await exists(manifestPath) ? JSON.parse(await readFile(manifestPath, 'utf8')) : null;
+  const authored = manifest?.status === 'authored';
   if (arg === '--skeleton' && slug !== undefined && slug !== 'all' && slug !== component.slug) continue;
 
   index.components.push({
@@ -59,7 +63,11 @@ for (const component of components) {
     tokens: component.tokens || [],
     source: `components/${component.slug}/`,
     manifest: `components/${component.slug}.json`,
-    status: authored ? 'authored' : 'generated'
+    status: authored ? 'authored' : 'generated',
+    dependencies: manifest?.dependencies ?? [],
+    examples: manifest?.examples ?? { good: [], bad: [], boundary: [] },
+    files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],
+    preview: `https://syntariui.github.io/syntari/components/${component.slug}/`
   });
 
   if (arg === '--skeleton' && (slug === 'all' || slug === component.slug) && !authored) {
