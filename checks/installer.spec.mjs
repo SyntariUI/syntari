@@ -10,7 +10,7 @@ const packageVersion=JSON.parse(await readFile(resolve('package.json'),'utf8')).
 test('documented archive installs and runs in a clean project',async({page})=>{
  const temp=await mkdtemp(join(tmpdir(),'syntari-install-check-'));let server;
  try{
-  const {stdout}=await exec('npm',['exec','--yes',`--package=http://127.0.0.1:4318/downloads/syntari-ui-${packageVersion}.tgz`,'--','syntari','add','button','slider','--dir',join(temp,'components/syntari')],{cwd:temp,timeout:60000});expect(stdout).toContain('Added button, slider');
+  const {stdout}=await exec('npm',['exec','--yes',`--package=http://127.0.0.1:4318/downloads/syntari-ui-${packageVersion}.tgz`,'--','syntari','add','button','slider','--dir',join(temp,'components/syntari')],{cwd:temp,timeout:60000,env:{...process.env,npm_config_cache:join(temp,'.npm-cache')}});expect(stdout).toContain('Added button, slider');
   expect(await readFile(join(temp,'components/syntari/AGENTS.md'),'utf8')).toContain('copy-source system');
   expect(JSON.parse(await readFile(join(temp,'components/syntari/syntari.json'),'utf8')).registry).toBe('./runtime/registry/index.json');
   const entry=join(temp,'components/syntari/button.js');await writeFile(entry,(await readFile(entry,'utf8'))+'\n// A local customization.\n');
