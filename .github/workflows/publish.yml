@@ -38,3 +38,35 @@ jobs:
     steps:
       - uses: actions/deploy-pages@v4
         id: deployment
+
+  verify-public-install:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify public Syntari install archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="https://syntariui.github.io/syntari/downloads/syntari-ui-0.2.1.tgz"
+
+          for attempt in {1..18}; do
+            if curl --fail --silent --show-error --location --head "$archive" >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 18 ]; then
+              echo "Public Syntari archive is not reachable: $archive" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+          temp="$(mktemp -d)"
+          cd "$temp"
+          npm exec --yes --package="$archive" -- syntari add app-shell
+          test -f components/syntari/app-shell.js
+          test -f components/syntari/AGENTS.md
+          test -f components/syntari/runtime/registry/index.json
