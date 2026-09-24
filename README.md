@@ -43,9 +43,9 @@ npm start
 
 `npm test` builds the package and runs CLI installation and registry checks. The build creates the package-ready `kit/` directory and the static website in `dist/`.
 
-## Cloudflare deployment
+## Cloudflare Workers deployment
 
-The Cloudflare Pages project is named `syntariui`. Cloudflare's connected Git build deploys the static output in `dist/` using `npm run build` and `npm run deploy`; Wrangler and the output directory are configured in `wrangler.toml`. GitHub Actions runs CI checks only and does not publish a second copy of the site. Configure the Cloudflare build settings with repository `SyntariUI/syntari`, production branch `main`, root `/`, build command `npm run build`, and deploy command `npm run deploy`. Add `syntariui.giovanitier.com` as a custom domain in the Cloudflare Pages project and point its DNS record to that project. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
+Cloudflare Workers serves the static site from `dist/` using Workers Static Assets. The `syntari` Worker and asset directory are configured in `wrangler.toml`; `npm run deploy` publishes it with Wrangler. Cloudflare's connected Git build uses repository `SyntariUI/syntari`, production branch `main`, root `/`, build command `npm run build`, and deploy command `npm run deploy`. GitHub Actions runs CI checks only. Add `syntariui.giovanitier.com` as a custom domain on the `syntari` Worker to serve the site at its public address. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
 
 ## Documentation
 
