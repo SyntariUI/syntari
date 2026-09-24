@@ -1,25 +1,35 @@
 # Syntari
 
-A design system that agents can understand, use, verify, and evolve.
+A design system that agents can understand, use, verify, and evolve. Syntari includes a deterministic CLI, editable component sources, design tokens, interaction patterns, and a machine-readable registry.
 
-Interactive components, design tokens, and agent-native patterns, with a machine-readable registry that agents can query, compose, validate, and safely evolve. Open source. Open code. **Use it to build your own agent-native interface library.**
+## Install for an agent or project
 
-![Syntari — components and agent patterns](preview.png)
+```sh
+npm install syntari-ui
+npx syntari list --json
+npx syntari search dashboard --json
+npx syntari info button --json
+npx syntari add button app-shell
+npx syntari doctor --dir ./components/syntari --json
+npx syntari validate --dir ./components/syntari --json
+```
 
-## Documentation
+The CLI is bundled in the npm package. It installs editable HTML, JavaScript, CSS, and the shared Syntari runtime. Existing files are preserved; choose a new destination when installing a conflicting name.
 
-Visit **[syntariui.github.io/syntari](https://syntariui.github.io/syntari/)** for the landing page, library, guides, and component documentation.
+Use `npx syntari patterns --json` to inspect authored layouts and interaction patterns. The installable `app-shell` pattern includes a responsive workspace frame, grouped navigation, utility settings, account footer, collapsible desktop sidebar, and mobile drawer.
 
-## Components
+## Machine-readable registry
 
-125 component families and 250 authored preview states and layouts, covering actions, form controls, navigation, data display, charts, overlays, tables, page blocks, chat, and agent interfaces.
+The package ships the same registry as the documentation site under `kit/runtime/registry/`. The public static endpoints are:
 
-- [Component gallery](https://syntariui.github.io/syntari/gallery.html) — live, interactive examples
-- [Library](https://syntariui.github.io/syntari/library.html) — documentation and guides
-- [Registry](https://syntariui.github.io/syntari/registry/index.json) — the machine-readable components, tokens, and schemas ([guide](./registry/README.md))
-- [Generative UI](https://syntariui.github.io/syntari/guides/generative-ui/) — the screen spec an agent can render, with a [live demo](https://syntariui.github.io/syntari/generative-ui.html)
+- [Component index](https://syntariui.github.io/syntari/registry/index.json)
+- [Pattern index](https://syntariui.github.io/syntari/registry/patterns/index.json)
+- [Primitive tokens](https://syntariui.github.io/syntari/registry/tokens/primitive.json)
+- [Semantic tokens](https://syntariui.github.io/syntari/registry/tokens/semantic.json)
+- [Component schema](https://syntariui.github.io/syntari/registry/schema/component.schema.json)
+- [Screen IR schema](https://syntariui.github.io/syntari/registry/schema/sui.schema.json)
 
-Every component page includes Preview / Usage / Code, its element contract, runtime API, and guidelines. All examples use the same editable HTML, CSS, and JavaScript runtime included in the source archive.
+`syntari registry --json` returns the component index. `syntari info <id> --json` returns a component or pattern's metadata, dependencies, tokens, examples, package files, and installability. Registry manifests are the lookup source; docs and examples explain use.
 
 ## Development
 
@@ -27,16 +37,16 @@ Use Node.js 22 or newer:
 
 ```sh
 npm ci
-npm run build
+npm test
 npm start
 ```
 
-Open http://127.0.0.1:4318/ for the landing page, `/library.html` for the library, and `/gallery.html` for the gallery. Run `npm test` for the full browser and installer suite.
+`npm test` builds the package and runs CLI installation and registry checks. The build creates the package-ready `kit/` directory and the static website in `dist/`.
 
-## Contributing
+## Publishing
 
-Please read the [contributing guide](./CONTRIBUTING.md).
+Create a GitHub Release after updating the package version. The npm release workflow runs the build and CLI checks, then publishes `syntari-ui` with provenance using the repository's `NPM_TOKEN` secret. The static site continues to deploy from the existing GitHub Pages workflow.
 
-## License
+## Documentation
 
-Licensed under the [MIT license](./LICENSE).
+Visit [syntariui.giovanitier.com](https://syntariui.giovanitier.com/) for the renderer, library, and component examples. The source repository is [SyntariUI/syntari](https://github.com/SyntariUI/syntari).
