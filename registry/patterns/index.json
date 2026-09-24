@@ -19,8 +19,8 @@
         "radius.card"
       ],
       "files": [
-        "patterns/app-shell.js",
-        "patterns/app-shell.css"
+        "app-shell.js",
+        "app-shell.css"
       ],
       "examples": [
         "mount('#app', { title: 'Studio' })"
