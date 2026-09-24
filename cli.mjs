@@ -53,7 +53,7 @@ function emit(data) {
   else if (typeof data === 'string') console.log(data);
   else console.log(JSON.stringify(data, null, 2));
 }
-function fail(message, code = 'SYNtARI_ERROR') {
+function fail(message, code = 'SYNTARI_ERROR') {
   const error = new Error(message);
   error.code = code;
   throw error;
@@ -170,7 +170,9 @@ async function main() {
       { name: 'packaged component catalog', ok: await exists(join(kitRoot, 'catalog.json')), detail: await exists(join(kitRoot, 'catalog.json')) ? `${catalog.length} entries` : 'missing' }
     ];
     if (dir) checks.push(...(await checkInstallation(dir)).checks);
-    return emit(jsonOutput ? { ok: checks.every((check) => check.ok), checks } : checks.map((check) => `${check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`).join('\n'));
+    const ok = checks.every((check) => check.ok);
+    if (!ok) process.exitCode = 1;
+    return emit(jsonOutput ? { ok, checks } : checks.map((check) => `${check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`).join('\n'));
   }
   if (command === 'validate') {
     const { dir } = parseOptions(rest);
@@ -183,14 +185,28 @@ async function main() {
       if (!item.name || !item.category || !item.manifest || !item.source) problems.push(`Incomplete registry entry: ${item.id}`);
       if (item.manifest && !await exists(join(await getRegistryDir(), item.manifest))) problems.push(`Missing manifest: ${item.manifest}`);
     }
+    const patternIds = new Set();
+    for (const pattern of patternIndex.patterns ?? []) {
+      if (!safeId(pattern.id)) problems.push(`Invalid pattern id: ${pattern.id}`);
+      else if (patternIds.has(pattern.id)) problems.push(`Duplicate pattern id: ${pattern.id}`);
+      patternIds.add(pattern.id);
+      if (!pattern.name || !pattern.type || !Array.isArray(pattern.dependencies) || !Array.isArray(pattern.tokens) || !Array.isArray(pattern.files) || !Array.isArray(pattern.examples)) problems.push(`Incomplete pattern entry: ${pattern.id}`);
+      if (pattern.installable) for (const file of pattern.files) {
+        const source = join(kitRoot, 'patterns', `${pattern.id}.${file.endsWith('.css') ? 'css' : 'js'}`);
+        if (!await exists(source)) problems.push(`Missing packaged pattern file: ${pattern.id}.${file}`);
+      }
+    }
     let install;
     if (dir) {
       install = await checkInstallation(dir);
       for (const check of install.checks) if (!check.ok) problems.push(`${check.name}: ${check.detail}`);
     }
     const result = { valid: problems.length === 0, version: registry.version, componentCount: ids.size, problems, ...(install ? { installation: install } : {}) };
-    if (!jsonOutput && problems.length) fail(problems.join('\n'), 'VALIDATION_FAILED');
-    return emit(jsonOutput ? result : `Registry valid: ${ids.size} components (Syntari ${registry.version}).`);
+    if (problems.length) {
+      if (jsonOutput) { process.exitCode = 1; return emit(result); }
+      fail(problems.join('\n'), 'VALIDATION_FAILED');
+    }
+    return emit(jsonOutput ? result : `Registry valid: ${ids.size} components, ${patternIds.size} patterns (Syntari ${registry.version}).`);
   }
   if (command === 'add') {
     const { values: names, dir } = parseOptions(rest);
