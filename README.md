@@ -26,7 +26,7 @@ Syntari 0.2 is a **copy-source CLI**, not a package you import with `import ... 
 From the consuming project:
 
 ```sh
-npm exec --yes --package="https://syntariui.github.io/syntari/downloads/syntari-ui-0.2.1.tgz" -- syntari add app-shell
+npm exec --yes --package="https://syntariui.github.io/syntari/downloads/syntari-ui-0.2.2.tgz" -- syntari add app-shell
 ```
 
 That creates `./components/syntari` with the selected component entry plus the shared runtime and registry.
