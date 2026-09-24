@@ -22,12 +22,12 @@ Use `npx syntari patterns --json` to inspect authored layouts and interaction pa
 
 The package ships the same registry as the documentation site under `kit/runtime/registry/`. The public static endpoints are:
 
-- [Component index](https://syntariui.github.io/syntari/registry/index.json)
-- [Pattern index](https://syntariui.github.io/syntari/registry/patterns/index.json)
-- [Primitive tokens](https://syntariui.github.io/syntari/registry/tokens/primitive.json)
-- [Semantic tokens](https://syntariui.github.io/syntari/registry/tokens/semantic.json)
-- [Component schema](https://syntariui.github.io/syntari/registry/schema/component.schema.json)
-- [Screen IR schema](https://syntariui.github.io/syntari/registry/schema/sui.schema.json)
+- [Component index](https://syntariui.giovanitier.com/registry/index.json)
+- [Pattern index](https://syntariui.giovanitier.com/registry/patterns/index.json)
+- [Primitive tokens](https://syntariui.giovanitier.com/registry/tokens/primitive.json)
+- [Semantic tokens](https://syntariui.giovanitier.com/registry/tokens/semantic.json)
+- [Component schema](https://syntariui.giovanitier.com/registry/schema/component.schema.json)
+- [Screen IR schema](https://syntariui.giovanitier.com/registry/schema/sui.schema.json)
 
 `syntari registry --json` returns the component index. `syntari info <id> --json` returns a component or pattern's metadata, dependencies, tokens, examples, package files, and installability. Registry manifests are the lookup source; docs and examples explain use.
 
@@ -43,9 +43,18 @@ npm start
 
 `npm test` builds the package and runs CLI installation and registry checks. The build creates the package-ready `kit/` directory and the static website in `dist/`.
 
-## Publishing
+## Cloudflare Pages deployment
 
-Create a GitHub Release after updating the package version. The npm release workflow runs the build and CLI checks, then publishes `syntari-ui` with provenance using the repository's `NPM_TOKEN` secret. The static site continues to deploy from the existing GitHub Pages workflow.
+The production site is deployed to Cloudflare Pages from GitHub Actions after the build and checks pass on `main`. The Cloudflare Pages project name is `syntariui`; the Wrangler config and workflow both publish `dist/`.
+
+Before the first production deploy:
+
+1. Create a Cloudflare Pages Direct Upload project named `syntariui` with production branch `main`.
+2. Add GitHub Actions repository secrets `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`. The token needs Cloudflare Pages edit access.
+3. In Cloudflare Pages, add `syntariui.giovanitier.com` as a custom domain and confirm its DNS record points to the Pages project.
+4. Merge the deployment workflow to `main`; subsequent successful main builds publish automatically.
+
+Direct Upload is used so the existing GitHub Actions build and release checks stay authoritative. GitHub Pages is no longer the production deploy target once this workflow is merged. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
 
 ## Documentation
 
