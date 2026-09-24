@@ -1,5 +1,16 @@
 # Unreleased
 
+# Syntari UI — version 0.2.2
+
+September 24, 2026.
+
+- Made the installer archive immutable per release so npm and agent runtimes cannot reuse stale cached Syntari source under the same versioned URL.
+- Moved generated install commands to the GitHub Pages archive while keeping the custom domain for the product and documentation.
+- Added an installed `AGENTS.md` contract and registry metadata so coding agents know to use copied Syntari source instead of reconstructing components.
+- Added a post-deploy public install smoke test using `app-shell`.
+
+---
+
 September 16, 2026.
 
 - Renamed the design system to Syntari across the interface, documentation, runtime, source archive, and installer.
