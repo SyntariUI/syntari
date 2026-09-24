@@ -24,13 +24,15 @@
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test",
-    "figma:extract": "node scripts/extract-figma.mjs"
+    "figma:extract": "node scripts/extract-figma.mjs",
+    "deploy": "wrangler pages deploy dist --project-name syntariui"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0"
+    "@playwright/test": "^1.55.0",
+    "wrangler": "4.138.0"
   },
   "bin": {
     "syntari": "cli.mjs"
