@@ -33,6 +33,7 @@ async function injectKobbeTrackingTree(dir) {
 async function injectKobbeTrackingIntoSite() {
   await injectKobbeTrackingTree('.');
 }
+execFileSync(process.execPath,['scripts/generate-registry.mjs','--skeleton','all'],{stdio:'pipe'});
 const components=await catalog();
 const runtime=['syntari.js','support.html','ir.js','ir.css','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
 const landing=await readFile('landing.html','utf8');
