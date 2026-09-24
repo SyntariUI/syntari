@@ -249,7 +249,7 @@ async function main() {
 }
 
 main().catch((error) => {
-  if (jsonOutput) console.error(JSON.stringify({ ok: false, error: error.message, code: error.code ?? 'SYNtARI_ERROR' }));
+  if (jsonOutput) console.error(JSON.stringify({ ok: false, error: error.message, code: error.code ?? 'SYNTARI_ERROR' }));
   else console.error(`Syntari: ${error.message}`);
   process.exitCode = 1;
 });
