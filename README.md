@@ -43,17 +43,9 @@ npm start
 
 `npm test` builds the package and runs CLI installation and registry checks. The build creates the package-ready `kit/` directory and the static website in `dist/`.
 
-## Cloudflare Pages migration
+## Cloudflare deployment
 
-The Cloudflare Pages project is named `syntariui`; Wrangler and the GitHub Actions workflow publish the built `dist/` directory. Cloudflare deployment is staged behind the repository Actions variable `CLOUDFLARE_PAGES_READY` so the existing GitHub Pages deploy remains available during setup and verification.
-
-1. Create a Cloudflare Pages Direct Upload project named `syntariui` with production branch `main`.
-2. Add GitHub Actions repository secrets `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`. The token needs Cloudflare Pages edit access.
-3. Set the repository Actions variable `CLOUDFLARE_PAGES_READY` to `true`. The next successful main build deploys to `syntariui.pages.dev`.
-4. Verify the Cloudflare Pages deployment, then add `syntariui.giovanitier.com` as its custom domain in Cloudflare Pages and confirm the DNS record points to the Pages project.
-5. After the custom domain serves the Cloudflare deployment, disable the GitHub Pages deployment job in `.github/workflows/publish.yml`.
-
-Direct Upload keeps the existing GitHub Actions build authoritative. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
+The Cloudflare Pages project is named `syntariui`. Cloudflare's connected Git build deploys the static output in `dist/` using `npm run build` and `npm run deploy`; Wrangler and the output directory are configured in `wrangler.toml`. GitHub Actions runs CI checks only and does not publish a second copy of the site. Configure the Cloudflare build settings with repository `SyntariUI/syntari`, production branch `main`, root `/`, build command `npm run build`, and deploy command `npm run deploy`. Add `syntariui.giovanitier.com` as a custom domain in the Cloudflare Pages project and point its DNS record to that project. npm package publishing remains a separate release workflow and requires `NPM_TOKEN`.
 
 ## Documentation
 
