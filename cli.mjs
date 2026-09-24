@@ -97,6 +97,8 @@ async function componentDetails(id, registry, catalog, patternIndex) {
     name: entry?.name ?? catalogEntry?.name ?? pattern?.name,
     category: entry?.category ?? catalogEntry?.category,
     packageVersion: (await getPackage()).version,
+    registryVersion: registry.version,
+    preview: pattern?.preview ?? entry?.preview ?? `https://syntariui.github.io/syntari/components/${id}/`,
     manifest: manifest ?? undefined,
     dependencies: manifest?.dependencies ?? pattern?.dependencies ?? [],
     tokens: manifest?.tokens ?? entry?.tokens ?? pattern?.tokens ?? [],
