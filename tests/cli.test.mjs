@@ -22,7 +22,8 @@ test('machine-readable discovery and validation commands work', () => {
   assert.equal(JSON.parse(run('doctor', '--json')).ok, true);
 });
 test('component and app-shell install as editable source without overwriting', async () => {
-  const target = await mkdtemp(join(tmpdir(), 'syntari-cli-'));
+  const base = await mkdtemp(join(tmpdir(), 'syntari-cli-'));
+  const target = join(base, 'install');
   try {
     const result = JSON.parse(run('add', 'app-shell', 'button', '--dir', target, '--json'));
     assert.deepEqual(result.components, ['app-shell', 'button']);
@@ -32,5 +33,5 @@ test('component and app-shell install as editable source without overwriting', a
     const validation = JSON.parse(run('validate', '--dir', target, '--json'));
     assert.equal(validation.valid, true);
     assert.throws(() => run('add', 'button', '--dir', target, '--json'));
-  } finally { await rm(target, { recursive: true, force: true }); }
+  } finally { await rm(base, { recursive: true, force: true }); }
 });
