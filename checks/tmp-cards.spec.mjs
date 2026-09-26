@@ -4,6 +4,7 @@ const origin = 'http://127.0.0.1:4398';
 
 const cards = [
   ['session-card', '.session-card'],
+  ['accordion', '.syntari-accordion'],
   ['card', '.mini-card'],
   ['tilt-card', '.syntari-tilt'],
   ['card-and-project-folder', '.project-folder'],
