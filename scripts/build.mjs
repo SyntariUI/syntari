@@ -60,9 +60,11 @@ execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{
 });
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
 await copyFile('landing.html','dist/index.html');
+await mkdir('dist/renderer',{recursive:true});
+await copyFile('renderer.html','dist/renderer/index.html');
 await writeFile('dist/library.html',docs);
 await writeFile('dist/gallery.html',docs.replace('<title>Docs — Syntari</title>','<title>Gallery — Syntari UI</title>'));
-for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs.css','docs.js','docs-data.js','docs-guides.js','docs-gallery.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
+for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs.css','docs.js','docs-data.js','docs-guides.js','docs-gallery.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
 for(const dir of ['assets','downloads','new','Jev','art-atlas','tmp','system'])await cp(dir,'dist/'+dir,{recursive:true});
 await cp('kit/runtime/registry','dist/registry',{recursive:true});
 // Route wrappers are build output. The workspace and docs templates are source.
@@ -86,7 +88,7 @@ function redirect(target, preserveHash=false){
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${target}"><title>Syntari</title></head><body><a href="${target}">Open Syntari</a><script>location.replace(${JSON.stringify(target)}${preserveHash ? '+location.hash' : ''})</script></body></html>`;
 }
 await writeFile('dist/tmp/system/index.html',redirect('/system/',true));
-await writeFile('dist/Jev/index.html',redirect('/'));
+await writeFile('dist/Jev/index.html',redirect('/renderer/'));
 
 await injectKobbeTrackingTree('dist');
 const packageMetadata=JSON.parse(await readFile('package.json','utf8'));

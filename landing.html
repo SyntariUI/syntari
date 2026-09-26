@@ -1,60 +1,56 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="From intent to interface. Render, inspect, and build with Syntari's trusted design system.">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="From intent to interface. A considered design system for people and agents. Explore live components and render interfaces with Syntari.">
   <title>Syntari — From intent to interface</title>
-  <link rel="icon" href="/favicon.svg">
-  <link rel="stylesheet" href="/tokens.css">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/ir.css">
-  <link rel="stylesheet" href="/renderer-workspace.css">
-  <link rel="stylesheet" href="/workspace.css">
+  <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/ir.css"><link rel="stylesheet" href="/landing.css">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
 </head>
-<body class="renderer-page">
-  <a class="workspace-skip" href="#renderer-stage">Skip to rendered interface</a>
-  <button class="workspace-menu" data-workspace-menu aria-label="Open Renderer navigation" aria-expanded="false" aria-controls="renderer-rail">☰ <span>Renderer</span></button>
-  <button class="workspace-backdrop" data-workspace-backdrop aria-label="Close navigation" hidden></button>
-  <div class="renderer-shell" data-shell>
-    <aside class="renderer-rail" id="renderer-rail" data-rail>
-      <div class="renderer-rail-head">
-        <a class="renderer-brand" href="/" aria-label="Syntari"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
-        <button class="workspace-theme" data-workspace-theme aria-label="Switch to light theme">◐</button>
-      </div>
-      <div class="renderer-section-title"><span>Renderer</span><h1>From intent to interface.</h1></div>
-      <nav class="renderer-nav" aria-label="Render an example"><span class="renderer-nav-label">Start with an example</span><div data-intent-examples></div></nav>
-      <div class="renderer-rail-note"><span>Your intent, Syntari's language</span><p>Describe a screen. Explore the result. Inspect the decisions behind it.</p><p>Local pattern matching · sample data</p></div>
-      <nav class="renderer-rail-foot" aria-label="Syntari"><a href="/" aria-current="page"><span>Renderer</span><span>•</span></a><a href="/system/"><span>System</span><span>↗</span></a><a href="/docs/"><span>Docs</span><span>↗</span></a><a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a></nav>
-    </aside>
-    <main class="renderer-main">
-      <section class="renderer-workspace" data-workspace data-panel="none" aria-label="Syntari Renderer" id="renderer">
-        <div class="renderer-stage" data-workspace-stage id="renderer-stage" tabindex="-1">
-          <div class="renderer-ambient" aria-hidden="true"></div>
-          <div class="renderer-stage-meta"><span>Rendered interface</span><strong data-intent-pattern>Preparing your workspace</strong></div>
-          <div class="renderer-canvas-wrap"><div class="ui-canvas" data-intent-output aria-label="Rendered interface"></div></div>
-          <form class="renderer-composer" data-intent-form>
-            <div class="renderer-composer-copy"><label for="intent-input">Describe what you want to build</label><textarea id="intent-input" data-intent-input rows="2" maxlength="1200" required placeholder="An analytics dashboard, an approval screen…">Show a release report with measures, comparisons, and evidence.</textarea></div>
-            <button type="submit" data-intent-submit aria-label="Render interface" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
-          </form>
-          <div class="renderer-status" data-intent-status role="status">Loading the pattern registry…</div>
-        </div>
-        <div class="renderer-toolbar" aria-label="Renderer tools">
-          <button class="renderer-tool renderer-tool-text" data-panel-open="logic" aria-pressed="false" aria-controls="renderer-inspector">Logic</button>
-          <button class="renderer-tool renderer-tool-text" data-panel-open="ir" aria-pressed="false" aria-controls="renderer-inspector">IR</button>
-          <button class="renderer-tool" data-panel-open="components" aria-label="Inspect components" aria-pressed="false" aria-controls="renderer-inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg></button>
-          <button class="renderer-tool" data-workspace-focus aria-label="Focus renderer" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
-        </div>
-        <aside class="renderer-inspector" id="renderer-inspector" data-inspector aria-label="Renderer inspector" aria-hidden="true" inert>
-          <header class="renderer-inspector-head"><div><span>Inspect</span><strong data-panel-title>Why this interface?</strong></div><button class="renderer-tool" data-close-panel aria-label="Close inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
-          <div class="renderer-inspector-body" data-inspector-panel="logic"><dl data-intent-trace></dl><p class="workspace-message">Selections use keyword matches against authored patterns. No model probability or live account data is involved.</p><a class="workspace-component" href="/guides/generative-ui/">How rendering works <span>↗</span></a></div>
-          <div class="renderer-inspector-body" data-inspector-panel="ir" hidden><button class="workspace-action" data-copy-ir>Copy Screen IR</button><p class="workspace-message" data-ir-copy-status role="status"></p><pre class="workspace-code" tabindex="0"><code data-intent-spec></code></pre><h2 style="font-size:13px">Validation</h2><pre class="workspace-code" data-intent-diagnostics></pre></div>
-          <div class="renderer-inspector-body" data-inspector-panel="components" hidden><p class="workspace-message">Inspect each component in System. Your rendered screen stays available in this tab.</p><div data-intent-components></div><p class="workspace-message">Actions use sample data. Connect and authorize real operations in your host application.</p><a class="workspace-component" href="/registry/agent-policy.json">Agent policy <span>↗</span></a></div>
-        </aside>
-      </section>
-    </main>
-  </div>
-  <script type="module" src="/intent-renderer.js"></script>
-</body>
-</html>
+<body class="landing-body">
+<a class="home-skip" href="#main">Skip to content</a>
+<header class="home-nav">
+  <a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
+  <nav aria-label="Syntari"><a href="/system/">Components</a><a href="/renderer/">Renderer</a><a href="/docs/">Docs</a></nav>
+  <div class="home-nav-end"><a class="home-github" href="https://github.com/SyntariUI/syntari">GitHub <span aria-hidden="true">↗</span></a><button class="home-theme" data-home-theme aria-label="Switch to light theme">◐</button></div>
+</header>
+<main id="main">
+  <section class="home-hero" aria-labelledby="home-title">
+    <a class="home-release" href="/system/"><span class="home-dot" aria-hidden="true"></span><span data-home-count>Explore the system</span><span class="home-release-note">Open source</span><span aria-hidden="true">↗</span></a>
+    <h1 id="home-title">From intent<br>to interface.</h1>
+    <p>A considered design system for people and agents.<br class="home-break"> Beautiful components. Predictable interfaces. Yours to build with.</p>
+    <div class="home-actions"><a class="home-button home-primary" href="/system/">Explore components <span aria-hidden="true">↗</span></a><a class="home-button" href="/renderer/">Open Renderer</a></div>
+    <form class="home-prompt" data-intent-form>
+      <label for="intent-input">What do you want to build?</label>
+      <div class="home-prompt-row"><textarea id="intent-input" data-intent-input rows="2" maxlength="1200" required placeholder="An analytics dashboard, an approval screen…">Show a release report with measures, comparisons, and evidence.</textarea><button type="submit" data-intent-submit aria-label="Render interface" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
+    </form>
+    <div class="home-examples" data-intent-examples aria-label="Try an example"></div>
+    <p class="home-helper">Try an example. Rendered locally with sample data.</p>
+  </section>
+  <section class="home-result home-width" data-home-result hidden aria-label="Rendered interface">
+    <header class="home-result-head"><div><span class="home-dot" aria-hidden="true"></span><strong data-intent-pattern>Preparing preview</strong></div><div class="home-result-tools"><button data-panel-open="logic" aria-expanded="false" aria-controls="home-inspector">Decisions</button><button data-panel-open="ir" aria-expanded="false" aria-controls="home-inspector">Screen IR</button><button data-panel-open="components" aria-expanded="false" aria-controls="home-inspector">Components</button><a href="/renderer/" aria-label="Open full Renderer">↗</a></div></header>
+    <div class="home-result-body"><div class="home-result-canvas" data-intent-output></div>
+    <aside class="home-inspector" id="home-inspector" data-home-inspector hidden><header><strong data-panel-title>Why this interface?</strong><button data-home-close aria-label="Close inspector">×</button></header>
+      <div data-inspector-panel="logic"><dl data-intent-trace></dl><p class="home-helper">Selections use keyword matches against authored patterns.</p></div>
+      <div data-inspector-panel="ir" hidden><button class="home-button" data-copy-ir>Copy Screen IR</button><p data-ir-copy-status role="status"></p><pre tabindex="0"><code data-intent-spec></code></pre><h3>Validation</h3><pre data-intent-diagnostics></pre></div>
+      <div data-inspector-panel="components" hidden><p>Inspect the components behind this screen.</p><div data-intent-components></div></div>
+    </aside></div>
+    <p class="home-render-status" data-intent-status role="status">Loading the pattern registry…</p>
+  </section>
+  <section class="home-gallery home-width" aria-labelledby="gallery-title">
+    <div class="home-section-head"><div><h2 id="gallery-title">Small details. Complete interfaces.</h2><p>Explore the interactions. Find your next starting point.</p></div><a href="/system/">View all components <span aria-hidden="true">↗</span></a></div>
+    <div class="home-grid" data-home-gallery aria-busy="true"><p>Loading live components…</p></div>
+  </section>
+  <section class="home-build home-width" aria-labelledby="build-title">
+    <div><span class="home-build-label">Build with Syntari</span><h2 id="build-title">The same language.<br>In your project.</h2><p>Bring the components, tokens, and interactions into your codebase. Give your agent the registry and rules to compose with confidence.</p><div class="home-build-links"><a href="/guides/installation/">Installation guide ↗</a><a href="/registry/agent-policy.json">Agent guardrails ↗</a></div></div>
+    <div class="home-install"><div class="home-install-head"><span>Install app-shell</span><button data-home-copy aria-label="Copy install command" disabled>Copy</button></div><pre tabindex="0"><code data-home-command>Loading the versioned install command…</code></pre><p data-home-copy-status role="status">Editable source. MIT licensed.</p></div>
+  </section>
+  <section class="home-faq home-width" aria-labelledby="faq-title"><h2 id="faq-title">A few things to know.</h2><div>
+    <details><summary>What can I build with Syntari?</summary><p>Use the components to build dashboards, product interfaces, and agent workflows. The Renderer demonstrates three authored screen patterns that you can inspect and adapt.</p></details>
+    <details><summary>Can an AI agent use the design system?</summary><p>Yes. The CLI and machine-readable registry expose components, dependencies, examples, tokens, and validation rules. Start with the <a href="/docs/">implementation docs</a> and <a href="/registry/agent-policy.json">agent policy</a>.</p></details>
+    <details><summary>Can I customize the components?</summary><p>Yes. Installation gives you editable source. Shared tokens control the visual language, and the MIT license allows personal and commercial use.</p></details>
+  </div></section>
+</main>
+<footer class="home-footer home-width"><div class="home-footer-top"><div><a class="home-brand" href="/"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><p>A design system agents can actually use.</p></div><nav aria-label="Footer"><a href="/system/">Components</a><a href="/renderer/">Renderer</a><a href="/docs/">Documentation</a><a href="https://github.com/SyntariUI/syntari">GitHub</a></nav></div><div class="home-footer-bottom"><span>Built in the open. MIT licensed.</span><span>From intent to interface.</span></div><div class="home-wordmark" aria-hidden="true">Syntari</div></footer>
+<script type="module" src="/intent-renderer.js"></script>
+</body></html>

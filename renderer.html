@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="From intent to interface. Render, inspect, and build with Syntari's trusted design system.">
+  <title>Syntari — From intent to interface</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/ir.css">
+  <link rel="stylesheet" href="/renderer-workspace.css">
+  <link rel="stylesheet" href="/workspace.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
+</head>
+<body class="renderer-page">
+  <a class="workspace-skip" href="#renderer-stage">Skip to rendered interface</a>
+  <button class="workspace-menu" data-workspace-menu aria-label="Open Renderer navigation" aria-expanded="false" aria-controls="renderer-rail">☰ <span>Renderer</span></button>
+  <button class="workspace-backdrop" data-workspace-backdrop aria-label="Close navigation" hidden></button>
+  <div class="renderer-shell" data-shell>
+    <aside class="renderer-rail" id="renderer-rail" data-rail>
+      <div class="renderer-rail-head">
+        <a class="renderer-brand" href="/" aria-label="Syntari"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
+        <button class="workspace-theme" data-workspace-theme aria-label="Switch to light theme">◐</button>
+      </div>
+      <div class="renderer-section-title"><span>Renderer</span><h1>From intent to interface.</h1></div>
+      <nav class="renderer-nav" aria-label="Render an example"><span class="renderer-nav-label">Start with an example</span><div data-intent-examples></div></nav>
+      <div class="renderer-rail-note"><span>Your intent, Syntari's language</span><p>Describe a screen. Explore the result. Inspect the decisions behind it.</p><p>Local pattern matching · sample data</p></div>
+      <nav class="renderer-rail-foot" aria-label="Syntari"><a href="/renderer/" aria-current="page"><span>Renderer</span><span>•</span></a><a href="/system/"><span>System</span><span>↗</span></a><a href="/docs/"><span>Docs</span><span>↗</span></a><a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a></nav>
+    </aside>
+    <main class="renderer-main">
+      <section class="renderer-workspace" data-workspace data-panel="none" aria-label="Syntari Renderer" id="renderer">
+        <div class="renderer-stage" data-workspace-stage id="renderer-stage" tabindex="-1">
+          <div class="renderer-ambient" aria-hidden="true"></div>
+          <div class="renderer-stage-meta"><span>Rendered interface</span><strong data-intent-pattern>Preparing your workspace</strong></div>
+          <div class="renderer-canvas-wrap"><div class="ui-canvas" data-intent-output aria-label="Rendered interface"></div></div>
+          <form class="renderer-composer" data-intent-form>
+            <div class="renderer-composer-copy"><label for="intent-input">Describe what you want to build</label><textarea id="intent-input" data-intent-input rows="2" maxlength="1200" required placeholder="An analytics dashboard, an approval screen…">Show a release report with measures, comparisons, and evidence.</textarea></div>
+            <button type="submit" data-intent-submit aria-label="Render interface" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+          </form>
+          <div class="renderer-status" data-intent-status role="status">Loading the pattern registry…</div>
+        </div>
+        <div class="renderer-toolbar" aria-label="Renderer tools">
+          <button class="renderer-tool renderer-tool-text" data-panel-open="logic" aria-pressed="false" aria-controls="renderer-inspector">Logic</button>
+          <button class="renderer-tool renderer-tool-text" data-panel-open="ir" aria-pressed="false" aria-controls="renderer-inspector">IR</button>
+          <button class="renderer-tool" data-panel-open="components" aria-label="Inspect components" aria-pressed="false" aria-controls="renderer-inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg></button>
+          <button class="renderer-tool" data-workspace-focus aria-label="Focus renderer" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
+        </div>
+        <aside class="renderer-inspector" id="renderer-inspector" data-inspector aria-label="Renderer inspector" aria-hidden="true" inert>
+          <header class="renderer-inspector-head"><div><span>Inspect</span><strong data-panel-title>Why this interface?</strong></div><button class="renderer-tool" data-close-panel aria-label="Close inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
+          <div class="renderer-inspector-body" data-inspector-panel="logic"><dl data-intent-trace></dl><p class="workspace-message">Selections use keyword matches against authored patterns. No model probability or live account data is involved.</p><a class="workspace-component" href="/guides/generative-ui/">How rendering works <span>↗</span></a></div>
+          <div class="renderer-inspector-body" data-inspector-panel="ir" hidden><button class="workspace-action" data-copy-ir>Copy Screen IR</button><p class="workspace-message" data-ir-copy-status role="status"></p><pre class="workspace-code" tabindex="0"><code data-intent-spec></code></pre><h2 style="font-size:13px">Validation</h2><pre class="workspace-code" data-intent-diagnostics></pre></div>
+          <div class="renderer-inspector-body" data-inspector-panel="components" hidden><p class="workspace-message">Inspect each component in System. Your rendered screen stays available in this tab.</p><div data-intent-components></div><p class="workspace-message">Actions use sample data. Connect and authorize real operations in your host application.</p><a class="workspace-component" href="/registry/agent-policy.json">Agent policy <span>↗</span></a></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/intent-renderer.js"></script>
+</body>
+</html>
