@@ -32,6 +32,12 @@ test('implementation lives beside the component, with legacy routes preserved',a
  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.reload();await expect(page.locator('[data-guide-content]')).toBeVisible();await expect(page.locator('[data-guide-select]')).toHaveValue('theming');
  await page.goto(origin+'/guides/installation/');await expect(page).toHaveURL(/system\/\?guide=installation#button$/);await expect(page.locator('[data-guide-content]')).toContainText('Your source. Your project.');
+ await page.getByRole('button',{name:'Close panel'}).click();
+ await page.getByRole('button',{name:'Open System navigation'}).click();
+ await page.getByRole('link',{name:'Getting started',exact:false}).click();
+ await expect(page.locator('[data-guide-content]')).toBeVisible();
+ await page.getByRole('button',{name:'Close panel'}).click();
+ await expect(page.getByRole('button',{name:'Open System navigation'})).toBeFocused();
  expect(errors).toEqual([]);
 });
 test('all component pages and every authored preview state load without errors',async({page,request})=>{

@@ -23,7 +23,10 @@ export function initWorkspace() {
     workspace.dataset.panel = 'none';
     document.querySelectorAll('[data-panel-open]').forEach(button => button.setAttribute('aria-pressed', 'false'));
     sync();
-    if (restore && returnFocus?.isConnected) returnFocus.focus();
+    if (restore) {
+      const target = returnFocus?.isConnected && !returnFocus.closest('[inert]') ? returnFocus : menu;
+      target?.focus();
+    }
   }
   function openPanel(mode, trigger) {
     if (workspace.dataset.panel === mode) { closePanel(); return; }
