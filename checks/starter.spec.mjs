@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 
 const expectFullCatalog=async page=>{const expected=await page.evaluate(async()=>(await import('/syntari.js')).getComponents().then(list=>list.length));await expect(page.locator('.specimen')).toHaveCount(expected);};
 test('starter controls and screens',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4318/gallery.html');
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4398/gallery.html');
  const c=name=>page.locator(`[data-component="${name}"]`);
  await c('Searchable select').getByRole('combobox').fill('Jamie');await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect(c('Searchable select').getByRole('combobox')).toHaveValue('Jamie Chen');
  await c('Multiselect').getByRole('combobox').fill('Design');await c('Multiselect').getByRole('option',{name:'Design',exact:true}).click();await expect(c('Multiselect').getByRole('button',{name:'Remove Design'})).toBeVisible();await c('Multiselect').getByRole('button',{name:'Remove Design'}).click();await expect(c('Multiselect').getByRole('button',{name:'Remove Design'})).toHaveCount(0);
@@ -20,7 +20,7 @@ test('starter controls and screens',async({page})=>{
  expect(errors).toEqual([]);
 });
 test('agent workflows',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4318/gallery.html');await page.locator('[data-category="Agents"]').click();const c=name=>page.locator(`[data-component="${name}"]`);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4398/gallery.html');await page.locator('[data-category="Agents"]').click();const c=name=>page.locator(`[data-component="${name}"]`);
  await c('Agent todo list').getByRole('button',{name:'Run plan'}).click();await expect(c('Agent todo list').locator('[data-todo-count]')).toHaveText('4 of 4 completed',{timeout:6000});await c('Agent todo list').getByRole('button',{name:'Replay'}).click();await c('Agent todo list').getByRole('button',{name:'Stop plan'}).click();await expect(c('Agent todo list').locator('[data-run-status]')).toContainText('stopped');
  await c('Approval card').getByRole('button',{name:'Approve',exact:true}).click();await expect(c('Approval card').locator('.agent-decision')).toContainText('Approved');await c('Approval card').getByRole('button',{name:'Reset preview'}).click();await c('Approval card').getByRole('button',{name:'Decline'}).click();await expect(c('Approval card').locator('.agent-decision')).toContainText('Declined');
  await c('Streaming response').getByRole('button',{name:'Generate response'}).click();await expect(c('Streaming response').locator('[data-stream-status]')).toHaveText('Response complete.');await c('Streaming response').getByRole('button',{name:'Regenerate'}).click();await c('Streaming response').getByRole('button',{name:'Stop'}).click();await expect(c('Streaming response').locator('[data-stream-status]')).toHaveText('Response stopped.');
@@ -28,7 +28,7 @@ test('agent workflows',async({page})=>{
  await setTheme(page,'dark');await page.screenshot({path:'test-results/agents-dark.png'});await page.setViewportSize({width:390,height:844});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:'test-results/agents-mobile.png'});await page.emulateMedia({reducedMotion:'reduce'});await c('Streaming response').getByRole('button',{name:'Regenerate'}).click();await expect(c('Streaming response').locator('[data-stream-status]')).toHaveText('Response complete.');expect(errors).toEqual([]);
 });
 test('remaining catalog patterns and responsive coverage',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4318/gallery.html');const c=name=>page.locator(`[data-component="${name}"]`);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4398/gallery.html');const c=name=>page.locator(`[data-component="${name}"]`);
  await expectFullCatalog(page);
  await c('Data table').getByRole('button',{name:'All statuses',exact:true}).click();await c('Data table').getByRole('button',{name:'Review',exact:true}).click();await expect(c('Data table').locator('tbody tr')).toHaveCount(2);
  const fillOtp=async value=>{const digits=c('OTP input').locator('.otp-digit');for(let i=0;i<value.length;i++)await digits.nth(i).fill(value[i]);};await fillOtp('111111');await c('OTP input').getByRole('button',{name:'Verify code'}).click();await expect(c('OTP input').getByRole('status')).toContainText('did not match');await fillOtp('123456');await c('OTP input').getByRole('button',{name:'Verify code'}).click();await expect(c('OTP input').getByRole('status')).toContainText('verified');
@@ -41,5 +41,5 @@ test('remaining catalog patterns and responsive coverage',async({page})=>{
  await c('Agent questions').getByRole('radio',{name:'Accessibility',exact:true}).check();await c('Agent questions').getByRole('button',{name:'Review response'}).click();await expect(c('Agent questions').getByRole('status')).toContainText('accessibility');await c('Agent questions').getByRole('button',{name:'Confirm response'}).click();await expect(c('Agent questions').getByRole('status')).toContainText('saved');
  await c('Prompt input').getByLabel('Attach a file').setInputFiles({name:'sample.txt',mimeType:'text/plain',buffer:Buffer.from('local preview')});await expect(c('Prompt input').locator('[data-attachment-name]')).toHaveText('sample.txt');
  for(const width of [390,768,1440]){await page.setViewportSize({width,height:900});for(const theme of ['Light theme','Dark theme']){await setTheme(page,theme);await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy()}}
- await page.goto('http://127.0.0.1:4318/gallery.html?view=screens&screen=projects');await expect(page.locator('#screens')).toBeVisible();await expect(page.locator('#screens .product-heading')).toContainText('Work in good company');expect(errors).toEqual([]);
+ await page.goto('http://127.0.0.1:4398/gallery.html?view=screens&screen=projects');await expect(page.locator('#screens')).toBeVisible();await expect(page.locator('#screens .product-heading')).toContainText('Work in good company');expect(errors).toEqual([]);
 });

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { setTheme } from './theme.mjs';
 
 const expectFullCatalog=async page=>{const expected=await page.evaluate(async()=>(await import('/syntari.js')).getComponents().then(list=>list.length));await expect(page.locator('.specimen')).toHaveCount(expected);};
-const origin = 'http://127.0.0.1:4318';
+const origin = 'http://127.0.0.1:4398';
 
 test('gallery and documentation share one document, filters, theme and browser history', async ({page}) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));

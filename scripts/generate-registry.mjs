@@ -2,7 +2,7 @@ import { writeFile, access, mkdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 
-const registry = resolve('registry');
+const registry = resolve(process.env.SYNTARI_REGISTRY_OUTPUT ?? 'registry');
 const componentsDir = resolve(registry, 'components');
 const releaseVersion = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version;
 
@@ -40,7 +40,7 @@ const components = await catalog();
 await mkdir(componentsDir, { recursive: true });
 
 const index = {
-  $id: 'https://syntariui.github.io/syntari/registry/index.json',
+  $id: 'https://syntariui.giovanitier.com/registry/index.json',
   version: releaseVersion,
   components: []
 };
@@ -67,7 +67,7 @@ for (const component of components) {
     dependencies: manifest?.dependencies ?? [],
     examples: manifest?.examples ?? { good: [], bad: [], boundary: [] },
     files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],
-    preview: `https://syntariui.github.io/syntari/components/${component.slug}/`
+    preview: `https://syntariui.giovanitier.com/components/${component.slug}/`
   });
 
   if (arg === '--skeleton' && (slug === 'all' || slug === component.slug) && !authored) {

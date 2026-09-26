@@ -10,16 +10,19 @@ The registry is the machine-readable source of truth for what Syntari contains, 
 - `tokens/semantic.json` — meaningful roles mapped to primitives and CSS variables.
 - `schema/component.schema.json` — the component manifest contract.
 - `schema/sui.schema.json` — the Syntari UI IR (screen) contract.
+- `patterns/index.json` — installable layouts, documented interaction patterns, and intent patterns.
+- `patterns/screens.json` — Screen IR for the renderer's three bounded compositions, produced by the build from `screen-recipes.js`.
+- `agent-policy.json` — machine-readable boundary between Screen IR rules and host-authorized actions.
 
 ## Published URLs
 
 The deployment serves these files alongside the documentation, so agents and tools can fetch them over HTTP instead of cloning the repository:
 
-- <https://syntariui.github.io/syntari/registry/index.json>
-- <https://syntariui.github.io/syntari/registry/schema/component.schema.json>
-- <https://syntariui.github.io/syntari/registry/schema/sui.schema.json>
-- <https://syntariui.github.io/syntari/registry/tokens/primitive.json>
-- <https://syntariui.github.io/syntari/registry/tokens/semantic.json>
+- <https://syntariui.giovanitier.com/registry/index.json>
+- <https://syntariui.giovanitier.com/registry/schema/component.schema.json>
+- <https://syntariui.giovanitier.com/registry/schema/sui.schema.json>
+- <https://syntariui.giovanitier.com/registry/tokens/primitive.json>
+- <https://syntariui.giovanitier.com/registry/tokens/semantic.json>
 
 Each artifact declares the matching `$id`, so a schema reference resolves without configuration.
 
@@ -37,7 +40,7 @@ CSS variables remain compiled output. The semantic layer is where agents reason;
 
 ## Component manifest status
 
-`button.json` and `tool-approval.json` are fully authored exemplars. The remaining components are indexed from the existing catalog and marked `generated`; they are skeletons to be filled in with intents, variants, anatomy, rules, and semantics over time.
+The authored manifests declare intent, anatomy, rules, and, where supported, prop and renderer bindings. The build includes authored component manifests. Those declaring both props and IR bindings can render from Screen IR. Other catalog entries receive generated skeletons in the package and site build. The build leaves the source manifests untouched.
 
 ## Rebuild the index
 
@@ -63,4 +66,4 @@ Authored manifests are never overwritten by the generator.
 
 ## Next layers
 
-The registry is the first of three foundational artifacts. The others are the validator (`@syntari/validator`) that judges generated output, and the Syntari UI IR renderer/compiler that turns validated IR into HTML and, later, React and Figma.
+The package includes schema-backed registry validation through `syntari validate`. Pass `--spec screen.json` to check Screen IR against the published schema and component contracts. The browser renderer applies the same component contracts before painting. Host applications authorize model actions separately.

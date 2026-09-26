@@ -1,6 +1,6 @@
 {
   "name": "syntari-ui",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "description": "Syntari design system runtime, deterministic installer CLI, and machine-readable component registry for agents.",
   "homepage": "https://syntariui.giovanitier.com/",
@@ -25,7 +25,8 @@
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test",
     "figma:extract": "node scripts/extract-figma.mjs",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "test:browser": "npm run build && playwright test checks/ir.spec.mjs checks/intent.spec.mjs checks/installer.spec.mjs"
   },
   "engines": {
     "node": ">=22"
@@ -39,8 +40,22 @@
   },
   "files": [
     "cli.mjs",
+    "agent.mjs",
+    "registry-validator.mjs",
     "kit/",
     "README.md",
-    "LICENSE"
-  ]
+    "LICENSE",
+    "AGENT-GUIDE.md"
+  ],
+  "dependencies": {
+    "ajv": "^8.20.0"
+  },
+  "type": "module",
+  "main": "./agent.mjs",
+  "exports": {
+    ".": "./agent.mjs",
+    "./registry/*": "./kit/runtime/registry/*",
+    "./runtime/*": "./kit/runtime/*",
+    "./package.json": "./package.json"
+  }
 }

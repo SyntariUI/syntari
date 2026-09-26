@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://syntariui.github.io/syntari/registry/schema/patterns.schema.json",
+  "$id": "https://syntariui.giovanitier.com/registry/schema/patterns.schema.json",
   "title": "Syntari Pattern Registry",
   "type": "object",
   "required": [
@@ -13,7 +13,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "patterns": {
       "type": "array",
@@ -77,6 +77,16 @@
           },
           "installable": {
             "type": "boolean"
+          },
+          "screenMode": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": true

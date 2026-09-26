@@ -1,4 +1,4 @@
-name: Test and deploy Syntari
+name: Verify Syntari
 on:
   push:
     branches: [main]
@@ -20,3 +20,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser

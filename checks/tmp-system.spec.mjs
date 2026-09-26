@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const origin = 'http://127.0.0.1:4318';
+const origin = 'http://127.0.0.1:4398';
 
 test('tmp System is a persistent component workspace', async ({ page }) => {
   const errors = [];

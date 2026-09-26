@@ -1,70 +1,136 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://syntariui.github.io/syntari/registry/schema/sui.schema.json",
+  "$id": "https://syntariui.giovanitier.com/registry/schema/sui.schema.json",
   "title": "SyntariUI",
   "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements.",
   "oneOf": [
-    { "$ref": "#/definitions/screen" },
-    { "$ref": "#/definitions/node" },
-    { "$ref": "#/definitions/region" }
+    {
+      "$ref": "#/definitions/screen"
+    },
+    {
+      "$ref": "#/definitions/node"
+    },
+    {
+      "$ref": "#/definitions/region"
+    }
   ],
   "definitions": {
     "node": {
       "type": "object",
-      "required": ["component"],
+      "required": [
+        "component"
+      ],
       "properties": {
         "component": {
           "type": "string",
           "pattern": "^syntari\\.[a-z0-9]+(-[a-z0-9]+)*$",
           "description": "Registry component id in syntari.<slug> form. Referential checks happen at the boundary against registry/index.json."
         },
-        "slot": { "type": "string" },
-        "props": { "type": "object" },
-        "children": { "$ref": "#/definitions/children" },
-        "provenance": { "$ref": "#/definitions/provenance" }
+        "slot": {
+          "type": "string"
+        },
+        "props": {
+          "type": "object"
+        },
+        "children": {
+          "$ref": "#/definitions/children"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
       },
       "additionalProperties": false
     },
     "region": {
       "type": "object",
       "description": "A labelled disclosure. The label is what a person reads; open decides whether the contents start visible.",
-      "required": ["type", "label", "children"],
+      "required": [
+        "type",
+        "label",
+        "children"
+      ],
       "properties": {
-        "type": { "const": "region" },
-        "label": { "type": "string", "maxLength": 60 },
-        "open": { "type": "boolean", "default": false },
-        "children": { "$ref": "#/definitions/children" },
-        "provenance": { "$ref": "#/definitions/provenance" }
+        "type": {
+          "const": "region"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "open": {
+          "type": "boolean",
+          "default": false
+        },
+        "children": {
+          "$ref": "#/definitions/children"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
       },
       "additionalProperties": false
     },
     "children": {
       "type": "array",
-      "items": { "oneOf": [ { "$ref": "#/definitions/node" }, { "$ref": "#/definitions/region" } ] }
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/node"
+          },
+          {
+            "$ref": "#/definitions/region"
+          }
+        ]
+      }
     },
     "screen": {
       "type": "object",
-      "required": ["type", "children"],
+      "required": [
+        "type",
+        "children"
+      ],
       "properties": {
-        "type": { "const": "screen" },
-        "layout": {
-          "enum": ["stack", "row", "grid", "two-column"],
-          "default": "stack",
-          "description": "Layout the reference renderer implements. Hosts may add their own, but only this set renders without configuration."
+        "version": {
+          "const": "syntari-ir-1"
         },
-        "title": { "type": "string" },
-        "children": { "$ref": "#/definitions/children" },
-        "meta": { "type": "object" }
+        "type": {
+          "const": "screen"
+        },
+        "layout": {
+          "type": "string",
+          "default": "stack",
+          "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+        },
+        "title": {
+          "type": "string"
+        },
+        "children": {
+          "$ref": "#/definitions/children"
+        },
+        "meta": {
+          "type": "object"
+        }
       },
       "additionalProperties": false
     },
     "provenance": {
       "type": "object",
       "properties": {
-        "component": { "type": "string" },
-        "source": { "type": "string" },
-        "reason": { "type": "string" },
-        "rulesApplied": { "type": "array", "items": { "type": "string" } }
+        "component": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "rulesApplied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
       "additionalProperties": false
     }

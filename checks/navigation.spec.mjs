@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test';
-const url = 'http://127.0.0.1:4318/preview.html?screen=projects';
+const url = 'http://127.0.0.1:4398/preview.html?screen=projects';
 
 test('sidebar and topbar preserve editing state and navigation preferences', async ({page}) => {
   const errors=[]; page.on('pageerror', error=>errors.push(error.message));
@@ -97,7 +97,7 @@ test('navigation fits phones and tablets, and the catalog exposes both layouts',
     }
   }
   await page.emulateMedia({reducedMotion:'reduce'});
-  await page.goto('http://127.0.0.1:4318/components/app-shell/');
+  await page.goto('http://127.0.0.1:4398/components/app-shell/');
   const example=page.locator('#live-example');
   await example.getByRole('button',{name:'Topbar',exact:true}).click();
   await example.getByRole('link',{name:'People',exact:true}).click();
