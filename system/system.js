@@ -1,9 +1,11 @@
 import { initialize, getComponents, mount } from '../syntari.js';
 import { statesFor } from '../docs-data.js';
+import {initReference,renderReference,manifestReference,codeSource,renderGuide} from './reference.js';
 import { initWorkspace, copyText } from '../workspace.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const workspace = initWorkspace();
+initReference(workspace);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let catalog = [], registry, selected, activeMount, query = '', swapToken = 0, stateId = 'default', codeMode = 'html';
 const manifests = new Map();
@@ -22,9 +24,9 @@ function stateControls() {
   }));
 }
 function renderCode(manifest) {
-  $('[data-code-file]').textContent = `${selected.slug}.${codeMode === 'manifest' ? 'json' : 'html'}`;
-  $('[data-source]').textContent = codeMode === 'manifest' ? JSON.stringify(manifest ?? {status:'loading'},null,2) : selected.html;
+  codeSource(codeMode,manifest);
   document.querySelectorAll('[data-code-mode]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.codeMode === codeMode)));
+  document.querySelectorAll('[data-source-kind]').forEach(node => node.hidden=node.dataset.sourceKind!==codeMode);
 }
 async function inspector(component, token) {
   $('[data-inspector-kicker]').textContent = component.category;
@@ -34,9 +36,9 @@ async function inspector(component, token) {
   $('[data-contract-status]').textContent = 'Loading…';
   $('[data-rules]').textContent = 'Loading the component contract…';
   $('[data-ir-support]').textContent = '';
+  $('[data-tokens]').replaceChildren();
   $('[data-manifest-link]').href = `/registry/components/${component.slug}.json`;
-  $('[data-docs-link]').href = `/docs/components/${component.slug}/`;
-  $('[data-install-command]').textContent = `npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-${registry.version}.tgz -- syntari add ${component.slug}`;
+  renderReference(component,registry.version,stateId);
   $('[data-copy-status]').textContent = '';
   renderCode(manifests.get(component.slug));
   try {
@@ -47,12 +49,13 @@ async function inspector(component, token) {
     }
     if (token !== swapToken) return;
     const manifest = manifests.get(component.slug);
+    manifestReference(manifest);
     $('[data-contract-status]').textContent = manifest.status === 'authored' ? 'Authored contract' : 'Catalog metadata';
     $('[data-rules]').textContent = manifest.rules?.length ? manifest.rules.join(' · ') : 'Use the editable source and implementation guide for this component.';
     $('[data-ir-support]').textContent = manifest.ir ? 'Screen IR supported. Props are checked against the authored contract.' : 'Available as editable source. A Screen IR contract has not been authored yet.';
     $('[data-tokens]').innerHTML = (manifest.tokens || component.tokens || []).map(token => `<span class="sys-token">${esc(token)}</span>`).join('');
     renderCode(manifest);
-  } catch(error) { if (token === swapToken) { $('[data-contract-status]').textContent = 'Unavailable'; $('[data-rules]').textContent = error.message; } }
+  } catch(error) { if (token === swapToken) { $('[data-dependencies]').textContent = 'Registry details unavailable. The installation panel includes shared runtime setup.'; $('[data-contract-status]').textContent = 'Unavailable'; $('[data-rules]').textContent = error.message; } }
 }
 async function select(slug, push = false, preserveState = false) {
   const component = catalog.find(c => c.slug === slug);
@@ -99,6 +102,11 @@ async function boot() {
   catalog = (await getComponents()).filter(c => ids.has(c.slug)).sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
   $('[data-component-count]').textContent = catalog.length;
   await select(routeSlug());
+  const guide=new URLSearchParams(location.search).get('guide');
+  const panel=new URLSearchParams(location.search).get('panel');
+  if(guide){renderGuide(guide);workspace.openPanel('guide');}
+  else if(['info','usage','api','install','code'].includes(panel))workspace.openPanel(panel);
+  for(const selector of ['[data-runtime-file]','[data-style-file]'])$(selector).addEventListener('change',()=>renderCode(manifests.get(selected.slug)));
   $('[data-search]').addEventListener('input',event => { query = event.target.value; nav(); });
   $('[data-copy-code]').addEventListener('click', () => copyText($('[data-source]').textContent,$('[data-code-copy-status]')));
   $('[data-copy-install]').addEventListener('click', () => copyText($('[data-install-command]').textContent,$('[data-copy-status]')));

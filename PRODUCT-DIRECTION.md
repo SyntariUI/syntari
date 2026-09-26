@@ -5,7 +5,7 @@ The Renderer and System are one visual workspace. This is the adopted product di
 - `/` is the homepage: a spacious introduction, a working intent prompt, and live component previews. Its hierarchy takes inspiration from beUI; its typography, surfaces, and controls belong to Syntari.
 - `/renderer/` is the full Renderer workspace: describe an intent, see a trusted composition, inspect its decisions, and refine the request.
 - `/system/` is the interactive design system: a persistent navigation rail, a generous component stage, and a compact toolbar. Inspect, source, installation, states, and device preview stay in the workspace.
-- `/docs/` explains implementation. Component implementation pages live under `/docs/components/`; public `/components/` previews use the System workspace.
+- Component reference lives inside System: Overview, Usage, API, Installation, Source, and shared Guides sit beside the live preview. There is no separate Docs destination. Legacy `/docs/`, `/docs/components/`, and `/guides/` URLs redirect into the appropriate System panel.
 
 Use the Syntari tokens, OpenRunde typography, component anatomy, and motion. Keep the rendered object prominent. Reveal technical details through the inspector, after the result is visible. The Renderer and System share theme, navigation, focus mode, and inspector behavior, including on narrow screens.
 

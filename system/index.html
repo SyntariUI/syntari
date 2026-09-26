@@ -43,7 +43,7 @@
       <div class="sys-rail-foot">
         <a href="/renderer/"><span>Renderer</span><span>↗</span></a>
         <a href="./" aria-current="page"><span>System</span><span>•</span></a>
-        <a href="../docs/"><span>Docs</span><span>↗</span></a>
+        <a href="?guide=getting-started"><span>Getting started</span><span>↗</span></a>
         <a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a>
       </div>
     </aside>
@@ -100,16 +100,20 @@
             </button>
           </div>
 
+          <nav class="sys-reference-tabs" aria-label="Component reference"><button data-panel-open="info">Overview</button><button data-panel-open="usage">Usage</button><button data-panel-open="api">API</button><button data-panel-open="install">Installation</button><button data-panel-open="code">Source</button><button data-panel-open="guide">Guides</button></nav>
+          <div class="sys-reference-panel" data-inspector-panel="usage" hidden data-usage-content></div>
+          <div class="sys-reference-panel" data-inspector-panel="api" hidden data-api-content></div>
+          <div class="sys-reference-panel" data-inspector-panel="guide" hidden><label class="sys-guide-picker">Guide<select data-guide-select></select></label><div data-guide-content></div></div>
           <div class="sys-info-panel" data-info-panel data-inspector-panel="info">
             <p class="sys-description" data-description></p>
 
-            <div class="sys-info-block">
+            <div class="sys-info-block"><span>Dependencies</span><p data-dependencies>Loading…</p></div><div class="sys-info-block"><span>Keyboard and accessibility</span><p data-accessibility-contract></p></div><div class="sys-info-block">
               <span>Registry</span>
               <div class="sys-info-row"><span>ID</span><code data-registry-id></code></div>
               <div class="sys-info-row"><span>Status</span><strong data-contract-status>Loading…</strong></div>
             </div>
 
-            <div class="sys-info-block"><span>Rules and use</span><p data-rules></p><p data-ir-support></p><a data-manifest-link>Open manifest ↗</a><a data-docs-link>Implementation guide ↗</a></div>
+            <div class="sys-info-block"><span>Rules and use</span><p data-rules></p><p data-ir-support></p><a data-manifest-link>Open manifest ↗</a><button class="workspace-action" data-panel-open="usage">How to use</button></div>
             <div class="sys-info-block">
               <span>System tokens</span>
               <div class="sys-token-list" data-tokens></div>
@@ -121,15 +125,16 @@
               <span data-code-file>component.html</span>
               <button type="button" data-copy-code>Copy</button>
             </div>
-            <div class="sys-code-toolbar"><button data-code-mode="html" aria-pressed="true">HTML</button><button data-code-mode="manifest" aria-pressed="false">Manifest</button></div>
+            <div class="sys-code-toolbar"><button data-code-mode="html" aria-pressed="true">HTML</button><button data-code-mode="module" aria-pressed="false">Module</button><button data-code-mode="interactions" aria-pressed="false">Interactions</button><button data-code-mode="styles" aria-pressed="false">Styles</button><button data-code-mode="manifest" aria-pressed="false">Manifest</button></div>
+            <label class="sys-source-select" data-source-kind="interactions" hidden>Shared runtime file<select data-runtime-file><option>app.js</option><option>syntari.js</option><option>navigation.js</option><option>starter.js</option><option>agents.js</option><option>extras.js</option><option>controls.js</option><option>numbers.js</option><option>motion.js</option><option>ir.js</option></select></label><label class="sys-source-select" data-source-kind="styles" hidden>Shared stylesheet<select data-style-file><option>styles.css</option><option>tokens.css</option><option>navigation.css</option><option>starter.css</option><option>agents.css</option><option>extras.css</option><option>controls.css</option><option>numbers.css</option><option>motion.css</option><option>ir.css</option></select></label>
             <p class="workspace-message" data-code-copy-status role="status"></p><pre tabindex="0"><code data-source></code></pre>
           </div>
           <div class="sys-install-panel" data-inspector-panel="install" hidden>
             <p>Copy editable source into your project. Requires Node.js 22 or later.</p>
-            <pre tabindex="0"><code data-install-command></code></pre>
+            <div class="sys-managers" aria-label="Package manager"><button data-package-manager="npm" aria-pressed="true">npm</button><button data-package-manager="pnpm" aria-pressed="false">pnpm</button><button data-package-manager="yarn" aria-pressed="false">yarn</button><button data-package-manager="bun" aria-pressed="false">bun</button></div><pre tabindex="0"><code data-install-command></code></pre>
             <button class="workspace-action" data-copy-install>Copy command</button>
             <p class="workspace-message" data-copy-status role="status"></p>
-            <a href="../guides/installation/">Installation guide ↗</a>
+            <a data-download-source download>Download source archive</a><button class="workspace-action" data-panel-open="usage">Continue to usage</button><div data-install-details></div>
           </div>
         </aside>
       </section>

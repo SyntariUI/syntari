@@ -23,12 +23,16 @@ export function initWorkspace() {
     workspace.dataset.panel = 'none';
     document.querySelectorAll('[data-panel-open]').forEach(button => button.setAttribute('aria-pressed', 'false'));
     sync();
-    if (restore && returnFocus?.isConnected) returnFocus.focus();
+    if (restore) {
+      const target = returnFocus?.isConnected && !returnFocus.closest('[inert]') ? returnFocus : menu;
+      target?.focus();
+    }
   }
   function openPanel(mode, trigger) {
     if (workspace.dataset.panel === mode) { closePanel(); return; }
     closeNav();
-    returnFocus = trigger || document.activeElement;
+    const candidate = trigger || document.activeElement;
+    if (!inspector.contains(candidate)) returnFocus = candidate === document.body ? document.querySelector('[data-panel-open]') : candidate;
     workspace.dataset.panel = mode;
     document.querySelectorAll('[data-inspector-panel]').forEach(panel => { panel.hidden = panel.dataset.inspectorPanel !== mode; });
     document.querySelectorAll('[data-panel-open]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.panelOpen === mode)));

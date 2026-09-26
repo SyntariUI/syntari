@@ -12,7 +12,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await page.getByRole('button',{name:'Inspect component'}).click();
  await expect(page.locator('[data-contract-status]')).toHaveText('Authored contract');
  await expect(page.locator('[data-rules]')).not.toBeEmpty();
- await expect(page.locator('[data-docs-link]')).toHaveAttribute('href','/docs/components/button/');
+ await expect(page.getByRole('button',{name:'How to use',exact:true})).toBeVisible();
  expect(await page.evaluate(el=>el===document.querySelector('[data-syntari-component]'),initial)).toBe(true);
  await page.getByRole('button',{name:'View code'}).click();
  await page.getByRole('button',{name:'Manifest',exact:true}).click();

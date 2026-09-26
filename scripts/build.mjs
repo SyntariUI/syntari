@@ -35,7 +35,6 @@ async function injectKobbeTrackingTree(dir) {
 
 const components=await catalog();
 const runtime=['syntari.js','support.html','ir.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
-const docs=await readFile('docs.html','utf8');
 const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
@@ -62,27 +61,26 @@ await rm('dist',{recursive:true,force:true});await mkdir('dist');
 await copyFile('landing.html','dist/index.html');
 await mkdir('dist/renderer',{recursive:true});
 await copyFile('renderer.html','dist/renderer/index.html');
-await writeFile('dist/library.html',docs);
-await writeFile('dist/gallery.html',docs.replace('<title>Docs — Syntari</title>','<title>Gallery — Syntari UI</title>'));
-for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs.css','docs.js','docs-data.js','docs-guides.js','docs-gallery.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
+await writeFile('dist/library.html',redirect('/system/'));
+await writeFile('dist/gallery.html',redirect('/system/'));
+for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
 for(const dir of ['assets','downloads','new','Jev','art-atlas','tmp','system'])await cp(dir,'dist/'+dir,{recursive:true});
 await cp('kit/runtime/registry','dist/registry',{recursive:true});
-// Route wrappers are build output. The workspace and docs templates are source.
-const docsPage = docs.replace('<head>','<head><base href="/">');
+// Legacy documentation routes now lead to the integrated component reference.
 await mkdir('dist/docs',{recursive:true});
-await writeFile('dist/docs/index.html',docsPage);
-await writeFile('dist/docs.html',docsPage);
+await writeFile('dist/docs/index.html',redirect('/system/?guide=getting-started#button'));
+await writeFile('dist/docs.html',redirect('/system/?guide=getting-started#button'));
 await mkdir('dist/components',{recursive:true});
 await writeFile('dist/components/index.html',systemPage);
 for(const c of components){
   await mkdir(`dist/components/${c.slug}`,{recursive:true});
   await writeFile(`dist/components/${c.slug}/index.html`,systemPage);
   await mkdir(`dist/docs/components/${c.slug}`,{recursive:true});
-  await writeFile(`dist/docs/components/${c.slug}/index.html`,docsPage);
+  await writeFile(`dist/docs/components/${c.slug}/index.html`,redirect(`/system/?panel=usage#${c.slug}`));
 }
 for(const id of ['getting-started','installation','theming','motion','generative-ui','composition','api','migration']){
   await mkdir(`dist/guides/${id}`,{recursive:true});
-  await writeFile(`dist/guides/${id}/index.html`,docsPage);
+  await writeFile(`dist/guides/${id}/index.html`,redirect(`/system/?guide=${id}#button`));
 }
 function redirect(target, preserveHash=false){
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${target}"><title>Syntari</title></head><body><a href="${target}">Open Syntari</a><script>location.replace(${JSON.stringify(target)}${preserveHash ? '+location.hash' : ''})</script></body></html>`;
@@ -92,4 +90,4 @@ await writeFile('dist/Jev/index.html',redirect('/renderer/'));
 
 await injectKobbeTrackingTree('dist');
 const packageMetadata=JSON.parse(await readFile('package.json','utf8'));
-console.log(`Built Syntari ${packageMetadata.version}: ${components.length} component pages, Renderer and System workspaces, 8 guides, documentation, and installable source archive.`);
+console.log(`Built Syntari ${packageMetadata.version}: ${components.length} component pages, Renderer and System workspaces, 8 integrated guides, and installable source archive.`);
