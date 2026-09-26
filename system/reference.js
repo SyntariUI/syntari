@@ -58,12 +58,12 @@ export async function codeSource(mode,manifest){
 export function initReference(workspace){
  $('[data-guide-select]').innerHTML=guideLinks.map(([id,name])=>`<option value="${id}">${esc(name)}</option>`).join('');
  $('[data-guide-select]').addEventListener('change',event=>{renderGuide(event.target.value);history.replaceState(null,'',`/system/?guide=${event.target.value}#${component.slug}`);});
- document.querySelectorAll('[data-package-manager]').forEach(b=>b.addEventListener('click',()=>{manager=b.dataset.packageManager;updateInstall();$('[data-copy-status]').textContent='';}));
+ document.querySelectorAll('[data-package-manager]').forEach(b=>b.addEventListener('click',()=>{manager=b.dataset.packageManager;if(!component)return;updateInstall();$('[data-copy-status]').textContent='';}));
  document.addEventListener('click',event=>{
   const copy=event.target.closest('[data-reference-copy]');if(copy){const block=copy.closest('.sys-snippet');copyText(block.querySelector('code').textContent,block.querySelector('[role=status]'));}
   const link=event.target.closest('a[href]');if(!link||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||event.button!==0)return;
   const url=new URL(link.href);if(url.origin!==location.origin)return;
   const guide=url.pathname.match(/^\/guides\/([^/]+)/)?.[1]||url.searchParams.get('guide');
-  if(guide){event.preventDefault();renderGuide(guide);workspace.closeNav();if(document.querySelector('[data-workspace]').dataset.panel!=='guide')workspace.openPanel('guide',link);history.replaceState(null,'',`/system/?guide=${guide}#${component.slug}`);}
+  if(guide&&component){event.preventDefault();renderGuide(guide);workspace.closeNav();if(document.querySelector('[data-workspace]').dataset.panel!=='guide')workspace.openPanel('guide',link);history.replaceState(null,'',`/system/?guide=${guide}#${component.slug}`);}
  });
 }

@@ -173,7 +173,7 @@ test('validation refuses invented components, missing props, and values outside 
 test('the guide links to the live registry-backed renderer catalogue', async ({ page }) => {
   await page.goto(`${origin}/guides/generative-ui/`);
   await expect(page.getByRole('link', { name: 'live renderer' })).toBeVisible();
-  await expect(page.locator('#docs-main')).toContainText('syntari info <id> --json');
+  await expect(page.locator('[data-guide-content]')).toContainText('syntari info <id> --json');
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
   expect(supported).toHaveLength(22);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
