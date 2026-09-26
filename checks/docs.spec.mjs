@@ -12,7 +12,7 @@ test('documentation routes, examples, source, installation and navigation',async
  await page.getByRole('tab',{name:'Code',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('project-folder');
  await page.getByRole('tab',{name:'Interactions',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('folder-file');await page.locator('#panel-source [data-expand-code]').click();await expect(page.locator('#panel-source .docs-code')).toHaveClass(/expanded/);
  await page.getByRole('tab',{name:'Styles',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('.project-folder');
- await page.getByRole('tab',{name:'pnpm',exact:true}).click();await expect(page.locator('#panel-command')).toContainText('pnpm --package=');
+ await page.getByRole('tab',{name:'pnpm',exact:true}).click();await expect(page.locator('#panel-command')).toContainText('pnpm dlx --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.2.2.tgz');
  await page.getByRole('tab',{name:'Manual',exact:true}).click();await expect(page.getByRole('link',{name:/Download Syntari 0.2.2/})).toHaveAttribute('href',/syntari-ui-0.2.2.tgz$/);
  await expect(page.locator('#api-reference')).toContainText('configure');
  await page.getByRole('searchbox',{name:'Search documentation'}).fill('agent todo');await page.locator('#docs-navigation').getByRole('link',{name:'Agent todo list',exact:true}).click();await expect(page).toHaveURL(/components\/agent-todo-list\/$/);
