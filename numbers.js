@@ -48,7 +48,7 @@
  function reveal(root){root.querySelectorAll('[data-number]').forEach(el=>set(el,Number(el.dataset.number),{initial:true}));root.querySelectorAll('[data-attribution]').forEach(el=>build(el,true));}
  function prepare(root){
   root.querySelectorAll('[data-attribution]').forEach(el=>{if(initialized.has(el))return;initialized.add(el);build(el,true);observer.observe(el)});
-  root.querySelectorAll('.mini-stats .stat strong,.ring strong').forEach(el=>{if(!el.dataset.number){const raw=el.textContent,digits=Number(raw.replace(/[^\d.]/g,''));if(raw.includes('$')){el.dataset.format='currency';el.dataset.number=digits}else if(raw.includes('%')){el.dataset.format='percent';el.dataset.number=digits/100}else el.dataset.number=digits;set(el,Number(el.dataset.number),{initial:true})}});
+  root.querySelectorAll('.mini-stats .stat strong,.ring strong').forEach(el=>{if(el.hasAttribute('data-static-number'))return;if(!el.dataset.number){const raw=el.textContent,digits=Number(raw.replace(/[^\d.]/g,''));if(raw.includes('$')){el.dataset.format='currency';el.dataset.number=digits}else if(raw.includes('%')){el.dataset.format='percent';el.dataset.number=digits/100}else el.dataset.number=digits;set(el,Number(el.dataset.number),{initial:true})}});
   root.querySelectorAll('[data-number]').forEach(el=>{if(!values.has(el))set(el,Number(el.dataset.number),{initial:true})});
  }
  const observer=new IntersectionObserver(entries=>entries.forEach(({target,isIntersecting})=>{if(isIntersecting)visible.add(target);else visible.delete(target)}),{threshold:.15});
