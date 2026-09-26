@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <base href="/system/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore, inspect, and install the Syntari design system.">
+  <title>System — Syntari</title>
+  <link rel="icon" href="../favicon.svg">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./system.css">
+  <link rel="stylesheet" href="../workspace.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
+</head>
+<body class="sys-body">
+  <a class="workspace-skip" href="#system-stage">Skip to preview</a>
+  <button class="workspace-menu" data-workspace-menu aria-label="Open System navigation" aria-expanded="false" aria-controls="system-rail">☰ <span>System</span></button>
+  <button class="workspace-backdrop" data-workspace-backdrop aria-label="Close navigation" hidden></button>
+  <div class="sys-shell" data-shell>
+    <aside class="sys-rail" id="system-rail" data-rail>
+      <div class="sys-rail-head">
+        <a class="sys-brand" href="../" aria-label="Syntari">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Syntari</span>
+        </a>
+        <button class="workspace-theme" data-workspace-theme aria-label="Switch to light theme">◐</button>
+      </div>
+
+      <div class="sys-section-title">
+        <span>System</span>
+        <strong data-component-count>—</strong>
+      </div>
+
+      <label class="sys-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input aria-label="Find a component" type="search" placeholder="Find a component" autocomplete="off" data-search>
+        <kbd>/</kbd>
+      </label>
+
+      <nav class="sys-nav" aria-label="Syntari system" data-nav></nav>
+
+      <div class="sys-rail-foot">
+        <a href="../"><span>Renderer</span><span>↗</span></a>
+        <a href="./" aria-current="page"><span>System</span><span>•</span></a>
+        <a href="../docs/"><span>Docs</span><span>↗</span></a>
+        <a href="https://github.com/SyntariUI/syntari"><span>GitHub</span><span>↗</span></a>
+      </div>
+    </aside>
+
+    <main class="sys-main">
+      <section class="sys-workspace" data-workspace data-panel="none">
+        <div class="sys-toolbar" aria-label="Component tools">
+          <button class="sys-install" type="button" data-install data-panel-open="install" aria-pressed="false" aria-controls="system-inspector">
+            <span>Install</span>
+          </button>
+
+          <button class="sys-icon-button" type="button" data-inspect data-panel-open="info" aria-controls="system-inspector" aria-label="Inspect component" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>
+          </button>
+
+          <button class="sys-icon-button" type="button" data-code data-panel-open="code" aria-controls="system-inspector" aria-label="View code" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>
+          </button>
+
+          <button class="sys-icon-button" type="button" data-focus data-workspace-focus aria-label="Focus preview" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+
+        <div class="sys-stage" data-stage data-workspace-stage id="system-stage" tabindex="-1">
+          <div class="sys-ambient" aria-hidden="true"></div>
+
+          <div class="sys-preview-viewport">
+            <div class="sys-preview-host" data-component-mount></div>
+          </div>
+
+          <div class="sys-stage-status" aria-live="polite">
+            <span class="sys-live-dot"></span>
+            <span data-status>Loading system…</span>
+          </div>
+
+          <div class="sys-stage-meta">
+            <span data-category>Component</span>
+            <strong data-name>Loading…</strong>
+          </div>
+
+          <div class="sys-preview-controls"><div data-states aria-label="Preview states"></div><button class="workspace-device" data-device aria-pressed="false">Mobile preview</button></div>
+          <div class="sys-cursor" aria-hidden="true" data-cursor></div>
+        </div>
+
+        <aside class="sys-inspector" id="system-inspector" data-inspector aria-label="Component inspector" aria-hidden="true" inert>
+          <div class="sys-inspector-head">
+            <div>
+              <span data-inspector-kicker>Component</span>
+              <strong data-inspector-title>—</strong>
+            </div>
+            <button class="sys-icon-button" type="button" data-close-panel aria-label="Close panel">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+
+          <div class="sys-info-panel" data-info-panel data-inspector-panel="info">
+            <p class="sys-description" data-description></p>
+
+            <div class="sys-info-block">
+              <span>Registry</span>
+              <div class="sys-info-row"><span>ID</span><code data-registry-id></code></div>
+              <div class="sys-info-row"><span>Status</span><strong data-contract-status>Loading…</strong></div>
+            </div>
+
+            <div class="sys-info-block"><span>Rules and use</span><p data-rules></p><p data-ir-support></p><a data-manifest-link>Open manifest ↗</a><a data-docs-link>Implementation guide ↗</a></div>
+            <div class="sys-info-block">
+              <span>System tokens</span>
+              <div class="sys-token-list" data-tokens></div>
+            </div>
+          </div>
+
+          <div class="sys-code-panel" data-code-panel data-inspector-panel="code" hidden>
+            <div class="sys-code-toolbar">
+              <span data-code-file>component.html</span>
+              <button type="button" data-copy-code>Copy</button>
+            </div>
+            <div class="sys-code-toolbar"><button data-code-mode="html" aria-pressed="true">HTML</button><button data-code-mode="manifest" aria-pressed="false">Manifest</button></div>
+            <p class="workspace-message" data-code-copy-status role="status"></p><pre tabindex="0"><code data-source></code></pre>
+          </div>
+          <div class="sys-install-panel" data-inspector-panel="install" hidden>
+            <p>Copy editable source into your project. Requires Node.js 22 or later.</p>
+            <pre tabindex="0"><code data-install-command></code></pre>
+            <button class="workspace-action" data-copy-install>Copy command</button>
+            <p class="workspace-message" data-copy-status role="status"></p>
+            <a href="../guides/installation/">Installation guide ↗</a>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./system.js"></script>
+</body>
+</html>

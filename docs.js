@@ -2,7 +2,7 @@ import { getComponents, mount, slugify, setTheme } from './syntari.js';
 import { groups, guideLinks, statesFor, sourceFor, contractFor, commonAPI, wideStage } from './docs-data.js';
 import { guideContent } from './docs-guides.js';
 import { galleryURL, galleryState, galleryPage, prepareGallery } from './docs-gallery.js';
-const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.2.tgz',base).href, libraryURL=new URL('library.html',base).href;
+const base=new URL('.',import.meta.url), archive=new URL('downloads/syntari-ui-0.2.2.tgz',base).href, libraryURL=new URL('docs/',base).href;
 // Keep relative links stable when history changes the current route.
 const baseElement=document.querySelector('base')||document.head.insertBefore(document.createElement('base'),document.head.firstChild);
 baseElement.href=base.href;
@@ -11,15 +11,14 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 let catalog=[],current=null,instance=null,mainTab='preview',installTab='cli',manager='npm',stateId='default',sourceTab='html',routeGeneration=0,previewGeneration=0,routePath=location.pathname+location.search;
 const codeValues=new Map(),sourceCache=new Map(); let codeIndex=0;
 const ic=n=>window.SyntariIcon?.(n)||'';
-const componentURL=c=>new URL(`components/${c.slug}/`,base).href;
+const componentURL=c=>new URL(`docs/components/${c.slug}/`,base).href;
 const guideURL=id=>new URL(`guides/${id}/`,base).href;
 let browsing=null,lastGalleryURL=history.state?.syntariGallery||galleryURL().href,lastDocumentURL=libraryURL;
 const galleryPlaces=new Map();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 function syncViews(){
- const gallery=$('#view-gallery'),docs=$('#view-documentation');
- gallery.href=lastGalleryURL;docs.href=lastDocumentURL;
- for(const [link,active]of [[gallery,!!browsing],[docs,!browsing]]){if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+ const docs=$('#view-documentation');
+ docs.href=libraryURL;docs.setAttribute('aria-current','page');
  $('.docs-search').hidden=!!browsing;
 }
 function filterGallery(value){
@@ -48,7 +47,7 @@ function setDocumentTheme(theme){setTheme(theme);try{localStorage.setItem('synta
 function renderNavigation(){
  const term=$('#docs-search').value.trim().toLowerCase(),route=location.pathname;
  const link=(url,title,icon='',badge='',active=new URL(url).pathname===route,attributes='')=>`<a class="docs-nav-link" href="${esc(url)}" ${active?'aria-current="page"':''} ${attributes}>${icon?ic(icon):''}${esc(title)}${badge?`<span class="docs-nav-badge">${badge}</span>`:''}</a>`;
- let html=`<div class="docs-nav-group"><h2>Workspace</h2>${link(base.href,'Home','external','',false,'data-nav-route')}${link(libraryURL,'Overview','grid')}${link(galleryURL(),'Component gallery','layers','',browsing?.view==='gallery','data-view="gallery"')}${link(galleryURL({view:'screens'}),'Starter screens','layout','',browsing?.view==='screens','data-view="screens"')}${link(galleryURL({view:'foundations'}),'Foundations','palette','',browsing?.view==='foundations','data-view="foundations"')}${link(new URL('generative-ui.html',base).href,'Renderer','bot')}</div>`;
+ let html=`<div class="docs-nav-group"><h2>Workspace</h2>${link(base.href,'Renderer','bot','',false,'data-nav-route')}${link(new URL('system/',base).href,'System','layers','',false,'data-nav-route')}${link(libraryURL,'Docs overview','file')}${link(galleryURL(),'Component gallery','layers','',browsing?.view==='gallery','data-view="gallery"')}${link(galleryURL({view:'screens'}),'Starter screens','layout','',browsing?.view==='screens','data-view="screens"')}${link(galleryURL({view:'foundations'}),'Foundations','palette','',browsing?.view==='foundations','data-view="foundations"')}${link(new URL('generative-ui.html',base).href,'Screen IR examples','bot','',false,'data-nav-route')}</div>`;
  if(browsing){
   html+=`<div class="docs-nav-group"><h2>Components<span>${catalog.length}</span></h2>${link(galleryURL(),'All components','',String(catalog.length),browsing.view==='gallery'&&browsing.category==='All components')}${Object.entries(groups).map(([name,[icon]])=>link(galleryURL({category:name}),name,icon,String(catalog.filter(c=>c.category===name).length),browsing.view==='gallery'&&browsing.category===name,`data-category="${esc(name)}"`)).join('')}</div>`;
  }
@@ -119,13 +118,13 @@ function renderInstall(){
 }
 function overview(){
  const featured=['button','card-and-project-folder','agent-todo-list','slider','data-table','floating-navigation'];
- return `<div class="docs-index-intro"><div class="docs-eyebrow"><span class="status-dot"></span> Syntari UI · Version 0.2.2</div><h1>Small details.<br>Whole products.</h1><p>A quiet, considered library for whatever you’re building.<br>Explore the interactions. Understand the details. Make them yours.</p><div class="docs-index-actions"><a class="button primary" href="${guideURL('getting-started')}">Get started ${ic('arrow')}</a><a class="button" href="${galleryURL()}">Explore components ${ic('grid')}</a></div></div><div class="docs-index-heading"><h2>A few good places to start</h2><span>${catalog.length} components · 4 starter screens</span></div><div class="docs-index-grid">${featured.map(slug=>{const c=catalog.find(c=>c.slug===slug);return `<a class="docs-index-card" href="${componentURL(c)}"><span>${ic(groups[c.category][0])}</span><h3>${c.name}</h3><p>${groups[c.category][1]}</p><small>${c.variants} ${ic('arrow')}</small></a>`}).join('')}</div><div class="docs-index-heading"><h2>The whole library</h2><span>One shared design language</span></div><div class="docs-library-list">${[...catalog].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<a href="${componentURL(c)}">${c.name}${ic('arrow')}</a>`).join('')}</div>`;
+ return `<div class="docs-index-intro"><div class="docs-eyebrow"><span class="status-dot"></span> Syntari UI · Version 0.2.2</div><h1>Build with Syntari.</h1><p>Install the runtime, retrieve the registry, and connect validated interfaces to your product.</p><div class="docs-index-actions"><a class="button primary" href="${guideURL('getting-started')}">Get started ${ic('arrow')}</a><a class="button" href="${new URL('system/',base)}" data-nav-route>Open System ${ic('grid')}</a></div></div><div class="docs-index-heading"><h2>A few good places to start</h2><span>${catalog.length} components · 4 starter screens</span></div><div class="docs-index-grid">${featured.map(slug=>{const c=catalog.find(c=>c.slug===slug);return `<a class="docs-index-card" href="${componentURL(c)}"><span>${ic(groups[c.category][0])}</span><h3>${c.name}</h3><p>${groups[c.category][1]}</p><small>${c.variants} ${ic('arrow')}</small></a>`}).join('')}</div><div class="docs-index-heading"><h2>The whole library</h2><span>One shared design language</span></div><div class="docs-library-list">${[...catalog].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<a href="${componentURL(c)}">${c.name}${ic('arrow')}</a>`).join('')}</div>`;
 }
 async function renderRoute(){routePath=location.pathname+location.search;
  $('#docs-main').getAnimations().forEach(animation=>animation.cancel());
  const generation=++routeGeneration;++previewGeneration;instance?.destroy();instance=null;current=null;codeValues.clear();
  mainTab='preview';stateId='default';sourceTab='html';
- const pathname=decodeURI(location.pathname).slice(base.pathname.length).replace(/^\/|\/$/g,'');const parts=pathname.split('/');
+ const pathname=decodeURI(location.pathname).slice(base.pathname.length).replace(/^\/|\/$/g,'');const parts=pathname.split('/');if(parts[0]==='docs')parts.shift();
  $('#docs-crumb').textContent='Overview';browsing=null;
  if(parts[0]==='gallery.html'){
   browsing=galleryState(new URL(location.href),catalog);lastGalleryURL=location.href;
@@ -140,7 +139,7 @@ async function renderRoute(){routePath=location.pathname+location.search;
   const page=guideContent(parts[1],{code,command,apiTable,commonAPI});
   if(page){$('#docs-main').innerHTML=`<article class="docs-guide"><div class="docs-eyebrow">${ic('file')} Guides</div><h1>${page.title}</h1><p class="docs-description">${page.description}</p>${page.body}</article>`;$('#docs-crumb').textContent=guideLinks.find(g=>g[0]===parts[1])?.[1]||'Guide';document.title=`${$('#docs-crumb').textContent} — Syntari UI`;}
   else $('#docs-main').innerHTML='<h1>Guide not found.</h1>';
- }else{$('#docs-main').innerHTML=overview();document.title='Syntari — Component library';}
+ }else{$('#docs-main').innerHTML=overview();document.title='Docs — Syntari';}
  if(generation!==routeGeneration)return;
  if(!browsing)lastDocumentURL=location.href;
  syncViews();renderNavigation();iconize();syncNavigation();$('#docs-main').querySelectorAll('.docs-gallery-intro,.docs-gallery-toolbar,.section-heading,.docs-section,.docs-index-grid,.docs-library-list,.screens-heading,.screen-picker,#screen-stage,.foundation-section,.docs-related').forEach(el=>el.dataset.syntariReveal='');window.SyntariMotion.prepare($('#docs-main'));$('#docs-announcement').textContent=`${$('#docs-crumb').textContent} loaded.`;
@@ -168,7 +167,7 @@ async function navigate(url,{restore=false,preserveGallery=false}={}){
 document.addEventListener('click',async e=>{
  const link=e.target.closest('a');
  if(link?.closest('.docs-view-switch')&&link.hasAttribute('aria-current')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0){e.preventDefault();return;}
-if(link&&!link.hasAttribute('data-nav-route')&&(!link.target||link.target==='_self')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0&&!link.hasAttribute('download')){const url=new URL(link.href);if(url.origin===base.origin&&url.pathname.startsWith(base.pathname)){const path=url.pathname.slice(base.pathname.length);if((!url.hash||url.pathname!==location.pathname)&&(!path||path==='library.html'||path==='gallery.html'||/^(components|guides)\/[^/]+\/?$/.test(path))){e.preventDefault();navigate(url,{preserveGallery:link.id==='view-gallery'});return;}}}
+if(link&&!link.hasAttribute('data-nav-route')&&(!link.target||link.target==='_self')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.button===0&&!link.hasAttribute('download')){const url=new URL(link.href);if(url.origin===base.origin&&url.pathname.startsWith(base.pathname)){const path=url.pathname.slice(base.pathname.length);if((!url.hash||url.pathname!==location.pathname)&&(path==='docs/'||path==='docs'||path==='docs.html'||path==='library.html'||path==='gallery.html'||/^(docs\/components|guides)\/[^/]+\/?$/.test(path))){e.preventDefault();navigate(url,{preserveGallery:link.id==='view-gallery'});return;}}}
  const b=e.target.closest('button');if(!b)return;
  if(b.id==='replay-motion'){window.SyntariMotion.replay();return;}
  if(b.id==='download'){window.SyntariGallery.exportTokens(new URL('tokens.css',base));return;}

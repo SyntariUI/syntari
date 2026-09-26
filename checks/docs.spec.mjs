@@ -3,7 +3,7 @@ import { catalog as readCatalog } from '../scripts/catalog.mjs';
 const origin='http://127.0.0.1:4398';
 test('documentation routes, examples, source, installation and navigation',async({page,context})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await context.grantPermissions(['clipboard-read','clipboard-write']);
- await page.goto(origin+'/components/card-and-project-folder/');await expect(page.locator('h1')).toHaveText('Card & project folder');
+ await page.goto(origin+'/docs/components/card-and-project-folder/');await expect(page.locator('h1')).toHaveText('Card & project folder');
  await page.getByRole('button',{name:'Expanded',exact:true}).click();await expect(page.locator('.project-folder')).toHaveAttribute('open','');
  await page.locator('.docs-toc').getByRole('link',{name:'API reference',exact:true}).click();await expect(page).toHaveURL(/card-and-project-folder\/#api-reference$/);await expect(page.locator('.project-folder')).toHaveAttribute('open','');
  await page.locator('.project-folder').getByRole('button',{name:'Identity',exact:true}).click();await expect(page.locator('[data-extra-status]')).toContainText('Identity selected');
@@ -24,8 +24,8 @@ test('documentation routes, examples, source, installation and navigation',async
  await page.goBack();await expect(page.locator('h1')).toHaveText('Agent todo list');await page.reload();await expect(page.locator('.syntari-component')).toBeVisible();expect(errors).toEqual([]);
 });
 test('all component pages and every authored preview state load without errors',async({page,request})=>{
- const catalog=await readCatalog();for(const c of catalog){const r=await request.get(origin+`/components/${c.slug}/`);expect(r.status(),c.slug).toBe(200);}
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(origin+'/components/button/');await page.locator('.syntari-component').waitFor();
+ const catalog=await readCatalog();for(const c of catalog){const r=await request.get(origin+`/docs/components/${c.slug}/`);expect(r.status(),c.slug).toBe(200);}
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(origin+'/docs/components/button/');await page.locator('.syntari-component').waitFor();
  const result=await page.evaluate(async()=>{
   const {getComponents,mount}=await import('/syntari.js');const {statesFor}=await import('/docs-data.js');const catalog=await getComponents();const errors=[];let states=0;
   document.querySelector('#docs-main').innerHTML='<div id="state-check"></div>';const target=document.querySelector('#state-check');
