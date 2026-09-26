@@ -18,6 +18,7 @@ test('machine-readable discovery and validation commands work', () => {
   assert.equal(JSON.parse(run('info', 'button', '--json')).id, 'button');
   const patterns = JSON.parse(run('patterns', '--json'));
   assert.ok(patterns.patterns.some((pattern) => pattern.id === 'app-shell' && pattern.installable));
+  assert.equal(JSON.parse(run('registry', 'policy', '--json')).actions.default, 'deny');
   assert.equal(JSON.parse(run('validate', '--json')).valid, true);
   assert.equal(JSON.parse(run('doctor', '--json')).ok, true);
 });

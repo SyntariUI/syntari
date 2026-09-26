@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Syntari is an agentic design system: interactive components, design tokens, agent-interface patterns, and a machine-readable registry that agents can query, compose, validate, and safely evolve.">
-  <title>Syntari — A design system agents can understand, use, verify, and evolve</title>
+  <meta name="description" content="Describe an interface. Syntari selects a trusted pattern, validates Screen IR against its registry, and renders the result with an inspectable decision trace.">
+  <title>Syntari Renderer — From intent to interface</title>
   <link rel="icon" href="favicon.svg">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="modulepreload" href="syntari.js">
   <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="ir.css">
+  <script type="module" src="intent-renderer.js"></script>
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
   <script
     src="https://app.kobbe.io/tracker.js"
@@ -22,6 +24,7 @@
     <header class="landing-nav site-topbar">
       <a class="landing-brand site-brand" href="./"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
       <nav class="landing-nav-links site-nav" aria-label="Syntari">
+        <a href="#renderer">Renderer</a>
         <a href="library.html">Components</a>
         <a href="gallery.html">Gallery</a>
       </nav>
@@ -32,17 +35,30 @@
     </header>
 
     <main>
-      <section class="landing-hero">
-        <span class="badge accent"><span class="status-dot"></span> Agent-first design system</span>
-        <h1>A design system agents can use, verify, and evolve.</h1>
-        <p>Composable components, design tokens, and agent-native patterns — all machine-readable.</p>
-        <div class="landing-cta">
-          <a class="button primary" href="library.html">Explore the library</a>
+      <section class="landing-hero" id="renderer">
+        <span class="badge accent"><span class="status-dot"></span> Syntari Renderer</span>
+        <h1>From intent to interface.</h1>
+        <p>Describe what you need. Syntari chooses a trusted composition, checks every component against its contract, and renders a screen you can inspect.</p>
+        <form class="intent-form" data-intent-form>
+          <label for="intent-input">Describe what you want to build</label>
+          <textarea id="intent-input" data-intent-input rows="3" maxlength="240" required>A release report with measures, comparisons, and evidence</textarea>
+          <div class="intent-form-actions"><span>Rendered locally from bounded Syntari patterns</span><button type="submit" class="button primary" data-intent-submit>Render interface</button></div>
+        </form>
+        <div class="intent-examples" aria-label="Try an example">
+          <button type="button" data-intent-example="An analytics dashboard with metrics, filters, and a chart">Analytics dashboard</button>
+          <button type="button" data-intent-example="A review and approval screen for a production migration">Approval review</button>
+          <button type="button" data-intent-example="A release report with measures, comparisons, and evidence">Release report</button>
         </div>
-        <div class="landing-stats">125 components &middot; 250 states &middot; 18 agent patterns</div>
+        <p class="intent-status" data-intent-status role="status">Loading the Syntari registry…</p>
+      </section>
+
+      <section class="intent-workspace" aria-label="Rendered interface and decision trace">
+        <div class="intent-result"><div class="intent-result-head"><span class="badge accent">Rendered interface</span><span><span data-intent-renderable>22</span> contract-backed components</span></div><div class="ir-stage" data-intent-output></div></div>
+        <aside class="intent-inspector"><h2>Why this interface?</h2><p>Every selection and validation result is visible.</p><dl data-intent-trace></dl><details><summary>Screen IR</summary><pre data-intent-spec></pre></details><details><summary>Validation details</summary><pre data-intent-diagnostics></pre></details><a href="guides/generative-ui/">How the renderer works →</a></aside>
       </section>
 
       <section class="landing-showcase">
+        <div class="landing-showcase-head"><h2>Inspect the system underneath.</h2><p>Explore the components and source that give each rendered screen its shape.</p><a class="button" href="library.html">Explore components</a></div>
         <div class="showcase-wall">
           <div class="showcase-col">
             <div class="showcase-item" id="stage-attribution-table" style="--min-h:430px"></div>

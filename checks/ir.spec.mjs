@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-const origin = 'http://127.0.0.1:4318';
+const origin = 'http://127.0.0.1:4398';
 
 /** mode, screen title, and the components the mode draws. */
 const modes = [
@@ -170,13 +170,11 @@ test('validation refuses invented components, missing props, and values outside 
   expect(report.badColumns).toContain('error:above-maximum');
 });
 
-test('the guide documents exactly the components that carry a prop contract', async ({ page }) => {
+test('the guide links to the live registry-backed renderer catalogue', async ({ page }) => {
   await page.goto(`${origin}/guides/generative-ui/`);
-  const list = page.locator('.docs-guide-list a');
-  await expect(list.first()).toBeVisible();
-  const documented = await list.evaluateAll(links => links.map(link => link.getAttribute('href').replace(/^components\//, '').replace(/\/$/, '')).sort());
+  await expect(page.getByRole('link', { name: 'live renderer' })).toBeVisible();
+  await expect(page.locator('#docs-main')).toContainText('syntari info <id> --json');
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
-  expect(documented).toEqual(supported);
   expect(supported).toHaveLength(22);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
 });

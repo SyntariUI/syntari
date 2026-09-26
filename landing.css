@@ -10,13 +10,42 @@
 .landing-nav-github .icon{width:15px;height:15px}
 .landing-nav-links a:hover{background:var(--bg-a1);color:var(--text)}
 .landing-nav .theme-toggle .icon{width:15px;height:15px}
-.landing-hero{max-width:700px;margin:0 auto;text-align:center;padding:56px 0 30px}
+.landing-hero{max-width:760px;margin:0 auto;text-align:center;padding:56px 0 30px}
 .landing-hero .badge{margin-bottom:20px}
 .landing-hero h1{font-size:clamp(34px,5vw,54px);line-height:1.03;font-weight:600;letter-spacing:-.045em;margin:0 0 18px}
 .landing-hero>p{font-size:clamp(15px,1.5vw,18px);line-height:1.55;color:var(--muted);max-width:46ch;margin:0 auto}
 .landing-cta{display:flex;gap:12px;justify-content:center;margin:24px 0 14px;flex-wrap:wrap}
 .landing-cta .button{font-size:13px;min-height:42px;padding:0 18px}
 .landing-stats{font-size:12px;color:var(--fg-2)}
+.intent-form{display:grid;gap:10px;margin:28px auto 0;padding:18px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
+.intent-form label{font-size:13px;font-weight:600;color:var(--text)}
+.intent-form textarea{width:100%;min-height:86px;resize:vertical;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--canvas);color:var(--text);font:inherit;line-height:1.55}
+.intent-form textarea:focus-visible,.intent-examples button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.intent-form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.intent-form-actions span,.intent-status{font-size:12px;color:var(--muted)}
+.intent-form-actions .button{min-height:42px}
+.intent-examples{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto}
+.intent-examples button{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.intent-examples button:hover{color:var(--text);border-color:var(--accent)}
+.intent-status{min-height:18px;margin:8px auto 0}
+.intent-workspace{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(260px,.8fr);gap:16px;max-width:1380px;margin:0 auto 54px;align-items:start}
+.intent-result{min-width:0;padding:16px;background:var(--bg-2);border:1px solid var(--border);border-radius:22px}
+.intent-result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 4px 14px;color:var(--muted);font-size:12px}
+.intent-result .ir-stage{min-height:400px}
+.intent-inspector{min-width:0;padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.intent-inspector h2{font-size:18px;letter-spacing:-.02em}
+.intent-inspector>p{font-size:13px;color:var(--muted);margin:6px 0 18px}
+.intent-inspector dl{display:grid;gap:0;margin:0}
+.intent-trace-row{display:grid;gap:4px;padding:12px 0;border-top:1px solid var(--border)}
+.intent-trace-row dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.intent-trace-row dd{margin:0;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.intent-inspector details{border-top:1px solid var(--border);padding:12px 0}
+.intent-inspector summary{cursor:pointer;font-size:13px}
+.intent-inspector pre{max-height:280px;overflow:auto;padding:12px;background:var(--canvas);border-radius:10px;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}
+.intent-inspector>a{display:inline-block;margin-top:8px;font-size:12px;color:var(--accent-text)}
+.landing-showcase-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1360px;margin:0 auto 26px}
+.landing-showcase-head h2{font-size:25px;letter-spacing:-.03em}
+.landing-showcase-head p{color:var(--muted);font-size:13px;flex:1 1 280px}
 
 /* Bento: explicit columns so every card lands where it belongs */
 .landing-showcase{width:100vw;margin-left:calc(50% - 50vw);margin-top:30px;margin-bottom:60px;padding:0 clamp(16px,3vw,32px)}
@@ -57,3 +86,4 @@
 @media(max-width:1300px){.showcase-wall{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:980px){.showcase-wall{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.showcase-wall{grid-template-columns:1fr}.landing-nav{flex-wrap:wrap;row-gap:6px}.landing-nav-links{flex-wrap:wrap;flex:1 1 100%;justify-content:space-between;order:2}.landing-nav-links a{padding:8px 9px;font-size:12px}.landing-hero{padding-top:40px}}
+@media(max-width:900px){.intent-workspace{grid-template-columns:1fr}.intent-result .ir-stage{min-height:300px}}

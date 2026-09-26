@@ -142,8 +142,9 @@ export async function validate(spec, options = {}) {
     return { ok: false, diagnostics, screen: null };
   }
   const screen = spec.type === 'screen' ? spec : { type: 'screen', layout: 'stack', children: [spec] };
+  if (spec.type === 'screen' && spec.version !== undefined && spec.version !== 'syntari-ir-1') report('error', 'unsupported-version', 'version', 'Screen version must be "syntari-ir-1".');
   if (spec.type === 'screen' && spec.layout !== undefined && !IR_LAYOUTS.includes(spec.layout)) report('warning', 'unknown-layout', 'layout', `"${spec.layout}" is not a reference layout. The screen renders as a stack.`);
-  if (screen.children !== undefined && !Array.isArray(screen.children)) report('error', 'wrong-type', 'children', 'Screen children must be an array.');
+  if (!Array.isArray(screen.children)) report('error', 'wrong-type', 'children', 'Screen children must be an array.');
   const children = Array.isArray(screen.children) ? screen.children : [];
   if (children.length > limits.maxChildren) report('error', 'over-node-budget', 'children', `${children.length} top-level nodes were supplied; the limit is ${limits.maxChildren}.`);
 
@@ -365,4 +366,4 @@ export async function render(spec, target, options = {}) {
   };
 }
 
-window.SyntariIR = { validate, render, registry, resolveProps, renderableSlugs, layouts: IR_LAYOUTS, limits: IR_LIMITS };
+if (typeof window !== 'undefined') window.SyntariIR = { validate, render, registry, resolveProps, renderableSlugs, layouts: IR_LAYOUTS, limits: IR_LIMITS };

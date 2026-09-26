@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { catalog as readCatalog } from '../scripts/catalog.mjs';
-const origin='http://127.0.0.1:4318';
+const origin='http://127.0.0.1:4398';
 test('documentation routes, examples, source, installation and navigation',async({page,context})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await context.grantPermissions(['clipboard-read','clipboard-write']);
  await page.goto(origin+'/components/card-and-project-folder/');await expect(page.locator('h1')).toHaveText('Card & project folder');
@@ -13,7 +13,7 @@ test('documentation routes, examples, source, installation and navigation',async
  await page.getByRole('tab',{name:'Interactions',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('folder-file');await page.locator('#panel-source [data-expand-code]').click();await expect(page.locator('#panel-source .docs-code')).toHaveClass(/expanded/);
  await page.getByRole('tab',{name:'Styles',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('.project-folder');
  await page.getByRole('tab',{name:'pnpm',exact:true}).click();await expect(page.locator('#panel-command')).toContainText('pnpm --package=');
- await page.getByRole('tab',{name:'Manual',exact:true}).click();await expect(page.getByRole('link',{name:/Download Syntari 0.2.1/})).toHaveAttribute('href',/syntari-ui-0.2.1.tgz$/);
+ await page.getByRole('tab',{name:'Manual',exact:true}).click();await expect(page.getByRole('link',{name:/Download Syntari 0.2.2/})).toHaveAttribute('href',/syntari-ui-0.2.2.tgz$/);
  await expect(page.locator('#api-reference')).toContainText('configure');
  await page.getByRole('searchbox',{name:'Search documentation'}).fill('agent todo');await page.locator('#docs-navigation').getByRole('link',{name:'Agent todo list',exact:true}).click();await expect(page).toHaveURL(/components\/agent-todo-list\/$/);
  await page.getByRole('button',{name:'Completed',exact:true}).click();await expect(page.locator('[data-run-status]')).toHaveText('All tasks completed');

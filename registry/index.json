@@ -1,12 +1,12 @@
 {
-  "$id": "https://syntariui.github.io/syntari/registry/index.json",
-  "version": "0.2.1",
+  "$id": "https://syntariui.giovanitier.com/registry/index.json",
+  "version": "0.2.2",
   "components": [
     {
       "id": "attribution-table",
       "name": "Attribution table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Proportional traffic and revenue segments sit behind stable, borderless rows. Values roll during live updates. Hover or focus a country to reveal revenue, or use Show revenue on touch devices. Pause stops the three-second demo updates.",
       "tokens": [
         "--radius-control",
@@ -17,13 +17,27 @@
       ],
       "source": "components/attribution-table/",
       "manifest": "components/attribution-table.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/attribution-table.js",
+        "kit/components/attribution-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/attribution-table/"
     },
     {
       "id": "rolling-number",
       "name": "Rolling number",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Individual digits roll inside fixed-width masks. Thousands separators and currency stay legible; the final number is exposed as one accessible label. Try crossing a digit boundary or changing direction.",
       "tokens": [
         "--radius-control",
@@ -34,13 +48,27 @@
       ],
       "source": "components/rolling-number/",
       "manifest": "components/rolling-number.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/rolling-number.js",
+        "kit/components/rolling-number.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/rolling-number/"
     },
     {
       "id": "visitor-table",
       "name": "Visitor table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact visitor list with an overlapping avatar and country flag, a source pill, and right-aligned revenue. Value animations share the same numeric primitive as the attribution table.",
       "tokens": [
         "--radius-control",
@@ -51,13 +79,27 @@
       ],
       "source": "components/visitor-table/",
       "manifest": "components/visitor-table.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/visitor-table.js",
+        "kit/components/visitor-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/visitor-table/"
     },
     {
       "id": "button",
       "name": "Button",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
       "tokens": [
         "--radius-control",
@@ -68,13 +110,33 @@
       ],
       "source": "components/button/",
       "manifest": "components/button.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [
+          "A single primary “Save changes” in a settings form."
+        ],
+        "bad": [
+          "Two primary buttons side by side in the same dialog."
+        ],
+        "boundary": [
+          "A destructive action must pair danger hierarchy with explicit confirmation."
+        ]
+      },
+      "files": [
+        "kit/components/button.js",
+        "kit/components/button.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/button/"
     },
     {
       "id": "icon-button",
       "name": "Icon button",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Compact actions with accessible names. Toggle buttons expose pressed state, and disabled actions remain visible.",
       "tokens": [
         "--radius-control",
@@ -85,13 +147,27 @@
       ],
       "source": "components/icon-button/",
       "manifest": "components/icon-button.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/icon-button.js",
+        "kit/components/icon-button.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/icon-button/"
     },
     {
       "id": "segmented-control",
       "name": "Segmented control",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Switch between mutually exclusive views. Each control exposes its selected state and supports arrow-key navigation.",
       "tokens": [
         "--radius-control",
@@ -102,13 +178,27 @@
       ],
       "source": "components/segmented-control/",
       "manifest": "components/segmented-control.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/segmented-control.js",
+        "kit/components/segmented-control.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/segmented-control/"
     },
     {
       "id": "text-input",
       "name": "Text input",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Labeled fields with persistent hints and associated validation messages. Error meaning is communicated with text as well as color.",
       "tokens": [
         "--radius-control",
@@ -119,13 +209,27 @@
       ],
       "source": "components/text-input/",
       "manifest": "components/text-input.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/text-input.js",
+        "kit/components/text-input.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/text-input/"
     },
     {
       "id": "switch",
       "name": "Switch",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Turn a setting on or off immediately. Each switch has a descriptive label and a generous interaction area.",
       "tokens": [
         "--radius-control",
@@ -136,13 +240,27 @@
       ],
       "source": "components/switch/",
       "manifest": "components/switch.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/switch.js",
+        "kit/components/switch.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/switch/"
     },
     {
       "id": "checkbox",
       "name": "Checkbox",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Use checkboxes for independent choices that can be combined.",
       "tokens": [
         "--radius-control",
@@ -153,13 +271,27 @@
       ],
       "source": "components/checkbox/",
       "manifest": "components/checkbox.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/checkbox.js",
+        "kit/components/checkbox.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/checkbox/"
     },
     {
       "id": "radio",
       "name": "Radio",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Use radio buttons for a single selection within a set.",
       "tokens": [
         "--radius-control",
@@ -170,13 +302,27 @@
       ],
       "source": "components/radio/",
       "manifest": "components/radio.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/radio.js",
+        "kit/components/radio.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/radio/"
     },
     {
       "id": "badge-and-status",
       "name": "Badge & status",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Quiet status indicators with semantic text colors. A dot, label, or sign carries the meaning beyond color.",
       "tokens": [
         "--green-a1",
@@ -187,13 +333,27 @@
       ],
       "source": "components/badge-and-status/",
       "manifest": "components/badge-and-status.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/badge-and-status.js",
+        "kit/components/badge-and-status.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/badge-and-status/"
     },
     {
       "id": "metric-and-sparkline",
       "name": "Metric & sparkline",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact metric pair with comparison badges and a bar chart.",
       "tokens": [
         "--blue-4",
@@ -203,13 +363,27 @@
       ],
       "source": "components/metric-and-sparkline/",
       "manifest": "components/metric-and-sparkline.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/metric-and-sparkline.js",
+        "kit/components/metric-and-sparkline.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/metric-and-sparkline/"
     },
     {
       "id": "floating-navigation",
       "name": "Floating navigation",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact utility rail for switching views. The selected destination has a quiet filled state and an accessible pressed label.",
       "tokens": [
         "--background",
@@ -219,13 +393,27 @@
       ],
       "source": "components/floating-navigation/",
       "manifest": "components/floating-navigation.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/floating-navigation.js",
+        "kit/components/floating-navigation.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/floating-navigation/"
     },
     {
       "id": "avatar-and-group",
       "name": "Avatar & group",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Abstract color avatars provide recognizable identity without depending on photography. Groups show overflow as a count.",
       "tokens": [
         "--radius-control",
@@ -236,13 +424,27 @@
       ],
       "source": "components/avatar-and-group/",
       "manifest": "components/avatar-and-group.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/avatar-and-group.js",
+        "kit/components/avatar-and-group.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/avatar-and-group/"
     },
     {
       "id": "select-and-date",
       "name": "Select & date",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A workspace selector and calendar share the same floating surface, selection colors, and Lucide icons. The calendar supports arrow keys, Home/End, Page Up/Down, Enter, and Escape.",
       "tokens": [
         "--radius-control",
@@ -253,13 +455,27 @@
       ],
       "source": "components/select-and-date/",
       "manifest": "components/select-and-date.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/select-and-date.js",
+        "kit/components/select-and-date.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/select-and-date/"
     },
     {
       "id": "score",
       "name": "Score",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A progress ring pairs a numerical score with a written evaluation.",
       "tokens": [
         "--green-4",
@@ -267,13 +483,27 @@
       ],
       "source": "components/score/",
       "manifest": "components/score.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/score.js",
+        "kit/components/score.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/score/"
     },
     {
       "id": "progress",
       "name": "Progress",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A linear progress bar shows measurable completion with a written value.",
       "tokens": [
         "--accent",
@@ -281,13 +511,27 @@
       ],
       "source": "components/progress/",
       "manifest": "components/progress.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/progress.js",
+        "kit/components/progress.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/progress/"
     },
     {
       "id": "dropdown-menu",
       "name": "Dropdown menu",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A contextual action list that opens on demand, dismisses on Escape or outside click, and supports keyboard navigation.",
       "tokens": [
         "--radius-control",
@@ -298,13 +542,27 @@
       ],
       "source": "components/dropdown-menu/",
       "manifest": "components/dropdown-menu.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/dropdown-menu.js",
+        "kit/components/dropdown-menu.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/dropdown-menu/"
     },
     {
       "id": "tabs",
       "name": "Tabs",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Switch related content in place. Tabs expose selected state, are connected to their panels, and support arrow keys.",
       "tokens": [
         "--radius-control",
@@ -315,13 +573,27 @@
       ],
       "source": "components/tabs/",
       "manifest": "components/tabs.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/tabs.js",
+        "kit/components/tabs.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/tabs/"
     },
     {
       "id": "banner",
       "name": "Banner",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Inline feedback communicates what happened and whether the user needs to act. Text remains readable in both themes.",
       "tokens": [
         "--radius-control",
@@ -332,13 +604,27 @@
       ],
       "source": "components/banner/",
       "manifest": "components/banner.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/banner.js",
+        "kit/components/banner.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/banner/"
     },
     {
       "id": "table",
       "name": "Table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Compact rows with subtle filled backgrounds. Semantic column headers keep the values understandable to screen readers.",
       "tokens": [
         "--radius-control",
@@ -349,13 +635,27 @@
       ],
       "source": "components/table/",
       "manifest": "components/table.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/table.js",
+        "kit/components/table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/table/"
     },
     {
       "id": "card",
       "name": "Card",
       "category": "Container",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A composed container for a project summary. Surface, border, and spacing tokens work independently of product domain.",
       "tokens": [
         "--radius-control",
@@ -366,13 +666,27 @@
       ],
       "source": "components/card/",
       "manifest": "components/card.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/card.js",
+        "kit/components/card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/card/"
     },
     {
       "id": "slider",
       "name": "Slider",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Choose a value along a range. The live output is associated with the labeled slider and updates on every change.",
       "tokens": [
         "--radius-control",
@@ -383,13 +697,27 @@
       ],
       "source": "components/slider/",
       "manifest": "components/slider.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/slider.js",
+        "kit/components/slider.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/slider/"
     },
     {
       "id": "dialog",
       "name": "Dialog",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A focused modal for a single task. Native dialog manages focus containment and Escape. The form validates before confirming.",
       "tokens": [
         "--radius-control",
@@ -400,13 +728,27 @@
       ],
       "source": "components/dialog/",
       "manifest": "components/dialog.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/dialog.js",
+        "kit/components/dialog.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/dialog/"
     },
     {
       "id": "toast",
       "name": "Toast",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Transient confirmation after an action. The message is announced through a live status region without moving focus.",
       "tokens": [
         "--radius-control",
@@ -417,13 +759,27 @@
       ],
       "source": "components/toast/",
       "manifest": "components/toast.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/toast.js",
+        "kit/components/toast.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/toast/"
     },
     {
       "id": "tooltip",
       "name": "Tooltip",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A short label for an icon action, shown on pointer hover and keyboard focus. It never contains essential instructions.",
       "tokens": [
         "--radius-control",
@@ -434,13 +790,27 @@
       ],
       "source": "components/tooltip/",
       "manifest": "components/tooltip.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/tooltip.js",
+        "kit/components/tooltip.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/tooltip/"
     },
     {
       "id": "pagination",
       "name": "Pagination",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Navigate a bounded set of pages. Current page and visible item range stay synchronized, including previous and next actions.",
       "tokens": [
         "--radius-control",
@@ -451,13 +821,27 @@
       ],
       "source": "components/pagination/",
       "manifest": "components/pagination.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/pagination.js",
+        "kit/components/pagination.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/pagination/"
     },
     {
       "id": "stepper",
       "name": "Stepper",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Progress through a short sequence with completed, current, and upcoming steps. The demo advances and can be restarted.",
       "tokens": [
         "--radius-control",
@@ -468,13 +852,27 @@
       ],
       "source": "components/stepper/",
       "manifest": "components/stepper.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/stepper.js",
+        "kit/components/stepper.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/stepper/"
     },
     {
       "id": "empty-state",
       "name": "Empty state",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Explain what belongs in an empty space and offer the next useful action.",
       "tokens": [
         "--radius-control",
@@ -485,13 +883,27 @@
       ],
       "source": "components/empty-state/",
       "manifest": "components/empty-state.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/empty-state.js",
+        "kit/components/empty-state.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/empty-state/"
     },
     {
       "id": "activity-list",
       "name": "Activity list",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A simple timeline pairs an event, context, and time. The connecting line is decorative; event order is semantic.",
       "tokens": [
         "--radius-control",
@@ -502,13 +914,27 @@
       ],
       "source": "components/activity-list/",
       "manifest": "components/activity-list.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/activity-list.js",
+        "kit/components/activity-list.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/activity-list/"
     },
     {
       "id": "skeleton-and-spinner",
       "name": "Skeleton & spinner",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Static skeletons reserve the shape of loading content. The spinner respects reduced-motion preferences.",
       "tokens": [
         "--radius-control",
@@ -519,13 +945,27 @@
       ],
       "source": "components/skeleton-and-spinner/",
       "manifest": "components/skeleton-and-spinner.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/skeleton-and-spinner.js",
+        "kit/components/skeleton-and-spinner.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/skeleton-and-spinner/"
     },
     {
       "id": "accordion",
       "name": "Accordion",
       "category": "Container",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Progressively disclose supporting details. Native details elements retain keyboard and screen-reader behavior.",
       "tokens": [
         "--radius-control",
@@ -536,13 +976,27 @@
       ],
       "source": "components/accordion/",
       "manifest": "components/accordion.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/accordion.js",
+        "kit/components/accordion.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/accordion/"
     },
     {
       "id": "funnel",
       "name": "Funnel",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A flowing stage comparison, with stage names and values available as text.",
       "tokens": [
         "--blue-4",
@@ -552,13 +1006,27 @@
       ],
       "source": "components/funnel/",
       "manifest": "components/funnel.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/funnel.js",
+        "kit/components/funnel.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/funnel/"
     },
     {
       "id": "filter-chips",
       "name": "Filter chips",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Applied filters are visible and individually removable. Clear all and reset keep the example repeatable.",
       "tokens": [
         "--radius-control",
@@ -569,13 +1037,27 @@
       ],
       "source": "components/filter-chips/",
       "manifest": "components/filter-chips.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/filter-chips.js",
+        "kit/components/filter-chips.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/filter-chips/"
     },
     {
       "id": "chat-composer",
       "name": "Chat composer",
       "category": "Chat",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A local AI-chat composer with room to write, attach, and send. Messages are kept locally and announced when added.",
       "tokens": [
         "--radius-control",
@@ -586,13 +1068,27 @@
       ],
       "source": "components/chat-composer/",
       "manifest": "components/chat-composer.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chat-composer.js",
+        "kit/components/chat-composer.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chat-composer/"
     },
     {
       "id": "file-input",
       "name": "File input",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "An empty-state pattern for assets: drop files on the surface or use Select assets. Selection stays on your device.",
       "tokens": [
         "--radius-control",
@@ -603,13 +1099,27 @@
       ],
       "source": "components/file-input/",
       "manifest": "components/file-input.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/file-input.js",
+        "kit/components/file-input.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/file-input/"
     },
     {
       "id": "text-area",
       "name": "Text area",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A multiline field with an associated character counter. Length limits are enforced by the native textarea.",
       "tokens": [
         "--radius-control",
@@ -620,13 +1130,27 @@
       ],
       "source": "components/text-area/",
       "manifest": "components/text-area.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/text-area.js",
+        "kit/components/text-area.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/text-area/"
     },
     {
       "id": "session-card",
       "name": "Session card",
       "category": "Container",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A layered review card. Expand the result row to see what was checked; spacing and shadows keep nested surfaces quiet.",
       "tokens": [
         "--radius-control",
@@ -637,13 +1161,27 @@
       ],
       "source": "components/session-card/",
       "manifest": "components/session-card.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/session-card.js",
+        "kit/components/session-card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/session-card/"
     },
     {
       "id": "selection-toolbar",
       "name": "Selection toolbar",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact body toolbar responds to selection. Actions confirm the selected items locally and clear selection after archiving.",
       "tokens": [
         "--radius-control",
@@ -654,13 +1192,27 @@
       ],
       "source": "components/selection-toolbar/",
       "manifest": "components/selection-toolbar.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/selection-toolbar.js",
+        "kit/components/selection-toolbar.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/selection-toolbar/"
     },
     {
       "id": "expandable-dock",
       "name": "Expandable dock",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A contextual activity switcher opens into a compact realtime summary. Select Realtime to expand; any other destination collapses it.",
       "tokens": [
         "--radius-control",
@@ -671,13 +1223,27 @@
       ],
       "source": "components/expandable-dock/",
       "manifest": "components/expandable-dock.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/expandable-dock.js",
+        "kit/components/expandable-dock.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/expandable-dock/"
     },
     {
       "id": "app-shell",
       "name": "App shell",
       "category": "Layout",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "One navigation system with sidebar and topbar layouts, a collapsible rail, and a keyboard-accessible mobile drawer. Starter screens use the same component.",
       "tokens": [
         "--radius-control",
@@ -688,13 +1254,27 @@
       ],
       "source": "components/app-shell/",
       "manifest": "components/app-shell.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/app-shell.js",
+        "kit/components/app-shell.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/app-shell/"
     },
     {
       "id": "page-header-and-breadcrumbs",
       "name": "Page header & breadcrumbs",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A page title, supporting description, breadcrumb trail, and primary action share a reusable alignment.",
       "tokens": [
         "--radius-control",
@@ -705,13 +1285,27 @@
       ],
       "source": "components/page-header-and-breadcrumbs/",
       "manifest": "components/page-header-and-breadcrumbs.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/page-header-and-breadcrumbs.js",
+        "kit/components/page-header-and-breadcrumbs.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/page-header-and-breadcrumbs/"
     },
     {
       "id": "side-drawer",
       "name": "Side drawer",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Inspect and edit a record without losing your place. Native modal semantics keep keyboard focus inside until dismissed.",
       "tokens": [
         "--radius-control",
@@ -722,13 +1316,27 @@
       ],
       "source": "components/side-drawer/",
       "manifest": "components/side-drawer.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/side-drawer.js",
+        "kit/components/side-drawer.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/side-drawer/"
     },
     {
       "id": "bottom-sheet",
       "name": "Bottom sheet",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact action surface rises from the bottom, with Escape and backdrop dismissal.",
       "tokens": [
         "--radius-control",
@@ -739,13 +1347,27 @@
       ],
       "source": "components/bottom-sheet/",
       "manifest": "components/bottom-sheet.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/bottom-sheet.js",
+        "kit/components/bottom-sheet.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/bottom-sheet/"
     },
     {
       "id": "popover",
       "name": "Popover",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Small controls appear next to their trigger and dismiss on outside click or Escape.",
       "tokens": [
         "--radius-control",
@@ -756,13 +1378,27 @@
       ],
       "source": "components/popover/",
       "manifest": "components/popover.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/popover.js",
+        "kit/components/popover.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/popover/"
     },
     {
       "id": "confirmation-dialog",
       "name": "Confirmation dialog",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Confirm a consequential action with a clear description, safe cancel action, and explicit outcome.",
       "tokens": [
         "--radius-control",
@@ -773,13 +1409,27 @@
       ],
       "source": "components/confirmation-dialog/",
       "manifest": "components/confirmation-dialog.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/confirmation-dialog.js",
+        "kit/components/confirmation-dialog.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/confirmation-dialog/"
     },
     {
       "id": "searchable-select",
       "name": "Searchable select",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Search a list of options. Arrow keys move the active option; Enter commits and Escape dismisses.",
       "tokens": [
         "--radius-control",
@@ -790,13 +1440,27 @@
       ],
       "source": "components/searchable-select/",
       "manifest": "components/searchable-select.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/searchable-select.js",
+        "kit/components/searchable-select.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/searchable-select/"
     },
     {
       "id": "autocomplete",
       "name": "Autocomplete",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Suggestions narrow as you type. Choose an existing value or keep a custom value.",
       "tokens": [
         "--radius-control",
@@ -807,13 +1471,27 @@
       ],
       "source": "components/autocomplete/",
       "manifest": "components/autocomplete.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/autocomplete.js",
+        "kit/components/autocomplete.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/autocomplete/"
     },
     {
       "id": "multiselect",
       "name": "Multiselect",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Select several values from a searchable list. Remove selected chips without reopening the list.",
       "tokens": [
         "--radius-control",
@@ -824,13 +1502,27 @@
       ],
       "source": "components/multiselect/",
       "manifest": "components/multiselect.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/multiselect.js",
+        "kit/components/multiselect.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/multiselect/"
     },
     {
       "id": "command-palette",
       "name": "Command palette",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Find screens, components, and common actions with the keyboard. Open anywhere with Command/Ctrl K.",
       "tokens": [
         "--radius-control",
@@ -841,13 +1533,27 @@
       ],
       "source": "components/command-palette/",
       "manifest": "components/command-palette.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/command-palette.js",
+        "kit/components/command-palette.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/command-palette/"
     },
     {
       "id": "number-stepper",
       "name": "Number stepper",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Increment, decrement, or enter a number. Boundary buttons disable at the minimum and maximum.",
       "tokens": [
         "--radius-control",
@@ -858,13 +1564,27 @@
       ],
       "source": "components/number-stepper/",
       "manifest": "components/number-stepper.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/number-stepper.js",
+        "kit/components/number-stepper.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/number-stepper/"
     },
     {
       "id": "password-field",
       "name": "Password field",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Reveal a password without changing its value. The toggle exposes its pressed state and updates its label.",
       "tokens": [
         "--radius-control",
@@ -875,13 +1595,27 @@
       ],
       "source": "components/password-field/",
       "manifest": "components/password-field.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/password-field.js",
+        "kit/components/password-field.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/password-field/"
     },
     {
       "id": "date-range-picker",
       "name": "Date range picker",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Choose two dates across months, or use a quick preset. Apply commits the selection; cancel preserves the original value.",
       "tokens": [
         "--radius-control",
@@ -892,13 +1626,27 @@
       ],
       "source": "components/date-range-picker/",
       "manifest": "components/date-range-picker.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/date-range-picker.js",
+        "kit/components/date-range-picker.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/date-range-picker/"
     },
     {
       "id": "time-picker",
       "name": "Time picker",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A tactile hour-and-minute wheel with momentum scrolling, keyboard control, and explicit confirmation.",
       "tokens": [
         "--radius-control",
@@ -909,13 +1657,27 @@
       ],
       "source": "components/time-picker/",
       "manifest": "components/time-picker.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/time-picker.js",
+        "kit/components/time-picker.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/time-picker/"
     },
     {
       "id": "selectable-cards",
       "name": "Selectable cards",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
       "tokens": [
         "--radius-control",
@@ -926,13 +1688,27 @@
       ],
       "source": "components/selectable-cards/",
       "manifest": "components/selectable-cards.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/selectable-cards.js",
+        "kit/components/selectable-cards.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/selectable-cards/"
     },
     {
       "id": "simple-data-table",
       "name": "Simple data table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A quiet table with one record per line. Sort project names, status, progress, currency, and dates without extra toolbars or bulk controls.",
       "tokens": [
         "--radius-control",
@@ -943,13 +1719,27 @@
       ],
       "source": "components/simple-data-table/",
       "manifest": "components/simple-data-table.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/simple-data-table.js",
+        "kit/components/simple-data-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/simple-data-table/"
     },
     {
       "id": "data-table",
       "name": "Data table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Sort, search, filter, hide columns, select rows, paginate, expand details, and edit records. Actions update local preview data.",
       "tokens": [
         "--radius-control",
@@ -960,13 +1750,27 @@
       ],
       "source": "components/data-table/",
       "manifest": "components/data-table.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/data-table.js",
+        "kit/components/data-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/data-table/"
     },
     {
       "id": "inline-validation",
       "name": "Inline validation",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Associated inline errors explain how to correct an invalid field. Valid input replaces the error with confirmation.",
       "tokens": [
         "--radius-control",
@@ -977,13 +1781,27 @@
       ],
       "source": "components/inline-validation/",
       "manifest": "components/inline-validation.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/inline-validation.js",
+        "kit/components/inline-validation.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/inline-validation/"
     },
     {
       "id": "error-and-retry",
       "name": "Error & retry",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Recover from a failed load without losing context. Retry shows a loading state before replacing the error.",
       "tokens": [
         "--radius-control",
@@ -994,13 +1812,27 @@
       ],
       "source": "components/error-and-retry/",
       "manifest": "components/error-and-retry.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/error-and-retry.js",
+        "kit/components/error-and-retry.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/error-and-retry/"
     },
     {
       "id": "upload-progress",
       "name": "Upload progress",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A bounded progress simulation with cancel and retry. Screen-reader updates announce milestones, not every frame.",
       "tokens": [
         "--radius-control",
@@ -1011,13 +1843,27 @@
       ],
       "source": "components/upload-progress/",
       "manifest": "components/upload-progress.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/upload-progress.js",
+        "kit/components/upload-progress.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/upload-progress/"
     },
     {
       "id": "unsaved-changes",
       "name": "Unsaved changes",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A contextual save bar appears when values differ from the saved version. Discard restores the original.",
       "tokens": [
         "--radius-control",
@@ -1028,13 +1874,27 @@
       ],
       "source": "components/unsaved-changes/",
       "manifest": "components/unsaved-changes.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/unsaved-changes.js",
+        "kit/components/unsaved-changes.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/unsaved-changes/"
     },
     {
       "id": "metadata-list",
       "name": "Metadata list",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Aligned labels and values display the details that accompany a record.",
       "tokens": [
         "--radius-control",
@@ -1045,13 +1905,27 @@
       ],
       "source": "components/metadata-list/",
       "manifest": "components/metadata-list.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/metadata-list.js",
+        "kit/components/metadata-list.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/metadata-list/"
     },
     {
       "id": "thumbnail-and-lightbox",
       "name": "Thumbnail & lightbox",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Local abstract artwork demonstrates an asset thumbnail and larger lightbox preview. Escape returns focus to the thumbnail.",
       "tokens": [
         "--radius-control",
@@ -1062,13 +1936,27 @@
       ],
       "source": "components/thumbnail-and-lightbox/",
       "manifest": "components/thumbnail-and-lightbox.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/thumbnail-and-lightbox.js",
+        "kit/components/thumbnail-and-lightbox.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/thumbnail-and-lightbox/"
     },
     {
       "id": "divider-and-form-section",
       "name": "Divider & form section",
       "category": "Layout",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A titled section and quiet divider separate related fields without adding another card.",
       "tokens": [
         "--radius-control",
@@ -1079,13 +1967,27 @@
       ],
       "source": "components/divider-and-form-section/",
       "manifest": "components/divider-and-form-section.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/divider-and-form-section.js",
+        "kit/components/divider-and-form-section.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/divider-and-form-section/"
     },
     {
       "id": "agent-todo-list",
       "name": "Agent todo list",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A collapsible task plan with explicit task states and bounded progress.",
       "tokens": [
         "--radius-control",
@@ -1096,13 +1998,27 @@
       ],
       "source": "components/agent-todo-list/",
       "manifest": "components/agent-todo-list.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/agent-todo-list.js",
+        "kit/components/agent-todo-list.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/agent-todo-list/"
     },
     {
       "id": "agent-message",
       "name": "Agent message",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A response with source identity and contextual actions.",
       "tokens": [
         "--radius-control",
@@ -1113,13 +2029,27 @@
       ],
       "source": "components/agent-message/",
       "manifest": "components/agent-message.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/agent-message.js",
+        "kit/components/agent-message.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/agent-message/"
     },
     {
       "id": "message-bubbles",
       "name": "Message bubbles",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Role-specific message surfaces.",
       "tokens": [
         "--radius-control",
@@ -1130,13 +2060,27 @@
       ],
       "source": "components/message-bubbles/",
       "manifest": "components/message-bubbles.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/message-bubbles.js",
+        "kit/components/message-bubbles.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/message-bubbles/"
     },
     {
       "id": "message-scroller",
       "name": "Message scroller",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A bounded message history with an explicit jump action.",
       "tokens": [
         "--radius-control",
@@ -1147,13 +2091,27 @@
       ],
       "source": "components/message-scroller/",
       "manifest": "components/message-scroller.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/message-scroller.js",
+        "kit/components/message-scroller.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/message-scroller/"
     },
     {
       "id": "prompt-input",
       "name": "Prompt input",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A growing prompt field with a local attachment picker and submit feedback.",
       "tokens": [
         "--radius-control",
@@ -1164,13 +2122,27 @@
       ],
       "source": "components/prompt-input/",
       "manifest": "components/prompt-input.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/prompt-input.js",
+        "kit/components/prompt-input.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/prompt-input/"
     },
     {
       "id": "code-block",
       "name": "Code block",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Code is preserved as text, with a copy action.",
       "tokens": [
         "--radius-control",
@@ -1181,13 +2153,27 @@
       ],
       "source": "components/code-block/",
       "manifest": "components/code-block.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/code-block.js",
+        "kit/components/code-block.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/code-block/"
     },
     {
       "id": "approval-card",
       "name": "Approval card",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A decision card that records an explicit choice.",
       "tokens": [
         "--radius-control",
@@ -1198,13 +2184,27 @@
       ],
       "source": "components/approval-card/",
       "manifest": "components/approval-card.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/approval-card.js",
+        "kit/components/approval-card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/approval-card/"
     },
     {
       "id": "file-diff",
       "name": "File diff",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Readable additions and deletions with a review outcome.",
       "tokens": [
         "--radius-control",
@@ -1215,13 +2215,27 @@
       ],
       "source": "components/file-diff/",
       "manifest": "components/file-diff.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/file-diff.js",
+        "kit/components/file-diff.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/file-diff/"
     },
     {
       "id": "tool-result",
       "name": "Tool result",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Inspect structured output and run a bounded local simulation.",
       "tokens": [
         "--radius-control",
@@ -1232,13 +2246,27 @@
       ],
       "source": "components/tool-result/",
       "manifest": "components/tool-result.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/tool-result.js",
+        "kit/components/tool-result.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/tool-result/"
     },
     {
       "id": "streaming-response",
       "name": "Streaming response",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A cancellable response preview. Completion is announced without reading every character.",
       "tokens": [
         "--radius-control",
@@ -1249,13 +2277,27 @@
       ],
       "source": "components/streaming-response/",
       "manifest": "components/streaming-response.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/streaming-response.js",
+        "kit/components/streaming-response.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/streaming-response/"
     },
     {
       "id": "image-generation",
       "name": "Image generation",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Local artwork illustrates generation states; no model service is called.",
       "tokens": [
         "--radius-control",
@@ -1266,13 +2308,27 @@
       ],
       "source": "components/image-generation/",
       "manifest": "components/image-generation.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/image-generation.js",
+        "kit/components/image-generation.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/image-generation/"
     },
     {
       "id": "tool-approval",
       "name": "Tool approval",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Show the requested scope before the user decides.",
       "tokens": [
         "--radius-control",
@@ -1283,13 +2339,33 @@
       ],
       "source": "components/tool-approval/",
       "manifest": "components/tool-approval.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [
+          "A destructive external action shows a tool-approval card before the agent proceeds."
+        ],
+        "bad": [
+          "A low-risk local read blocks the user behind a tool-approval card."
+        ],
+        "boundary": [
+          "A consequential but reversible action may use inline confirmation instead of tool approval."
+        ]
+      },
+      "files": [
+        "kit/components/tool-approval.js",
+        "kit/components/tool-approval.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/tool-approval/"
     },
     {
       "id": "citations",
       "name": "Citations",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Numbered references disclose context next to a response.",
       "tokens": [
         "--radius-control",
@@ -1300,13 +2376,27 @@
       ],
       "source": "components/citations/",
       "manifest": "components/citations.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/citations.js",
+        "kit/components/citations.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/citations/"
     },
     {
       "id": "agent-activity",
       "name": "Agent activity",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A chronological record separate from the task plan.",
       "tokens": [
         "--radius-control",
@@ -1317,13 +2407,27 @@
       ],
       "source": "components/agent-activity/",
       "manifest": "components/agent-activity.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/agent-activity.js",
+        "kit/components/agent-activity.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/agent-activity/"
     },
     {
       "id": "agent-loading-states",
       "name": "Agent loading states",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Feedback before a durable task plan is available.",
       "tokens": [
         "--radius-control",
@@ -1334,13 +2438,27 @@
       ],
       "source": "components/agent-loading-states/",
       "manifest": "components/agent-loading-states.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/agent-loading-states.js",
+        "kit/components/agent-loading-states.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/agent-loading-states/"
     },
     {
       "id": "ai-sidebar",
       "name": "AI sidebar",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Conversation navigation next to a working composer.",
       "tokens": [
         "--radius-control",
@@ -1351,13 +2469,27 @@
       ],
       "source": "components/ai-sidebar/",
       "manifest": "components/ai-sidebar.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/ai-sidebar.js",
+        "kit/components/ai-sidebar.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/ai-sidebar/"
     },
     {
       "id": "chat-workspace",
       "name": "Chat workspace",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A composed local conversation with retained messages between previews.",
       "tokens": [
         "--radius-control",
@@ -1368,13 +2500,27 @@
       ],
       "source": "components/chat-workspace/",
       "manifest": "components/chat-workspace.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chat-workspace.js",
+        "kit/components/chat-workspace.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chat-workspace/"
     },
     {
       "id": "file-tree",
       "name": "File tree",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Explore nested files with disclosures and preview feedback.",
       "tokens": [
         "--radius-control",
@@ -1385,13 +2531,27 @@
       ],
       "source": "components/file-tree/",
       "manifest": "components/file-tree.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/file-tree.js",
+        "kit/components/file-tree.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/file-tree/"
     },
     {
       "id": "preview-rail",
       "name": "Preview rail",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact artwork selector updates a shared preview.",
       "tokens": [
         "--radius-control",
@@ -1402,14 +2562,28 @@
       ],
       "source": "components/preview-rail/",
       "manifest": "components/preview-rail.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/preview-rail.js",
+        "kit/components/preview-rail.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/preview-rail/"
     },
     {
       "id": "otp-input",
       "name": "OTP input",
       "category": "Form controls",
-      "version": "0.2.1",
-      "description": "One accessible code field supports paste, autofill, and validation.",
+      "version": "0.2.2",
+      "description": "A six-digit verification field supports paste, autofill, animated completion, and clear rejection feedback.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1419,13 +2593,27 @@
       ],
       "source": "components/otp-input/",
       "manifest": "components/otp-input.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/otp-input.js",
+        "kit/components/otp-input.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/otp-input/"
     },
     {
       "id": "feedback-widget",
       "name": "Feedback widget",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Collect a rating and optional note within the local preview.",
       "tokens": [
         "--radius-control",
@@ -1436,13 +2624,27 @@
       ],
       "source": "components/feedback-widget/",
       "manifest": "components/feedback-widget.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/feedback-widget.js",
+        "kit/components/feedback-widget.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/feedback-widget/"
     },
     {
       "id": "notification-stack",
       "name": "Notification stack",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact inbox with per-notification dismissal.",
       "tokens": [
         "--radius-control",
@@ -1453,13 +2655,27 @@
       ],
       "source": "components/notification-stack/",
       "manifest": "components/notification-stack.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/notification-stack.js",
+        "kit/components/notification-stack.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/notification-stack/"
     },
     {
       "id": "context-menu",
       "name": "Context menu",
       "category": "Overlay",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Secondary actions open with right-click, Shift F10, or an explicit button.",
       "tokens": [
         "--radius-control",
@@ -1470,13 +2686,27 @@
       ],
       "source": "components/context-menu/",
       "manifest": "components/context-menu.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/context-menu.js",
+        "kit/components/context-menu.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/context-menu/"
     },
     {
       "id": "availability-scheduler",
       "name": "Availability scheduler",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Choose a day and available time with explicit confirmation.",
       "tokens": [
         "--radius-control",
@@ -1487,13 +2717,27 @@
       ],
       "source": "components/availability-scheduler/",
       "manifest": "components/availability-scheduler.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/availability-scheduler.js",
+        "kit/components/availability-scheduler.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/availability-scheduler/"
     },
     {
       "id": "wheel-picker",
       "name": "Wheel picker",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A bounded duration list with scroll snapping and keyboard selection.",
       "tokens": [
         "--radius-control",
@@ -1504,13 +2748,27 @@
       ],
       "source": "components/wheel-picker/",
       "manifest": "components/wheel-picker.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/wheel-picker.js",
+        "kit/components/wheel-picker.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/wheel-picker/"
     },
     {
       "id": "swipeable-list",
       "name": "Swipeable list",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Pointer swipes and visible actions lead to the same reversible outcome.",
       "tokens": [
         "--radius-control",
@@ -1521,13 +2779,27 @@
       ],
       "source": "components/swipeable-list/",
       "manifest": "components/swipeable-list.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/swipeable-list.js",
+        "kit/components/swipeable-list.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/swipeable-list/"
     },
     {
       "id": "not-found",
       "name": "Not found",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "An actionable empty route state.",
       "tokens": [
         "--radius-control",
@@ -1538,13 +2810,27 @@
       ],
       "source": "components/not-found/",
       "manifest": "components/not-found.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/not-found.js",
+        "kit/components/not-found.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/not-found/"
     },
     {
       "id": "range-slider",
       "name": "Range slider",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A budget interval with independent, labeled lower and upper controls.",
       "tokens": [
         "--radius-control",
@@ -1555,13 +2841,27 @@
       ],
       "source": "components/range-slider/",
       "manifest": "components/range-slider.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/range-slider.js",
+        "kit/components/range-slider.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/range-slider/"
     },
     {
       "id": "tilt-card",
       "name": "Tilt card",
       "category": "Container",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A restrained perspective response on pointer movement, without changing the content hierarchy.",
       "tokens": [
         "--radius-control",
@@ -1572,13 +2872,27 @@
       ],
       "source": "components/tilt-card/",
       "manifest": "components/tilt-card.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/tilt-card.js",
+        "kit/components/tilt-card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/tilt-card/"
     },
     {
       "id": "marquee",
       "name": "Marquee",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A pausable horizontal strip. Motion stops when reduced motion is requested.",
       "tokens": [
         "--radius-control",
@@ -1589,13 +2903,27 @@
       ],
       "source": "components/marquee/",
       "manifest": "components/marquee.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/marquee.js",
+        "kit/components/marquee.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/marquee/"
     },
     {
       "id": "pull-to-refresh",
       "name": "Pull to refresh",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Refresh a short feed using a downward gesture or accessible button.",
       "tokens": [
         "--radius-control",
@@ -1606,13 +2934,27 @@
       ],
       "source": "components/pull-to-refresh/",
       "manifest": "components/pull-to-refresh.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/pull-to-refresh.js",
+        "kit/components/pull-to-refresh.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/pull-to-refresh/"
     },
     {
       "id": "ambient-background",
       "name": "Ambient background",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A lightweight CSS interpretation of the reference shader effect, using only Syntari palette tokens.",
       "tokens": [
         "--radius-control",
@@ -1623,13 +2965,27 @@
       ],
       "source": "components/ambient-background/",
       "manifest": "components/ambient-background.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/ambient-background.js",
+        "kit/components/ambient-background.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/ambient-background/"
     },
     {
       "id": "rotating-carousel",
       "name": "Rotating carousel",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Three artwork cards rotate through a shared stage, with explicit controls and reduced motion.",
       "tokens": [
         "--radius-control",
@@ -1640,13 +2996,27 @@
       ],
       "source": "components/rotating-carousel/",
       "manifest": "components/rotating-carousel.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/rotating-carousel.js",
+        "kit/components/rotating-carousel.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/rotating-carousel/"
     },
     {
       "id": "card-and-project-folder",
       "name": "Card & project folder",
       "category": "Container",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A folder opens into a compact set of file actions.",
       "tokens": [
         "--radius-control",
@@ -1657,13 +3027,27 @@
       ],
       "source": "components/card-and-project-folder/",
       "manifest": "components/card-and-project-folder.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/card-and-project-folder.js",
+        "kit/components/card-and-project-folder.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/card-and-project-folder/"
     },
     {
       "id": "masonry-grid",
       "name": "Masonry grid",
       "category": "Layout",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "An uneven grid with explicit loading instead of an endless automatic fetch.",
       "tokens": [
         "--radius-control",
@@ -1674,13 +3058,27 @@
       ],
       "source": "components/masonry-grid/",
       "manifest": "components/masonry-grid.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/masonry-grid.js",
+        "kit/components/masonry-grid.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/masonry-grid/"
     },
     {
       "id": "fixtures",
       "name": "Fixtures",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact schedule pattern with selectable fixtures and local detail feedback.",
       "tokens": [
         "--radius-control",
@@ -1691,13 +3089,27 @@
       ],
       "source": "components/fixtures/",
       "manifest": "components/fixtures.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/fixtures.js",
+        "kit/components/fixtures.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/fixtures/"
     },
     {
       "id": "asset-swap",
       "name": "Asset swap",
       "category": "Form controls",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A local illustrative crypto convert form: each field carries its own asset select, enter an amount, and review the order. No wallet, trading, or network transaction is connected.",
       "tokens": [
         "--radius-control",
@@ -1708,13 +3120,27 @@
       ],
       "source": "components/asset-swap/",
       "manifest": "components/asset-swap.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/asset-swap.js",
+        "kit/components/asset-swap.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/asset-swap/"
     },
     {
       "id": "status-island",
       "name": "Status island",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A dark floating surface reveals task context without switching pages.",
       "tokens": [
         "--radius-control",
@@ -1725,13 +3151,27 @@
       ],
       "source": "components/status-island/",
       "manifest": "components/status-island.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/status-island.js",
+        "kit/components/status-island.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/status-island/"
     },
     {
       "id": "overflow-actions",
       "name": "Overflow actions",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Low-frequency actions share the standard Syntari menu surface.",
       "tokens": [
         "--radius-control",
@@ -1742,13 +3182,27 @@
       ],
       "source": "components/overflow-actions/",
       "manifest": "components/overflow-actions.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/overflow-actions.js",
+        "kit/components/overflow-actions.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/overflow-actions/"
     },
     {
       "id": "wallet-card",
       "name": "Wallet card",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A sample account surface with concealed balance and a copyable demonstration identifier.",
       "tokens": [
         "--radius-control",
@@ -1759,13 +3213,27 @@
       ],
       "source": "components/wallet-card/",
       "manifest": "components/wallet-card.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/wallet-card.js",
+        "kit/components/wallet-card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/wallet-card/"
     },
     {
       "id": "prediction-card",
       "name": "Prediction card",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A product-planning prediction sample with local choices; no betting or payment.",
       "tokens": [
         "--radius-control",
@@ -1776,13 +3244,27 @@
       ],
       "source": "components/prediction-card/",
       "manifest": "components/prediction-card.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/prediction-card.js",
+        "kit/components/prediction-card.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/prediction-card/"
     },
     {
       "id": "bloom-menu",
       "name": "Bloom menu",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Circular actions float above a central trigger that clearly changes between Create and Close.",
       "tokens": [
         "--radius-control",
@@ -1793,13 +3275,27 @@
       ],
       "source": "components/bloom-menu/",
       "manifest": "components/bloom-menu.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/bloom-menu.js",
+        "kit/components/bloom-menu.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/bloom-menu/"
     },
     {
       "id": "morphing-search",
       "name": "Morphing search",
       "category": "Navigation",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "An inline search expands in place and filters a small set of recent projects.",
       "tokens": [
         "--radius-control",
@@ -1810,13 +3306,27 @@
       ],
       "source": "components/morphing-search/",
       "manifest": "components/morphing-search.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/morphing-search.js",
+        "kit/components/morphing-search.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/morphing-search/"
     },
     {
       "id": "action-swap",
       "name": "Action swap",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A single action changes its label and icon as work progresses.",
       "tokens": [
         "--radius-control",
@@ -1827,13 +3337,27 @@
       ],
       "source": "components/action-swap/",
       "manifest": "components/action-swap.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/action-swap.js",
+        "kit/components/action-swap.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/action-swap/"
     },
     {
       "id": "agent-questions",
       "name": "Agent questions",
       "category": "Agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A small guided approval flow combines radio options, free text, and a reviewable result.",
       "tokens": [
         "--radius-control",
@@ -1844,14 +3368,28 @@
       ],
       "source": "components/agent-questions/",
       "manifest": "components/agent-questions.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/agent-questions.js",
+        "kit/components/agent-questions.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/agent-questions/"
     },
     {
       "id": "chart-bars",
       "name": "Chart bars",
       "category": "Data display",
-      "version": "0.2.1",
-      "description": "Grouped columns compare two series across periods, with the numbers in a summary a screen reader can read.",
+      "version": "0.2.2",
+      "description": "A compact comparative bar chart that keeps exact values visible and makes the change across checkpoints easy to scan.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1861,13 +3399,27 @@
       ],
       "source": "components/chart-bars/",
       "manifest": "components/chart-bars.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chart-bars.js",
+        "kit/components/chart-bars.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chart-bars/"
     },
     {
       "id": "chart-line",
       "name": "Chart line",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A line chart with points and a quiet grid. Series colours come from the shared tokens rather than a palette of their own.",
       "tokens": [
         "--radius-control",
@@ -1878,13 +3430,27 @@
       ],
       "source": "components/chart-line/",
       "manifest": "components/chart-line.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chart-line.js",
+        "kit/components/chart-line.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chart-line/"
     },
     {
       "id": "chart-donut",
       "name": "Chart donut",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A ring shows how one whole splits, with the total held in the centre and a legend carrying the exact numbers.",
       "tokens": [
         "--radius-control",
@@ -1895,13 +3461,27 @@
       ],
       "source": "components/chart-donut/",
       "manifest": "components/chart-donut.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chart-donut.js",
+        "kit/components/chart-donut.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chart-donut/"
     },
     {
       "id": "heatmap",
       "name": "Heatmap",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A compact grid where one intensity ramp carries the comparison, with the scale beside it.",
       "tokens": [
         "--radius-control",
@@ -1912,13 +3492,27 @@
       ],
       "source": "components/heatmap/",
       "manifest": "components/heatmap.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/heatmap.js",
+        "kit/components/heatmap.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/heatmap/"
     },
     {
       "id": "treemap",
       "name": "Treemap",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Tiles sized by share, so the shape of the whole is readable before any number is.",
       "tokens": [
         "--radius-control",
@@ -1929,13 +3523,27 @@
       ],
       "source": "components/treemap/",
       "manifest": "components/treemap.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/treemap.js",
+        "kit/components/treemap.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/treemap/"
     },
     {
       "id": "network-graph",
       "name": "Network graph",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Relationships drawn as nodes and edges, with the busiest node carrying the emphasis.",
       "tokens": [
         "--radius-control",
@@ -1946,13 +3554,27 @@
       ],
       "source": "components/network-graph/",
       "manifest": "components/network-graph.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/network-graph.js",
+        "kit/components/network-graph.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/network-graph/"
     },
     {
       "id": "gantt-chart",
       "name": "Gantt chart",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Rows of work with a span and a marker for today, at a grain people can read at a glance.",
       "tokens": [
         "--radius-control",
@@ -1963,13 +3585,27 @@
       ],
       "source": "components/gantt-chart/",
       "manifest": "components/gantt-chart.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/gantt-chart.js",
+        "kit/components/gantt-chart.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/gantt-chart/"
     },
     {
       "id": "comparison-table",
       "name": "Comparison table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "The same metric measured across options, with the advantage column naming the winner in words rather than colour alone.",
       "tokens": [
         "--radius-control",
@@ -1980,13 +3616,27 @@
       ],
       "source": "components/comparison-table/",
       "manifest": "components/comparison-table.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/comparison-table.js",
+        "kit/components/comparison-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/comparison-table/"
     },
     {
       "id": "stat-row",
       "name": "Stat row",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A row of measures with a label, a value, a change, and the note that explains it.",
       "tokens": [
         "--radius-control",
@@ -1997,13 +3647,27 @@
       ],
       "source": "components/stat-row/",
       "manifest": "components/stat-row.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/stat-row.js",
+        "kit/components/stat-row.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/stat-row/"
     },
     {
       "id": "process-ledger",
       "name": "Process ledger",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A pipeline shown as stages with their durations and a total, so the cost of each step is visible.",
       "tokens": [
         "--radius-control",
@@ -2014,13 +3678,27 @@
       ],
       "source": "components/process-ledger/",
       "manifest": "components/process-ledger.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/process-ledger.js",
+        "kit/components/process-ledger.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/process-ledger/"
     },
     {
       "id": "transport-controls",
       "name": "Transport controls",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Controls for something that runs: play, pause, step, and a speed that states its own value.",
       "tokens": [
         "--radius-control",
@@ -2031,13 +3709,27 @@
       ],
       "source": "components/transport-controls/",
       "manifest": "components/transport-controls.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/transport-controls.js",
+        "kit/components/transport-controls.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/transport-controls/"
     },
     {
       "id": "live-readout",
       "name": "Live readout",
       "category": "Feedback & status",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A small panel of measures with a live status, for anything that changes while someone watches.",
       "tokens": [
         "--radius-control",
@@ -2048,13 +3740,27 @@
       ],
       "source": "components/live-readout/",
       "manifest": "components/live-readout.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/live-readout.js",
+        "kit/components/live-readout.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/live-readout/"
     },
     {
       "id": "feature-grid",
       "name": "Feature grid",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A short row of capabilities: an icon, a claim, the explanation, and the footnote that qualifies it.",
       "tokens": [
         "--radius-control",
@@ -2065,13 +3771,27 @@
       ],
       "source": "components/feature-grid/",
       "manifest": "components/feature-grid.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/feature-grid.js",
+        "kit/components/feature-grid.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/feature-grid/"
     },
     {
       "id": "pricing-table",
       "name": "Pricing table",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A plan matrix where included, limited, and absent stay readable without relying on colour.",
       "tokens": [
         "--radius-control",
@@ -2082,13 +3802,27 @@
       ],
       "source": "components/pricing-table/",
       "manifest": "components/pricing-table.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/pricing-table.js",
+        "kit/components/pricing-table.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/pricing-table/"
     },
     {
       "id": "cta-band",
       "name": "CTA band",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A closing call to action: one statement, one next step, and no competing links.",
       "tokens": [
         "--radius-control",
@@ -2099,13 +3833,27 @@
       ],
       "source": "components/cta-band/",
       "manifest": "components/cta-band.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/cta-band.js",
+        "kit/components/cta-band.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/cta-band/"
     },
     {
       "id": "page-footer",
       "name": "Page footer",
       "category": "Content",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "The end of a page: the mark, the promise, grouped links, and whether the service is up.",
       "tokens": [
         "--radius-control",
@@ -2116,13 +3864,27 @@
       ],
       "source": "components/page-footer/",
       "manifest": "components/page-footer.json",
-      "status": "generated"
+      "status": "generated",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/page-footer.js",
+        "kit/components/page-footer.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/page-footer/"
     },
     {
       "id": "area-chart",
       "name": "Area chart",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A line with its area filled, a labelled axis, and gridlines. The summary states the range for screen readers.",
       "tokens": [
         "--radius-control",
@@ -2133,13 +3895,27 @@
       ],
       "source": "components/area-chart/",
       "manifest": "components/area-chart.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/area-chart.js",
+        "kit/components/area-chart.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/area-chart/"
     },
     {
       "id": "chart-toolbar",
       "name": "Chart toolbar",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "The controls that belong above a chart: a comparison, a view switch, and room for a legend.",
       "tokens": [
         "--radius-control",
@@ -2150,13 +3926,27 @@
       ],
       "source": "components/chart-toolbar/",
       "manifest": "components/chart-toolbar.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/chart-toolbar.js",
+        "kit/components/chart-toolbar.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/chart-toolbar/"
     },
     {
       "id": "metric-strip",
       "name": "Metric strip",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A row of measures where the active one is the thing being charted. Choosing another changes the focus.",
       "tokens": [
         "--radius-control",
@@ -2167,13 +3957,27 @@
       ],
       "source": "components/metric-strip/",
       "manifest": "components/metric-strip.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/metric-strip.js",
+        "kit/components/metric-strip.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/metric-strip/"
     },
     {
       "id": "headline-metric",
       "name": "Headline metric",
       "category": "Data display",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "The one number a screen is about, with an optional total it is measured against.",
       "tokens": [
         "--radius-control",
@@ -2184,13 +3988,27 @@
       ],
       "source": "components/headline-metric/",
       "manifest": "components/headline-metric.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/headline-metric.js",
+        "kit/components/headline-metric.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/headline-metric/"
     },
     {
       "id": "filter-bar",
       "name": "Filter bar",
       "category": "Action",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "The row that scopes a view: a period selector, a filter action, and the chips that describe the current scope.",
       "tokens": [
         "--radius-control",
@@ -2201,13 +4019,27 @@
       ],
       "source": "components/filter-bar/",
       "manifest": "components/filter-bar.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/filter-bar.js",
+        "kit/components/filter-bar.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/filter-bar/"
     },
     {
       "id": "source-list",
       "name": "Source list",
       "category": "Table & list",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "A short ranked list with share bars, for the sources or answers behind a number.",
       "tokens": [
         "--radius-control",
@@ -2218,7 +4050,21 @@
       ],
       "source": "components/source-list/",
       "manifest": "components/source-list.json",
-      "status": "authored"
+      "status": "authored",
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/source-list.js",
+        "kit/components/source-list.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/source-list/"
     }
   ]
 }

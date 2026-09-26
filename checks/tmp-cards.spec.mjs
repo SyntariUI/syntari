@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const origin = 'http://127.0.0.1:4318';
+const origin = 'http://127.0.0.1:4398';
 
 const cards = [
   ['session-card', '.session-card'],

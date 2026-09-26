@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/patterns.schema.json",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "patterns": [
     {
       "id": "app-shell",
@@ -10,12 +10,12 @@
       "status": "authored",
       "dependencies": [],
       "tokens": [
-        "surface",
-        "canvas",
-        "text",
-        "muted",
-        "border",
-        "accent",
+        "color.surface.raised",
+        "color.surface.canvas",
+        "color.text.primary",
+        "color.text.secondary",
+        "color.border.default",
+        "color.action.primary",
         "radius.card"
       ],
       "files": [
@@ -158,6 +158,109 @@
         "Separate the rendered result from the action that requested it."
       ],
       "installable": false
+    },
+    {
+      "id": "release-review",
+      "name": "Release review",
+      "type": "composition",
+      "description": "A report someone has to trust before they act on it.",
+      "status": "authored",
+      "dependencies": [
+        "banner",
+        "stat-row",
+        "chart-bars",
+        "comparison-table",
+        "process-ledger"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Show a release report with measures, comparisons, and evidence."
+      ],
+      "installable": false,
+      "screenMode": "static",
+      "keywords": [
+        "release",
+        "report",
+        "audit",
+        "evidence",
+        "rollout",
+        "deploy",
+        "compare"
+      ],
+      "preview": "https://syntariui.giovanitier.com/#renderer"
+    },
+    {
+      "id": "analytics-overview",
+      "name": "Analytics overview",
+      "type": "composition",
+      "description": "The north-star screen: a report a product team opens every morning.",
+      "status": "authored",
+      "dependencies": [
+        "filter-bar",
+        "headline-metric",
+        "metric-strip",
+        "chart-toolbar",
+        "area-chart",
+        "source-list",
+        "metadata-list"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Build an analytics dashboard with metrics, filters, and a chart."
+      ],
+      "installable": false,
+      "screenMode": "interactive",
+      "keywords": [
+        "dashboard",
+        "analytics",
+        "metrics",
+        "traffic",
+        "growth",
+        "chart",
+        "product",
+        "filter"
+      ],
+      "preview": "https://syntariui.giovanitier.com/#renderer"
+    },
+    {
+      "id": "approval-review",
+      "name": "Approval review",
+      "type": "composition",
+      "description": "A consequential change needs a clear review before a person authorizes it.",
+      "status": "authored",
+      "dependencies": [
+        "banner",
+        "tool-approval",
+        "metadata-list"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Show a safe review screen before a production change."
+      ],
+      "installable": false,
+      "screenMode": "approval",
+      "keywords": [
+        "approval",
+        "approve",
+        "migration",
+        "permission",
+        "consent",
+        "production",
+        "review"
+      ],
+      "preview": "https://syntariui.giovanitier.com/#renderer"
     }
   ]
 }

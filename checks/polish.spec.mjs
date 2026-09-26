@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { wideStage } from '../docs-data.js';
-const origin='http://127.0.0.1:4318';
+const origin='http://127.0.0.1:4398';
 async function open(page,slug){await page.goto(`${origin}/components/${slug}/`);await page.locator('.syntari-component').waitFor();}
 const live=page=>page.locator('.syntari-component');
 

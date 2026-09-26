@@ -2,6 +2,7 @@
 import { access, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateRegistry, validateScreenSchema } from './registry-validator.mjs';
 
 const packageRoot = dirname(fileURLToPath(import.meta.url));
 const kitRoot = join(packageRoot, 'kit');
@@ -14,8 +15,8 @@ const usage = `Syntari UI
   syntari search <query> [--json]
   syntari info <name> [--json]
   syntari doctor [--dir <path>] [--json]
-  syntari validate [--dir <path>] [--json]
-  syntari registry [<component>] [--json]
+  syntari validate [--dir <path>] [--spec <screen.json>] [--json]
+  syntari registry [<component>|policy] [--json]
   syntari patterns [--json]
   syntari add <component...> [--dir <path>] [--json]
 
@@ -61,17 +62,21 @@ function fail(message, code = 'SYNTARI_ERROR') {
 function safeId(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 }
-function parseOptions(argv) {
+function parseOptions(argv, { allowSpec = false } = {}) {
   const values = [];
   let dir;
+  let spec;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--dir') {
       dir = argv[++i];
       if (!dir) fail('--dir requires a path.', 'INVALID_ARGUMENT');
+    } else if (argv[i] === '--spec' && allowSpec) {
+      spec = argv[++i];
+      if (!spec) fail('--spec requires a JSON file.', 'INVALID_ARGUMENT');
     } else if (argv[i].startsWith('-')) fail(`Unknown option: ${argv[i]}`, 'INVALID_ARGUMENT');
     else values.push(argv[i]);
   }
-  return { values, dir };
+  return { values, dir, spec };
 }
 async function componentDetails(id, registry, catalog, patternIndex) {
   const entry = (registry.components ?? []).find((item) => item.id === id);
@@ -98,22 +103,24 @@ async function componentDetails(id, registry, catalog, patternIndex) {
     category: entry?.category ?? catalogEntry?.category,
     packageVersion: (await getPackage()).version,
     registryVersion: registry.version,
-    preview: pattern?.preview ?? entry?.preview ?? `https://syntariui.github.io/syntari/components/${id}/`,
+    preview: pattern?.preview ?? entry?.preview ?? `https://syntariui.giovanitier.com/components/${id}/`,
     manifest: manifest ?? undefined,
     dependencies: manifest?.dependencies ?? pattern?.dependencies ?? [],
     tokens: manifest?.tokens ?? entry?.tokens ?? pattern?.tokens ?? [],
     examples: manifest?.examples ?? pattern?.examples ?? {},
+    ...(pattern?.screenMode ? { screen: (await readJson(join(base, 'patterns', 'screens.json')))[pattern.screenMode] } : {}),
     files: files.length ? files : requestedFiles,
     installable: pattern ? Boolean(pattern.installable && files.length === requestedFiles.length) : files.includes(`components/${id}.js`) && files.includes(`components/${id}.html`)
   };
 }
-async function checkInstallation(dir) {
+async function checkInstallation(dir, packageVersion, registryVersion) {
   const root = resolve(dir);
   const checks = [];
   const markerPath = join(root, 'syntari.json');
   let marker;
   try { marker = await readJson(markerPath); } catch {}
-  checks.push({ name: 'installation marker', ok: Boolean(marker?.version), detail: marker?.version ? `Syntari ${marker.version}` : 'syntari.json is missing or invalid' });
+  const markerOk = marker?.version === packageVersion && marker?.registryVersion === registryVersion;
+  checks.push({ name: 'installation marker', ok: markerOk, detail: markerOk ? `Syntari ${marker.version}` : `expected Syntari ${packageVersion} and registry ${registryVersion}; installation marker is missing or stale` });
   const runtime = join(root, 'runtime');
   for (const file of ['syntari.js', 'tokens.css', 'styles.css']) {
     checks.push({ name: `runtime/${file}`, ok: await exists(join(runtime, file)), detail: await exists(join(runtime, file)) ? 'present' : 'missing' });
@@ -140,9 +147,12 @@ async function main() {
     const { values } = parseOptions(rest);
     const query = values.join(' ').trim().toLocaleLowerCase();
     if (!query) fail('Provide a search query, for example: syntari search dashboard.', 'INVALID_ARGUMENT');
-    const items = catalog.filter((item) => [item.slug, item.id, item.name, item.category, item.description].join(' ').toLocaleLowerCase().includes(query))
-      .map((item) => ({ id: item.slug ?? item.id, name: item.name, category: item.category, description: item.description }));
-    return emit(jsonOutput ? { query, count: items.length, results: items } : items.length ? items.map((item) => `${item.id} — ${item.name} (${item.category})\n  ${item.description ?? ''}`).join('\n') : 'No matching components.');
+    const components = catalog.filter((item) => [item.slug, item.id, item.name, item.category, item.description].join(' ').toLocaleLowerCase().includes(query))
+      .map((item) => ({ id: item.slug ?? item.id, kind: 'component', name: item.name, category: item.category, description: item.description }));
+    const patterns = (patternIndex.patterns ?? []).filter((item) => [item.id, item.name, item.type, item.description, ...(item.keywords ?? [])].join(' ').toLocaleLowerCase().includes(query))
+      .map((item) => ({ id: item.id, kind: 'pattern', name: item.name, category: item.type, description: item.description }));
+    const items = [...components, ...patterns].sort((a, b) => a.id.localeCompare(b.id));
+    return emit(jsonOutput ? { query, count: items.length, results: items } : items.length ? items.map((item) => `${item.id} — ${item.name} (${item.kind})\n  ${item.description ?? ''}`).join('\n') : 'No matching registry entries.');
   }
   if (command === 'info') {
     const { values } = parseOptions(rest);
@@ -152,6 +162,7 @@ async function main() {
   if (command === 'registry') {
     const { values } = parseOptions(rest);
     if (values.length > 1) fail('Use syntari registry [component].', 'INVALID_ARGUMENT');
+    if (values[0] === 'policy') return emit(await readJson(join(await getRegistryDir(), 'agent-policy.json')));
     if (values[0]) return emit(await componentDetails(values[0], registry, catalog, patternIndex));
     return emit(registry);
   }
@@ -164,51 +175,48 @@ async function main() {
   if (command === 'doctor') {
     const { dir } = parseOptions(rest);
     const registryOk = Array.isArray(registry.components) && registry.components.length > 0;
+    const contracts = await validateRegistry(await getRegistryDir(), kitRoot, pkg.version);
     const checks = [
-      { name: 'Node.js version', ok: Number(process.versions.node.split('.')[0]) >= 18, detail: process.version },
+      { name: 'Node.js version', ok: Number(process.versions.node.split('.')[0]) >= 22, detail: `${process.version} (requires Node.js 22+)` },
       { name: 'CLI package version', ok: Boolean(pkg.version), detail: pkg.version },
       { name: 'component registry', ok: registryOk, detail: registryOk ? `${registry.components.length} components · ${registry.version}` : 'registry index missing or empty' },
       { name: 'pattern registry', ok: await exists(join(await getRegistryDir(), 'patterns', 'index.json')), detail: await exists(join(await getRegistryDir(), 'patterns', 'index.json')) ? 'present' : 'missing' },
-      { name: 'packaged component catalog', ok: await exists(join(kitRoot, 'catalog.json')), detail: await exists(join(kitRoot, 'catalog.json')) ? `${catalog.length} entries` : 'missing' }
+      { name: 'packaged component catalog', ok: await exists(join(kitRoot, 'catalog.json')), detail: await exists(join(kitRoot, 'catalog.json')) ? `${catalog.length} entries` : 'missing' },
+      { name: 'registry contracts', ok: contracts.valid, detail: contracts.valid ? `${contracts.componentCount} components and ${contracts.patternCount} patterns validated` : contracts.problems.slice(0, 3).join('; ') }
     ];
-    if (dir) checks.push(...(await checkInstallation(dir)).checks);
+    if (dir) checks.push(...(await checkInstallation(dir, pkg.version, registry.version)).checks);
     const ok = checks.every((check) => check.ok);
     if (!ok) process.exitCode = 1;
     return emit(jsonOutput ? { ok, checks } : checks.map((check) => `${check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`).join('\n'));
   }
   if (command === 'validate') {
-    const { dir } = parseOptions(rest);
-    const ids = new Set();
-    const problems = [];
-    for (const item of registry.components ?? []) {
-      if (!item.id || !safeId(item.id)) problems.push(`Invalid component id: ${item.id}`);
-      else if (ids.has(item.id)) problems.push(`Duplicate component id: ${item.id}`);
-      ids.add(item.id);
-      if (!item.name || !item.category || !item.manifest || !item.source) problems.push(`Incomplete registry entry: ${item.id}`);
-      if (item.manifest && !await exists(join(await getRegistryDir(), item.manifest))) problems.push(`Missing manifest: ${item.manifest}`);
-    }
-    const patternIds = new Set();
-    for (const pattern of patternIndex.patterns ?? []) {
-      if (!safeId(pattern.id)) problems.push(`Invalid pattern id: ${pattern.id}`);
-      else if (patternIds.has(pattern.id)) problems.push(`Duplicate pattern id: ${pattern.id}`);
-      patternIds.add(pattern.id);
-      if (!pattern.name || !pattern.type || !Array.isArray(pattern.dependencies) || !Array.isArray(pattern.tokens) || !Array.isArray(pattern.files) || !Array.isArray(pattern.examples)) problems.push(`Incomplete pattern entry: ${pattern.id}`);
-      if (pattern.installable) for (const file of pattern.files) {
-        const source = join(kitRoot, 'patterns', `${pattern.id}.${file.endsWith('.css') ? 'css' : 'js'}`);
-        if (!await exists(source)) problems.push(`Missing packaged pattern file: ${pattern.id}.${file}`);
-      }
-    }
+    const { dir, spec } = parseOptions(rest, { allowSpec: true });
+    const result = await validateRegistry(await getRegistryDir(), kitRoot, pkg.version);
     let install;
     if (dir) {
-      install = await checkInstallation(dir);
-      for (const check of install.checks) if (!check.ok) problems.push(`${check.name}: ${check.detail}`);
+      install = await checkInstallation(dir, pkg.version, registry.version);
+      for (const check of install.checks) if (!check.ok) result.problems.push(`${check.name}: ${check.detail}`);
     }
-    const result = { valid: problems.length === 0, version: registry.version, componentCount: ids.size, problems, ...(install ? { installation: install } : {}) };
-    if (problems.length) {
+    if (spec) {
+      const screen = await readJson(resolve(spec));
+      const { validate } = await import('./kit/runtime/ir.js');
+      const registryDir = await getRegistryDir();
+      const screenSchema = await validateScreenSchema(screen, registryDir);
+      if (!screenSchema.valid) result.problems.push(...screenSchema.problems.map(problem => `Screen schema ${problem}`));
+      const entries = new Map(registry.components.map(entry => [entry.id, entry]));
+      result.screen = await validate(screen, { registry: {
+        entries,
+        manifest: async slug => entries.has(slug) ? readJson(join(registryDir, 'components', `${slug}.json`)) : null
+      } });
+      if (!result.screen.ok) result.problems.push(...result.screen.diagnostics.filter(item => item.severity === 'error').map(item => `${item.path}: ${item.code}: ${item.message}`));
+    }
+    result.valid = result.problems.length === 0;
+    if (install) result.installation = install;
+    if (!result.valid) {
       if (jsonOutput) { process.exitCode = 1; return emit(result); }
-      fail(problems.join('\n'), 'VALIDATION_FAILED');
+      fail(result.problems.join('\n'), 'VALIDATION_FAILED');
     }
-    return emit(jsonOutput ? result : `Registry valid: ${ids.size} components, ${patternIds.size} patterns (Syntari ${registry.version}).`);
+    return emit(jsonOutput ? result : `Registry valid: ${result.componentCount} components, ${result.patternCount} patterns (Syntari ${result.version}).`);
   }
   if (command === 'add') {
     const { values: names, dir } = parseOptions(rest);
@@ -221,7 +229,8 @@ async function main() {
     if (await exists(target)) {
       let marker;
       try { marker = await readJson(markerPath); } catch {}
-      if (!marker || marker.version !== pkg.version) fail('Destination exists and is not a matching Syntari installation. Choose a new --dir.', 'DESTINATION_CONFLICT');
+      if (!marker || marker.version !== pkg.version || marker.registryVersion !== registry.version) fail('Destination exists and is not a matching Syntari installation. Choose a new --dir.', 'DESTINATION_CONFLICT');
+      if (!(await checkInstallation(target, pkg.version, registry.version)).ok) fail('Destination has missing or stale runtime files. Run syntari doctor --dir <path> and repair it before adding components.', 'INSTALLATION_INVALID');
     }
     for (const name of names) {
       const pattern = patterns.find((item) => item.id === name && item.installable);

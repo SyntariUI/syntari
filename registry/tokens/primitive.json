@@ -1,6 +1,6 @@
 {
-  "$id": "https://syntariui.github.io/syntari/registry/tokens/primitive.json",
-  "version": "0.2.1",
+  "$id": "https://syntariui.giovanitier.com/registry/tokens/primitive.json",
+  "version": "0.2.2",
   "description": "Raw primitive values. Semantic tokens reference these; CSS is compiled output.",
   "values": {
     "neutral.canvas": { "light": "#ffffff", "dark": "#14141f" },

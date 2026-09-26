@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const origin = 'http://127.0.0.1:4318';
+const origin = 'http://127.0.0.1:4398';
 
 test('Renderer uses the shared System workspace and renders trusted Syntari UI', async ({ page }) => {
   const errors = [];

@@ -1,0 +1,19 @@
+{
+  "$id": "https://syntariui.giovanitier.com/registry/agent-policy.json",
+  "version": "0.2.2",
+  "screenIR": {
+    "schema": "schema/sui.schema.json",
+    "componentIndex": "index.json",
+    "patternIndex": "patterns/index.json",
+    "requiresValidation": true,
+    "onError": "reject",
+    "onWarning": "show-diagnostic",
+    "allowedComponentStatus": "authored-with-props-and-ir"
+  },
+  "actions": {
+    "authorizationOwner": "host-application",
+    "default": "deny",
+    "modelAuthoredApprovalIsAuthorization": false,
+    "requiresTrustedScopeCheck": true
+  }
+}

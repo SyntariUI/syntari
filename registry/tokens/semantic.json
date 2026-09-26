@@ -1,6 +1,6 @@
 {
-  "$id": "https://syntariui.github.io/syntari/registry/tokens/semantic.json",
-  "version": "0.2.1",
+  "$id": "https://syntariui.giovanitier.com/registry/tokens/semantic.json",
+  "version": "0.2.2",
   "description": "Meaningful token roles. Each maps to a primitive and compiles to a CSS variable.",
   "tokens": {
     "color.surface.canvas": { "primitive": "neutral.canvas", "css": "--canvas" },

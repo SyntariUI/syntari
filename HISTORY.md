@@ -1,3 +1,16 @@
+# Syntari UI — version 0.2.2
+
+September 26, 2026.
+
+- Made the homepage an intent-first renderer with three bounded compositions, validation results, and an inspectable decision trace.
+- Added a versioned Node API and CLI Screen IR validation for agent projects.
+- Validated component and pattern manifests against published schemas, including dependency and token references.
+- Moved registry generation into build output so building no longer writes skeleton manifests into source.
+- Added a focused browser gate for the homepage, renderer, and clean-project package install.
+- Prepared npm publication with provenance and a GitHub release archive; kept the site archive as an installation fallback.
+
+---
+
 # Unreleased
 
 September 16, 2026.

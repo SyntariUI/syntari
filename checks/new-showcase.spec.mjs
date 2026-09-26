@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 test('new compositions are interactive, animated and responsive',async({page})=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
 
-  await page.goto('http://127.0.0.1:4318/new/command-palette/');
+  await page.goto('http://127.0.0.1:4398/new/command-palette/');
   await expect(page.locator('.command-icon .lucide')).toHaveCount(10);
   const search=page.getByRole('searchbox',{name:'Search commands'});
   await search.fill('settings');
@@ -12,7 +12,7 @@ test('new compositions are interactive, animated and responsive',async({page})=>
   await search.press('Enter');
   await expect(page.getByRole('status')).toHaveText('Open settings selected.');
 
-  await page.goto('http://127.0.0.1:4318/new/revenue-card/');
+  await page.goto('http://127.0.0.1:4398/new/revenue-card/');
   const revenue=page.locator('[data-revenue-card]');
   await expect(revenue).toHaveAttribute('aria-busy','false');
   const line=page.locator('[data-revenue-line]');
@@ -28,7 +28,7 @@ test('new compositions are interactive, animated and responsive',async({page})=>
   await expect.poll(async()=>await line.getAttribute('d')).not.toBe(before);
   await expect(page.locator('.square-action .lucide')).toHaveCount(1);
 
-  await page.goto('http://127.0.0.1:4318/new/team-projects-report/');
+  await page.goto('http://127.0.0.1:4398/new/team-projects-report/');
   const report=page.locator('[data-team-report]');
   await expect(report).toHaveAttribute('aria-busy','false');
   await expect(page.locator('.agent-generated .lucide')).toHaveCount(1);
