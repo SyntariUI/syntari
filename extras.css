@@ -333,6 +333,7 @@
    Cards are quiet shells with compact inset rows, not floating marketing panels. */
 :is(
   .session-card,
+  .syntari-accordion,
   .mini-card,
   .syntari-tilt,
   .project-folder,
@@ -373,6 +374,33 @@
   width:calc(100% - 8px);
   margin:0 4px 4px;
   justify-content:center;
+}
+
+.syntari-accordion{
+  padding:var(--card-shell-padding)!important;
+  gap:var(--card-shell-gap)!important;
+}
+.syntari-accordion>details{
+  margin:0!important;
+  border:0!important;
+  border-radius:var(--card-inset-radius)!important;
+  background:var(--card-inset-bg)!important;
+  overflow:hidden;
+}
+.syntari-accordion>details+details{
+  margin-top:var(--card-shell-gap)!important;
+}
+.syntari-accordion>details>summary{
+  min-height:42px;
+  padding:9px 10px!important;
+  align-items:center;
+  font-size:12px;
+}
+.syntari-accordion>details>p{
+  margin:0!important;
+  padding:0 10px 11px!important;
+  line-height:1.55!important;
+  font-size:11px!important;
 }
 
 .syntari-tilt{
