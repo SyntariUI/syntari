@@ -80,7 +80,7 @@ export function prepareGallery(state) {
     const root = document.querySelector('#gallery');
     const count = window.SyntariGallery.render({
       root, category: state.category, query: state.query, categoryOrder: Object.keys(groups),
-      componentURL: c => new URL(`components/${slugify(c.name)}/`, base).href
+      componentURL: c => new URL(`docs/components/${slugify(c.name)}/`, base).href
     });
     prepareCursorGrid(root);
     return count;

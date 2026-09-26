@@ -1,0 +1,75 @@
+/* The product shell shared by Renderer and System. Component styles stay in the runtime. */
+.workspace-menu,.workspace-backdrop{display:none}
+.workspace-skip{position:fixed;left:16px;top:-80px;z-index:200;background:var(--surface);color:var(--text);padding:12px;border-radius:8px}
+.workspace-skip:focus{top:12px}
+.workspace-theme{width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:20px/1 inherit}
+.workspace-theme:hover{background:var(--bg-a2);color:var(--text)}
+:is(.sys-body,.renderer-page) :is(button,a,input,textarea,select,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:is(.sys-rail-foot,.renderer-rail-foot) a{font-size:12px;min-height:36px}
+:is(.sys-nav-item,.renderer-nav-item){font-size:12px;min-height:34px;height:auto}
+.renderer-section-title h1{font-size:21px;line-height:1.2;letter-spacing:-.03em;font-weight:500;margin:0;max-width:190px}
+.renderer-rail{overflow-y:auto;grid-template-rows:auto auto auto minmax(40px,1fr) auto}
+.renderer-nav{max-height:36vh;overflow:auto}
+.renderer-rail-note p{font-size:12px}
+.renderer-composer label{font-size:11px;color:var(--muted)}
+.renderer-composer textarea{resize:none;max-height:100px;width:100%;border:0;outline:0;background:transparent;color:var(--text);font:14px/1.6 OpenRunde,var(--font-sans);padding:4px 0}
+.renderer-composer button:disabled{opacity:.45;cursor:wait}
+.renderer-status{right:20px;bottom:7px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.renderer-canvas-wrap{padding-bottom:158px}
+.renderer-stage-meta strong{max-width:200px}
+.renderer-workspace[data-panel=components]{--panel-offset:var(--renderer-drawer)}
+.renderer-workspace[data-panel=components] .renderer-inspector{transform:none;opacity:1;pointer-events:auto}
+.renderer-inspector-body{padding:20px;overflow:auto;min-height:0;flex:1}
+.intent-trace-row{padding:14px 0;border-bottom:1px solid var(--renderer-line)}
+.intent-trace-row dt{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
+.intent-trace-row dd{margin:0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.workspace-code{margin:16px 0;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.7 ui-monospace,monospace;color:var(--text);tab-size:2}
+.workspace-action{border:1px solid var(--border);border-radius:9px;padding:9px 12px;background:var(--bg-a1);color:var(--text);font-size:12px}
+.workspace-message{font-size:12px;line-height:1.6;color:var(--muted);min-height:1.6em}
+.workspace-component{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);text-decoration:none}
+.workspace-component:hover{color:var(--accent)}
+.sys-workspace[data-panel=install]{--panel-offset:var(--sys-drawer)}
+.sys-workspace[data-panel=install] .sys-inspector{transform:none;opacity:1;pointer-events:auto}
+.sys-preview-viewport{overflow:auto;align-items:safe center}
+.sys-preview-host{max-height:none;margin:auto}
+.sys-preview-host.is-device{width:min(375px,100%)!important;border:1px solid var(--sys-line);border-radius:18px;padding:18px;overflow:auto}
+.sys-preview-controls{position:absolute;z-index:12;bottom:16px;left:16px;right:16px;display:flex;justify-content:center;gap:12px;align-items:center}
+.sys-preview-controls [data-states]{display:flex;gap:3px;overflow-x:auto;max-width:65%;padding:4px;border-radius:10px;background:var(--canvas);border:1px solid var(--sys-line)}
+.sys-preview-controls button{flex-shrink:0;min-height:30px;border:0;border-radius:7px;background:transparent;padding:5px 9px;color:var(--muted);font-size:11px}
+.sys-preview-controls button[aria-pressed=true]{background:var(--bg-a2);color:var(--text)}
+.sys-preview-controls .workspace-device{border:1px solid var(--sys-line);background:var(--canvas)}
+.sys-info-block p{font-size:12px;line-height:1.7;overflow-wrap:anywhere;color:var(--muted)}
+.sys-info-block a,.sys-install-panel a{display:block;margin-top:14px;color:var(--text);font-size:12px}
+.sys-install-panel{padding:22px 20px;overflow:auto;font-size:13px;line-height:1.65}
+.sys-install-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg-a1);border:1px solid var(--sys-line);border-radius:10px;padding:14px;font-size:11px}
+.sys-info-row strong{font-size:11px}
+.sys-code-panel{min-height:0;overflow:auto}
+.sys-code-panel pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.sys-stage-status{display:block!important;left:20px;bottom:auto;top:42px;max-width:calc(100% - 40px);font-size:10px;pointer-events:none}
+.sys-stage-status .sys-live-dot{display:none}
+.sys-stage-meta strong{max-width:190px}
+[hidden]{display:none!important}
+@media(max-width:760px){
+  .workspace-menu{display:flex;gap:8px;align-items:center;position:fixed;z-index:65;top:13px;left:10px;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:9px;background:var(--canvas);color:var(--text);font-size:12px}
+  .workspace-backdrop:not([hidden]){display:block;position:fixed;inset:0;z-index:69;border:0;background:rgba(0,0,0,.45)}
+  :is(.sys-shell,.renderer-shell){height:100dvh;min-height:0;grid-template-columns:minmax(0,1fr)}
+  :is(.sys-shell,.renderer-shell).is-focus{grid-template-columns:minmax(0,1fr)}
+  :is(.sys-rail,.renderer-rail){display:grid;position:fixed;inset:0 auto 0 0;z-index:70;width:min(300px,85vw);transform:translateX(-100%);visibility:hidden;background:var(--canvas)}
+  .nav-open :is(.sys-rail,.renderer-rail){transform:none;visibility:visible;opacity:1}
+  :is(.sys-main,.renderer-main){height:100dvh;padding:0!important}
+  :is(.sys-stage-meta,.renderer-stage-meta){top:64px}
+  .sys-stage-status{top:95px}
+  .sys-preview-viewport{padding:126px 12px 85px}
+  .renderer-canvas-wrap{padding:112px 4px 172px}
+  .ui-canvas{padding:8px 12px 28px}
+  .renderer-composer{bottom:28px;width:calc(100% - 24px)}
+  .renderer-status{left:14px;right:14px}
+  :is(.sys-inspector,.renderer-inspector){z-index:68}
+  .renderer-workspace[data-panel=components] .renderer-stage,.sys-workspace[data-panel=install] .sys-stage{opacity:.16;pointer-events:none}
+  :is(.renderer-tool,.sys-icon-button){height:32px;min-width:30px}
+  :is(.renderer-tool-text,.sys-install){font-size:11px;padding-inline:8px}
+  .sys-preview-controls{left:8px;right:8px;gap:6px}
+}
+
+/* Horizontal comparison rows must fill their grid track. */
+:is(.renderer-page,.sys-body) .chart-bars-modern .column-pair{justify-content:stretch}
