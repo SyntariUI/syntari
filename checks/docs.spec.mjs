@@ -1,34 +1,45 @@
 import { test, expect } from '@playwright/test';
 import { catalog as readCatalog } from '../scripts/catalog.mjs';
 const origin='http://127.0.0.1:4398';
-test('documentation routes, examples, source, installation and navigation',async({page,context})=>{
+test('implementation lives beside the component, with legacy routes preserved',async({page,context})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await context.grantPermissions(['clipboard-read','clipboard-write']);
- await page.goto(origin+'/docs/components/card-and-project-folder/');await expect(page.locator('h1')).toHaveText('Card & project folder');
- await page.getByRole('button',{name:'Expanded',exact:true}).click();await expect(page.locator('.project-folder')).toHaveAttribute('open','');
- await page.locator('.docs-toc').getByRole('link',{name:'API reference',exact:true}).click();await expect(page).toHaveURL(/card-and-project-folder\/#api-reference$/);await expect(page.locator('.project-folder')).toHaveAttribute('open','');
- await page.locator('.project-folder').getByRole('button',{name:'Identity',exact:true}).click();await expect(page.locator('[data-extra-status]')).toContainText('Identity selected');
- await page.getByRole('tab',{name:'Usage',exact:true}).click();await expect(page.locator('#panel-main pre')).toContainText('details.open = true');
- await page.locator('#panel-main [data-doc-copy]').click();expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('card-and-project-folder.js');
- await page.getByRole('tab',{name:'Code',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('project-folder');
- await page.getByRole('tab',{name:'Interactions',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('folder-file');await page.locator('#panel-source [data-expand-code]').click();await expect(page.locator('#panel-source .docs-code')).toHaveClass(/expanded/);
- await page.getByRole('tab',{name:'Styles',exact:true}).click();await expect(page.locator('#panel-source pre')).toContainText('.project-folder');
- await page.getByRole('tab',{name:'pnpm',exact:true}).click();await expect(page.locator('#panel-command')).toContainText('pnpm dlx --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.2.2.tgz');
- await page.getByRole('tab',{name:'Manual',exact:true}).click();await expect(page.getByRole('link',{name:/Download Syntari 0.2.2/})).toHaveAttribute('href',/syntari-ui-0.2.2.tgz$/);
- await expect(page.locator('#api-reference')).toContainText('configure');
- await page.getByRole('searchbox',{name:'Search documentation'}).fill('agent todo');await page.locator('#docs-navigation').getByRole('link',{name:'Agent todo list',exact:true}).click();await expect(page).toHaveURL(/components\/agent-todo-list\/$/);
- await page.getByRole('button',{name:'Completed',exact:true}).click();await expect(page.locator('[data-run-status]')).toHaveText('All tasks completed');
- await page.getByRole('button',{name:'Running',exact:true}).click();await page.getByRole('button',{name:'Stop plan'}).click();await expect(page.locator('[data-run-status]')).toContainText('Plan stopped');
- await page.getByRole('button',{name:'Switch to light theme'}).click();await expect(page.locator('html')).toHaveAttribute('data-theme','light');
- await page.setViewportSize({width:390,height:844});await expect(page.locator('#docs-menu')).toBeVisible();await page.locator('#docs-menu').click();await expect(page.locator('body')).toHaveClass(/nav-open/);await page.getByRole('searchbox',{name:'Search documentation'}).fill('');await page.locator('#docs-navigation').getByRole('link',{name:'Theming',exact:true}).click();await expect(page.locator('h1')).toHaveText('One shared language.');await expect(page.locator('body')).not.toHaveClass(/nav-open/);
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await page.goBack();await expect(page.locator('h1')).toHaveText('Agent todo list');await page.reload();await expect(page.locator('.syntari-component')).toBeVisible();expect(errors).toEqual([]);
+ await page.goto(origin+'/docs/components/card-and-project-folder/');
+ await expect(page).toHaveURL(/system\/\?panel=usage#card-and-project-folder$/);
+ await expect(page.locator('[data-usage-content]')).toContainText('How to use');
+ await page.getByRole('button',{name:'Close panel'}).click();
+ await page.locator('[data-states]').getByRole('button',{name:'Expanded',exact:true}).click();
+ await expect(page.locator('.project-folder')).toHaveAttribute('open','');
+ const instance=await page.locator('[data-component-mount] > div').elementHandle();
+ await page.getByRole('button',{name:'Inspect component'}).click();
+ await page.getByRole('button',{name:'Usage',exact:true}).click();
+ await expect(page.locator('[data-usage-content] pre')).toContainText('details.open = true');
+ await page.getByRole('button',{name:'Copy Usage example',exact:true}).click();
+ expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('card-and-project-folder.js');
+ await page.getByRole('button',{name:'API',exact:true}).click();
+ await expect(page.locator('[data-api-content]')).toContainText('configure');
+ await page.getByRole('button',{name:'Source',exact:true}).click();
+ await page.getByRole('button',{name:'Interactions',exact:true}).click();
+ await expect(page.locator('[data-source]')).toContainText('folder-file');
+ await page.getByRole('button',{name:'Styles',exact:true}).click();
+ await expect(page.locator('[data-source]')).toContainText('.project-folder');
+ await page.getByRole('button',{name:'Installation',exact:true}).click();
+ for(const pm of ['pnpm','yarn','bun','npm']){await page.getByRole('button',{name:pm,exact:true}).click();await expect(page.locator('[data-install-command]')).toContainText(pm);}
+ await expect(page.locator('[data-install-details]')).toContainText('doctor --dir ./components/syntari');
+ await expect(page.locator('[data-download-source]')).toHaveAttribute('href',/syntari-ui-0.2.2.tgz$/);
+ expect(await page.evaluate(el=>el===document.querySelector('[data-component-mount] > div'),instance)).toBe(true);
+ await page.getByRole('button',{name:'Guides',exact:true}).click();await page.locator('[data-guide-select]').selectOption('theming');
+ await expect(page.locator('[data-guide-content]')).toContainText('One shared language.');
+ await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.reload();await expect(page.locator('[data-guide-content]')).toBeVisible();await expect(page.locator('[data-guide-select]')).toHaveValue('theming');
+ await page.goto(origin+'/guides/installation/');await expect(page).toHaveURL(/system\/\?guide=installation#button$/);await expect(page.locator('[data-guide-content]')).toContainText('Your source. Your project.');
+ expect(errors).toEqual([]);
 });
 test('all component pages and every authored preview state load without errors',async({page,request})=>{
  const catalog=await readCatalog();for(const c of catalog){const r=await request.get(origin+`/docs/components/${c.slug}/`);expect(r.status(),c.slug).toBe(200);}
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(origin+'/docs/components/button/');await page.locator('.syntari-component').waitFor();
  const result=await page.evaluate(async()=>{
   const {getComponents,mount}=await import('/syntari.js');const {statesFor}=await import('/docs-data.js');const catalog=await getComponents();const errors=[];let states=0;
-  document.querySelector('#docs-main').innerHTML='<div id="state-check"></div>';const target=document.querySelector('#state-check');
+  document.querySelector('[data-component-mount]').innerHTML='<div id="state-check"></div>';const target=document.querySelector('#state-check');
   for(const c of catalog)for(const state of statesFor(c)){
    let instance;try{instance=await mount(c.slug,target,{configure:state.code?new Function('root',state.code):undefined});if(!instance.element.children.length)throw Error('Empty example');states++;}catch(error){errors.push(c.slug+'/'+state.id+': '+error.message)}finally{instance?.destroy();target.replaceChildren();}
   }
