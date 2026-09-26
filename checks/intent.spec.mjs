@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('homepage renders a bounded screen and exposes its decisions', async ({ page }) => {
+test('renderer workspace renders a bounded screen and exposes its decisions', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('http://127.0.0.1:4398/');
+  await page.goto('http://127.0.0.1:4398/renderer/');
   await expect(page.getByRole('heading', { name: 'From intent to interface.' })).toBeVisible();
   await expect(page.locator('[data-intent-output] .ir-screen')).toBeVisible();
   await expect(page.locator('[data-intent-trace]')).toContainText('Release review');
@@ -15,7 +15,7 @@ test('homepage renders a bounded screen and exposes its decisions', async ({ pag
 });
 
 test('intent examples select different registry compositions', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4398/');
+  await page.goto('http://127.0.0.1:4398/renderer/');
   await page.locator('[data-intent-output] .ir-screen').waitFor();
   await page.getByRole('button', { name: 'Analytics overview' }).click();
   await expect(page.locator('[data-intent-trace]')).toContainText('Analytics overview');
@@ -30,7 +30,7 @@ test('intent examples select different registry compositions', async ({ page }) 
 
 test('workspace navigation and inspectors remain reachable on mobile', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
-  await page.goto('http://127.0.0.1:4398/');
+  await page.goto('http://127.0.0.1:4398/renderer/');
   await expect(page.locator('[data-intent-output] .ir-screen')).toBeVisible();
   await expect(page.locator('[data-rail]')).toHaveAttribute('inert','');
   await page.getByRole('button',{name:'Open Renderer navigation'}).click();
@@ -48,7 +48,7 @@ test('workspace navigation and inspectors remain reachable on mobile', async ({ 
 });
 
 test('unmatched requests explain the fallback and rapidly selected patterns settle correctly', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4398/');
+  await page.goto('http://127.0.0.1:4398/renderer/');
   await page.locator('[data-intent-output] .ir-screen').waitFor();
   await page.getByLabel('Describe what you want to build').fill('A virtual aquarium of glowing jellyfish');
   await page.getByRole('button',{name:'Render interface',exact:true}).click();
