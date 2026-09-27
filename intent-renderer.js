@@ -1,9 +1,8 @@
 import { render, validate } from './ir.js';
 import { initWorkspace, copyText } from './workspace.js';
-import { initHomepage } from './homepage.js';
 
 const $ = selector => document.querySelector(selector);
-const workspace = document.body.classList.contains('landing-body') ? initHomepage() : initWorkspace();
+const workspace = initWorkspace();
 let mounted, patterns, screens, generation = 0;
 
 function choose(prompt) {
@@ -82,4 +81,4 @@ async function start() {
   try { const saved = sessionStorage.getItem('syntari-intent'); if (saved) $('[data-intent-input]').value = saved; } catch {}
   await paint($('[data-intent-input]').value.trim());
 }
-start().catch(error => { $('[data-home-result]')?.removeAttribute('hidden'); $('[data-intent-status]').textContent = error.message; });
+start().catch(error => { const status = $('[data-intent-status]'); if (status) status.textContent = error.message; });

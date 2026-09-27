@@ -1,22 +1,10 @@
 import {getComponents, mount} from './syntari.js';
 import {copyText} from './workspace.js';
 export function initHomepage() {
-  const $ = selector => document.querySelector(selector);
-  const result=$('[data-home-result]'), inspector=$('[data-home-inspector]');
-  let mode, trigger;
-  function closePanel(){inspector.hidden=true;mode=null;document.querySelectorAll('[data-panel-open]').forEach(b=>b.setAttribute('aria-expanded','false'));trigger?.focus();}
-  function openPanel(next,button){if(mode===next){closePanel();return;}mode=next;trigger=button;inspector.hidden=false;document.querySelectorAll('[data-inspector-panel]').forEach(p=>p.hidden=p.dataset.inspectorPanel!==next);document.querySelectorAll('[data-panel-open]').forEach(b=>b.setAttribute('aria-expanded',String(b.dataset.panelOpen===next)));$('[data-panel-title]').textContent={logic:'Why this interface?',ir:'Screen IR',components:'Components'}[next];$('[data-home-close]').focus();}
-  document.querySelectorAll('[data-panel-open]').forEach(b=>b.addEventListener('click',()=>openPanel(b.dataset.panelOpen,b)));
-  $('[data-home-close]').addEventListener('click',closePanel);
-  inspector.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
-  const reveal=()=>{result.hidden=false;result.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'start'});};
-  $('[data-intent-form]').addEventListener('submit',()=>{if($('[data-intent-input]').value.trim())reveal();});
-  $('[data-intent-examples]').addEventListener('click',e=>{if(e.target.closest('button'))reveal();});
-  const theme=$('[data-home-theme]');
+  const theme=document.querySelector('[data-home-theme]');
   const label=()=>theme.setAttribute('aria-label',`Switch to ${document.documentElement.dataset.theme==='dark'?'light':'dark'} theme`);
   theme.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem('syntari-theme',next)}catch{}label();});label();
-  loadGallery().catch(error=>{$('[data-home-gallery]').textContent=`Previews unavailable. Explore the components in System. ${error.message}`;}).finally(()=>$('[data-home-gallery]').setAttribute('aria-busy','false'));
-  return {openPanel,closePanel,closeNav(){}};
+  loadGallery().catch(error=>{document.querySelector('[data-home-gallery]').textContent=`Previews unavailable. Explore the components in System. ${error.message}`;}).finally(()=>document.querySelector('[data-home-gallery]').setAttribute('aria-busy','false'));
 }
 async function loadGallery(){
   const response=await fetch('/registry/index.json');if(!response.ok)throw new Error('The registry could not load.');
@@ -47,3 +35,4 @@ async function loadGallery(){
     info.append(link);article.append(preview,info);grid.append(article);observer.observe(preview);
   }
 }
+if(document.body.classList.contains('landing-body'))initHomepage();
