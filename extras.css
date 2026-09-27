@@ -122,7 +122,7 @@
 .chart-bars-modern .chart-column .column-label{
   grid-column:1;
   grid-row:1;
-  font:var(--type-caption)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  font:var(--type-caption)/1 var(--font-mono);
   color:var(--muted);
   text-align:left;
 }

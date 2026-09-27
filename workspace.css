@@ -12,7 +12,7 @@
 .renderer-nav{max-height:36vh;overflow:auto}
 .renderer-rail-note p{font-size:var(--type-caption)}
 .renderer-composer label{font-size:var(--type-caption);color:var(--muted)}
-.renderer-composer textarea{resize:none;max-height:100px;width:100%;border:0;outline:0;background:transparent;color:var(--text);font:var(--type-body)/1.6 OpenRunde,var(--font-sans);padding:4px 0}
+.renderer-composer textarea{resize:none;max-height:100px;width:100%;border:0;outline:0;background:transparent;color:var(--text);font:var(--type-body)/1.6 var(--font-sans);padding:4px 0}
 .renderer-composer button:disabled{opacity:.45;cursor:wait}
 .renderer-status{right:20px;bottom:7px;font-size:var(--type-caption);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .renderer-status.sr-only{position:absolute!important;left:-10000px!important;top:auto!important;right:auto!important;bottom:auto!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
@@ -24,7 +24,7 @@
 .intent-trace-row{padding:14px 0;border-bottom:1px solid var(--renderer-line)}
 .intent-trace-row dt{font-size:var(--type-caption);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
 .intent-trace-row dd{margin:0;font-size:var(--type-label);line-height:1.65;overflow-wrap:anywhere}
-.workspace-code{margin:16px 0;white-space:pre-wrap;overflow-wrap:anywhere;font:var(--type-caption)/1.7 ui-monospace,monospace;color:var(--text);tab-size:2}
+.workspace-code{margin:16px 0;white-space:pre-wrap;overflow-wrap:anywhere;font:var(--type-caption)/1.7 var(--font-mono);color:var(--text);tab-size:2}
 .workspace-action{border:1px solid var(--border);border-radius:9px;padding:9px 12px;background:var(--bg-a1);color:var(--text);font-size:var(--type-caption)}
 .workspace-message{font-size:var(--type-caption);line-height:1.6;color:var(--muted);min-height:1.6em}
 .workspace-component{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);font-size:var(--type-label);color:var(--text);text-decoration:none}
@@ -88,7 +88,7 @@
 .sys-reference-panel .docs-section{padding:0;margin:26px 0;border:0}.sys-reference-panel .docs-section h2{font-size:var(--type-reading)}
 .sys-snippet{margin:16px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-a1)}
 .sys-snippet header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:var(--type-caption);color:var(--muted)}
-.sys-snippet header button{font-size:var(--type-caption);color:var(--text);padding:5px 8px}.sys-snippet pre{padding:14px;margin:0;background:none;border:0;font:var(--type-caption)/1.8 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.sys-snippet .workspace-message:empty{display:none}.sys-snippet .workspace-message{padding-inline:12px}
+.sys-snippet header button{font-size:var(--type-caption);color:var(--text);padding:5px 8px}.sys-snippet pre{padding:14px;margin:0;background:none;border:0;font:var(--type-caption)/1.8 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}.sys-snippet .workspace-message:empty{display:none}.sys-snippet .workspace-message{padding-inline:12px}
 .sys-api-table{overflow:auto;margin:15px 0}.sys-api-table table{width:100%;border-collapse:collapse;font-size:var(--type-caption)}.sys-api-table th{text-align:left;color:var(--muted);font-weight:400}.sys-api-table :is(th,td){vertical-align:top;padding:12px 8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}.sys-api-table small{display:block;color:var(--muted);margin-top:5px}
 .sys-guide-picker,.sys-source-select{display:grid;gap:7px;color:var(--muted);font-size:var(--type-caption);margin-bottom:22px}.sys-guide-picker select,.sys-source-select select{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)}.sys-source-select{margin:8px 18px}.sys-managers{display:flex;gap:4px;margin-top:18px}
 .sys-code-panel{display:flex;flex-direction:column}.sys-code-toolbar{flex-wrap:wrap;gap:6px;flex-shrink:0}.sys-code-panel pre{flex:1;min-height:160px;color:var(--text)}
@@ -117,3 +117,41 @@
 @media(max-width:760px){.sys-install-panel{padding:22px 18px 36px}}
 
 .ring{overflow:hidden}.ring strong{white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums}
+
+
+/* System preview loading state: centered skeleton while the selected component mounts. */
+.sys-stage-status{display:block!important;position:absolute!important;left:-10000px!important;top:auto!important;right:auto!important;bottom:auto!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+.sys-loading-skeleton{position:absolute;z-index:6;left:50%;top:50%;display:none;width:min(600px,calc(100% - 64px));padding:22px;border:1px solid var(--sys-line);border-radius:16px;background:color-mix(in srgb,var(--surface) 88%,var(--canvas));box-shadow:0 18px 50px rgba(0,0,0,.1);transform:translate(-50%,-50%)}
+.sys-stage[data-loading=true] .sys-loading-skeleton{display:grid;gap:16px}
+.sys-stage[data-loading=true] .sys-preview-host{visibility:hidden;opacity:0}
+.sys-stage[data-error=true] .sys-loading-skeleton{display:none}
+.sys-preview-error{position:absolute;left:50%;top:50%;z-index:8;transform:translate(-50%,-50%);max-width:min(480px,calc(100% - 48px));margin:0;padding:16px 20px;border:1px solid var(--sys-line);border-radius:12px;background:var(--surface);color:var(--muted);text-align:center;font-size:var(--type-label)}
+.sys-skeleton-line,.sys-skeleton-metrics span,.sys-skeleton-chart i{position:relative;overflow:hidden;display:block;border-radius:7px;background:var(--bg-a2)}
+.sys-skeleton-line::after,.sys-skeleton-metrics span::after,.sys-skeleton-chart i::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--text) 8%,transparent),transparent);animation:sys-skeleton-shimmer 1.6s ease-in-out infinite}
+.sys-skeleton-line{height:10px;width:100%}.sys-skeleton-line.is-title{width:34%;height:13px}.sys-skeleton-line.is-short{width:22%}
+.sys-skeleton-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.sys-skeleton-metrics span{height:54px}
+.sys-skeleton-chart{height:126px;display:flex;align-items:end;gap:10px;padding-top:18px}.sys-skeleton-chart i{flex:1;height:46%;border-radius:6px 6px 3px 3px}.sys-skeleton-chart i:nth-child(2){height:68%}.sys-skeleton-chart i:nth-child(3){height:54%}.sys-skeleton-chart i:nth-child(4){height:84%}.sys-skeleton-chart i:nth-child(5){height:62%}.sys-skeleton-chart i:nth-child(6){height:94%}
+@keyframes sys-skeleton-shimmer{to{transform:translateX(100%)}}
+
+/* Install is a bottom sheet that gives the live preview room above it. */
+.sys-workspace[data-panel=install]{--install-sheet-height:min(62vh,680px);--panel-offset:0px}
+.sys-workspace[data-panel=install] .sys-stage{right:0;bottom:var(--install-sheet-height)}
+.sys-stage{transition:right .58s var(--sys-ease),bottom .58s var(--sys-ease),background .25s ease}
+.sys-inspector.is-install-sheet{top:auto;left:0;right:0;bottom:0;width:100%;height:var(--install-sheet-height);max-height:calc(100% - 64px);border:0;border-top:1px solid var(--sys-line);border-radius:18px 18px 0 0;box-shadow:0 -20px 70px rgba(0,0,0,.22);transform:translateY(101%);opacity:1;pointer-events:none;transition:transform .62s var(--sys-ease),opacity .24s ease}
+.sys-workspace[data-panel=install] .sys-inspector.is-install-sheet{transform:translateY(101%);opacity:1;pointer-events:none}
+.sys-workspace[data-panel=install] .sys-inspector.is-install-sheet.is-sheet-open{transform:translateY(0);pointer-events:auto}
+.sys-inspector.is-install-sheet .sys-inspector-head{height:54px;padding-inline:22px}
+.sys-inspector.is-install-sheet .sys-install-panel{min-height:0;flex:1;padding:22px clamp(20px,4vw,48px) 34px}
+.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:8px 24px}
+.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>h2:first-child{grid-column:1/-1}
+.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>:last-child{grid-column:1/-1}
+.sys-inspector.is-install-sheet .sys-install-panel pre{max-width:100%}
+@media(max-width:760px){
+  .sys-workspace[data-panel=install]{--install-sheet-height:min(76dvh,760px)}
+  .sys-inspector.is-install-sheet{max-height:calc(100% - 48px);border-radius:16px 16px 0 0}
+  .sys-inspector.is-install-sheet .sys-install-panel{padding:18px 18px 28px}
+  .sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]{grid-template-columns:minmax(0,1fr)}
+  .sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>h2:first-child,.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>:last-child{grid-column:auto}
+  .sys-inspector.is-install-sheet .sys-inspector-head{padding-inline:16px}
+}
+@media(prefers-reduced-motion:reduce){.sys-skeleton-line::after,.sys-skeleton-metrics span::after,.sys-skeleton-chart i::after{animation:none}}
