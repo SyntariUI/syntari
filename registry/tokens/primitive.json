@@ -40,7 +40,7 @@
     "shadow.soft": "0 1px 2px #18192506,0 2px 5px #18192503",
     "shadow.card": "0 1px 2px #18192508,0 2px 5px #18192504",
     "shadow.card-hover": "0 2px 4px #18192508,0 6px 16px #18192507",
-    "font.sans": "OpenRunde, Arial, sans-serif",
+    "font.sans": "Geist, Arial, sans-serif",
     "brand.mark": "#4877f2"
   }
 }

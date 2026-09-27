@@ -32,6 +32,6 @@ Default geometry is captured in a 640px stage with reduced motion. It is evidenc
 
 ## Next step
 
-Use the extracted values to plan variable collections and aliases; verify OpenRunde's availability in Figma; define component properties and variant axes from the actual structure and behavior. Create native components, compare them visually with the browser, and only then add Code Connect mappings. Keep source provenance and returned Figma IDs together in a separate generation ledger.
+Use the extracted values to plan variable collections and aliases; verify Geist's availability in Figma; define component properties and variant axes from the actual structure and behavior. Create native components, compare them visually with the browser, and only then add Code Connect mappings. Keep source provenance and returned Figma IDs together in a separate generation ledger.
 
 Target: [Syntari in Figma](https://www.figma.com/design/0rv4sI7MUcEZaERaCJX8bt).

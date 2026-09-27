@@ -3,6 +3,7 @@ test('homepage previews components and renders inspectable results',async({page}
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:4398/');
  await expect(page.getByRole('heading',{name:'From intent to interface.'})).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>document.fonts.check('16px Geist'))).toBe(true);
  await expect(page.locator('[data-home-count]')).toHaveText('131 components');
  await expect(page.locator('[data-home-result]')).toBeHidden();
  await page.getByRole('button',{name:'Analytics overview',exact:true}).click();
@@ -15,6 +16,10 @@ test('homepage previews components and renders inspectable results',async({page}
  await expect(page.getByRole('button',{name:'Screen IR',exact:true})).toBeFocused();
  await page.locator('[data-home-gallery]').scrollIntoViewIfNeeded();
  await expect(page.locator('[data-home-preview="button"] [data-syntari-component]')).toBeVisible();
+ await expect(page.locator('[data-home-preview="otp-input"] .home-otp-note')).toHaveText('Use 123456');
+ await expect(page.locator('[data-home-preview="otp-input"] .otp-group')).toBeVisible();
+ await expect(page.locator('[data-home-preview="otp-input"] .otp-submit')).toBeVisible();
+ await expect(page.locator('[data-home-preview="otp-input"]')).not.toContainText('Enter the six-digit code');
  await expect(page.locator('.home-card')).toHaveCount(6);
  await expect(page.locator('[data-home-command]')).toContainText('syntari-ui-0.2.2.tgz');
  await page.getByRole('link',{name:'Open Renderer',exact:true}).click();

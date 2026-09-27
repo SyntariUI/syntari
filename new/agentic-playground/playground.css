@@ -506,7 +506,7 @@
   overflow:auto;
   padding:var(--space-4);
   color:var(--muted);
-  font:var(--type-caption)/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;
+  font:var(--type-caption)/1.7 var(--font-mono);
   white-space:pre-wrap;
 }
 

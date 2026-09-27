@@ -68,21 +68,22 @@
           </button>
         </div>
 
-        <div class="sys-stage" data-stage data-workspace-stage id="system-stage" tabindex="-1">
+        <div class="sys-stage" data-stage data-loading="true" data-workspace-stage id="system-stage" tabindex="-1">
           <div class="sys-ambient" aria-hidden="true"></div>
 
           <div class="sys-preview-viewport">
-            <div class="sys-preview-host" data-component-mount></div>
+            <div class="sys-preview-host" data-component-mount aria-busy="true"></div>
+            <div class="sys-loading-skeleton" data-preview-skeleton aria-hidden="true">
+              <span class="sys-skeleton-line is-title"></span>
+              <div class="sys-skeleton-metrics"><span></span><span></span><span></span></div>
+              <div class="sys-skeleton-chart"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <span class="sys-skeleton-line is-short"></span>
+            </div>
+            <p class="sys-preview-error" data-preview-error hidden role="status">Preview unavailable.</p>
           </div>
 
-          <div class="sys-stage-status" aria-live="polite">
-            <span class="sys-live-dot"></span>
+          <div class="sys-stage-status sr-only" aria-live="polite" role="status">
             <span data-status>Loading system…</span>
-          </div>
-
-          <div class="sys-stage-meta">
-            <span data-category>Component</span>
-            <strong data-name>Loading…</strong>
           </div>
 
           <div class="sys-preview-controls"><div data-states aria-label="Preview states"></div><button class="workspace-device" data-device aria-pressed="false">Mobile preview</button></div>
@@ -100,7 +101,6 @@
             </button>
           </div>
 
-          <nav class="sys-reference-tabs" aria-label="Component reference"><button data-panel-open="info">Overview</button><button data-panel-open="usage">Usage</button><button data-panel-open="api">API</button><button data-panel-open="install">Installation</button><button data-panel-open="code">Source</button><button data-panel-open="guide">Guides</button></nav>
           <div class="sys-reference-panel" data-inspector-panel="usage" hidden data-usage-content></div>
           <div class="sys-reference-panel" data-inspector-panel="api" hidden data-api-content></div>
           <div class="sys-reference-panel" data-inspector-panel="guide" hidden><label class="sys-guide-picker">Guide<select data-guide-select></select></label><div data-guide-content></div></div>
@@ -113,7 +113,7 @@
               <div class="sys-info-row"><span>Status</span><strong data-contract-status>Loading…</strong></div>
             </div>
 
-            <div class="sys-info-block"><span>Rules and use</span><p data-rules></p><p data-ir-support></p><a data-manifest-link>Open manifest ↗</a><button class="workspace-action" data-panel-open="usage">How to use</button></div>
+            <div class="sys-info-block"><span>Rules and use</span><p data-rules></p><p data-ir-support></p><a data-manifest-link>Open manifest ↗</a></div>
             <div class="sys-info-block">
               <span>System tokens</span>
               <div class="sys-token-list" data-tokens></div>
@@ -130,11 +130,11 @@
             <p class="workspace-message" data-code-copy-status role="status"></p><pre tabindex="0"><code data-source></code></pre>
           </div>
           <div class="sys-install-panel" data-inspector-panel="install" hidden>
-            <p>Copy editable source into your project. Requires Node.js 22 or later.</p>
+            <p>Install editable source into your project. Requires Node.js 22 or later.</p>
             <div class="sys-managers" aria-label="Package manager"><button data-package-manager="npm" aria-pressed="true">npm</button><button data-package-manager="pnpm" aria-pressed="false">pnpm</button><button data-package-manager="yarn" aria-pressed="false">yarn</button><button data-package-manager="bun" aria-pressed="false">bun</button></div><pre tabindex="0"><code data-install-command></code></pre>
             <button class="workspace-action" data-copy-install>Copy command</button>
             <p class="workspace-message" data-copy-status role="status"></p>
-            <a data-download-source download>Download source archive</a><button class="workspace-action" data-panel-open="usage">Continue to usage</button><div data-install-details></div>
+            <a data-download-source download>Download source archive</a><div data-install-details></div>
           </div>
         </aside>
       </section>
