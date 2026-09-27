@@ -85,7 +85,7 @@ button,input{font:inherit}
   background:
     radial-gradient(720px circle at var(--mx,50%) var(--my,44%),color-mix(in srgb,var(--fg-3) 7%,transparent),transparent 62%),
     color-mix(in srgb,var(--surface) 97%,var(--canvas));
-  transition:right .58s var(--sys-ease),background .25s ease;
+  transition:right .42s var(--sys-ease),background .25s ease;
 }
 .sys-ambient{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 22%,transparent 80%,rgba(0,0,0,.035))}
 .sys-preview-viewport{position:absolute;inset:0;display:grid;place-items:center;padding:72px 54px 62px}
@@ -95,7 +95,7 @@ button,input{font:inherit}
   display:grid;
   place-items:center;
   transform-origin:center;
-  transition:width .55s var(--sys-ease),opacity .22s ease,filter .32s ease,transform .42s var(--sys-ease);
+  transition:width .42s var(--sys-ease),opacity .22s ease,filter .32s ease,transform .42s var(--sys-ease);
 }
 .sys-preview-host.is-wide{width:min(980px,86%)}
 .sys-preview-host.is-compact{width:min(560px,70%)}
@@ -134,7 +134,7 @@ button,input{font:inherit}
   background:color-mix(in srgb,var(--canvas) 76%,transparent);
   backdrop-filter:blur(18px) saturate(130%);
   box-shadow:0 10px 30px rgba(0,0,0,.12);
-  transition:right .58s var(--sys-ease),transform .2s var(--sys-ease);
+  transition:right .42s var(--sys-ease),transform .2s var(--sys-ease);
 }
 .sys-toolbar:hover{transform:translateY(-1px)}
 .sys-install,.sys-icon-button{height:30px;border:0;background:transparent;color:var(--muted);border-radius:8px;display:grid;place-items:center;transition:background .18s ease,color .18s ease,transform .18s ease}
@@ -160,9 +160,9 @@ button,input{font:inherit}
   border-left:1px solid var(--sys-line);
   background:color-mix(in srgb,var(--canvas) 98%,var(--surface));
   transform:translateX(100%);
-  opacity:0;
+  opacity:1;
   pointer-events:none;
-  transition:transform .58s var(--sys-ease),opacity .3s ease;
+  transition:transform .42s var(--sys-ease);
 }
 .sys-workspace:not([data-panel=none]) .sys-inspector{transform:none;opacity:1;pointer-events:auto}
 .sys-inspector-head{height:60px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 18px;border-bottom:1px solid var(--sys-line)}

@@ -31,6 +31,8 @@ export function initWorkspace() {
   function openPanel(mode, trigger) {
     if (workspace.dataset.panel === mode) { closePanel(); return; }
     closeNav();
+    shell.classList.remove('is-focus');
+    $('[data-workspace-focus]')?.setAttribute('aria-pressed', 'false');
     const candidate = trigger || document.activeElement;
     if (!inspector.contains(candidate)) returnFocus = candidate === document.body ? document.querySelector('[data-panel-open]') : candidate;
     workspace.dataset.panel = mode;
