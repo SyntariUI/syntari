@@ -119,39 +119,15 @@
 .ring{overflow:hidden}.ring strong{white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums}
 
 
-/* System preview loading state: centered skeleton while the selected component mounts. */
+/* System preview loading stays in place and uses the Syntari brand mark. */
 .sys-stage-status{display:block!important;position:absolute!important;left:-10000px!important;top:auto!important;right:auto!important;bottom:auto!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
-.sys-loading-skeleton{position:absolute;z-index:6;left:50%;top:50%;display:none;width:min(600px,calc(100% - 64px));padding:22px;border:1px solid var(--sys-line);border-radius:16px;background:color-mix(in srgb,var(--surface) 88%,var(--canvas));box-shadow:0 18px 50px rgba(0,0,0,.1);transform:translate(-50%,-50%)}
-.sys-stage[data-loading=true] .sys-loading-skeleton{display:grid;gap:16px}
+.sys-loading-mark{position:absolute;z-index:6;left:50%;top:50%;display:none;width:48px;height:48px;place-items:center;transform:translate(-50%,-50%)}
+.sys-loading-mark .brand-mark{width:23px;height:23px;background:linear-gradient(135deg,#f1f0ff 8%,#89aaff 52%,#b7a5ff 100%);opacity:.68;filter:drop-shadow(0 0 18px color-mix(in srgb,var(--accent) 34%,transparent));animation:sys-mark-breathe 1.4s ease-in-out infinite alternate}
+.sys-stage[data-loading=true] .sys-loading-mark{display:grid}
 .sys-stage[data-loading=true] .sys-preview-host{visibility:hidden;opacity:0}
-.sys-stage[data-error=true] .sys-loading-skeleton{display:none}
+.sys-stage[data-error=true] .sys-loading-mark{display:none}
+.sys-stage[data-loading=true] .sys-ambient{background:radial-gradient(620px circle at 50% 46%,color-mix(in srgb,#819dff 11%,transparent),transparent 72%),radial-gradient(420px circle at 45% 55%,color-mix(in srgb,#b6a1ff 7%,transparent),transparent 76%),linear-gradient(180deg,rgba(255,255,255,.012),transparent 22%,transparent 80%,rgba(0,0,0,.035));background-size:150% 150%;animation:sys-ambient-drift 3.2s ease-in-out infinite alternate}
+@keyframes sys-mark-breathe{from{opacity:.38;transform:scale(.88)}to{opacity:.9;transform:scale(1.04)}}
+@keyframes sys-ambient-drift{from{background-position:42% 40%,58% 62%,50% 50%}to{background-position:60% 57%,40% 43%,50% 50%}}
 .sys-preview-error{position:absolute;left:50%;top:50%;z-index:8;transform:translate(-50%,-50%);max-width:min(480px,calc(100% - 48px));margin:0;padding:16px 20px;border:1px solid var(--sys-line);border-radius:12px;background:var(--surface);color:var(--muted);text-align:center;font-size:var(--type-label)}
-.sys-skeleton-line,.sys-skeleton-metrics span,.sys-skeleton-chart i{position:relative;overflow:hidden;display:block;border-radius:7px;background:var(--bg-a2)}
-.sys-skeleton-line::after,.sys-skeleton-metrics span::after,.sys-skeleton-chart i::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--text) 8%,transparent),transparent);animation:sys-skeleton-shimmer 1.6s ease-in-out infinite}
-.sys-skeleton-line{height:10px;width:100%}.sys-skeleton-line.is-title{width:34%;height:13px}.sys-skeleton-line.is-short{width:22%}
-.sys-skeleton-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.sys-skeleton-metrics span{height:54px}
-.sys-skeleton-chart{height:126px;display:flex;align-items:end;gap:10px;padding-top:18px}.sys-skeleton-chart i{flex:1;height:46%;border-radius:6px 6px 3px 3px}.sys-skeleton-chart i:nth-child(2){height:68%}.sys-skeleton-chart i:nth-child(3){height:54%}.sys-skeleton-chart i:nth-child(4){height:84%}.sys-skeleton-chart i:nth-child(5){height:62%}.sys-skeleton-chart i:nth-child(6){height:94%}
-@keyframes sys-skeleton-shimmer{to{transform:translateX(100%)}}
-
-/* Install is a bottom sheet that gives the live preview room above it. */
-.sys-workspace[data-panel=install]{--install-sheet-height:min(62vh,680px);--panel-offset:0px}
-.sys-workspace[data-panel=install] .sys-stage{right:0;bottom:var(--install-sheet-height)}
-.sys-stage{transition:right .58s var(--sys-ease),bottom .58s var(--sys-ease),background .25s ease}
-.sys-inspector.is-install-sheet{top:auto;left:0;right:0;bottom:0;width:100%;height:var(--install-sheet-height);max-height:calc(100% - 64px);border:0;border-top:1px solid var(--sys-line);border-radius:18px 18px 0 0;box-shadow:0 -20px 70px rgba(0,0,0,.22);transform:translateY(101%);opacity:1;pointer-events:none;transition:transform .62s var(--sys-ease),opacity .24s ease}
-.sys-workspace[data-panel=install] .sys-inspector.is-install-sheet{transform:translateY(101%);opacity:1;pointer-events:none}
-.sys-workspace[data-panel=install] .sys-inspector.is-install-sheet.is-sheet-open{transform:translateY(0);pointer-events:auto}
-.sys-inspector.is-install-sheet .sys-inspector-head{height:54px;padding-inline:22px}
-.sys-inspector.is-install-sheet .sys-install-panel{min-height:0;flex:1;padding:22px clamp(20px,4vw,48px) 34px}
-.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:8px 24px}
-.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>h2:first-child{grid-column:1/-1}
-.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>:last-child{grid-column:1/-1}
-.sys-inspector.is-install-sheet .sys-install-panel pre{max-width:100%}
-@media(max-width:760px){
-  .sys-workspace[data-panel=install]{--install-sheet-height:min(76dvh,760px)}
-  .sys-inspector.is-install-sheet{max-height:calc(100% - 48px);border-radius:16px 16px 0 0}
-  .sys-inspector.is-install-sheet .sys-install-panel{padding:18px 18px 28px}
-  .sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]{grid-template-columns:minmax(0,1fr)}
-  .sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>h2:first-child,.sys-inspector.is-install-sheet .sys-install-panel>[data-install-details]>:last-child{grid-column:auto}
-  .sys-inspector.is-install-sheet .sys-inspector-head{padding-inline:16px}
-}
-@media(prefers-reduced-motion:reduce){.sys-skeleton-line::after,.sys-skeleton-metrics span::after,.sys-skeleton-chart i::after{animation:none}}
+@media(prefers-reduced-motion:reduce){.sys-loading-mark .brand-mark,.sys-stage[data-loading=true] .sys-ambient{animation:none!important}}

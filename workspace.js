@@ -6,7 +6,6 @@ export function initWorkspace() {
   const stage = $('[data-workspace-stage]'), menu = $('[data-workspace-menu]');
   const media = matchMedia('(max-width: 760px)');
   let returnFocus;
-  let sheetCloseTimer;
   const focusable = root => [...root.querySelectorAll('a[href],button,input,textarea,select,[tabindex="0"]')]
     .filter(node => !node.disabled && !node.closest('[inert],[hidden]') && node.getClientRects().length);
   function sync() {
@@ -21,13 +20,7 @@ export function initWorkspace() {
   }
   function closeNav() { shell.classList.remove('nav-open'); sync(); }
   function closePanel(restore = true) {
-    const wasInstall = workspace.dataset.panel === 'install';
     workspace.dataset.panel = 'none';
-    if (wasInstall) {
-      inspector.classList.remove('is-sheet-open');
-      clearTimeout(sheetCloseTimer);
-      sheetCloseTimer = setTimeout(() => { if (workspace.dataset.panel !== 'install') inspector.classList.remove('is-install-sheet'); }, 640);
-    }
     document.querySelectorAll('[data-panel-open]').forEach(button => button.setAttribute('aria-pressed', 'false'));
     sync();
     if (restore) {
@@ -40,16 +33,12 @@ export function initWorkspace() {
     closeNav();
     const candidate = trigger || document.activeElement;
     if (!inspector.contains(candidate)) returnFocus = candidate === document.body ? document.querySelector('[data-panel-open]') : candidate;
-    clearTimeout(sheetCloseTimer);
-    inspector.classList.remove('is-sheet-open');
-    inspector.classList.toggle('is-install-sheet', mode === 'install');
     workspace.dataset.panel = mode;
     document.querySelectorAll('[data-inspector-panel]').forEach(panel => { panel.hidden = panel.dataset.inspectorPanel !== mode; });
     document.querySelectorAll('[data-panel-open]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.panelOpen === mode)));
     const title = $('[data-panel-title]');
     if (title) title.textContent = {logic:'Why this interface?',ir:'Screen IR',components:'Components'}[mode] || mode;
     sync();
-    if (mode === 'install') { void inspector.offsetHeight; requestAnimationFrame(() => { if (workspace.dataset.panel === 'install') inspector.classList.add('is-sheet-open'); }); }
     $('[data-close-panel]').focus();
   }
   document.querySelectorAll('[data-panel-open]').forEach(button => button.addEventListener('click', () => openPanel(button.dataset.panelOpen, button)));
