@@ -1,19 +1,14 @@
 import {test,expect} from '@playwright/test';
-test('homepage previews components and renders inspectable results',async({page})=>{
+test('homepage previews components and leaves rendering to the Renderer',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:4398/');
  await expect(page.getByRole('heading',{name:'From intent to interface.'})).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>document.fonts.check('16px Geist'))).toBe(true);
  await expect(page.locator('[data-home-count]')).toHaveText('131 components');
- await expect(page.locator('[data-home-result]')).toBeHidden();
- await page.getByRole('button',{name:'Analytics overview',exact:true}).click();
- await expect(page.locator('[data-intent-output] .ir-screen-title')).toContainText('analytics dashboard');
- await page.getByRole('button',{name:'Decisions',exact:true}).click();
- await expect(page.locator('[data-intent-trace]')).toBeVisible();
- await page.getByRole('button',{name:'Screen IR',exact:true}).click();
- await expect(page.locator('[data-intent-spec]')).toContainText('syntari-ir-1');
- await page.getByRole('button',{name:'Close inspector'}).click();
- await expect(page.getByRole('button',{name:'Screen IR',exact:true})).toBeFocused();
+ await expect(page.locator('[data-intent-form]')).toHaveCount(0);
+ await expect(page.locator('.home-faq')).toHaveCount(0);
+ await expect(page.locator('.home-footer')).toBeVisible();
+ await expect(page.locator('.home-wordmark')).toHaveCount(0);
  await page.locator('[data-home-gallery]').scrollIntoViewIfNeeded();
  await expect(page.locator('[data-home-preview="button"] [data-syntari-component]')).toBeVisible();
  await expect(page.locator('[data-home-preview="otp-input"] .home-otp-note')).toHaveText('Use 123456');
@@ -40,16 +35,17 @@ test('homepage previews components and renders inspectable results',async({page}
  await expect(page.locator('[data-home-command]')).toContainText('syntari-ui-0.2.2.tgz');
  await page.getByRole('link',{name:'Open Renderer',exact:true}).click();
  await expect(page).toHaveURL('http://127.0.0.1:4398/renderer/');
- await expect(page.locator('[data-intent-output] .ir-screen-title')).toContainText('analytics dashboard');
+ await expect(page.locator('[data-intent-form]')).toBeVisible();
  expect(errors).toEqual([]);
 });
-test('homepage fits a phone and preserves theme through System navigation',async({page})=>{
+test('homepage fits a phone and preserves theme through Renderer navigation',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('http://127.0.0.1:4398/');
  await page.getByRole('button',{name:'Switch to light theme'}).click();
  await expect(page.locator('html')).toHaveAttribute('data-theme','light');
- await page.getByRole('button',{name:'Render interface',exact:true}).click();
- await expect(page.locator('[data-home-result]')).toBeVisible();
+ await expect(page.locator('[data-intent-form]')).toHaveCount(0);
+ await expect(page.locator('.home-faq')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await page.getByRole('link',{name:'Explore components',exact:true}).click();
- await expect(page).toHaveURL(/\/system\//);await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ await page.getByRole('link',{name:'Open Renderer',exact:true}).click();
+ await expect(page).toHaveURL(/\/renderer\//);await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ await expect(page.locator('[data-intent-form]')).toBeVisible();
 });

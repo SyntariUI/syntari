@@ -8,6 +8,8 @@
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'dark'}catch{}</script>
 </head>
 <body class="landing-body">
+<div class="landing">
+<div class="home-atmosphere" aria-hidden="true"></div>
 <a class="home-skip" href="#main">Skip to content</a>
 <header class="home-nav">
   <a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
@@ -20,22 +22,6 @@
     <h1 id="home-title">From intent<br>to interface.</h1>
     <p>A considered design system for people and agents.<br class="home-break"> Beautiful components. Predictable interfaces. Yours to build with.</p>
     <div class="home-actions"><a class="home-button home-primary" href="/system/">Explore components <span aria-hidden="true">↗</span></a><a class="home-button" href="/renderer/">Open Renderer</a></div>
-    <form class="home-prompt" data-intent-form>
-      <label for="intent-input">What do you want to build?</label>
-      <div class="home-prompt-row"><textarea id="intent-input" data-intent-input rows="2" maxlength="1200" required placeholder="An analytics dashboard, an approval screen…">Show a release report with measures, comparisons, and evidence.</textarea><button type="submit" data-intent-submit aria-label="Render interface" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
-    </form>
-    <div class="home-examples" data-intent-examples aria-label="Try an example"></div>
-    <p class="home-helper">Try an example. Rendered locally with sample data.</p>
-  </section>
-  <section class="home-result home-width" data-home-result hidden aria-label="Rendered interface">
-    <header class="home-result-head"><div><span class="home-dot" aria-hidden="true"></span><strong data-intent-pattern>Preparing preview</strong></div><div class="home-result-tools"><button data-panel-open="logic" aria-expanded="false" aria-controls="home-inspector">Decisions</button><button data-panel-open="ir" aria-expanded="false" aria-controls="home-inspector">Screen IR</button><button data-panel-open="components" aria-expanded="false" aria-controls="home-inspector">Components</button><a href="/renderer/" aria-label="Open full Renderer">↗</a></div></header>
-    <div class="home-result-body"><div class="home-result-canvas" data-intent-output></div>
-    <aside class="home-inspector" id="home-inspector" data-home-inspector hidden><header><strong data-panel-title>Why this interface?</strong><button data-home-close aria-label="Close inspector">×</button></header>
-      <div data-inspector-panel="logic"><dl data-intent-trace></dl><p class="home-helper">Selections use keyword matches against authored patterns.</p></div>
-      <div data-inspector-panel="ir" hidden><button class="home-button" data-copy-ir>Copy Screen IR</button><p data-ir-copy-status role="status"></p><pre tabindex="0"><code data-intent-spec></code></pre><h3>Validation</h3><pre data-intent-diagnostics></pre></div>
-      <div data-inspector-panel="components" hidden><p>Inspect the components behind this screen.</p><div data-intent-components></div></div>
-    </aside></div>
-    <p class="home-render-status" data-intent-status role="status">Loading the pattern registry…</p>
   </section>
   <section class="home-gallery home-width" aria-labelledby="gallery-title">
     <div class="home-section-head"><div><h2 id="gallery-title">Small details. Complete interfaces.</h2><p>Explore the interactions. Find your next starting point.</p></div><a href="/system/">View all components <span aria-hidden="true">↗</span></a></div>
@@ -45,12 +31,17 @@
     <div><span class="home-build-label">Build with Syntari</span><h2 id="build-title">The same language.<br>In your project.</h2><p>Bring the components, tokens, and interactions into your codebase. Give your agent the registry and rules to compose with confidence.</p><div class="home-build-links"><a href="/system/?panel=install#app-shell">Installation guide ↗</a><a href="/registry/agent-policy.json">Agent guardrails ↗</a></div></div>
     <div class="home-install"><div class="home-install-head"><span>Install app-shell</span><button data-home-copy aria-label="Copy install command" disabled>Copy</button></div><pre tabindex="0"><code data-home-command>Loading the versioned install command…</code></pre><p data-home-copy-status role="status">Editable source. MIT licensed.</p></div>
   </section>
-  <section class="home-faq home-width" aria-labelledby="faq-title"><h2 id="faq-title">A few things to know.</h2><div>
-    <details><summary>What can I build with Syntari?</summary><p>Use the components to build dashboards, product interfaces, and agent workflows. The Renderer demonstrates three authored screen patterns that you can inspect and adapt.</p></details>
-    <details><summary>Can an AI agent use the design system?</summary><p>Yes. The CLI and machine-readable registry expose components, dependencies, examples, tokens, and validation rules. Start with the <a href="/system/?guide=getting-started#button">component guides</a> and <a href="/registry/agent-policy.json">agent policy</a>.</p></details>
-    <details><summary>Can I customize the components?</summary><p>Yes. Installation gives you editable source. Shared tokens control the visual language, and the MIT license allows personal and commercial use.</p></details>
-  </div></section>
 </main>
-<footer class="home-footer home-width"><div class="home-footer-top"><div><a class="home-brand" href="/"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><p>A design system agents can actually use.</p></div><nav aria-label="Footer"><a href="/system/">Components</a><a href="/renderer/">Renderer</a><a href="/system/?guide=getting-started#button">Getting started</a><a href="https://github.com/SyntariUI/syntari">GitHub</a></nav></div><div class="home-footer-bottom"><span>Built in the open. MIT licensed.</span><span>From intent to interface.</span></div><div class="home-wordmark" aria-hidden="true">Syntari</div></footer>
-<script type="module" src="/intent-renderer.js"></script>
+<footer class="home-footer home-width">
+  <div class="home-footer-main">
+    <div class="home-footer-identity"><a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><p>A design system agents can actually use.</p></div>
+    <nav aria-label="Footer">
+      <div class="home-footer-group"><h2>Explore</h2><a href="/system/">Components</a><a href="/renderer/">Renderer</a></div>
+      <div class="home-footer-group"><h2>Resources</h2><a href="/system/?guide=getting-started#button">Getting started</a><a href="https://github.com/SyntariUI/syntari">GitHub <span aria-hidden="true">↗</span></a></div>
+    </nav>
+  </div>
+  <div class="home-footer-bottom"><span>© 2026 Syntari · Open source under MIT</span><span>From intent to interface.</span></div>
+</footer>
+<script type="module" src="/homepage.js"></script>
+</div>
 </body></html>
