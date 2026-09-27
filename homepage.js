@@ -29,6 +29,15 @@ async function loadGallery(){
       root.querySelector('.agent-heading')?.remove();
       const note=root.querySelector('p'),form=root.querySelector('[data-otp-form]'),group=form?.querySelector('.otp-group');
       if(note&&form&&group){note.textContent='Use 123456';note.classList.add('home-otp-note');form.dataset.homeCompact='true';form.insertBefore(note,group);}
+    }:slug==='chart-bars'?root=>{
+      const chart=root.querySelector('.chart-bars-modern');
+      chart?.classList.add('home-compact-chart');
+      chart?.querySelector('figcaption')?.remove();
+      chart?.querySelectorAll('.column-value').forEach(value=>value.remove());
+    }:slug==='tool-approval'?root=>{
+      const approval=root.querySelector('[data-agent-kind="approval"]');
+      approval?.querySelector('p.hint')?.remove();
+      if(approval)approval.dataset.showResetPreview='false';
     }:undefined}).catch(()=>{entry.target.textContent='Open this component in System to explore it.';});}},{rootMargin:'200px'});
   for(const slug of slugs){
     const c=catalog.find(item=>item.slug===slug);if(!c)continue;

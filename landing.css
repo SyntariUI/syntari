@@ -37,3 +37,6 @@
 .home-card-stage .otp-submit{margin-top:0}
 @media(max-width:900px){.home-width{width:calc(100% - 48px)}.home-card-stage{height:clamp(268px,34vw,320px)}}
 @media(max-width:600px){.home-width{width:calc(100% - 32px)}.home-hero{padding:56px 10px 44px}.home-card-stage{height:296px;padding:22px}.home-card:hover .home-card-stage{transform:none}}
+
+.home-card-stage .chart-bars-modern.home-compact-chart .chart-column{grid-template-columns:38px minmax(0,1fr)}
+.home-card-stage .chart-bars-modern.home-compact-chart .column-pair{grid-column:2}
