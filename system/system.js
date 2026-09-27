@@ -81,7 +81,7 @@ async function select(slug, push = false, preserveState = false) {
     surface.removeAttribute('data-syntari-delay');
     for (const [property,value] of Object.entries({opacity:'1',visibility:'visible',filter:'none',transform:'none',animation:'none'})) surface.style.setProperty(property,value,'important');
     host.classList.remove('is-wide','is-compact','is-swapping');
-    if (/table|list|data|navigation/i.test(component.category) || /table|chart|navigation|calendar/.test(slug)) host.classList.add('is-wide');
+    if (/table|list|data|navigation/i.test(component.category) || /table|chart|navigation|calendar|chat-workspace/.test(slug)) host.classList.add('is-wide');
     else if (/action|form|feedback/i.test(component.category)) host.classList.add('is-compact');
     $('[data-status]').textContent = '';
     if (push) history.pushState(null,'',`/system/#${slug}`);

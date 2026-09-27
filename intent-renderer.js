@@ -23,7 +23,7 @@ function showTrace(prompt, choice, spec, result) {
   $('[data-intent-trace]').replaceChildren(
     line('Intent',prompt), line('Pattern selected',choice.selected.pattern.name),
     line('Candidates',choice.candidates.map(item => `${item.pattern.name} · ${item.cues.length} cues`).join(' / ')),
-    line('Decision',choice.matched ? `Matched ${choice.selected.cues.join(', ')}.` : 'No supported keyword matched. The release review is shown as an example.'),
+    line('Decision',choice.matched ? `Matched ${choice.selected.cues.join(', ')}.` : 'No supported keyword matched. A bundled example is shown.'),
     line('Match evidence',`${choice.selected.cues.length} matching keywords. This is a deterministic selection heuristic.`),
     line('Composition',choice.selected.pattern.dependencies.join(', ')),
     line('Rules applied','Registry component ids, prop contracts, layout and node budgets.'),
@@ -53,7 +53,7 @@ async function paint(prompt) {
     if (token !== generation) { next.destroy(); return; }
     mounted?.destroy(); mounted = next; output.replaceChildren(...staging.childNodes); output.scrollTop = 0;
     $('[data-intent-pattern]').textContent = choice.selected.pattern.name;
-    status.textContent = choice.matched ? `${choice.selected.pattern.name} · validated · sample data` : 'No matching pattern. Showing a validated release review example.';
+    status.textContent = choice.matched ? `Rendered ${choice.selected.pattern.name}.` : 'No matching pattern. Showing the closest supported example.';
     document.querySelectorAll('[data-intent-example]').forEach(button => {
       const selected = button.dataset.patternId === choice.selected.pattern.id;
       button.classList.toggle('is-selected',selected); button.setAttribute('aria-pressed',String(selected));

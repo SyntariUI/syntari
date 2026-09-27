@@ -38,7 +38,7 @@
             <div class="renderer-composer-copy"><label for="intent-input">Describe what you want to build</label><textarea id="intent-input" data-intent-input rows="2" maxlength="1200" required placeholder="An analytics dashboard, an approval screen…">Show a release report with measures, comparisons, and evidence.</textarea></div>
             <button type="submit" data-intent-submit aria-label="Render interface" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
           </form>
-          <div class="renderer-status" data-intent-status role="status">Loading the pattern registry…</div>
+          <div class="renderer-status sr-only" data-intent-status role="status">Loading the pattern registry…</div>
         </div>
         <div class="renderer-toolbar" aria-label="Renderer tools">
           <button class="renderer-tool renderer-tool-text" data-panel-open="logic" aria-pressed="false" aria-controls="renderer-inspector">Logic</button>
@@ -49,7 +49,7 @@
         <aside class="renderer-inspector" id="renderer-inspector" data-inspector aria-label="Renderer inspector" aria-hidden="true" inert>
           <header class="renderer-inspector-head"><div><span>Inspect</span><strong data-panel-title>Why this interface?</strong></div><button class="renderer-tool" data-close-panel aria-label="Close inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
           <div class="renderer-inspector-body" data-inspector-panel="logic"><dl data-intent-trace></dl><p class="workspace-message">Selections use keyword matches against authored patterns. No model probability or live account data is involved.</p><a class="workspace-component" href="/system/?guide=generative-ui#tool-approval">How rendering works <span>↗</span></a></div>
-          <div class="renderer-inspector-body" data-inspector-panel="ir" hidden><button class="workspace-action" data-copy-ir>Copy Screen IR</button><p class="workspace-message" data-ir-copy-status role="status"></p><pre class="workspace-code" tabindex="0"><code data-intent-spec></code></pre><h2 style="font-size:13px">Validation</h2><pre class="workspace-code" data-intent-diagnostics></pre></div>
+          <div class="renderer-inspector-body" data-inspector-panel="ir" hidden><div class="renderer-ir-heading"><h2>Screen IR</h2><button class="workspace-action" data-copy-ir>Copy IR</button></div><p class="workspace-message" data-ir-copy-status role="status"></p><pre class="workspace-code" tabindex="0"><code data-intent-spec></code></pre><h2 class="renderer-validation-title">Validation</h2><pre class="workspace-code" data-intent-diagnostics></pre></div>
           <div class="renderer-inspector-body" data-inspector-panel="components" hidden><p class="workspace-message">Inspect each component in System. Your rendered screen stays available in this tab.</p><div data-intent-components></div><p class="workspace-message">Actions use sample data. Connect and authorize real operations in your host application.</p><a class="workspace-component" href="/registry/agent-policy.json">Agent policy <span>↗</span></a></div>
         </aside>
       </section>
