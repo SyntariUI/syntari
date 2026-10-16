@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { wideStage } from '../docs-data.js';
 const origin='http://127.0.0.1:4398';
 async function open(page,slug){await page.goto(`${origin}/components/${slug}/`);await page.locator('.syntari-component').waitFor();}
 const live=page=>page.locator('.syntari-component');
@@ -74,19 +73,23 @@ test('pointer motion runs normally and reduced motion preserves final states',as
  await open(page,'otp-input');const otp=live(page),fillOtp=async value=>{const digits=otp.locator('.otp-digit');for(let i=0;i<value.length;i++)await digits.nth(i).fill(value[i]);};await expect(otp.locator('.otp-submit')).toHaveCount(0);await fillOtp('123456');await expect.poll(()=>otp.locator('[data-otp-form]').getAttribute('data-otp-state')).toBe('success');await expect(otp.locator('[data-otp-status]')).toHaveClass(/sr-only/);await fillOtp('111111');await expect.poll(()=>otp.locator('[data-otp-form]').getAttribute('data-otp-state')).toBe('error');
 });
 
-test('every default component fits its documentation preview in both themes at three widths',async({page})=>{
+test('every default component fits its System preview in both themes at three widths',async({page})=>{
  await open(page,'button');await page.emulateMedia({reducedMotion:'reduce'});
  const failures=[];
  for(const width of [390,768,1440]){await page.setViewportSize({width,height:1000});
   for(const theme of ['light','dark']){
-   const result=await page.evaluate(async({theme,wide})=>{
+   const result=await page.evaluate(async({theme})=>{
     const {getComponents,mount,setTheme}=await import('/syntari.js');setTheme(theme);const catalog=await getComponents(),fail=[];
-    const stage=document.querySelector('.docs-stage'),container=document.querySelector('#live-example');container.replaceChildren();
-    const wideRe=new RegExp(wide);for(const c of catalog){stage.classList.toggle('is-wide',wideRe.test(c.slug));const instance=await mount(c.slug,container);const root=instance.element;
+    /* Mirror System's own stage sizing so each component is measured in the frame people see. */
+    const host=document.querySelector('[data-component-mount]');host.replaceChildren();
+    for(const c of catalog){host.classList.remove('is-wide','is-compact');
+     if(/table|list|data|navigation/i.test(c.category)||/table|chart|navigation|calendar|chat-workspace/.test(c.slug))host.classList.add('is-wide');
+     else if(/action|form|feedback/i.test(c.category))host.classList.add('is-compact');
+     const instance=await mount(c.slug,host);const root=instance.element;
      if(root.scrollWidth>root.clientWidth+2)fail.push({slug:c.slug,width:root.clientWidth,scroll:root.scrollWidth});
      instance.destroy();
     }return fail;
-   },{theme,wide:wideStage.source});failures.push(...result.map(r=>({...r,theme,viewport:width})));
+   },{theme});failures.push(...result.map(r=>({...r,theme,viewport:width})));
   }
  }
  console.log('Preview overflow audit:',failures);expect(failures).toEqual([]);

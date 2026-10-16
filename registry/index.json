@@ -1,12 +1,12 @@
 {
   "$id": "https://syntariui.giovanitier.com/registry/index.json",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "components": [
     {
       "id": "attribution-table",
       "name": "Attribution table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Proportional traffic and revenue segments sit behind stable, borderless rows. Values roll during live updates. Hover or focus a country to reveal revenue, or use Show revenue on touch devices. Pause stops the three-second demo updates.",
       "tokens": [
         "--radius-control",
@@ -37,7 +37,7 @@
       "id": "rolling-number",
       "name": "Rolling number",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Individual digits roll inside fixed-width masks. Thousands separators and currency stay legible; the final number is exposed as one accessible label. Try crossing a digit boundary or changing direction.",
       "tokens": [
         "--radius-control",
@@ -68,7 +68,7 @@
       "id": "visitor-table",
       "name": "Visitor table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact visitor list with an overlapping avatar and country flag, a source pill, and right-aligned revenue. Value animations share the same numeric primitive as the attribution table.",
       "tokens": [
         "--radius-control",
@@ -99,7 +99,7 @@
       "id": "button",
       "name": "Button",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
       "tokens": [
         "--radius-control",
@@ -136,7 +136,7 @@
       "id": "icon-button",
       "name": "Icon button",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Compact actions with accessible names. Toggle buttons expose pressed state, and disabled actions remain visible.",
       "tokens": [
         "--radius-control",
@@ -167,7 +167,7 @@
       "id": "segmented-control",
       "name": "Segmented control",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Switch between mutually exclusive views. Each control exposes its selected state and supports arrow-key navigation.",
       "tokens": [
         "--radius-control",
@@ -198,7 +198,7 @@
       "id": "text-input",
       "name": "Text input",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Labeled fields with persistent hints and associated validation messages. Error meaning is communicated with text as well as color.",
       "tokens": [
         "--radius-control",
@@ -229,7 +229,7 @@
       "id": "switch",
       "name": "Switch",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Turn a setting on or off immediately. Each switch has a descriptive label and a generous interaction area.",
       "tokens": [
         "--radius-control",
@@ -260,7 +260,7 @@
       "id": "checkbox",
       "name": "Checkbox",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Use checkboxes for independent choices that can be combined.",
       "tokens": [
         "--radius-control",
@@ -291,7 +291,7 @@
       "id": "radio",
       "name": "Radio",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Use radio buttons for a single selection within a set.",
       "tokens": [
         "--radius-control",
@@ -322,7 +322,7 @@
       "id": "badge-and-status",
       "name": "Badge & status",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Quiet status indicators with semantic text colors. A dot, label, or sign carries the meaning beyond color.",
       "tokens": [
         "--green-a1",
@@ -353,7 +353,7 @@
       "id": "metric-and-sparkline",
       "name": "Metric & sparkline",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact metric pair with comparison badges and a bar chart.",
       "tokens": [
         "--blue-4",
@@ -383,7 +383,7 @@
       "id": "floating-navigation",
       "name": "Floating navigation",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact utility rail for switching views. The selected destination has a quiet filled state and an accessible pressed label.",
       "tokens": [
         "--background",
@@ -413,7 +413,7 @@
       "id": "avatar-and-group",
       "name": "Avatar & group",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Abstract color avatars provide recognizable identity without depending on photography. Groups show overflow as a count.",
       "tokens": [
         "--radius-control",
@@ -444,7 +444,7 @@
       "id": "select-and-date",
       "name": "Select & date",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A workspace selector and calendar share the same floating surface, selection colors, and Lucide icons. The calendar supports arrow keys, Home/End, Page Up/Down, Enter, and Escape.",
       "tokens": [
         "--radius-control",
@@ -475,7 +475,7 @@
       "id": "score",
       "name": "Score",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A progress ring pairs a numerical score with a written evaluation.",
       "tokens": [
         "--green-4",
@@ -503,7 +503,7 @@
       "id": "progress",
       "name": "Progress",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A linear progress bar shows measurable completion with a written value.",
       "tokens": [
         "--accent",
@@ -531,7 +531,7 @@
       "id": "dropdown-menu",
       "name": "Dropdown menu",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A contextual action list that opens on demand, dismisses on Escape or outside click, and supports keyboard navigation.",
       "tokens": [
         "--radius-control",
@@ -562,7 +562,7 @@
       "id": "tabs",
       "name": "Tabs",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Switch related content in place. Tabs expose selected state, are connected to their panels, and support arrow keys.",
       "tokens": [
         "--radius-control",
@@ -593,7 +593,7 @@
       "id": "banner",
       "name": "Banner",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Inline feedback communicates what happened and whether the user needs to act. Text remains readable in both themes.",
       "tokens": [
         "--radius-control",
@@ -624,7 +624,7 @@
       "id": "table",
       "name": "Table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Compact rows with subtle filled backgrounds. Semantic column headers keep the values understandable to screen readers.",
       "tokens": [
         "--radius-control",
@@ -655,7 +655,7 @@
       "id": "card",
       "name": "Card",
       "category": "Container",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A composed container for a project summary. Surface, border, and spacing tokens work independently of product domain.",
       "tokens": [
         "--radius-control",
@@ -686,7 +686,7 @@
       "id": "slider",
       "name": "Slider",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Choose a value along a range. The live output is associated with the labeled slider and updates on every change.",
       "tokens": [
         "--radius-control",
@@ -717,7 +717,7 @@
       "id": "dialog",
       "name": "Dialog",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A focused modal for a single task. Native dialog manages focus containment and Escape. The form validates before confirming.",
       "tokens": [
         "--radius-control",
@@ -748,7 +748,7 @@
       "id": "toast",
       "name": "Toast",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Transient confirmation after an action. The message is announced through a live status region without moving focus.",
       "tokens": [
         "--radius-control",
@@ -779,7 +779,7 @@
       "id": "tooltip",
       "name": "Tooltip",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A short label for an icon action, shown on pointer hover and keyboard focus. It never contains essential instructions.",
       "tokens": [
         "--radius-control",
@@ -810,7 +810,7 @@
       "id": "pagination",
       "name": "Pagination",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Navigate a bounded set of pages. Current page and visible item range stay synchronized, including previous and next actions.",
       "tokens": [
         "--radius-control",
@@ -841,7 +841,7 @@
       "id": "stepper",
       "name": "Stepper",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Progress through a short sequence with completed, current, and upcoming steps. The demo advances and can be restarted.",
       "tokens": [
         "--radius-control",
@@ -872,7 +872,7 @@
       "id": "empty-state",
       "name": "Empty state",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Explain what belongs in an empty space and offer the next useful action.",
       "tokens": [
         "--radius-control",
@@ -903,7 +903,7 @@
       "id": "activity-list",
       "name": "Activity list",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A simple timeline pairs an event, context, and time. The connecting line is decorative; event order is semantic.",
       "tokens": [
         "--radius-control",
@@ -934,7 +934,7 @@
       "id": "skeleton-and-spinner",
       "name": "Skeleton & spinner",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Static skeletons reserve the shape of loading content. The spinner respects reduced-motion preferences.",
       "tokens": [
         "--radius-control",
@@ -965,7 +965,7 @@
       "id": "accordion",
       "name": "Accordion",
       "category": "Container",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Progressively disclose supporting details. Native details elements retain keyboard and screen-reader behavior.",
       "tokens": [
         "--radius-control",
@@ -996,7 +996,7 @@
       "id": "funnel",
       "name": "Funnel",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A flowing stage comparison, with stage names and values available as text.",
       "tokens": [
         "--blue-4",
@@ -1026,7 +1026,7 @@
       "id": "filter-chips",
       "name": "Filter chips",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Applied filters are visible and individually removable. Clear all and reset keep the example repeatable.",
       "tokens": [
         "--radius-control",
@@ -1057,7 +1057,7 @@
       "id": "chat-composer",
       "name": "Chat composer",
       "category": "Chat",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A local AI-chat composer with room to write, attach, and send. Messages are kept locally and announced when added.",
       "tokens": [
         "--radius-control",
@@ -1088,7 +1088,7 @@
       "id": "file-input",
       "name": "File input",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "An empty-state pattern for assets: drop files on the surface or use Select assets. Selection stays on your device.",
       "tokens": [
         "--radius-control",
@@ -1119,7 +1119,7 @@
       "id": "text-area",
       "name": "Text area",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A multiline field with an associated character counter. Length limits are enforced by the native textarea.",
       "tokens": [
         "--radius-control",
@@ -1150,7 +1150,7 @@
       "id": "session-card",
       "name": "Session card",
       "category": "Container",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A layered review card. Expand the result row to see what was checked; spacing and shadows keep nested surfaces quiet.",
       "tokens": [
         "--radius-control",
@@ -1181,7 +1181,7 @@
       "id": "selection-toolbar",
       "name": "Selection toolbar",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact body toolbar responds to selection. Actions confirm the selected items locally and clear selection after archiving.",
       "tokens": [
         "--radius-control",
@@ -1212,7 +1212,7 @@
       "id": "expandable-dock",
       "name": "Expandable dock",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A contextual activity switcher opens into a compact realtime summary. Select Realtime to expand; any other destination collapses it.",
       "tokens": [
         "--radius-control",
@@ -1243,7 +1243,7 @@
       "id": "app-shell",
       "name": "App shell",
       "category": "Layout",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "One navigation system with sidebar and topbar layouts, a collapsible rail, and a keyboard-accessible mobile drawer. Starter screens use the same component.",
       "tokens": [
         "--radius-control",
@@ -1274,7 +1274,7 @@
       "id": "page-header-and-breadcrumbs",
       "name": "Page header & breadcrumbs",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A page title, supporting description, breadcrumb trail, and primary action share a reusable alignment.",
       "tokens": [
         "--radius-control",
@@ -1305,7 +1305,7 @@
       "id": "side-drawer",
       "name": "Side drawer",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Inspect and edit a record without losing your place. Native modal semantics keep keyboard focus inside until dismissed.",
       "tokens": [
         "--radius-control",
@@ -1336,7 +1336,7 @@
       "id": "bottom-sheet",
       "name": "Bottom sheet",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact action surface rises from the bottom, with Escape and backdrop dismissal.",
       "tokens": [
         "--radius-control",
@@ -1367,7 +1367,7 @@
       "id": "popover",
       "name": "Popover",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Small controls appear next to their trigger and dismiss on outside click or Escape.",
       "tokens": [
         "--radius-control",
@@ -1398,7 +1398,7 @@
       "id": "confirmation-dialog",
       "name": "Confirmation dialog",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Confirm a consequential action with a clear description, safe cancel action, and explicit outcome.",
       "tokens": [
         "--radius-control",
@@ -1429,7 +1429,7 @@
       "id": "searchable-select",
       "name": "Searchable select",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Search a list of options. Arrow keys move the active option; Enter commits and Escape dismisses.",
       "tokens": [
         "--radius-control",
@@ -1460,7 +1460,7 @@
       "id": "autocomplete",
       "name": "Autocomplete",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Suggestions narrow as you type. Choose an existing value or keep a custom value.",
       "tokens": [
         "--radius-control",
@@ -1491,7 +1491,7 @@
       "id": "multiselect",
       "name": "Multiselect",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Select several values from a searchable list. Remove selected chips without reopening the list.",
       "tokens": [
         "--radius-control",
@@ -1522,7 +1522,7 @@
       "id": "command-palette",
       "name": "Command palette",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Find screens, components, and common actions with the keyboard. Open anywhere with Command/Ctrl K.",
       "tokens": [
         "--radius-control",
@@ -1553,7 +1553,7 @@
       "id": "number-stepper",
       "name": "Number stepper",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Increment, decrement, or enter a number. Boundary buttons disable at the minimum and maximum.",
       "tokens": [
         "--radius-control",
@@ -1584,7 +1584,7 @@
       "id": "password-field",
       "name": "Password field",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Reveal a password without changing its value. The toggle exposes its pressed state and updates its label.",
       "tokens": [
         "--radius-control",
@@ -1615,7 +1615,7 @@
       "id": "date-range-picker",
       "name": "Date range picker",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Choose two dates across months, or use a quick preset. Apply commits the selection; cancel preserves the original value.",
       "tokens": [
         "--radius-control",
@@ -1646,7 +1646,7 @@
       "id": "time-picker",
       "name": "Time picker",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A tactile hour-and-minute wheel with momentum scrolling, keyboard control, and explicit confirmation.",
       "tokens": [
         "--radius-control",
@@ -1677,7 +1677,7 @@
       "id": "selectable-cards",
       "name": "Selectable cards",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
       "tokens": [
         "--radius-control",
@@ -1708,7 +1708,7 @@
       "id": "simple-data-table",
       "name": "Simple data table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A quiet table with one record per line. Sort project names, status, progress, currency, and dates without extra toolbars or bulk controls.",
       "tokens": [
         "--radius-control",
@@ -1739,7 +1739,7 @@
       "id": "data-table",
       "name": "Data table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Sort, search, filter, hide columns, select rows, paginate, expand details, and edit records. Actions update local preview data.",
       "tokens": [
         "--radius-control",
@@ -1770,7 +1770,7 @@
       "id": "inline-validation",
       "name": "Inline validation",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Associated inline errors explain how to correct an invalid field. Valid input replaces the error with confirmation.",
       "tokens": [
         "--radius-control",
@@ -1801,7 +1801,7 @@
       "id": "error-and-retry",
       "name": "Error & retry",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Recover from a failed load without losing context. Retry shows a loading state before replacing the error.",
       "tokens": [
         "--radius-control",
@@ -1832,7 +1832,7 @@
       "id": "upload-progress",
       "name": "Upload progress",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A bounded progress simulation with cancel and retry. Screen-reader updates announce milestones, not every frame.",
       "tokens": [
         "--radius-control",
@@ -1863,7 +1863,7 @@
       "id": "unsaved-changes",
       "name": "Unsaved changes",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A contextual save bar appears when values differ from the saved version. Discard restores the original.",
       "tokens": [
         "--radius-control",
@@ -1894,7 +1894,7 @@
       "id": "metadata-list",
       "name": "Metadata list",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Aligned labels and values display the details that accompany a record.",
       "tokens": [
         "--radius-control",
@@ -1925,7 +1925,7 @@
       "id": "thumbnail-and-lightbox",
       "name": "Thumbnail & lightbox",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Local abstract artwork demonstrates an asset thumbnail and larger lightbox preview. Escape returns focus to the thumbnail.",
       "tokens": [
         "--radius-control",
@@ -1956,7 +1956,7 @@
       "id": "divider-and-form-section",
       "name": "Divider & form section",
       "category": "Layout",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A titled section and quiet divider separate related fields without adding another card.",
       "tokens": [
         "--radius-control",
@@ -1987,7 +1987,7 @@
       "id": "agent-todo-list",
       "name": "Agent todo list",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A collapsible task plan with explicit task states and bounded progress.",
       "tokens": [
         "--radius-control",
@@ -2018,7 +2018,7 @@
       "id": "agent-message",
       "name": "Agent message",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A response with source identity and contextual actions.",
       "tokens": [
         "--radius-control",
@@ -2049,7 +2049,7 @@
       "id": "message-bubbles",
       "name": "Message bubbles",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Role-specific message surfaces.",
       "tokens": [
         "--radius-control",
@@ -2080,7 +2080,7 @@
       "id": "message-scroller",
       "name": "Message scroller",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A bounded message history with an explicit jump action.",
       "tokens": [
         "--radius-control",
@@ -2111,7 +2111,7 @@
       "id": "prompt-input",
       "name": "Prompt input",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A growing prompt field with a local attachment picker and submit feedback.",
       "tokens": [
         "--radius-control",
@@ -2142,7 +2142,7 @@
       "id": "code-block",
       "name": "Code block",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Code is preserved as text, with a copy action.",
       "tokens": [
         "--radius-control",
@@ -2173,7 +2173,7 @@
       "id": "approval-card",
       "name": "Approval card",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A decision card that records an explicit choice.",
       "tokens": [
         "--radius-control",
@@ -2204,7 +2204,7 @@
       "id": "file-diff",
       "name": "File diff",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Readable additions and deletions with a review outcome.",
       "tokens": [
         "--radius-control",
@@ -2235,7 +2235,7 @@
       "id": "tool-result",
       "name": "Tool result",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Inspect structured output and run a bounded local simulation.",
       "tokens": [
         "--radius-control",
@@ -2266,7 +2266,7 @@
       "id": "streaming-response",
       "name": "Streaming response",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A cancellable response preview. Completion is announced without reading every character.",
       "tokens": [
         "--radius-control",
@@ -2297,7 +2297,7 @@
       "id": "image-generation",
       "name": "Image generation",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Local artwork illustrates generation states; no model service is called.",
       "tokens": [
         "--radius-control",
@@ -2328,7 +2328,7 @@
       "id": "tool-approval",
       "name": "Tool approval",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Show the requested scope before the user decides.",
       "tokens": [
         "--radius-control",
@@ -2365,7 +2365,7 @@
       "id": "citations",
       "name": "Citations",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Numbered references disclose context next to a response.",
       "tokens": [
         "--radius-control",
@@ -2396,7 +2396,7 @@
       "id": "agent-activity",
       "name": "Agent activity",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A chronological record separate from the task plan.",
       "tokens": [
         "--radius-control",
@@ -2427,7 +2427,7 @@
       "id": "agent-loading-states",
       "name": "Agent loading states",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Feedback before a durable task plan is available.",
       "tokens": [
         "--radius-control",
@@ -2458,7 +2458,7 @@
       "id": "ai-sidebar",
       "name": "AI sidebar",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Conversation navigation next to a working composer.",
       "tokens": [
         "--radius-control",
@@ -2489,7 +2489,7 @@
       "id": "chat-workspace",
       "name": "Chat workspace",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A composed local conversation with retained messages between previews.",
       "tokens": [
         "--radius-control",
@@ -2520,7 +2520,7 @@
       "id": "file-tree",
       "name": "File tree",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Explore nested files with disclosures and preview feedback.",
       "tokens": [
         "--radius-control",
@@ -2551,7 +2551,7 @@
       "id": "preview-rail",
       "name": "Preview rail",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact artwork selector updates a shared preview.",
       "tokens": [
         "--radius-control",
@@ -2582,7 +2582,7 @@
       "id": "otp-input",
       "name": "OTP input",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A six-digit verification field supports paste, autofill, animated completion, and clear rejection feedback.",
       "tokens": [
         "--radius-control",
@@ -2613,7 +2613,7 @@
       "id": "feedback-widget",
       "name": "Feedback widget",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Collect a rating and optional note within the local preview.",
       "tokens": [
         "--radius-control",
@@ -2644,7 +2644,7 @@
       "id": "notification-stack",
       "name": "Notification stack",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact inbox with per-notification dismissal.",
       "tokens": [
         "--radius-control",
@@ -2675,7 +2675,7 @@
       "id": "context-menu",
       "name": "Context menu",
       "category": "Overlay",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Secondary actions open with right-click, Shift F10, or an explicit button.",
       "tokens": [
         "--radius-control",
@@ -2706,7 +2706,7 @@
       "id": "availability-scheduler",
       "name": "Availability scheduler",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Choose a day and available time with explicit confirmation.",
       "tokens": [
         "--radius-control",
@@ -2737,7 +2737,7 @@
       "id": "wheel-picker",
       "name": "Wheel picker",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A bounded duration list with scroll snapping and keyboard selection.",
       "tokens": [
         "--radius-control",
@@ -2768,7 +2768,7 @@
       "id": "swipeable-list",
       "name": "Swipeable list",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Pointer swipes and visible actions lead to the same reversible outcome.",
       "tokens": [
         "--radius-control",
@@ -2799,7 +2799,7 @@
       "id": "not-found",
       "name": "Not found",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "An actionable empty route state.",
       "tokens": [
         "--radius-control",
@@ -2830,7 +2830,7 @@
       "id": "range-slider",
       "name": "Range slider",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A budget interval with independent, labeled lower and upper controls.",
       "tokens": [
         "--radius-control",
@@ -2861,7 +2861,7 @@
       "id": "tilt-card",
       "name": "Tilt card",
       "category": "Container",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A restrained perspective response on pointer movement, without changing the content hierarchy.",
       "tokens": [
         "--radius-control",
@@ -2892,7 +2892,7 @@
       "id": "marquee",
       "name": "Marquee",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A pausable horizontal strip. Motion stops when reduced motion is requested.",
       "tokens": [
         "--radius-control",
@@ -2923,7 +2923,7 @@
       "id": "pull-to-refresh",
       "name": "Pull to refresh",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Refresh a short feed using a downward gesture or accessible button.",
       "tokens": [
         "--radius-control",
@@ -2954,7 +2954,7 @@
       "id": "ambient-background",
       "name": "Ambient background",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A lightweight CSS interpretation of the reference shader effect, using only Syntari palette tokens.",
       "tokens": [
         "--radius-control",
@@ -2985,7 +2985,7 @@
       "id": "rotating-carousel",
       "name": "Rotating carousel",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Three artwork cards rotate through a shared stage, with explicit controls and reduced motion.",
       "tokens": [
         "--radius-control",
@@ -3016,7 +3016,7 @@
       "id": "card-and-project-folder",
       "name": "Card & project folder",
       "category": "Container",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A folder opens into a compact set of file actions.",
       "tokens": [
         "--radius-control",
@@ -3047,8 +3047,8 @@
       "id": "masonry-grid",
       "name": "Masonry grid",
       "category": "Layout",
-      "version": "0.2.2",
-      "description": "An uneven grid with explicit loading instead of an endless automatic fetch.",
+      "version": "0.2.3",
+      "description": "An editorial masonry gallery where each card has its own artwork, crop, and title.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3078,7 +3078,7 @@
       "id": "fixtures",
       "name": "Fixtures",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact schedule pattern with selectable fixtures and local detail feedback.",
       "tokens": [
         "--radius-control",
@@ -3109,7 +3109,7 @@
       "id": "asset-swap",
       "name": "Asset swap",
       "category": "Form controls",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A local illustrative crypto convert form: each field carries its own asset select, enter an amount, and review the order. No wallet, trading, or network transaction is connected.",
       "tokens": [
         "--radius-control",
@@ -3140,7 +3140,7 @@
       "id": "status-island",
       "name": "Status island",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A dark floating surface reveals task context without switching pages.",
       "tokens": [
         "--radius-control",
@@ -3171,7 +3171,7 @@
       "id": "overflow-actions",
       "name": "Overflow actions",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Low-frequency actions share the standard Syntari menu surface.",
       "tokens": [
         "--radius-control",
@@ -3202,7 +3202,7 @@
       "id": "wallet-card",
       "name": "Wallet card",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A sample account surface with concealed balance and a copyable demonstration identifier.",
       "tokens": [
         "--radius-control",
@@ -3233,7 +3233,7 @@
       "id": "prediction-card",
       "name": "Prediction card",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A product-planning prediction sample with local choices; no betting or payment.",
       "tokens": [
         "--radius-control",
@@ -3264,7 +3264,7 @@
       "id": "bloom-menu",
       "name": "Bloom menu",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Circular actions float above a central trigger that clearly changes between Create and Close.",
       "tokens": [
         "--radius-control",
@@ -3295,7 +3295,7 @@
       "id": "morphing-search",
       "name": "Morphing search",
       "category": "Navigation",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "An inline search expands in place and filters a small set of recent projects.",
       "tokens": [
         "--radius-control",
@@ -3326,7 +3326,7 @@
       "id": "action-swap",
       "name": "Action swap",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A single action changes its label and icon as work progresses.",
       "tokens": [
         "--radius-control",
@@ -3357,7 +3357,7 @@
       "id": "agent-questions",
       "name": "Agent questions",
       "category": "Agents",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A small guided approval flow combines radio options, free text, and a reviewable result.",
       "tokens": [
         "--radius-control",
@@ -3388,8 +3388,8 @@
       "id": "chart-bars",
       "name": "Chart bars",
       "category": "Data display",
-      "version": "0.2.2",
-      "description": "A compact comparative bar chart that keeps exact values visible and makes the change across checkpoints easy to scan.",
+      "version": "0.2.3",
+      "description": "A monthly comparison keeps each period on a shared scale with a readable value and concise legend.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3419,8 +3419,8 @@
       "id": "chart-line",
       "name": "Chart line",
       "category": "Data display",
-      "version": "0.2.2",
-      "description": "A line chart with points and a quiet grid. Series colours come from the shared tokens rather than a palette of their own.",
+      "version": "0.2.3",
+      "description": "An animated line chart with keyboard-accessible points and hover details for each year.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3450,8 +3450,8 @@
       "id": "chart-donut",
       "name": "Chart donut",
       "category": "Data display",
-      "version": "0.2.2",
-      "description": "A ring shows how one whole splits, with the total held in the centre and a legend carrying the exact numbers.",
+      "version": "0.2.3",
+      "description": "A softly animated ring keeps the total centered and aligns each share label as a clear group.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3481,7 +3481,7 @@
       "id": "heatmap",
       "name": "Heatmap",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A compact grid where one intensity ramp carries the comparison, with the scale beside it.",
       "tokens": [
         "--radius-control",
@@ -3512,7 +3512,7 @@
       "id": "treemap",
       "name": "Treemap",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Tiles sized by share, so the shape of the whole is readable before any number is.",
       "tokens": [
         "--radius-control",
@@ -3543,8 +3543,8 @@
       "id": "network-graph",
       "name": "Network graph",
       "category": "Data display",
-      "version": "0.2.2",
-      "description": "Relationships drawn as nodes and edges, with the busiest node carrying the emphasis.",
+      "version": "0.2.3",
+      "description": "Move the services by pointer or keyboard. Labels stay centered within each generously sized node.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3574,7 +3574,7 @@
       "id": "gantt-chart",
       "name": "Gantt chart",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Rows of work with a span and a marker for today, at a grain people can read at a glance.",
       "tokens": [
         "--radius-control",
@@ -3605,7 +3605,7 @@
       "id": "comparison-table",
       "name": "Comparison table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "The same metric measured across options, with the advantage column naming the winner in words rather than colour alone.",
       "tokens": [
         "--radius-control",
@@ -3636,7 +3636,7 @@
       "id": "stat-row",
       "name": "Stat row",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A row of measures with a label, a value, a change, and the note that explains it.",
       "tokens": [
         "--radius-control",
@@ -3667,7 +3667,7 @@
       "id": "process-ledger",
       "name": "Process ledger",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A pipeline shown as stages with their durations and a total, so the cost of each step is visible.",
       "tokens": [
         "--radius-control",
@@ -3698,7 +3698,7 @@
       "id": "transport-controls",
       "name": "Transport controls",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "Controls for something that runs: play, pause, step, and a speed that states its own value.",
       "tokens": [
         "--radius-control",
@@ -3729,7 +3729,7 @@
       "id": "live-readout",
       "name": "Live readout",
       "category": "Feedback & status",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A small panel of measures with a live status, for anything that changes while someone watches.",
       "tokens": [
         "--radius-control",
@@ -3760,7 +3760,7 @@
       "id": "feature-grid",
       "name": "Feature grid",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A short row of capabilities: an icon, a claim, the explanation, and the footnote that qualifies it.",
       "tokens": [
         "--radius-control",
@@ -3791,7 +3791,7 @@
       "id": "pricing-table",
       "name": "Pricing table",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A plan matrix where included, limited, and absent stay readable without relying on colour.",
       "tokens": [
         "--radius-control",
@@ -3822,7 +3822,7 @@
       "id": "cta-band",
       "name": "CTA band",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A closing call to action: one statement, one next step, and no competing links.",
       "tokens": [
         "--radius-control",
@@ -3853,7 +3853,7 @@
       "id": "page-footer",
       "name": "Page footer",
       "category": "Content",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "The end of a page: the mark, the promise, grouped links, and whether the service is up.",
       "tokens": [
         "--radius-control",
@@ -3884,8 +3884,8 @@
       "id": "area-chart",
       "name": "Area chart",
       "category": "Data display",
-      "version": "0.2.2",
-      "description": "A line with its area filled, a labelled axis, and gridlines. The summary states the range for screen readers.",
+      "version": "0.2.3",
+      "description": "An animated mention-rate trend with exact daily values on focus and hover.",
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3915,7 +3915,7 @@
       "id": "chart-toolbar",
       "name": "Chart toolbar",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "The controls that belong above a chart: a comparison, a view switch, and room for a legend.",
       "tokens": [
         "--radius-control",
@@ -3946,7 +3946,7 @@
       "id": "metric-strip",
       "name": "Metric strip",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A row of measures where the active one is the thing being charted. Choosing another changes the focus.",
       "tokens": [
         "--radius-control",
@@ -3977,7 +3977,7 @@
       "id": "headline-metric",
       "name": "Headline metric",
       "category": "Data display",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "The one number a screen is about, with an optional total it is measured against.",
       "tokens": [
         "--radius-control",
@@ -4008,7 +4008,7 @@
       "id": "filter-bar",
       "name": "Filter bar",
       "category": "Action",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "The row that scopes a view: a period selector, a filter action, and the chips that describe the current scope.",
       "tokens": [
         "--radius-control",
@@ -4039,7 +4039,7 @@
       "id": "source-list",
       "name": "Source list",
       "category": "Table & list",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "description": "A short ranked list with share bars, for the sources or answers behind a number.",
       "tokens": [
         "--radius-control",

@@ -1,3 +1,20 @@
+# Syntari — version 0.2.3
+
+October 16, 2026.
+
+- Published the six AI behaviour patterns (clarification, uncertainty, delegation, recovery, memory, and generation) as a System guide that links each pattern to the components that carry it. The former standalone page redirects there, and the pattern registry points agents to it.
+- Raised light-theme text contrast to WCAG AA. Tertiary labels, success text, danger text, and banner details now reach 4.5:1; all 131 components in their default state, the homepage, Renderer, and System pass an automated contrast check in both themes.
+- Fixed System clearing the first row of components whose rows carry a `data-status` attribute, such as Simple data table.
+- Pointed workspace preview links at System instead of the retired gallery.
+- Moved the prototype workspaces (`Jev/`, `tmp/`, `new/`, `morrow/`, `art-atlas/`) to the `archive/prototypes` branch. Their public URLs redirect to the production surfaces.
+- Disclosed the site's Kobbe analytics on the homepage and in the README. A test keeps analytics out of the npm package.
+- Unified the product sentence and component count across the README, package metadata, site, and coverage notes, with a test that keeps them in step with the registry.
+- Ported component behaviour checks from the retired gallery to System routes, and CI now runs every browser suite.
+- Synced the committed registry index with current component descriptions.
+- The release workflow skips versions that are already on npm, and `npm publish` always builds and tests first.
+
+---
+
 # Syntari UI — version 0.2.2
 
 September 26, 2026.
@@ -65,7 +82,7 @@ A working, framework-independent component gallery with 38 component families, l
 
 From this directory, run `python3 -m http.server 4318 --bind 127.0.0.1`, then open http://127.0.0.1:4318.
 
-No install or build is needed. Font files are local. There are no analytics, API calls, or external runtime dependencies.
+No install or build is needed. Font files are local. There are no analytics, API calls, or external runtime dependencies. (Since September 22, 2026 the documentation site loads Kobbe analytics; the npm package and installed components still contain none.)
 
 ## Files
 

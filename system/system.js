@@ -60,14 +60,14 @@ async function inspector(component, token) {
 async function select(slug, push = false, preserveState = false) {
   const component = catalog.find(c => c.slug === slug);
   const stage = $('[data-stage]'), previewError = $('[data-preview-error]');
-  if (!component) { stage.dataset.loading = 'false'; stage.dataset.error = 'true'; previewError.hidden = false; previewError.textContent = 'Component not found. Choose one from System.'; $('[data-status]').textContent = previewError.textContent; return; }
+  if (!component) { stage.dataset.loading = 'false'; stage.dataset.error = 'true'; previewError.hidden = false; previewError.textContent = 'Component not found. Choose one from System.'; $('[data-system-status]').textContent = previewError.textContent; return; }
   const token = ++swapToken, host = $('[data-component-mount]');
   selected = component;
   if (!preserveState) stateId = 'default';
   nav(); stateControls(); inspector(component,token);
   stage.dataset.loading = 'true'; stage.dataset.error = 'false'; previewError.hidden = true;
   document.title = `${component.name} — Syntari System`;
-  $('[data-status]').textContent = 'Loading preview…';
+  $('[data-system-status]').textContent = 'Loading preview…';
   host.setAttribute('aria-busy','true');
   if (!reducedMotion && activeMount) { host.classList.add('is-swapping'); await new Promise(resolve => setTimeout(resolve,120)); }
   if (token !== swapToken) return;
@@ -85,11 +85,11 @@ async function select(slug, push = false, preserveState = false) {
     if (/table|list|data|navigation/i.test(component.category) || /table|chart|navigation|calendar|chat-workspace/.test(slug)) host.classList.add('is-wide');
     else if (/action|form|feedback/i.test(component.category)) host.classList.add('is-compact');
     stage.dataset.loading = 'false'; stage.dataset.error = 'false';
-    $('[data-status]').textContent = '';
+    $('[data-system-status]').textContent = '';
     if (push) history.pushState(null,'',`/system/#${slug}`);
     else if (!location.hash && location.pathname.startsWith('/system')) history.replaceState(null,'',`#${slug}`);
   } catch(error) {
-    if (token === swapToken) { host.classList.remove('is-swapping'); stage.dataset.loading = 'false'; stage.dataset.error = 'true'; previewError.hidden = false; previewError.textContent = 'Preview unavailable.'; $('[data-status]').textContent = `${previewError.textContent} ${error.message}`; }
+    if (token === swapToken) { host.classList.remove('is-swapping'); stage.dataset.loading = 'false'; stage.dataset.error = 'true'; previewError.hidden = false; previewError.textContent = 'Preview unavailable.'; $('[data-system-status]').textContent = `${previewError.textContent} ${error.message}`; }
   } finally { if (token === swapToken) host.setAttribute('aria-busy','false'); }
 }
 function routeSlug() {
@@ -125,4 +125,4 @@ async function boot() {
     event.currentTarget.style.setProperty('--my',`${(event.clientY-box.top)/box.height*100}%`);
   });
 }
-boot().catch(error => { const stage=$('[data-stage]'),previewError=$('[data-preview-error]');stage.dataset.loading='false';stage.dataset.error='true';previewError.hidden=false;previewError.textContent='The component preview could not load.';$('[data-status]').textContent=error.message; });
+boot().catch(error => { const stage=$('[data-stage]'),previewError=$('[data-preview-error]');stage.dataset.loading='false';stage.dataset.error='true';previewError.hidden=false;previewError.textContent='The component preview could not load.';$('[data-system-status]').textContent=error.message; });

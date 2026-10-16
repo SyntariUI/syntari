@@ -25,6 +25,16 @@ jobs:
         run: gh release upload "$GITHUB_REF_NAME" downloads/syntari-ui-*.tgz --clobber
         env:
           GH_TOKEN: ${{ github.token }}
-      - run: npm publish --access public --provenance
+      - name: Skip versions that are already on npm
+        id: registry
+        run: |
+          if npm view "syntari-ui@$(node -p "require('./package.json').version")" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::This version is already on npm. The release archive was attached; nothing was published."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.registry.outputs.published == 'false'
+        run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

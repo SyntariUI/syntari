@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const origin='http://127.0.0.1:4398';
 test('System preserves the live component while inspecting contracts, code and installation',async({page,context})=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
@@ -25,7 +27,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await page.getByRole('button',{name:'Manifest',exact:true}).click();
  await expect(page.locator('[data-source]')).toContainText('"id": "button"');
  await page.getByRole('button',{name:'Install',exact:true}).click();
- await expect(page.locator('[data-install-command]')).toContainText('syntari-ui-0.2.2.tgz -- syntari add button');
+ await expect(page.locator('[data-install-command]')).toContainText(`syntari-ui-${version}.tgz -- syntari add button`);
  await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel','install');
  const drawer=await page.locator('[data-inspector]').boundingBox(),stage=await page.locator('[data-stage]').boundingBox(),workspace=await page.locator('.sys-workspace').boundingBox();
  expect(Math.abs(stage.x+stage.width-drawer.x)).toBeLessThan(3);
@@ -71,4 +73,18 @@ test('System component routes, mobile navigation, states and inspector focus wor
  await page.locator('[data-slug="slider"]').click();
  await page.locator('[data-states]').getByRole('button',{name:'Disabled'}).click();
  await expect(page.getByRole('slider',{name:'Monthly events'})).toBeDisabled();
+});
+
+test('AI behaviour patterns are published as a System guide and link to their components', async ({page}) => {
+ await page.goto('http://127.0.0.1:4398/ai-behavioural-patterns.html');
+ await expect(page).toHaveURL(/\/system\/\?guide=ai-patterns#agent-questions$/);
+ const guide = page.locator('[data-guide-content]');
+ await expect(guide.getByRole('heading',{name:'Agents that earn trust.'})).toBeVisible();
+ for (const name of ['Clarification','Uncertainty','Delegation','Recovery','Memory','Generation']) await expect(guide.getByRole('heading',{name,exact:true})).toBeVisible();
+ await guide.getByRole('link',{name:'Tool approval',exact:true}).click();
+ await expect(page.locator('[data-syntari-component="tool-approval"]')).toBeVisible();
+ const patterns = await (await page.request.get('http://127.0.0.1:4398/registry/patterns/index.json')).json();
+ const interaction = patterns.patterns.filter(item => item.type === 'interaction');
+ expect(interaction).toHaveLength(6);
+ for (const item of interaction) expect(item.preview).toContain('/system/?guide=ai-patterns');
 });

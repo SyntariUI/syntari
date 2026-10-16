@@ -4,7 +4,7 @@
   <base href="/system/">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Explore, inspect, and install the Syntari design system.">
+  <meta name="description" content="A design system for people and agents. Explore, inspect, and install every Syntari component.">
   <title>System — Syntari</title>
   <link rel="icon" href="../favicon.svg">
   <link rel="stylesheet" href="../tokens.css">
@@ -48,6 +48,7 @@
     </aside>
 
     <main class="sys-main">
+      <h1 class="sr-only">Syntari System</h1>
       <section class="sys-workspace" data-workspace data-panel="none">
         <div class="sys-toolbar" aria-label="Component tools">
           <button class="sys-install" type="button" data-install data-panel-open="install" aria-pressed="false" aria-controls="system-inspector">
@@ -77,7 +78,7 @@
           </div>
 
           <div class="sys-stage-status sr-only" aria-live="polite" role="status">
-            <span data-status>Loading system…</span>
+            <span data-system-status>Loading system…</span>
           </div>
 
           <div class="sys-preview-controls"><div data-states aria-label="Preview states"></div><button class="workspace-device" data-device aria-pressed="false">Mobile preview</button></div>

@@ -1,6 +1,6 @@
 {
   "$id": "https://syntariui.giovanitier.com/registry/agent-policy.json",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "screenIR": {
     "schema": "schema/sui.schema.json",
     "componentIndex": "index.json",

@@ -5,12 +5,14 @@ import { join, extname, resolve } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const exec=promisify(execFile);
 test('documented archive installs and runs in a clean project',async({page})=>{
  const temp=await mkdtemp(join(tmpdir(),'syntari-install-check-'));let server;
  try{
-  const {stdout}=await exec('npm',['exec','--yes','--package=http://127.0.0.1:4398/downloads/syntari-ui-0.2.2.tgz','--','syntari','add','button','slider','--dir',join(temp,'components/syntari')],{cwd:temp,timeout:60000});expect(stdout).toContain('Added button, slider');
-  await exec('npm',['install','--prefix',temp,'http://127.0.0.1:4398/downloads/syntari-ui-0.2.2.tgz'],{cwd:temp,timeout:60000});
+  const {stdout}=await exec('npm',['exec','--yes',`--package=http://127.0.0.1:4398/downloads/syntari-ui-${version}.tgz`,'--','syntari','add','button','slider','--dir',join(temp,'components/syntari')],{cwd:temp,timeout:60000});expect(stdout).toContain('Added button, slider');
+  await exec('npm',['install','--prefix',temp,`http://127.0.0.1:4398/downloads/syntari-ui-${version}.tgz`],{cwd:temp,timeout:60000});
   const api=await exec(process.execPath,['--input-type=module','-e',"import {getPattern,validateScreen} from 'syntari-ui'; const pattern=await getPattern('approval-review'); const result=await validateScreen(pattern.screen); if(!result.ok) process.exit(1); console.log(pattern.id)"],{cwd:temp,timeout:10000});expect(api.stdout).toContain('approval-review');
   const entry=join(temp,'components/syntari/button.js');await writeFile(entry,(await readFile(entry,'utf8'))+'\n// A local customization.\n');
   const duplicate=await exec(process.execPath,['cli.mjs','add','button','--dir',join(temp,'components/syntari')],{cwd:process.cwd()}).then(()=>null,e=>e);expect(duplicate.stderr).toContain('already exists');expect(await readFile(entry,'utf8')).toContain('A local customization');

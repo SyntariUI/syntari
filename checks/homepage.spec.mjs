@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 test('homepage previews components and keeps the primary CTA visible',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:4398/');
@@ -36,7 +38,7 @@ test('homepage previews components and keeps the primary CTA visible',async({pag
  await expect(tabs.getByRole('tab',{name:'Activity'})).toHaveAttribute('aria-selected','true');
  await expect(tabs.getByRole('tabpanel')).toContainText('Jamie published');
  await expect(page.locator('.home-card')).toHaveCount(6);
- await expect(page.locator('[data-home-command]')).toContainText('syntari-ui-0.2.2.tgz');
+ await expect(page.locator('[data-home-command]')).toContainText(`syntari-ui-${version}.tgz`);
  await page.getByRole('link',{name:'Explore components',exact:false}).click();
  await expect(page).toHaveURL('http://127.0.0.1:4398/system/');
  expect(errors).toEqual([]);

@@ -1,8 +1,8 @@
-# Syntari UI coverage
+# Syntari coverage
 
-Syntari is an open interface system. Its component gallery, interactive examples, source runtime, and documentation are maintained as one shared product surface.
+A design system for people and agents. Syntari's components, interactive examples, source runtime, registry, and documentation are maintained as one shared product surface.
 
-The current release includes 107 component families, 250 authored preview states and layouts, and four composed starter screens. Components share Syntari’s tokens, typography, interaction runtime, accessibility conventions, and restrained motion system.
+The current release includes 131 components across 12 categories, 302 authored preview states, four composed starter screens, and six documented AI behaviour patterns. 22 components can be rendered from Screen IR. Components share Syntari’s tokens, typography, interaction runtime, accessibility conventions, and restrained motion system.
 
 ## Coverage principles
 

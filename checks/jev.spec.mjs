@@ -6,4 +6,8 @@ test('earlier workspace previews lead to the canonical product routes',async({pa
  await page.goto('http://127.0.0.1:4398/tmp/system/#tool-approval');
  await expect(page).toHaveURL('http://127.0.0.1:4398/system/#tool-approval');
  await expect(page.locator('[data-syntari-component="tool-approval"]')).toBeVisible();
+ for(const [path,target] of [['/new/command-palette/','/system/'],['/tmp/components.html','/system/'],['/art-atlas/','/']]){
+  await page.goto('http://127.0.0.1:4398'+path);
+  await expect(page).toHaveURL(new RegExp('^http://127\\.0\\.0\\.1:4398'+target.replace(/\//g,'\\/')+'(#.*)?$'));
+ }
 });
