@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFile, writeFile } from 'node:fs/promises';
 const origin = 'http://127.0.0.1:4398';
 
 /** mode, screen title, and the components the mode draws. */
@@ -66,7 +67,7 @@ test('the interactive mode responds to its own controls', async ({ page }) => {
   await expect(stage.locator('[data-chart-view]')).toHaveAttribute('aria-pressed', 'false');
   await stage.locator('[data-chart-view]').click();
   await expect(stage.locator('[data-chart-view]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(stage.locator('[data-chart-view]')).toHaveText('View weekly totals');
+  await expect(stage.locator('[data-chart-view]')).toHaveText('View daily numbers');
   await expect(stage.locator('.area-line')).toHaveAttribute('d', /^M\d/);
   await stage.locator('[data-select-toggle]').click();
   await stage.locator('[data-option="Last 90 days"]').click();
@@ -260,4 +261,28 @@ test('every render contract sample paints without errors, fallbacks, or demo cop
   });
   expect(rows).toHaveLength(62);
   for (const row of rows) expect(row, row.slug).toEqual({ slug: row.slug, errors: [], fallback: 0, undefinedText: false, demoCopy: false });
+});
+
+/* What a person sees when an agent sends only the required props. Any template copy that surfaces shows up as a diff
+   against this reviewed record. After an intended change, regenerate it with UPDATE_FIXTURES=1 and review the diff. */
+test('required-only renders show the props and the component chrome, nothing else', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const texts = await page.evaluate(async () => {
+    const { render, renderableSlugs, registry } = await import('/ir.js');
+    const reg = await registry();
+    const stage = document.querySelector('[data-ir-output]');
+    const out = {};
+    for (const slug of await renderableSlugs()) {
+      const manifest = await reg.manifest(slug);
+      const required = Object.fromEntries(Object.entries(manifest.sample.props).filter(([key]) => manifest.props[key]?.required));
+      const result = await render({ type: 'screen', children: [{ component: `syntari.${slug}`, props: required }] }, stage);
+      out[slug] = result.element.querySelector('[data-syntari-contract]').innerText.replace(/\s+/g, ' ').trim();
+      result.destroy();
+    }
+    return out;
+  });
+  const fixture = new URL('./fixtures/required-only-text.json', import.meta.url);
+  if (process.env.UPDATE_FIXTURES) await writeFile(fixture, `${JSON.stringify(texts, null, 2)}\n`);
+  expect(texts).toEqual(JSON.parse(await readFile(fixture, 'utf8')));
 });

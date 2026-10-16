@@ -36,6 +36,9 @@ test('an agent can discover a contract, compose from its sample, and validate th
     assert.equal(contract.renderable, true);
     assert.equal(contract.actions.approve.consequential, true);
     assert.equal(contract.install, 'npx syntari add tool-approval');
+    assert.ok(contract.icons.includes('terminal'), 'components with icon props carry the icon vocabulary');
+    const plain = (await client.callTool({ name: 'get_component', arguments: { id: 'table' } })).structuredContent;
+    assert.equal(plain.icons, undefined);
 
     const screen = { type: 'screen', children: [{ id: 'deploy', component: 'syntari.tool-approval', props: contract.sample.props }] };
     const valid = (await client.callTool({ name: 'validate_screen', arguments: { screen } })).structuredContent;
@@ -64,4 +67,29 @@ test('MCP tool errors are reported to the agent instead of crashing the server',
     await assert.rejects(client.callTool({ name: 'delete_everything', arguments: {} }));
     assert.equal((await client.callTool({ name: 'list_patterns', arguments: {} })).structuredContent.count > 0, true);
   } finally { await client.close(); }
+});
+
+/* Clients that are not the official SDK still get JSON-RPC answers: batches, malformed requests, and parse errors. */
+test('MCP server answers raw JSON-RPC edge cases without dying', async () => {
+  const { spawn } = await import('node:child_process');
+  const lines = [
+    '[{"jsonrpc":"2.0","id":1,"method":"ping"},{"jsonrpc":"2.0","method":"notifications/initialized"},{"jsonrpc":"2.0","id":2,"method":"nope"}]',
+    '{"jsonrpc":"2.0","id":3}',
+    '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":null}',
+    '[]',
+    'not json',
+    '{"jsonrpc":"2.0","id":5,"method":"ping"}'
+  ];
+  const child = spawn(process.execPath, ['cli.mjs', 'mcp'], { stdio: ['pipe', 'pipe', 'ignore'] });
+  let output = '';
+  child.stdout.on('data', chunk => { output += chunk; });
+  child.stdin.end(`${lines.join('\n')}\n`);
+  await new Promise(resolve => child.on('close', resolve));
+  const replies = output.trim().split('\n').map(line => JSON.parse(line));
+  const errorOf = reply => reply.error?.code;
+  const batch = replies.find(Array.isArray);
+  assert.deepEqual(batch.map(reply => [reply.id, errorOf(reply) ?? 'ok']), [[1, 'ok'], [2, -32601]]);
+  /* Lines are answered as they finish, which JSON-RPC allows, so compare without order. */
+  const single = replies.filter(reply => !Array.isArray(reply)).map(reply => `${reply.id}:${errorOf(reply) ?? 'ok'}`).sort();
+  assert.deepEqual(single, ['3:-32600', '4:-32602', '5:ok', 'null:-32600', 'null:-32700']);
 });

@@ -147,6 +147,11 @@
     "disabled": {
       "type": "boolean",
       "default": false
+    },
+    "consequential": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set true when pressing it changes something outside the screen, such as Delete. Its requests then report consequential: true."
     }
   },
   "ir": {
@@ -176,7 +181,8 @@
   "actions": {
     "press": {
       "selector": ".button",
-      "description": "The person pressed the button."
+      "description": "The person pressed the button.",
+      "consequentialProp": "consequential"
     }
   },
   "sample": {

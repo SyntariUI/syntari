@@ -39,9 +39,15 @@ function skeleton(component) {
 const components = await catalog();
 await mkdir(componentsDir, { recursive: true });
 
+/* The icon names the runtime ships, so agents and validation know the vocabulary of every icon prop. */
+const appSource = await readFile(resolve('app.js'), 'utf8');
+const iconTable = appSource.match(/const paths=(\{.*?\});/);
+if (!iconTable) throw new Error('generate-registry could not find the icon table in app.js.');
+const iconNames = [...new Set([...Object.keys(JSON.parse(iconTable[1])), ...[...appSource.matchAll(/paths\['([a-z0-9-]+)'\]=/g)].map(match => match[1])])];
 const index = {
   $id: 'https://syntariui.giovanitier.com/registry/index.json',
   version: releaseVersion,
+  icons: iconNames,
   components: []
 };
 

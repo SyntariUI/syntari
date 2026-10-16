@@ -6,6 +6,8 @@ export const IR_LIMITS = { maxDepth: 8, maxNodes: 120, maxChildren: 40, maxListI
 const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 /** A node id lets the host match an action to its own state. It never names code to run. */
 export const NODE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/i;
+/** Icon names reach markup, so they are limited to lowercase words joined by dashes. */
+const ICON_NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 let registryPromise;
 /** Read the published registry: the component index plus one manifest per rendered component. */
@@ -111,12 +113,12 @@ async function checkNode(node, context, path) {
     else if (context.ids?.has(node.id)) report('error', 'duplicate-node-id', `${path}.id`, `"${node.id}" is already used by another node.`);
     else context.ids?.add(node.id);
   }
-  checkProps(manifest, node.props ?? {}, `${path}.props`, report);
+  checkProps(manifest, node.props ?? {}, `${path}.props`, report, reg.index?.icons);
   return { slug, manifest };
 }
 
 /** Check props against a component contract. Shared by Screen IR nodes and mount({ props }). */
-export function checkProps(manifest, props, path, report) {
+export function checkProps(manifest, props, path, report, icons) {
   const component = `syntari.${manifest.id}`;
   if (typeOf(props) !== 'object') { report('error', 'wrong-type', path, 'Props must be an object.'); return; }
   for (const [key, value] of Object.entries(props)) {
@@ -126,6 +128,17 @@ export function checkProps(manifest, props, path, report) {
   }
   for (const [key, descriptor] of Object.entries(manifest.props)) {
     if (descriptor.required && props[key] === undefined && descriptor.default === undefined) report('error', 'missing-required', `${path}.${key}`, `"${key}" is required by ${component}.`);
+  }
+  const badIcon = (value, at) => {
+    if (value === undefined) return;
+    if (typeof value !== 'string' || !ICON_NAME.test(value)) report('error', 'invalid-icon', at, 'Icon names use lowercase letters, digits, and dashes, such as "circlecheck" or "arrow-up".');
+    else if (icons && !icons.includes(value)) report('warning', 'unknown-icon', at, `"${value}" is not a Syntari icon, so the component keeps its own. The registry index lists every icon name.`);
+  };
+  for (const key of Object.keys(manifest.ir?.icon ?? {})) badIcon(props[key], `${path}.${key}`);
+  for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) {
+    const fields = [].concat(parts).flatMap(part => Object.keys(part.icon ?? {}));
+    if (!fields.length || !Array.isArray(props[key])) continue;
+    props[key].forEach((item, i) => { for (const field of fields) badIcon(item?.[field], `${path}.${key}[${i}].${field}`); });
   }
 }
 
@@ -139,8 +152,9 @@ export async function validateProps(slug, props = {}, options = {}) {
     report('error', 'unsupported-component', 'props', `"${slug}" has no prop contract yet. Mount it without props and configure its markup instead.`);
     return { ok: false, diagnostics, manifest, props: {} };
   }
-  checkProps(manifest, props, 'props', report);
-  return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, manifest, props: resolveProps(props, manifest) };
+  checkProps(manifest, props, 'props', report, reg.index?.icons);
+  const ok = !diagnostics.some(d => d.severity === 'error');
+  return { ok, diagnostics, manifest, props: ok ? resolveProps(props, manifest) : {} };
 }
 
 /** Merge contract defaults into the values an agent supplied. Unknown props never reach the DOM. */
@@ -193,6 +207,29 @@ export async function validate(spec, options = {}) {
 function setText(target, value) {
   if (target) target.textContent = String(value);
 }
+/** An empty contract slot takes no space. Table cells keep their place in the grid. */
+function markEmpty(target, empty) {
+  if (!target || /^(td|th)$/i.test(target.tagName)) return;
+  if (empty) target.dataset.syntariEmpty = ''; else delete target.dataset.syntariEmpty;
+}
+function fillText(target, value) {
+  if (!target) return;
+  setText(target, value);
+  markEmpty(target, String(value) === '');
+}
+function fillLead(target, value) {
+  if (!target) return;
+  setLead(target, value);
+  /* A label that wraps a field stays; an action or tag without words goes. */
+  markEmpty(target, !target.textContent.trim() && !target.querySelector('input, textarea, select'));
+}
+function setAttributes(target, binding, current) {
+  if (!target) return;
+  const on = binding.invert ? !current : current;
+  /* aria attributes state a value, so false is written; markup flags like checked are removed. */
+  if (on === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
+  else target.setAttribute(binding.attribute, String(on));
+}
 /** Resolve a contract selector. An empty selector, or one that matches the scope itself, returns the scope. */
 function pick(scope, selector) {
   if (!selector) return scope;
@@ -204,14 +241,17 @@ function pick(scope, selector) {
 /** Replace the element's own leading text while keeping the markup around it. */
 function setLead(target, value) {
   if (!target) return;
+  const text = String(value);
   const node = [...target.childNodes].find(child => child.nodeType === 3 && child.nodeValue.trim());
-  if (node) node.nodeValue = ` ${String(value)} `;
-  else target.prepend(document.createTextNode(String(value)));
+  if (node) node.nodeValue = text ? ` ${text} ` : '';
+  else if (text) target.prepend(document.createTextNode(text));
 }
-function setIcon(target, value, report, path) {
+function setIcon(target, value) {
   if (!target) return;
-  const markup = window.SyntariIcon?.(String(value));
-  if (!markup) { report('warning', 'unknown-icon', path, `"${value}" is not a Lucide icon in this runtime, so the component's own icon was kept.`); return; }
+  const name = String(value);
+  /* Icon names are interpolated into markup, so only names the runtime ships are written. Validation reports the rest. */
+  const markup = ICON_NAME.test(name) && window.SyntariIconNames?.includes(name) ? window.SyntariIcon?.(name) : null;
+  if (!markup) return;
   if (target.tagName.toLowerCase() === 'svg') target.outerHTML = markup;
   else {
     target.innerHTML = markup;
@@ -235,29 +275,29 @@ function toggleClass(target, className, value) {
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
 export function applyContract(element, manifest, props, diagnostics, path) {
   const ir = manifest.ir;
-  const report = (severity, code, detail) => diagnostics.push({ severity, code, path, message: detail });
+  const report = (severity, code, at, message) => diagnostics.push({ severity, code, path: at, message });
   const root = ir.node ? element.querySelector(ir.node) : element;
-  if (!root) { report('warning', 'instance-root-missing', `The contract expects "${ir.node}" inside ${manifest.id}; the markup has changed.`); return element; }
+  if (!root) { report('warning', 'instance-root-missing', path, `The contract expects "${ir.node}" inside ${manifest.id}; the markup has changed.`); return element; }
   /* Keep the instance root and its ancestors; every other branch of the example is discarded. */
   for (let node = root; node && node !== element; node = node.parentElement) for (const sibling of [...(node.parentElement?.children ?? [])]) if (sibling !== node) sibling.remove();
   /* Contract mode: demo-only parts go, and the runtime leaves declared actions to the host. */
   root.dataset.syntariContract = manifest.id;
   for (const selector of ir.remove ?? []) root.querySelectorAll(selector).forEach(node => node.remove());
+  /* A contract button is not a form's submit button unless the contract's own form owns it. */
+  for (const button of root.querySelectorAll('button:not([type])')) if (!button.closest('form') || !root.contains(button.closest('form'))) button.type = 'button';
+  if (root.matches('button:not([type])')) root.type = 'button';
   const value = key => props[key];
-  /** An optional prop that the spec left out must not write "undefined" into the markup. */
-  const bound = (key, apply) => { const current = value(key); if (current !== undefined) apply(current); };
-  for (const [key, selector] of Object.entries(ir.text ?? {})) bound(key, current => setText(pick(root, selector), current));
-  for (const [key, selector] of Object.entries(ir.lead ?? {})) bound(key, current => setLead(pick(root, selector), current));
-  for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => setIcon(pick(root, selector), current, report, path));
+  /** Text comes from props or defaults only: a slot whose optional prop is unset is emptied, never left with demo copy. */
+  const bound = (key, apply, clear) => { const current = value(key); if (current !== undefined) apply(current); else clear?.(); };
+  const each = (selector, fn) => { for (const one of [].concat(selector)) fn(pick(root, one)); };
+  for (const [key, selector] of Object.entries(ir.text ?? {})) bound(key, current => each(selector, target => fillText(target, current)), () => each(selector, target => fillText(target, '')));
+  for (const [key, selector] of Object.entries(ir.lead ?? {})) bound(key, current => each(selector, target => fillLead(target, current)), () => each(selector, target => fillLead(target, '')));
+  for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => each(selector, target => setIcon(target, current)));
+  /* Chrome that only means something beside a value, like a "Total" label, goes when that value is unset. */
+  for (const [key, selector] of Object.entries(ir.showWhen ?? {})) { const current = value(key); each(selector, target => markEmpty(target, current === undefined || current === '' || (Array.isArray(current) && !current.length))); }
   for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
-    bound(key, current => {
-      const target = pick(root, binding.selector);
-      if (!target) return;
-      /* aria attributes state a value, so false is written; markup flags like checked are removed. */
-      if (current === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
-      else target.setAttribute(binding.attribute, String(current));
-    });
+    bound(key, current => { for (const one of [].concat(binding)) setAttributes(pick(root, one.selector), one, current); });
   }
   for (const [key, className] of Object.entries(ir.class ?? {})) bound(key, current => toggleClass(root, className, current));
   /** Chart geometry stays data: the series arrives as numbers and the renderer draws the path. */
@@ -265,7 +305,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     const points = Array.isArray(value(key)) ? value(key) : [];
     const svg = pick(root, declared.selector);
     const line = svg && pick(svg, declared.line);
-    if (!line) { report('warning', 'series-slot-missing', `The contract expects "${declared.line}" inside "${declared.selector}" for ${key}.`); continue; }
+    if (!line) { report('warning', 'series-slot-missing', path, `The contract expects "${declared.line}" inside "${declared.selector}" for ${key}.`); continue; }
     const [width, height] = String(declared.viewBox ?? svg.getAttribute('viewBox') ?? '0 0 360 160').split(/\s+/).slice(2).map(Number);
     const inset = declared.inset ?? (svg.dataset.inset ? Object.fromEntries(['top', 'bottom', 'left', 'right'].map((side, index) => [side, Number(svg.dataset.inset.split(/\s+/)[index])])) : {});
     const top = inset.top ?? 18, bottom = inset.bottom ?? 24, left = inset.left ?? 12, right = inset.right ?? 12;
@@ -284,7 +324,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     for (const part of [].concat(declared)) {
       const container = pick(root, part.container);
       const template = container ? pick(container, part.item) : null;
-      if (!container || !template) { report('warning', 'list-slot-missing', `The contract expects "${part.item}" inside "${part.container}" for ${key}.`); continue; }
+      if (!container || !template) { report('warning', 'list-slot-missing', path, `The contract expects "${part.item}" inside "${part.container}" for ${key}.`); continue; }
       const existing = [...container.querySelectorAll(part.item)];
       const clone = template.cloneNode(true);
       existing.forEach(node => node.remove());
@@ -296,22 +336,16 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         item.dataset.syntariIndex = String(i);
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
         if (part.cells) [...item.querySelectorAll(part.cells)].forEach((cell, index) => setText(cell, Array.isArray(data) ? data[index] ?? '' : ''));
-        const filled = (name, apply) => { const current = field(name); if (current !== undefined) apply(current); };
-        for (const [name, selector] of Object.entries(part.text ?? {})) filled(name, current => setText(pick(item, selector), current));
-        for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => setLead(pick(item, selector), current));
-        for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current, report, path));
+        const filled = (name, apply, clear) => { const current = field(name); if (current !== undefined) apply(current); else clear?.(); };
+        for (const [name, selector] of Object.entries(part.text ?? {})) filled(name, current => fillText(pick(item, selector), current), () => fillText(pick(item, selector), ''));
+        for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
+        for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current));
         for (const [name, style] of Object.entries(part.style ?? {})) {
           filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${current}${style.suffix ?? ''}`); });
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
-          filled(name, current => {
-            const target = pick(item, binding.selector);
-            if (!target) return;
-            /* aria attributes state a value, so false is written; markup flags like checked are removed. */
-      if (current === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
-            else target.setAttribute(binding.attribute, String(current));
-          });
+          filled(name, current => { for (const one of [].concat(binding)) setAttributes(pick(item, one.selector), one, current); });
         }
         /* The template carries the demo's classes, so a managed class starts from nothing. */
         for (const [name, className] of Object.entries(part.class ?? {})) { toggleClass(item, className, false); filled(name, current => toggleClass(item, className, current)); }
@@ -322,8 +356,11 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   for (const [name, action] of Object.entries(manifest.actions ?? {})) {
     const targets = [...root.querySelectorAll(action.selector)];
     if (root.matches(action.selector)) targets.unshift(root);
-    if (!targets.length) report('warning', 'action-slot-missing', `The contract declares "${name}" at "${action.selector}", but the markup has no such element.`);
-    for (const target of targets) target.dataset.syntariAction = name;
+    if (!targets.length) report('warning', 'action-slot-missing', path, `The contract declares "${name}" at "${action.selector}", but the markup has no such element.`);
+    for (const target of targets) {
+      target.dataset.syntariAction = name;
+      if (action.local) target.dataset.syntariLocal = '';
+    }
   }
   return root;
 }
@@ -339,10 +376,20 @@ function formValues(form) {
   return values;
 }
 
+/** The state a view control shows after a person used it. */
+function controlState(source) {
+  if (source.matches('input[type=checkbox], input[type=radio]')) return { checked: source.checked };
+  if (source.matches('input, select, textarea')) return { value: source.value };
+  if (source.hasAttribute('value')) return { value: source.getAttribute('value') };
+  if (source.hasAttribute('aria-pressed')) return { pressed: source.getAttribute('aria-pressed') === 'true' };
+  return undefined;
+}
+
 /**
  * Turn the actions a contract declares into `syntari:action` events.
  * The event reports what a person asked for. It never performs the action: the host decides whether it may run.
  */
+
 export function bindActions(element, manifest, context = {}) {
   const declared = manifest.actions ?? {};
   if (!Object.keys(declared).length) return;
@@ -355,7 +402,7 @@ export function bindActions(element, manifest, context = {}) {
       ...(context.path ? { path: context.path } : {}),
       ...(item && element.contains(item) ? { index: Number(item.dataset.syntariIndex) } : {}),
       ...(values ? { values } : {}),
-      consequential: Boolean(declared[name].consequential)
+      consequential: Boolean(declared[name].consequential || (declared[name].consequentialProp && context.props?.[declared[name].consequentialProp]))
     };
     source.dispatchEvent(new CustomEvent('syntari:action', { bubbles: true, detail }));
     context.onAction?.(detail);
@@ -365,7 +412,16 @@ export function bindActions(element, manifest, context = {}) {
     if (!source || !element.contains(source)) return;
     const name = source.dataset.syntariAction;
     if (!declared[name] || (declared[name].event ?? 'click') !== 'click') return;
-    emit(source, name);
+    /* A local action lets the component update itself first, so the request reports what the person now sees. */
+    if (declared[name].local) setTimeout(() => emit(source, name, controlState(source)));
+    else emit(source, name);
+  });
+  element.addEventListener('change', event => {
+    const source = event.target.closest?.('[data-syntari-action]');
+    if (!source || !element.contains(source)) return;
+    const name = source.dataset.syntariAction;
+    if (declared[name]?.event !== 'change') return;
+    emit(source, name, controlState(source));
   });
   element.addEventListener('submit', event => {
     const form = event.target;
@@ -437,7 +493,7 @@ export async function render(spec, target, options = {}) {
       configure: element => {
         const painted = applyContract(element, manifest, props, diagnostics, path);
         if (node.provenance) painted.dataset.irProvenance = JSON.stringify(node.provenance);
-        bindActions(element, manifest, { id: node.id, path, onAction: options.onActionRequest });
+        bindActions(element, manifest, { id: node.id, path, props, onAction: options.onActionRequest });
       }
     });
     mounted.push(instance);

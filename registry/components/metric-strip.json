@@ -158,5 +158,12 @@
         }
       }
     }
+  },
+  "actions": {
+    "select": {
+      "selector": "[data-metric]",
+      "local": true,
+      "description": "The person chose the measure to chart. index says which; the host charts it."
+    }
   }
 }

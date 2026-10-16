@@ -79,11 +79,13 @@
     },
     "optionA": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "required": true
     },
     "optionB": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "required": true
     },
     "rows": {
       "type": "array",

@@ -55,7 +55,8 @@ export interface ActionRequest {
   id?: string;
   path?: string;
   index?: number;
-  /** Form actions send what the person entered. Files arrive as File objects in the browser. */
+  /** Form actions send what the person entered; files arrive as File objects in the browser.
+   * Local and change actions send the control's new state: value, checked, or pressed. */
   values?: Record<string, unknown>;
   /** True when acting on it changes something outside the screen. The host must authorise it. */
   consequential: boolean;
@@ -77,9 +78,14 @@ export interface PropContract {
 
 export interface ActionContract {
   selector: string;
-  event?: 'click' | 'submit';
+  /** submit sends a form's named values; change sends a checkbox's checked or a field's value. */
+  event?: 'click' | 'submit' | 'change';
   description?: string;
   consequential?: boolean;
+  /** Boolean prop that marks one instance's requests consequential, such as a Delete button. */
+  consequentialProp?: string;
+  /** The control updates itself, as a view control does, and the request reports its new state. */
+  local?: boolean;
 }
 
 export interface ComponentEntry {
@@ -124,6 +130,8 @@ export interface ComponentDetails extends ComponentManifest {
   /** The CLI command that copies this component into a project. */
   install: string;
   preview: string;
+  /** Present when the component has icon props: every icon name the runtime ships. */
+  icons?: string[];
 }
 
 export interface Pattern {

@@ -116,3 +116,5 @@ header.site-topbar .site-nav+.site-actions{margin-left:0}
 header.site-topbar .site-actions .icon-button{width:34px;height:34px;color:var(--muted)}
 header.site-topbar .site-actions .icon-button:hover{color:var(--text)}
 @media(max-width:760px){header.site-topbar{padding:12px var(--topbar-inset,18px);gap:10px;flex-wrap:wrap;row-gap:8px}header.site-topbar .site-nav{flex:1 1 100%;order:2;margin-left:0}header.site-topbar .site-actions{margin-left:auto}header.site-topbar .site-brand{font-size:var(--type-reading)}header.site-topbar .site-nav a{padding:7px 9px;font-size:var(--type-caption)}}
+/* Contract slots whose optional prop is unset. */
+[data-syntari-empty]{display:none!important}

@@ -19,6 +19,10 @@ A contract declares what a person can ask for, such as `approve` and `reject` on
 
 Form actions add `values` with what the person entered. List actions add `index`. Declared actions never run demo behaviour and never perform anything. Re-render with the outcome once the host has decided.
 
+View controls, such as the period on Filter bar, Compare on Chart toolbar, or the chosen measure on Metric strip, are `local` actions: the control updates itself, then the request reports its new state in `values` (`value`, `checked`, or `pressed`) so the host can load the matching data. Set an instance's consequence with its props where the contract allows it, such as `consequential: true` on a Delete button.
+
+Leave an optional prop out and its slot stays empty: the renderer never shows the template's example copy. Icon props take a name from `icons` in the registry index (also returned by `get_component`): a malformed name is an `invalid-icon` error, and a well-formed name the runtime does not ship is an `unknown-icon` warning that keeps the component's own icon.
+
 ## Action boundary
 
 Screen validation controls UI composition. A button or approval card is a visual affordance; it does not grant permission to run a tool. The host application must keep authentication, tool allowlists, data scope, and human approval in trusted code outside the model's Screen IR. A model-provided `approved: true` value is not evidence of human consent, and an `approve` request is consent to ask for, not authorization.

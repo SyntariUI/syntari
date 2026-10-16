@@ -136,7 +136,10 @@
   "ir": {
     "node": "[data-extra-kind=questions]",
     "text": {
-      "question": "h3",
+      "question": [
+        "h3",
+        "legend"
+      ],
       "status": "[data-question-result]"
     },
     "lead": {

@@ -102,6 +102,22 @@
         "selector": "[data-chart-view]",
         "attribute": "aria-pressed"
       }
+    },
+    "showWhen": {
+      "compareLabel": ".choice"
+    }
+  },
+  "actions": {
+    "compare": {
+      "selector": "[data-chart-compare]",
+      "event": "change",
+      "local": true,
+      "description": "The person turned the comparison on or off. values.checked is the new state; the host redraws the chart."
+    },
+    "view": {
+      "selector": "[data-chart-view]",
+      "local": true,
+      "description": "The person switched the view. values.pressed is the new state; the host changes the data it shows."
     }
   }
 }

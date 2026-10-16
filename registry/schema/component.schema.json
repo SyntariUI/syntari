@@ -161,7 +161,18 @@
         "attributes": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/attributeBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/attributeBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/attributeBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "list": {
@@ -186,6 +197,14 @@
             "type": "string"
           },
           "description": "Selectors for demo-only parts removed from a contract instance."
+        },
+        "showWhen": {
+          "description": "Prop name to an element that only means something beside that value, such as a Total label or a picker without options. The element is hidden while the prop is unset, empty, or an empty list.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/selectorMap"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -419,7 +438,18 @@
       "type": "object",
       "description": "Prop name to CSS selector, resolved inside the instance root or the list item.",
       "additionalProperties": {
-        "type": "string"
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        ]
       }
     },
     "variantBinding": {
@@ -470,6 +500,10 @@
         },
         "attribute": {
           "type": "string"
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "Write the opposite of the prop value, such as disabled when streaming is false."
         }
       },
       "additionalProperties": false
@@ -569,7 +603,18 @@
         "attributes": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/attributeBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/attributeBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/attributeBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "style": {
@@ -604,10 +649,11 @@
         "event": {
           "enum": [
             "click",
-            "submit"
+            "submit",
+            "change"
           ],
           "default": "click",
-          "description": "submit sends the form's named values with the event."
+          "description": "submit sends the form's named values; change sends a checkbox's checked or a field's value."
         },
         "description": {
           "type": "string"
@@ -615,6 +661,15 @@
         "consequential": {
           "type": "boolean",
           "description": "True when acting on it changes something outside the screen. The host must authorise it."
+        },
+        "consequentialProp": {
+          "type": "string",
+          "description": "Boolean prop that marks this instance's requests consequential, such as a Delete button."
+        },
+        "local": {
+          "type": "boolean",
+          "default": false,
+          "description": "The component also updates itself, as a view control does. The request reports its new state (value, checked, or pressed) so the host can update the data."
         }
       },
       "additionalProperties": false

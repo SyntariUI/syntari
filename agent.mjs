@@ -31,7 +31,10 @@ export async function getComponent(id) {
   const entry = (await listComponents()).find(item => item.id === id);
   if (!entry) return null;
   const manifest = await readJson(`components/${id}.json`);
-  return { ...manifest, renderable: Boolean(manifest.props && manifest.ir), install: `npx syntari add ${id}`, preview: entry.preview };
+  /* A component with icon props carries the icon vocabulary, so an agent never has to guess a name. */
+  const takesIcons = Object.keys(manifest.ir?.icon ?? {}).length > 0 || Object.values(manifest.ir?.list ?? {}).flat().some(part => part.icon);
+  const icons = takesIcons ? { icons: (await readJson('index.json')).icons } : {};
+  return { ...manifest, renderable: Boolean(manifest.props && manifest.ir), install: `npx syntari add ${id}`, preview: entry.preview, ...icons };
 }
 
 /** Components and patterns whose id, name, category, description, or intents mention every word of the query. */
@@ -53,6 +56,7 @@ export async function validateScreen(spec) {
   const [schema, index] = await Promise.all([validateScreenSchema(spec, registryDir), readJson('index.json')]);
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
   const runtime = await validateRuntime(spec, { registry: {
+    index,
     entries,
     manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null
   } });

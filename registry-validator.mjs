@@ -57,7 +57,10 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const token of manifest.tokens ?? []) if (!(token in semantic.tokens) && !(token.startsWith('--') && runtimeTokens.includes(`${token}:`))) problems.push(`Unknown token for ${entry.id}: ${token}`);
     if (Boolean(manifest.props) !== Boolean(manifest.ir)) problems.push(`Incomplete render contract: ${entry.id} needs both props and ir.`);
     if ((manifest.actions || manifest.sample) && !(manifest.props && manifest.ir)) problems.push(`Actions and samples need a render contract: ${entry.id}`);
-    for (const [name, action] of Object.entries(manifest.actions ?? {})) if (!safeId(name)) problems.push(`Invalid action name for ${entry.id}: ${name}`);
+    for (const [name, action] of Object.entries(manifest.actions ?? {})) {
+      if (!safeId(name)) problems.push(`Invalid action name for ${entry.id}: ${name}`);
+      if (action.consequentialProp && manifest.props?.[action.consequentialProp]?.type !== 'boolean') problems.push(`consequentialProp for ${entry.id}.${name} must name a boolean prop`);
+    }
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
         if (binding === 'node' || binding === 'remove') continue;

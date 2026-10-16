@@ -17,7 +17,7 @@
  document.addEventListener('input',e=>{if(e.target.matches('.range'))range(e.target)});
  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!e.target.closest('.ds-select,.ds-date'))closeAll();if(!b)return;
  if(b.matches('[data-select-toggle],[data-date-toggle]'))open(b);
- if(b.hasAttribute('data-option')){const root=b.closest('.ds-select');root.querySelector('[data-select-label]').textContent=b.dataset.option;root.querySelectorAll('[role=option]').forEach(x=>x.setAttribute('aria-selected',x===b));close(root.querySelector('.control-panel'),true)}
+ if(b.hasAttribute('data-option')){const root=b.closest('.ds-select');root.querySelector('[data-select-label]').textContent=(b.querySelector('span:not(.option-check)')?.textContent||b.dataset.option).trim();root.querySelectorAll('[role=option]').forEach(x=>x.setAttribute('aria-selected',x===b));close(root.querySelector('.control-panel'),true)}
  if(b.hasAttribute('data-month-step')){const root=b.closest('.ds-date'),date=dateFrom(root.dataset.month||root.dataset.date);date.setDate(1);date.setMonth(date.getMonth()+Number(b.dataset.monthStep));root.dataset.month=iso(date);renderCalendar(root,iso(date));place(root.querySelector('.calendar-panel'));root.querySelector(`[data-month-step="${b.dataset.monthStep}"]`).focus()}
  if(b.hasAttribute('data-calendar-date'))selectDate(b.closest('.ds-date'),b.dataset.calendarDate);
  if(b.hasAttribute('data-calendar-today'))selectDate(b.closest('.ds-date'),iso(new Date()));

@@ -66,7 +66,7 @@ export async function mount(slug, target, options = {}) {
       error.diagnostics = checked.diagnostics;
       throw error;
     }
-    contract = { ...checked, apply: ir.applyContract, bind: ir.bindActions };
+    contract = { ...checked, validation: checked.diagnostics, apply: ir.applyContract, bind: ir.bindActions };
   }
   let element, controller, destroyed = false;
   async function render() {
@@ -76,8 +76,9 @@ export async function mount(slug, target, options = {}) {
     container.append(element); await prepare(element);
     if (destroyed) { element.remove(); return; }
     if (contract) {
+      contract.diagnostics = [...contract.validation];
       contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props');
-      contract.bind(element, contract.manifest, { onAction: options.onActionRequest });
+      contract.bind(element, contract.manifest, { props: contract.props, onAction: options.onActionRequest });
     }
     options.configure?.(element);
     controller = new AbortController();

@@ -13,6 +13,14 @@ function describeProp(name, prop) {
   return `- \`${name}\` (${type}): ${notes.join('; ')}`;
 }
 
+function actionNote(action) {
+  const how = action.event === 'submit' ? ' (form submit, sends values)'
+    : action.local ? ' (the control updates itself and sends its new state)'
+    : action.event === 'change' ? ' (on change, sends the new state)' : '';
+  const consequence = action.consequential ? ' — consequential' : action.consequentialProp ? ` — consequential when \`${action.consequentialProp}\` is true` : '';
+  return how + consequence;
+}
+
 export async function buildLlms(registryDir) {
   const index = await readJson(join(registryDir, 'index.json'));
   const patterns = (await readJson(join(registryDir, 'patterns/index.json'))).patterns;
@@ -64,7 +72,7 @@ ${item.purpose}
 
 ${item.avoidWhen?.length ? `Avoid when: ${item.avoidWhen.join(', ')}.\n\n` : ''}Props:
 ${Object.entries(item.props).map(([name, prop]) => describeProp(name, prop)).join('\n')}
-${actions.length ? `\nActions (fire \`syntari:action\` and \`onActionRequest\`; nothing runs until the host decides):\n${actions.map(([name, action]) => `- \`${name}\`${action.event === 'submit' ? ' (form submit, sends values)' : ''}${action.consequential ? ' — consequential' : ''}: ${action.description ?? ''}`).join('\n')}\n` : ''}
+${actions.length ? `\nActions (fire \`syntari:action\` and \`onActionRequest\`; nothing runs until the host decides):\n${actions.map(([name, action]) => `- \`${name}\`${actionNote(action)}: ${action.description ?? ''}`).join('\n')}\n` : ''}
 Valid sample:
 
 \`\`\`json
@@ -85,7 +93,9 @@ ${JSON.stringify(policy, null, 2)}
 
 ## Screen IR in brief
 
-A screen is \`{ "type": "screen", "layout": "stack" | "row" | "grid" | "two-column", "title"?, "children": [...] }\`. A child is a component node \`{ "id"?, "component": "syntari.<id>", "props": {...}, "provenance"? }\` or a labelled region \`{ "type": "region", "label", "open"?, "children": [...] }\`. Components do not take children; group them in a region. Budgets: 120 nodes, depth 8, 40 top-level children, 40 items in any list prop. Errors stop a node and show a labelled fallback; warnings repair it.
+A screen is \`{ "type": "screen", "layout": "stack" | "row" | "grid" | "two-column", "title"?, "children": [...] }\`. A child is a component node \`{ "id"?, "component": "syntari.<id>", "props": {...}, "provenance"? }\` or a labelled region \`{ "type": "region", "label", "open"?, "children": [...] }\`. Components do not take children; group them in a region. Budgets: 120 nodes, depth 8, 40 top-level children, 40 items in any list prop. Errors stop a node and show a labelled fallback; warnings repair it. An optional prop left out leaves its slot empty.
+
+Icon props take one of these names: ${index.icons.map(name => `\`${name}\``).join(', ')}.
 
 Complete compositions you can fetch with \`syntari info <id> --json\` or the MCP tool \`get_pattern\`:
 ${compositions}

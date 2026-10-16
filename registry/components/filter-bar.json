@@ -127,12 +127,36 @@
           "label": "span"
         },
         "attributes": {
-          "value": {
-            "selector": "",
-            "attribute": "data-option"
-          }
+          "value": [
+            {
+              "selector": "",
+              "attribute": "data-option"
+            },
+            {
+              "selector": "",
+              "attribute": "value"
+            }
+          ]
         }
       }
+    },
+    "showWhen": {
+      "periods": ".ds-select"
+    }
+  },
+  "actions": {
+    "period": {
+      "selector": "[role=option]",
+      "local": true,
+      "description": "The person chose a reporting period. values.value is that period's value; the host loads the data for it."
+    },
+    "filters": {
+      "selector": "[data-filter-action]",
+      "description": "The person asked for filters. The host opens its own filter controls."
+    },
+    "settings": {
+      "selector": "[data-settings-action]",
+      "description": "The person asked for chart settings. The host opens them."
     }
   }
 }

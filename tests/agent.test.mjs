@@ -87,3 +87,13 @@ test('node ids are validated and must be unique', async () => {
   const invalid = await validateScreen({ type: 'screen', children: [{ ...node, id: '../save' }] });
   assert.equal(invalid.ok, false);
 });
+
+test('icon props accept only the registry vocabulary', async () => {
+  const message = icon => ({ type: 'screen', children: [{ component: 'syntari.agent-message', props: { author: 'Agent', text: 'Hello', icon } }] });
+  const codes = result => result.diagnostics.map(item => `${item.severity}:${item.code}`);
+  assert.deepEqual(codes(await validateScreen(message('bot'))), []);
+  assert.deepEqual(codes(await validateScreen(message('rocketship'))), ['warning:unknown-icon']);
+  const injected = await validateScreen(message('"><svg onload=x>'));
+  assert.equal(injected.ok, false);
+  assert.deepEqual(codes(injected), ['error:invalid-icon']);
+});

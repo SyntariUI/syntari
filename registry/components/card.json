@@ -3,16 +3,6 @@
   "id": "card",
   "version": "1.0.0",
   "status": "authored",
-  "sample": {
-    "props": {
-      "title": "Q3 board pack",
-      "body": "Revenue, retention, and hiring updates for the October meeting.",
-      "badge": "Needs review",
-      "badgeTone": "danger",
-      "action": "Open pack"
-    }
-  },
-  "source": "components/card/",
   "name": "Card",
   "category": "Container",
   "purpose": "Hold one record or one idea in a surface that can stand on its own.",
@@ -130,5 +120,21 @@
         }
       }
     }
-  }
+  },
+  "actions": {
+    "open": {
+      "selector": ".mini-card .button",
+      "description": "The person asked to open the item. Omit action to show no button."
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Q3 board pack",
+      "body": "Revenue, retention, and hiring updates for the October meeting.",
+      "badge": "Needs review",
+      "badgeTone": "danger",
+      "action": "Open pack"
+    }
+  },
+  "source": "components/card/"
 }

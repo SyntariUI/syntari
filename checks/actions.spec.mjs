@@ -113,3 +113,80 @@ test('mount() with props renders one configured instance from the same contract'
   expect(result.error).toEqual({ name: 'TypeError', codes: ['enum-outside-values'] });
   expect(result.specimenButtons).toBeGreaterThan(1);
 });
+
+test('view controls update themselves and report their new state; run controls wait for the host', async ({ page }) => {
+  await stage(page);
+  expect(await renderScreen(page, [
+    { id: 'scope', component: 'syntari.filter-bar', props: { period: 'Last 30 days', periods: [{ label: 'Last 7 days', value: '7d' }, { label: 'Last 30 days', value: '30d' }] } },
+    { id: 'chart', component: 'syntari.chart-toolbar', props: { compareLabel: 'Compare with last month', viewLabel: 'View daily numbers' } },
+    { id: 'measures', component: 'syntari.metric-strip', props: { items: [{ label: 'Mention rate', value: '45%', active: true }, { label: 'Leads', value: '2' }] } },
+    { id: 'run', component: 'syntari.transport-controls', props: { label: 'Paused at step 3 of 60', speed: 12, steps: 60 } }
+  ])).toEqual([]);
+  const output = page.locator('[data-ir-output]');
+  await output.locator('[data-select-toggle]').click();
+  await output.getByRole('option', { name: 'Last 7 days' }).click();
+  await expect(output.locator('[data-select-label]')).toHaveText('Last 7 days');
+  await output.getByRole('button', { name: 'Filters' }).click();
+  await output.getByRole('checkbox', { name: 'Compare with last month' }).uncheck();
+  await output.getByRole('button', { name: 'View daily numbers' }).click();
+  await expect(output.locator('[data-chart-view]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(output.locator('[data-chart-view]')).toHaveText('View daily numbers');
+  await output.locator('.metric-item').nth(1).click();
+  await expect(output.locator('.metric-item').nth(1)).toHaveClass(/active/);
+  await expect(output.locator('[data-transport-number]')).toHaveText('12');
+  await output.getByRole('button', { name: 'Play' }).click();
+  await expect(output.locator('[data-transport-status]')).toHaveText('Paused at step 3 of 60');
+  await expect(output.locator('[data-transport-play]')).toHaveAttribute('aria-pressed', 'false');
+  await output.getByRole('slider').fill('20');
+  await expect(output.locator('[data-transport-number]')).toHaveText('20');
+  await expect(output.locator('[data-transport-status]')).toHaveText('Paused at step 3 of 60');
+  await expect.poll(async () => (await requests(page)).map(({ path, ...rest }) => rest)).toEqual([
+    { component: 'filter-bar', action: 'period', id: 'scope', index: 0, values: { value: '7d' }, consequential: false },
+    { component: 'filter-bar', action: 'filters', id: 'scope', consequential: false },
+    { component: 'chart-toolbar', action: 'compare', id: 'chart', values: { checked: false }, consequential: false },
+    { component: 'chart-toolbar', action: 'view', id: 'chart', values: { pressed: true }, consequential: false },
+    { component: 'metric-strip', action: 'select', id: 'measures', index: 1, values: { pressed: true }, consequential: false },
+    { component: 'transport-controls', action: 'play', id: 'run', consequential: false },
+    { component: 'transport-controls', action: 'speed', id: 'run', values: { value: '20' }, consequential: false }
+  ]);
+});
+
+test('instance props decide consequence, streaming state and the accessible question', async ({ page }) => {
+  await stage(page);
+  expect(await renderScreen(page, [
+    { id: 'delete', component: 'syntari.button', props: { label: 'Delete project', variant: 'danger', consequential: true } },
+    { id: 'save', component: 'syntari.button', props: { label: 'Save draft' } },
+    { id: 'live', component: 'syntari.streaming-response', props: { author: 'Research assistant', text: 'Renewals grew', streaming: true } },
+    { id: 'done', component: 'syntari.streaming-response', props: { author: 'Research assistant', text: 'Renewals grew 18%.' } },
+    { id: 'audience', component: 'syntari.agent-questions', props: { question: 'Who is this for?', options: [{ value: 'Board' }, { value: 'Team' }] } }
+  ])).toEqual([]);
+  const output = page.locator('[data-ir-output]');
+  await output.getByRole('button', { name: 'Delete project' }).click();
+  await output.getByRole('button', { name: 'Save draft' }).click();
+  const [live, done] = [output.locator('[data-ir-component="streaming-response"]').first(), output.locator('[data-ir-component="streaming-response"]').nth(1)];
+  await expect(live.locator('[data-agent-action=stream-stop]')).toBeEnabled();
+  await expect(live.locator('[data-agent-action=stream-start]')).toBeDisabled();
+  await expect(done.locator('[data-agent-action=stream-stop]')).toBeDisabled();
+  await expect(done.locator('[data-agent-action=stream-start]')).toBeEnabled();
+  await live.locator('[data-agent-action=stream-stop]').click();
+  await expect(output.getByRole('group', { name: 'Who is this for?' })).toBeVisible();
+  expect((await requests(page)).map(({ id, action, consequential }) => ({ id, action, consequential }))).toEqual([
+    { id: 'delete', action: 'press', consequential: true },
+    { id: 'save', action: 'press', consequential: false },
+    { id: 'live', action: 'stop', consequential: false }
+  ]);
+});
+
+test('a reset instance reports its diagnostics once, with their own message', async ({ page }) => {
+  await stage(page);
+  const result = await page.evaluate(async () => {
+    const { mount } = await import('/syntari.js');
+    const instance = await mount('agent-message', document.createElement('div'), { props: { author: 'Agent', text: 'Hello', icon: 'rocketship' } });
+    const first = instance.diagnostics.map(({ code, path, message }) => ({ code, path, message }));
+    await instance.reset();
+    await instance.reset();
+    return { first, after: instance.diagnostics.length };
+  });
+  expect(result.first).toEqual([{ code: 'unknown-icon', path: 'props.icon', message: expect.stringContaining('"rocketship" is not a Syntari icon') }]);
+  expect(result.after).toBe(1);
+});

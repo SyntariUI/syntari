@@ -149,6 +149,9 @@
           }
         }
       }
+    },
+    "showWhen": {
+      "total": ".ledger-total"
     }
   }
 }

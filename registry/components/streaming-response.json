@@ -112,6 +112,11 @@
       "type": "string",
       "default": "bot",
       "maxLength": 24
+    },
+    "streaming": {
+      "type": "boolean",
+      "default": false,
+      "description": "True while text is arriving: Stop is available and Generate is not."
     }
   },
   "ir": {
@@ -126,6 +131,19 @@
     "text": {
       "status": ".agent-heading .hint",
       "text": ".stream-content"
+    },
+    "attributes": {
+      "streaming": [
+        {
+          "selector": "[data-agent-action=stream-stop]",
+          "attribute": "disabled",
+          "invert": true
+        },
+        {
+          "selector": "[data-agent-action=stream-start]",
+          "attribute": "disabled"
+        }
+      ]
     }
   }
 }

@@ -95,7 +95,7 @@
     "label": {
       "type": "string",
       "maxLength": 60,
-      "default": "Message to Syntari",
+      "default": "Message",
       "description": "Accessible name of the field."
     },
     "placeholder": {
@@ -106,7 +106,8 @@
     "hint": {
       "type": "string",
       "maxLength": 40,
-      "description": "Text beside the attachment button."
+      "description": "Text beside the attachment button.",
+      "default": ""
     },
     "status": {
       "type": "string",

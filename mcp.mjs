@@ -12,7 +12,7 @@ const pkg = JSON.parse(await readFile(new URL('./package.json', import.meta.url)
 
 const INSTRUCTIONS = `Syntari is a design system for people and agents. To build a screen:
 1. Find components with search_components or list_components (renderable: true means it has a contract).
-2. Read get_component for the contract: props, actions, rules, and a valid sample.
+2. Read get_component for the contract: props, actions, rules, a valid sample, and the icon names icon props accept.
 3. Compose Screen IR (see get_pattern for complete examples) and give interactive nodes an id.
 4. Call validate_screen and repair every error before showing the screen.
 Actions in a rendered screen are requests from a person. The host application decides whether anything runs; read get_agent_policy.`;
@@ -103,7 +103,9 @@ function checkArguments(schema, args) {
   return null;
 }
 
-async function callTool({ name, arguments: args = {} } = {}) {
+async function callTool(params) {
+  if (!params || typeof params !== 'object' || Array.isArray(params)) throw Object.assign(new Error('tools/call needs params with a tool name.'), { code: -32602 });
+  const { name, arguments: args = {} } = params;
   const tool = tools[name];
   if (!tool) throw Object.assign(new Error(`Unknown tool: ${name}`), { code: -32602 });
   const problem = checkArguments(tool.inputSchema, args);
@@ -135,17 +137,29 @@ async function handle(message) {
   }
 }
 
+/** Answer one JSON-RPC message. Returns undefined for notifications and replies, which need no answer. */
+async function answer(message) {
+  const reply = payload => ({ jsonrpc: '2.0', ...payload });
+  if (!message || typeof message !== 'object' || Array.isArray(message)) return reply({ id: null, error: { code: -32600, message: 'Invalid Request' } });
+  const hasId = message.id !== undefined && message.id !== null;
+  if (typeof message.method !== 'string') return hasId && !('result' in message) && !('error' in message) ? reply({ id: message.id, error: { code: -32600, message: 'Invalid Request: method is required.' } }) : undefined;
+  if (!hasId) return undefined; // Notifications such as notifications/initialized need no reply.
+  try { return reply({ id: message.id, result: await handle(message) }); }
+  catch (error) { return reply({ id: message.id, error: { code: error.code ?? -32603, message: error.code ? error.message : 'Internal error' } }); }
+}
+
 export function serve({ input = process.stdin, output = process.stdout } = {}) {
-  const send = payload => output.write(`${JSON.stringify({ jsonrpc: '2.0', ...payload })}\n`);
+  const send = payload => { if (payload !== undefined) output.write(`${JSON.stringify(payload)}\n`); };
   const lines = createInterface({ input, crlfDelay: Infinity });
   lines.on('line', async line => {
     if (!line.trim()) return;
     let message;
-    try { message = JSON.parse(line); } catch { send({ id: null, error: { code: -32700, message: 'Parse error' } }); return; }
-    const isRequest = message && message.id !== undefined && message.id !== null && typeof message.method === 'string';
-    if (!isRequest) return; // Notifications such as notifications/initialized need no reply.
-    try { send({ id: message.id, result: await handle(message) }); }
-    catch (error) { send({ id: message.id, error: { code: error.code ?? -32603, message: error.message } }); }
+    try { message = JSON.parse(line); } catch { send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }); return; }
+    if (!Array.isArray(message)) { send(await answer(message)); return; }
+    /* Batches, which 2025-03-26 clients may send: answer each request, and nothing for an all-notification batch. */
+    if (!message.length) { send({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request: empty batch.' } }); return; }
+    const replies = (await Promise.all(message.map(answer))).filter(Boolean);
+    if (replies.length) send(replies);
   });
   return new Promise(resolve => lines.on('close', resolve));
 }

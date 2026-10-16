@@ -3,15 +3,6 @@
   "id": "empty-state",
   "version": "1.0.0",
   "status": "authored",
-  "sample": {
-    "props": {
-      "title": "No reports yet",
-      "body": "Reports you generate appear here.",
-      "action": "Create report",
-      "icon": "plus"
-    }
-  },
-  "source": "components/empty-state/",
   "name": "Empty state",
   "category": "Content",
   "purpose": "Explain what belongs in an empty region and offer the next useful step.",
@@ -94,5 +85,20 @@
     "icon": {
       "icon": ".empty-sample .empty-icon"
     }
-  }
+  },
+  "actions": {
+    "create": {
+      "selector": ".empty-sample .button",
+      "description": "The person asked for the next step. Omit action to show no button."
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "No reports yet",
+      "body": "Reports you generate appear here.",
+      "action": "Create report",
+      "icon": "plus"
+    }
+  },
+  "source": "components/empty-state/"
 }
