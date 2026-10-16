@@ -16,9 +16,9 @@
   },
   "sample": {
     "props": {
-      "title": "Review",
-      "summary": "Summary line",
-      "detail": "Detail scope"
+      "title": "Review the release notes",
+      "summary": "Release notes for 4.2 are drafted from 18 merged changes.",
+      "detail": "docs/releases/4.2.md"
     }
   },
   "source": "components/approval-card/",

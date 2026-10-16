@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "file-diff",
   "name": "File diff",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Show a proposed change to one file and ask the person to keep or discard it.",

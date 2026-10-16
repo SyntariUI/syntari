@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "tool-result",
   "name": "Tool result",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Report what a tool run produced, with its outcome and key figures, and let a person ask for another run.",

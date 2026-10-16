@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/patterns.schema.json",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "patterns": [
     {
       "id": "app-shell",

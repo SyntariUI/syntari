@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "prompt-input",
   "name": "Prompt input",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Let a person write the next request to an agent, optionally with one attachment.",

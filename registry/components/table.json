@@ -5,19 +5,27 @@
   "status": "authored",
   "sample": {
     "props": {
-      "caption": "Caption here",
+      "caption": "Tool calls this week",
       "columns": [
         {
           "label": "Tool"
         },
         {
-          "label": "Runs"
+          "label": "Calls"
         }
       ],
       "rows": [
         [
           "read_files",
           "412"
+        ],
+        [
+          "search_docs",
+          "238"
+        ],
+        [
+          "run_tests",
+          "96"
         ]
       ]
     }

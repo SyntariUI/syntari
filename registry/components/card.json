@@ -5,11 +5,11 @@
   "status": "authored",
   "sample": {
     "props": {
-      "title": "Card title",
-      "body": "Card body",
-      "badge": "Review",
+      "title": "Q3 board pack",
+      "body": "Revenue, retention, and hiring updates for the October meeting.",
+      "badge": "Needs review",
       "badgeTone": "danger",
-      "action": "Open it"
+      "action": "Open pack"
     }
   },
   "source": "components/card/",

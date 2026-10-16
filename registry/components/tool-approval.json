@@ -222,9 +222,9 @@
   },
   "sample": {
     "props": {
-      "title": "Run it?",
-      "question": "Apply migrations",
-      "scope": "billing · write"
+      "title": "Run the billing migration?",
+      "question": "Apply three schema changes to the billing database in production.",
+      "scope": "billing-production · write access"
     }
   },
   "source": "components/tool-approval/"

@@ -19,6 +19,7 @@ const usage = `Syntari UI
   syntari registry [<component>|policy] [--json]
   syntari patterns [--json]
   syntari add <component...> [--dir <path>] [--json]
+  syntari mcp                 Read-only MCP server over stdio for agents
 
 Use npm install syntari-ui for the CLI and trusted component runtime.`;
 
@@ -131,6 +132,11 @@ async function checkInstallation(dir, packageVersion, registryVersion) {
 async function main() {
   const [command, ...rest] = cleanArgs;
   if (!command || command === 'help' || command === '--help' || command === '-h') return emit(usage);
+  if (command === 'mcp') {
+    // stdout belongs to the MCP protocol from here on.
+    const { serve } = await import('./mcp.mjs');
+    return serve();
+  }
   const pkg = await getPackage();
   const registry = await getRegistry();
   const catalog = await getCatalog(registry);

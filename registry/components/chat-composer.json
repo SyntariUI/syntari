@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "chat-composer",
   "name": "Chat composer",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Chat",
   "status": "authored",
   "purpose": "Show a short conversation and let the person send the next message.",

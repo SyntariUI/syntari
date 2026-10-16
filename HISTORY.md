@@ -1,7 +1,14 @@
-# Syntari — version 0.2.3
+# Syntari — version 0.3.0
 
-October 16, 2026.
+October 16, 2026. Version 0.2.3 was prepared but never published; its changes ship here.
 
+- Added contract mode. `mount(slug, target, { props })` validates props against the component contract and renders one configured instance, the same contract Screen IR uses. Invalid props reject with a TypeError that carries diagnostics.
+- Added Screen IR actions. Contracts declare what a person can ask for; the renderer reports each request through `onActionRequest` and a bubbling `syntari:action` event, with the node `id`, form `values`, and list `index`. Declared actions never run demo behaviour and never perform anything.
+- Added render contracts for Prompt input, Agent message, Tool result, Citations, File diff, Agent activity, Agent questions, Chat composer, and Button: 31 components now render from Screen IR. Tool approval, Approval card, and Streaming response declare their actions. Every contract ships a sample that validates.
+- Added `syntari mcp`, a read-only MCP server over stdio with tools to list, search, and read components and patterns, read the agent policy, and validate Screen IR. It has no dependencies and is tested with the official MCP client.
+- Published `llms.txt`, `llms-full.txt`, `README.md`, and `AGENT-GUIDE.md` on the site, generated from the same registry as the package.
+- Contract roots now discard every other branch of the example, as the schema documents. Demo small print no longer appears in contract instances.
+- Agent questions submits its choice as `choice` instead of `focus`. The component index marks each entry `renderable`.
 - Published the six AI behaviour patterns (clarification, uncertainty, delegation, recovery, memory, and generation) as a System guide that links each pattern to the components that carry it. The former standalone page redirects there, and the pattern registry points agents to it.
 - Raised light-theme text contrast to WCAG AA. Tertiary labels, success text, danger text, and banner details now reach 4.5:1; all 131 components in their default state, the homepage, Renderer, and System pass an automated contrast check in both themes.
 - Fixed System clearing the first row of components whose rows carry a `data-status` attribute, such as Simple data table.

@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "agent-activity",
   "name": "Agent activity",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Keep a chronological record of what an agent did, separate from its plan.",

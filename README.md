@@ -2,14 +2,14 @@
 
 A design system for people and agents. 131 components, a machine-readable registry, and a renderer that validates what agents compose.
 
-People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. Today 22 components can be rendered from Screen IR; the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
+People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. One contract configures both: 31 components can be rendered from Screen IR or mounted with props, and the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
 
 ## Install in an agent project
 
 Node.js 22 or newer is required.
 
 ```sh
-npm install syntari-ui@0.2.3
+npm install syntari-ui@0.3.0
 npx syntari list --json
 npx syntari search dashboard --json
 npx syntari info approval-review --json
@@ -21,15 +21,40 @@ npx syntari validate --spec ./screen.json --dir ./components/syntari --json
 The same package archive is served from the site as an installation fallback:
 
 ```sh
-npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.2.3.tgz -- syntari add button app-shell
+npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.3.0.tgz -- syntari add button app-shell
 ```
 
 The CLI copies editable HTML, JavaScript, CSS, fonts, registry JSON, and runtime files into the project. It refuses to overwrite existing component files or a mismatched installation. `syntari info <id> --json` returns manifests, dependencies, tokens, examples, package files, and, for renderer patterns, a complete Screen IR example.
 
+## Connect an agent over MCP
+
+`syntari mcp` is a read-only MCP server over stdio. It lists and searches components and patterns, returns contracts with a valid sample, returns the agent policy, and validates Screen IR. It never writes files or performs actions.
+
+```sh
+claude mcp add syntari -- npx -y syntari-ui mcp
+```
+
+Other clients use the same command, for example `{ "command": "npx", "args": ["-y", "syntari-ui", "mcp"] }`. Models without tools can read [llms.txt](https://syntariui.giovanitier.com/llms.txt) and [llms-full.txt](https://syntariui.giovanitier.com/llms-full.txt).
+
+## Mount with props
+
+```js
+import { mount } from './components/syntari/tool-approval.js';
+
+await mount('#consent', {
+  props: { title: 'Run the billing migration?', question: 'Apply three schema changes.', scope: 'billing-production · write access' },
+  onActionRequest(request) {
+    // request.action is "approve" or "reject". Nothing has run: your code decides.
+  }
+});
+```
+
+Props are validated against the component contract, the same one Screen IR uses. Declared actions report requests and never run demo behaviour. Without props, `mount()` renders the documented example.
+
 ## Use the Node API
 
 ```js
-import { listComponents, listPatterns, getPattern, getAgentPolicy, validateScreen } from 'syntari-ui';
+import { listComponents, listPatterns, getComponent, getPattern, getAgentPolicy, searchRegistry, validateScreen } from 'syntari-ui';
 
 const pattern = await getPattern('approval-review');
 const policy = await getAgentPolicy();
@@ -61,4 +86,4 @@ The documentation site uses Kobbe analytics. The npm package and the components 
 
 ## Deploy and publish
 
-Cloudflare Workers Static Assets serves `dist/` through the `syntari` Worker in `wrangler.toml`. Cloudflare's connected Git build uses `main`, `npm run build`, and `npm run deploy`; `syntariui.giovanitier.com` is the custom domain. GitHub Actions runs CI. Publishing a GitHub release whose tag matches the package version (for example `v0.2.3`) runs the npm release workflow, which verifies the tag and package before `npm publish --provenance`. The workflow publishes through npm trusted publishing, or with an `NPM_TOKEN` repository secret when one is configured. The site archive is built from the same `kit/` package files.
+Cloudflare Workers Static Assets serves `dist/` through the `syntari` Worker in `wrangler.toml`. Cloudflare's connected Git build uses `main`, `npm run build`, and `npm run deploy`; `syntariui.giovanitier.com` is the custom domain. GitHub Actions runs CI. Publishing a GitHub release whose tag matches the package version (for example `v0.3.0`) runs the npm release workflow, which verifies the tag and package before `npm publish --provenance`. The workflow publishes through npm trusted publishing, or with an `NPM_TOKEN` repository secret when one is configured. The site archive is built from the same `kit/` package files.

@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 import { modes } from '../screen-recipes.js';
+import { buildLlms } from './llms.mjs';
 
 const kobbeTracker = `  <script
     src="https://app.kobbe.io/tracker.js"
@@ -66,6 +67,10 @@ await writeFile('dist/gallery.html',redirect('/system/'));
 for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
 for(const dir of ['assets','downloads','system'])await cp(dir,'dist/'+dir,{recursive:true});
 await cp('kit/runtime/registry','dist/registry',{recursive:true});
+// Plain-text entry points for models, generated from the same registry the package ships.
+const llms=await buildLlms('kit/runtime/registry');
+await writeFile('dist/llms.txt',llms.short);await writeFile('dist/llms-full.txt',llms.full);
+for(const file of ['README.md','AGENT-GUIDE.md'])await copyFile(file,'dist/'+file);
 // Legacy documentation routes now lead to the integrated component reference.
 await mkdir('dist/docs',{recursive:true});
 await writeFile('dist/docs/index.html',redirect('/system/?guide=getting-started#button'));

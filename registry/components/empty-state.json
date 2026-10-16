@@ -5,9 +5,9 @@
   "status": "authored",
   "sample": {
     "props": {
-      "title": "Nothing here",
-      "body": "Add one",
-      "action": "Create",
+      "title": "No reports yet",
+      "body": "Reports you generate appear here.",
+      "action": "Create report",
       "icon": "plus"
     }
   },

@@ -5,10 +5,10 @@
   "status": "authored",
   "sample": {
     "props": {
-      "message": "Build passed",
-      "detail": "Detail line",
-      "tone": "info",
-      "icon": "info"
+      "message": "Build 4281 passed",
+      "detail": "128 tests in 42 seconds.",
+      "tone": "success",
+      "icon": "circlecheck"
     }
   },
   "source": "components/banner/",

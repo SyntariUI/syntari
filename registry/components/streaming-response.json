@@ -15,9 +15,9 @@
   },
   "sample": {
     "props": {
-      "author": "Agent",
-      "text": "Streamed body",
-      "status": "Idle"
+      "author": "Research assistant",
+      "text": "Renewals grew 18% quarter over quarter, mostly in the enterprise tier.",
+      "status": "Complete"
     }
   },
   "source": "components/streaming-response/",

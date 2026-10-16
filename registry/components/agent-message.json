@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "agent-message",
   "name": "Agent message",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Show one settled agent response with its author and the follow-ups a person can ask for.",

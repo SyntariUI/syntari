@@ -64,6 +64,7 @@ for (const component of components) {
     source: `components/${component.slug}/`,
     manifest: `components/${component.slug}.json`,
     status: authored ? 'authored' : 'generated',
+    renderable: Boolean(manifest?.props && manifest?.ir),
     dependencies: manifest?.dependencies ?? [],
     examples: manifest?.examples ?? { good: [], bad: [], boundary: [] },
     files: [`kit/components/${component.slug}.js`, `kit/components/${component.slug}.html`, 'kit/runtime/syntari.js', 'kit/runtime/tokens.css', 'kit/runtime/styles.css'],

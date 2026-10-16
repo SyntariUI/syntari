@@ -9,7 +9,13 @@
         {
           "icon": "plus",
           "title": "Run started",
-          "detail": "Queue empty",
+          "detail": "3 tasks queued",
+          "time": "2m ago"
+        },
+        {
+          "icon": "check",
+          "title": "Tests passed",
+          "detail": "128 tests in 42 s",
           "time": "1m ago"
         }
       ]

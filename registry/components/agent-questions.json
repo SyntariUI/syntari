@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "agent-questions",
   "name": "Agent questions",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Ask the person one focused question with a small set of answers, plus an optional note.",

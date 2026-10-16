@@ -30,7 +30,10 @@ export function renderReference(c,release,state){
 export function manifestReference(manifest){
  $('[data-dependencies]').textContent=manifest.dependencies?.length?manifest.dependencies.map(d=>typeof d==='string'?d:JSON.stringify(d)).join(', '):'Shared Syntari runtime, included by the installer. No additional component dependencies declared.';
  const props=manifest.props?.properties || manifest.props || {};
- $('[data-ir-api]').innerHTML=manifest.ir?`<h2>Screen IR props</h2><p>Validated against this component’s authored registry contract.</p>${snippet(JSON.stringify(props,null,2),'Prop schema')}`:'<h2>Screen IR</h2><p>A Screen IR contract has not been authored for this component yet. Use its editable source and native DOM API.</p>';
+ const actions=Object.keys(manifest.actions??{});
+ const indent=(text,pad)=>text.split('\n').map((line,i)=>i?pad+line:line).join('\n');
+ const propsUsage=manifest.sample?`<h2>Mount with props</h2><p>This component has a contract, so you can mount one configured instance. The same contract validates Screen IR.${actions.length?` Declared actions arrive in onActionRequest: ${actions.join(', ')}.`:''}</p>${snippet(`import { mount } from './components/syntari/${manifest.id}.js';\n\nawait mount('#example', {\n  props: ${indent(JSON.stringify(manifest.sample.props,null,2),'  ')}${actions.length?`,\n  onActionRequest(request) {\n    // request.action is ${actions.map(a=>JSON.stringify(a)).join(' or ')}. Nothing has run yet: decide in your code.\n  }`:''}\n});`,'Props example')}`:'';
+ $('[data-ir-api]').innerHTML=manifest.ir?`${propsUsage}<h2>Screen IR props</h2><p>Validated against this component’s authored registry contract.</p>${snippet(JSON.stringify(props,null,2),'Prop schema')}`:'<h2>Screen IR</h2><p>A Screen IR contract has not been authored for this component yet. Use its editable source and native DOM API.</p>';
  $('[data-accessibility-contract]').textContent=manifest.accessibility?.keyboard?.length?manifest.accessibility.keyboard.join(' · '):'See Usage for interaction states and shared accessibility guidance.';
 }
 function updateInstall(){

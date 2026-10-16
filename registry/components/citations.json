@@ -2,7 +2,7 @@
   "$schema": "../schema/component.schema.json",
   "id": "citations",
   "name": "Citations",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "category": "Agents",
   "status": "authored",
   "purpose": "Disclose the sources behind an answer next to the answer, numbered and expandable.",

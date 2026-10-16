@@ -11,6 +11,10 @@
         {
           "label": "Generation",
           "value": "27"
+        },
+        {
+          "label": "Nodes",
+          "value": "1,204"
         }
       ]
     }
