@@ -1,3 +1,11 @@
+# Syntari UI — version 0.2.3
+
+Unreleased.
+
+- Removed the legacy documentation and gallery shell (`index.html`, `docs.html`, `gallery.html`, `library.html`, `docs.js`, `docs.css`, `docs-gallery.js`) and the unused root preview screenshots. The build had stopped shipping them; `/gallery.html`, `/library.html`, `/docs.html`, and `/docs/` still redirect to the System workspace.
+
+---
+
 # Syntari UI — version 0.2.2
 
 September 26, 2026.
