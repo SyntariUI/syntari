@@ -3,6 +3,14 @@
   "id": "banner",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "message": "Build passed",
+      "detail": "Detail line",
+      "tone": "info",
+      "icon": "info"
+    }
+  },
   "source": "components/banner/",
   "name": "Banner",
   "category": "Feedback & status",

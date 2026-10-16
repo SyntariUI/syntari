@@ -3,6 +3,23 @@
   "id": "area-chart",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Mention rate",
+      "note": "Last 30 days",
+      "chartLabel": "Mention rate",
+      "points": [
+        {
+          "label": "D1",
+          "value": 40
+        },
+        {
+          "label": "D2",
+          "value": 55
+        }
+      ]
+    }
+  },
   "source": "components/area-chart/",
   "name": "Area chart",
   "category": "Data display",

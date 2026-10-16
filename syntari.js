@@ -45,13 +45,29 @@ export async function prepare(root) {
   window.SyntariMotion.prepare(root);
   return root;
 }
-/** Mount a working example by slug. Configure its real DOM; connect application services in your handlers. */
+/**
+ * Mount a component by slug.
+ * Without props it mounts the documented example. With props it mounts one instance configured through the
+ * component's contract, the same contract agents use in Screen IR; declared actions then fire `syntari:action`.
+ */
 export async function mount(slug, target, options = {}) {
   const catalog = await getComponents();
   const component = catalog.find(c => c.slug === slug);
   if (!component) throw new RangeError(`Unknown Syntari component: ${slug}`);
   const container = typeof target === 'string' ? document.querySelector(target) : target;
   if (!(container instanceof Element)) throw new TypeError('Syntari mount() needs a matching selector or Element.');
+  let contract = null;
+  if (options.props !== undefined) {
+    const ir = await import('./ir.js');
+    const checked = await ir.validateProps(slug, options.props);
+    if (!checked.ok) {
+      const errors = checked.diagnostics.filter(d => d.severity === 'error');
+      const error = new TypeError(`Invalid props for ${slug}: ${errors.map(d => `${d.path}: ${d.message}`).join(' ')}`);
+      error.diagnostics = checked.diagnostics;
+      throw error;
+    }
+    contract = { ...checked, apply: ir.applyContract, bind: ir.bindActions };
+  }
   let element, controller, destroyed = false;
   async function render() {
     controller?.abort();
@@ -59,6 +75,10 @@ export async function mount(slug, target, options = {}) {
     element = document.createElement('div'); element.dataset.syntariComponent = slug; element.innerHTML = component.html;
     container.append(element); await prepare(element);
     if (destroyed) { element.remove(); return; }
+    if (contract) {
+      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props');
+      contract.bind(element, contract.manifest, { onAction: options.onActionRequest });
+    }
     options.configure?.(element);
     controller = new AbortController();
     for (const [event, callback] of [['input', options.onInput], ['change', options.onChange], ['click', options.onAction]]) {
@@ -68,6 +88,8 @@ export async function mount(slug, target, options = {}) {
   await render();
   return {
     get element() { return element; },
+    /** Warnings raised while applying props, such as an unknown prop that was ignored. */
+    get diagnostics() { return contract?.diagnostics ?? []; },
     async reset() { if (destroyed) throw new Error('Cannot reset a destroyed Syntari component.'); await render(); },
     destroy() { destroyed = true; controller?.abort(); element.querySelectorAll('[data-syntari-shell]').forEach(root => window.SyntariNavigation?.destroy(root)); element.querySelectorAll(':popover-open').forEach(p => p.hidePopover()); element.getAnimations({subtree:true}).forEach(a => a.cancel()); element.remove(); }
   };

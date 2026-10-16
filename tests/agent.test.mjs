@@ -64,3 +64,26 @@ test('product sentence and component count match the registry everywhere they ar
     for (const value of stated) assert.equal(value, count, `${name} states ${value} components; the registry has ${count}`);
   }
 });
+
+test('every render contract ships a sample that validates as Screen IR', async () => {
+  const components = await listComponents();
+  let contracts = 0;
+  for (const entry of components) {
+    const manifest = JSON.parse(readFileSync(`kit/runtime/registry/components/${entry.id}.json`, 'utf8'));
+    if (!(manifest.props && manifest.ir)) continue;
+    contracts += 1;
+    assert.ok(manifest.sample?.props, `${entry.id} needs a sample`);
+    const result = await validateScreen({ type: 'screen', children: [{ id: `${entry.id}-sample`, component: `syntari.${entry.id}`, props: manifest.sample.props }] });
+    assert.equal(result.ok, true, `${entry.id} sample: ${JSON.stringify(result.diagnostics)}`);
+    assert.deepEqual(result.diagnostics.filter(item => item.severity === 'warning'), [], `${entry.id} sample raised warnings`);
+  }
+  assert.ok(contracts >= 31, `expected at least 31 render contracts, found ${contracts}`);
+});
+
+test('node ids are validated and must be unique', async () => {
+  const node = { component: 'syntari.button', props: { label: 'Save' } };
+  const duplicate = await validateScreen({ type: 'screen', children: [{ ...node, id: 'save' }, { ...node, id: 'save' }] });
+  assert.ok(duplicate.diagnostics.some(item => item.code === 'duplicate-node-id'));
+  const invalid = await validateScreen({ type: 'screen', children: [{ ...node, id: '../save' }] });
+  assert.equal(invalid.ok, false);
+});

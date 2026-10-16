@@ -4,6 +4,8 @@ const base = new URL('.', import.meta.url);
 export const IR_LAYOUTS = ['stack', 'row', 'grid', 'two-column'];
 export const IR_LIMITS = { maxDepth: 8, maxNodes: 120, maxChildren: 40, maxListItems: 40 };
 const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
+/** A node id lets the host match an action to its own state. It never names code to run. */
+export const NODE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/i;
 
 let registryPromise;
 /** Read the published registry: the component index plus one manifest per rendered component. */
@@ -104,17 +106,41 @@ async function checkNode(node, context, path) {
   if (!reg.entries.has(slug)) { report('error', 'unknown-component', `${path}.component`, `"${component}" is not in the Syntari registry.`); return null; }
   const manifest = await reg.manifest(slug);
   if (!isRenderable(manifest)) { report('error', 'unsupported-component', `${path}.component`, `"${component}" is documented but has no prop contract yet, so it cannot be rendered from IR.`); return null; }
-  const props = node.props ?? {};
-  if (typeOf(props) !== 'object') { report('error', 'wrong-type', `${path}.props`, 'Props must be an object.'); return { slug, manifest }; }
+  if (node.id !== undefined) {
+    if (typeof node.id !== 'string' || !NODE_ID_PATTERN.test(node.id)) report('error', 'invalid-node-id', `${path}.id`, 'Node ids use letters, digits, dots, dashes, or underscores, up to 64 characters.');
+    else if (context.ids?.has(node.id)) report('error', 'duplicate-node-id', `${path}.id`, `"${node.id}" is already used by another node.`);
+    else context.ids?.add(node.id);
+  }
+  checkProps(manifest, node.props ?? {}, `${path}.props`, report);
+  return { slug, manifest };
+}
+
+/** Check props against a component contract. Shared by Screen IR nodes and mount({ props }). */
+export function checkProps(manifest, props, path, report) {
+  const component = `syntari.${manifest.id}`;
+  if (typeOf(props) !== 'object') { report('error', 'wrong-type', path, 'Props must be an object.'); return; }
   for (const [key, value] of Object.entries(props)) {
     const descriptor = manifest.props[key];
-    if (!descriptor) { report('warning', 'unknown-prop', `${path}.props.${key}`, `${component} has no "${key}" prop. It was ignored.`); continue; }
-    checkValue(value, descriptor, `${path}.props.${key}`, report);
+    if (!descriptor) { report('warning', 'unknown-prop', `${path}.${key}`, `${component} has no "${key}" prop. It was ignored.`); continue; }
+    checkValue(value, descriptor, `${path}.${key}`, report);
   }
   for (const [key, descriptor] of Object.entries(manifest.props)) {
-    if (descriptor.required && props[key] === undefined && descriptor.default === undefined) report('error', 'missing-required', `${path}.props.${key}`, `"${key}" is required by ${component}.`);
+    if (descriptor.required && props[key] === undefined && descriptor.default === undefined) report('error', 'missing-required', `${path}.${key}`, `"${key}" is required by ${component}.`);
   }
-  return { slug, manifest };
+}
+
+/** Validate props for one component before mount() applies them. */
+export async function validateProps(slug, props = {}, options = {}) {
+  const reg = options.registry ?? await registry();
+  const diagnostics = [];
+  const report = (severity, code, path, message) => diagnostics.push({ severity, code, path, message });
+  const manifest = reg.entries.has(slug) ? await reg.manifest(slug) : null;
+  if (!isRenderable(manifest)) {
+    report('error', 'unsupported-component', 'props', `"${slug}" has no prop contract yet. Mount it without props and configure its markup instead.`);
+    return { ok: false, diagnostics, manifest, props: {} };
+  }
+  checkProps(manifest, props, 'props', report);
+  return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, manifest, props: resolveProps(props, manifest) };
 }
 
 /** Merge contract defaults into the values an agent supplied. Unknown props never reach the DOM. */
@@ -136,7 +162,7 @@ export async function validate(spec, options = {}) {
   const limits = { ...IR_LIMITS, ...options.limits };
   const diagnostics = [];
   const report = (severity, code, path, message) => diagnostics.push({ severity, code, path, message });
-  const context = { reg, report, limits, count: 0 };
+  const context = { reg, report, limits, count: 0, ids: new Set() };
   if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
     report('error', 'invalid-spec', '', 'The spec must be an object describing a screen or a node.');
     return { ok: false, diagnostics, screen: null };
@@ -212,7 +238,11 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   const report = (severity, code, detail) => diagnostics.push({ severity, code, path, message: detail });
   const root = ir.node ? element.querySelector(ir.node) : element;
   if (!root) { report('warning', 'instance-root-missing', `The contract expects "${ir.node}" inside ${manifest.id}; the markup has changed.`); return element; }
-  if (root !== element) for (const child of [...element.children]) if (child !== root && !child.contains(root)) child.remove();
+  /* Keep the instance root and its ancestors; every other branch of the example is discarded. */
+  for (let node = root; node && node !== element; node = node.parentElement) for (const sibling of [...(node.parentElement?.children ?? [])]) if (sibling !== node) sibling.remove();
+  /* Contract mode: demo-only parts go, and the runtime leaves declared actions to the host. */
+  root.dataset.syntariContract = manifest.id;
+  for (const selector of ir.remove ?? []) root.querySelectorAll(selector).forEach(node => node.remove());
   const value = key => props[key];
   /** An optional prop that the spec left out must not write "undefined" into the markup. */
   const bound = (key, apply) => { const current = value(key); if (current !== undefined) apply(current); };
@@ -250,6 +280,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   }
   for (const [key, declared] of Object.entries(ir.list ?? {})) {
     const items = Array.isArray(value(key)) ? value(key) : [];
+    const fieldContract = manifest.props?.[key]?.items?.fields ?? {};
     for (const part of [].concat(declared)) {
       const container = pick(root, part.container);
       const template = container ? pick(container, part.item) : null;
@@ -261,7 +292,8 @@ export function applyContract(element, manifest, props, diagnostics, path) {
       for (let i = 0; i < limit; i += 1) {
         const item = clone.cloneNode(true);
         const data = items[i];
-        const field = name => Array.isArray(data) ? data[Number(name)] : data?.[name];
+        const field = name => { const current = Array.isArray(data) ? data[Number(name)] : data?.[name]; return current === undefined ? fieldContract[name]?.default : current; };
+        item.dataset.syntariIndex = String(i);
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
         if (part.cells) [...item.querySelectorAll(part.cells)].forEach((cell, index) => setText(cell, Array.isArray(data) ? data[index] ?? '' : ''));
         const filled = (name, apply) => { const current = field(name); if (current !== undefined) apply(current); };
@@ -287,7 +319,62 @@ export function applyContract(element, manifest, props, diagnostics, path) {
       }
     }
   }
+  for (const [name, action] of Object.entries(manifest.actions ?? {})) {
+    const targets = [...root.querySelectorAll(action.selector)];
+    if (root.matches(action.selector)) targets.unshift(root);
+    if (!targets.length) report('warning', 'action-slot-missing', `The contract declares "${name}" at "${action.selector}", but the markup has no such element.`);
+    for (const target of targets) target.dataset.syntariAction = name;
+  }
   return root;
+}
+
+/** Collect what a person entered in a submitted form. Radio names lose the per-mount prefix prepare() adds. */
+function formValues(form) {
+  const values = {};
+  for (const [name, entry] of new FormData(form)) {
+    if (typeof File !== 'undefined' && entry instanceof File && !entry.name) continue;
+    const key = name.replace(/^syntari-[0-9a-f-]{36}-/, '');
+    values[key] = key in values ? [].concat(values[key], entry) : entry;
+  }
+  return values;
+}
+
+/**
+ * Turn the actions a contract declares into `syntari:action` events.
+ * The event reports what a person asked for. It never performs the action: the host decides whether it may run.
+ */
+export function bindActions(element, manifest, context = {}) {
+  const declared = manifest.actions ?? {};
+  if (!Object.keys(declared).length) return;
+  const emit = (source, name, values) => {
+    const item = source.closest('[data-syntari-index]');
+    const detail = {
+      component: manifest.id,
+      action: name,
+      ...(context.id ? { id: context.id } : {}),
+      ...(context.path ? { path: context.path } : {}),
+      ...(item && element.contains(item) ? { index: Number(item.dataset.syntariIndex) } : {}),
+      ...(values ? { values } : {}),
+      consequential: Boolean(declared[name].consequential)
+    };
+    source.dispatchEvent(new CustomEvent('syntari:action', { bubbles: true, detail }));
+    context.onAction?.(detail);
+  };
+  element.addEventListener('click', event => {
+    const source = event.target.closest?.('[data-syntari-action]');
+    if (!source || !element.contains(source)) return;
+    const name = source.dataset.syntariAction;
+    if (!declared[name] || (declared[name].event ?? 'click') !== 'click') return;
+    emit(source, name);
+  });
+  element.addEventListener('submit', event => {
+    const form = event.target;
+    if (!form?.matches?.('form[data-syntari-action]') || !element.contains(form)) return;
+    const name = form.dataset.syntariAction;
+    if (declared[name]?.event !== 'submit') return;
+    event.preventDefault();
+    emit(form, name, formValues(form));
+  });
 }
 
 function fallback(node, reason, component) {
@@ -345,10 +432,12 @@ export async function render(spec, target, options = {}) {
     const manifest = await reg.manifest(slug);
     const props = resolveProps(node.props ?? {}, manifest);
     slot.dataset.irComponent = slug;
+    if (node.id) slot.dataset.irId = node.id;
     const instance = await mount(slug, slot, {
       configure: element => {
         const painted = applyContract(element, manifest, props, diagnostics, path);
         if (node.provenance) painted.dataset.irProvenance = JSON.stringify(node.provenance);
+        bindActions(element, manifest, { id: node.id, path, onAction: options.onActionRequest });
       }
     });
     mounted.push(instance);
@@ -366,4 +455,4 @@ export async function render(spec, target, options = {}) {
   };
 }
 
-if (typeof window !== 'undefined') window.SyntariIR = { validate, render, registry, resolveProps, renderableSlugs, layouts: IR_LAYOUTS, limits: IR_LIMITS };
+if (typeof window !== 'undefined') window.SyntariIR = { validate, validateProps, render, registry, resolveProps, renderableSlugs, layouts: IR_LAYOUTS, limits: IR_LIMITS };

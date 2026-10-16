@@ -26,6 +26,11 @@
           "pattern": "^syntari\\.[a-z0-9]+(-[a-z0-9]+)*$",
           "description": "Registry component id in syntari.<slug> form. Referential checks happen at the boundary against registry/index.json."
         },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Action events carry it so the host can match a request to its own state."
+        },
         "slot": {
           "type": "string"
         },

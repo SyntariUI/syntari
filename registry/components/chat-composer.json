@@ -1,0 +1,180 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "chat-composer",
+  "name": "Chat composer",
+  "version": "0.2.3",
+  "category": "Chat",
+  "status": "authored",
+  "purpose": "Show a short conversation and let the person send the next message.",
+  "description": "A message list with a one-line composer. Sending reports the message to the host, which appends it.",
+  "intents": [
+    "chat",
+    "reply",
+    "converse"
+  ],
+  "variants": {},
+  "states": [
+    "empty",
+    "conversation"
+  ],
+  "anatomy": [
+    "root",
+    "messages",
+    "message",
+    "composer",
+    "field",
+    "hint",
+    "sendAction"
+  ],
+  "accessibility": {
+    "role": "log",
+    "keyboard": [
+      "Tab",
+      "Enter"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "messages-show-who-spoke",
+    "send-is-a-request"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card",
+    "color.action.primary",
+    "color.action.primary.soft"
+  ],
+  "compatibleWith": [
+    "prompt-input",
+    "agent-message"
+  ],
+  "avoidWhen": [
+    "long-form-prompt",
+    "single-response"
+  ],
+  "agentEvents": [
+    "MessageSent"
+  ],
+  "semantics": {
+    "intent": [
+      "input",
+      "conversation"
+    ],
+    "interaction": "compose",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "Two short turns and a field for the next one."
+    ],
+    "bad": [
+      "A 40-message history; page it instead."
+    ],
+    "boundary": [
+      "A long request with attachments belongs in prompt-input."
+    ]
+  },
+  "props": {
+    "messages": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "fields": {
+          "text": {
+            "type": "string",
+            "required": true,
+            "maxLength": 300
+          },
+          "from": {
+            "type": "enum",
+            "values": [
+              "assistant",
+              "person"
+            ],
+            "default": "assistant"
+          }
+        }
+      }
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "What would you like to make?"
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "Write a message"
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 40
+    }
+  },
+  "ir": {
+    "attributes": {
+      "placeholder": {
+        "selector": "form input",
+        "attribute": "placeholder"
+      },
+      "label": {
+        "selector": "form input",
+        "attribute": "aria-label"
+      }
+    },
+    "text": {
+      "hint": ".composer-actions .hint"
+    },
+    "list": {
+      "messages": {
+        "container": "[data-messages]",
+        "item": ".message",
+        "variant": {
+          "from": {
+            "values": {
+              "assistant": "",
+              "person": "sent"
+            }
+          }
+        },
+        "text": {
+          "text": ""
+        }
+      }
+    }
+  },
+  "actions": {
+    "send": {
+      "selector": "form",
+      "event": "submit",
+      "description": "The person sent a message. values.message holds the text; append it and re-render."
+    }
+  },
+  "sample": {
+    "props": {
+      "messages": [
+        {
+          "text": "Which quarter should I compare?"
+        },
+        {
+          "text": "Q2 against Q3, please.",
+          "from": "person"
+        }
+      ],
+      "placeholder": "Reply to the assistant"
+    }
+  },
+  "source": "components/chat-composer/"
+}

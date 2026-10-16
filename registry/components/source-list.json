@@ -3,6 +3,20 @@
   "id": "source-list",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "sources": [
+        {
+          "name": "ChatGPT",
+          "share": 42
+        },
+        {
+          "name": "Perplexity",
+          "share": 26
+        }
+      ]
+    }
+  },
   "source": "components/source-list/",
   "name": "Source list",
   "category": "Table & list",

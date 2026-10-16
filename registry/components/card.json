@@ -3,6 +3,15 @@
   "id": "card",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Card title",
+      "body": "Card body",
+      "badge": "Review",
+      "badgeTone": "danger",
+      "action": "Open it"
+    }
+  },
   "source": "components/card/",
   "name": "Card",
   "category": "Container",

@@ -1,0 +1,240 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "tool-result",
+  "name": "Tool result",
+  "version": "0.2.3",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Report what a tool run produced, with its outcome and key figures, and let a person ask for another run.",
+  "description": "A collapsible result summary with an outcome badge, labelled values, and a rerun request.",
+  "intents": [
+    "report",
+    "inspect",
+    "summarize-run"
+  ],
+  "variants": {
+    "tone": [
+      "success",
+      "warning",
+      "danger",
+      "neutral"
+    ]
+  },
+  "states": [
+    "complete",
+    "warning",
+    "failed"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "title",
+    "summary",
+    "status",
+    "fields",
+    "note",
+    "rerunAction"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false
+  },
+  "rules": [
+    "result-states-outcome-first",
+    "rerun-is-a-request",
+    "values-are-labelled"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card",
+    "color.status.success",
+    "color.status.danger",
+    "color.status.warning"
+  ],
+  "compatibleWith": [
+    "agent-activity",
+    "tool-approval",
+    "agent-message"
+  ],
+  "avoidWhen": [
+    "long-form-output",
+    "streaming-output"
+  ],
+  "agentEvents": [
+    "ToolCompleted",
+    "ToolFailed",
+    "ToolRerunRequested"
+  ],
+  "semantics": {
+    "intent": [
+      "report"
+    ],
+    "interaction": "inspect",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "A lint run reports 3 files checked, 0 warnings, and offers a rerun."
+    ],
+    "bad": [
+      "A 200-line log pasted into the summary."
+    ],
+    "boundary": [
+      "A run that still needs consent belongs in tool-approval first."
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "One line under the title."
+    },
+    "statusLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Complete"
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "success",
+        "warning",
+        "danger",
+        "neutral"
+      ],
+      "default": "success"
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "terminal"
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 32
+          },
+          "value": {
+            "type": "string",
+            "required": true,
+            "maxLength": 48
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 120,
+      "default": "",
+      "description": "Small print under the values."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "description": "Start expanded."
+    },
+    "rerunLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Run again"
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": "summary > .icon"
+    },
+    "lead": {
+      "title": "summary > span",
+      "rerunLabel": "[data-agent-action=tool-run]"
+    },
+    "text": {
+      "summary": "summary small",
+      "statusLabel": "summary .badge",
+      "note": "details > p.hint"
+    },
+    "variant": {
+      "tone": {
+        "selector": "summary .badge",
+        "values": {
+          "success": "green",
+          "warning": "amber",
+          "danger": "red",
+          "neutral": ""
+        }
+      }
+    },
+    "attributes": {
+      "open": {
+        "selector": "details",
+        "attribute": "open"
+      }
+    },
+    "list": {
+      "fields": {
+        "container": ".metadata-list",
+        "item": "div",
+        "text": {
+          "label": "dt",
+          "value": "dd"
+        }
+      }
+    }
+  },
+  "actions": {
+    "rerun": {
+      "selector": "[data-agent-action=tool-run]",
+      "consequential": true,
+      "description": "The person asked to run the tool again. Treat it like any tool call: check scope and consent first."
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Lint check",
+      "summary": "12 files checked · 1 warning",
+      "statusLabel": "Warning",
+      "tone": "warning",
+      "fields": [
+        {
+          "label": "Files",
+          "value": "12"
+        },
+        {
+          "label": "Warnings",
+          "value": "1"
+        },
+        {
+          "label": "Duration",
+          "value": "1.4 s"
+        }
+      ]
+    }
+  },
+  "source": "components/tool-result/"
+}

@@ -3,6 +3,18 @@
   "id": "activity-list",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "items": [
+        {
+          "icon": "plus",
+          "title": "Run started",
+          "detail": "Queue empty",
+          "time": "1m ago"
+        }
+      ]
+    }
+  },
   "source": "components/activity-list/",
   "name": "Activity list",
   "category": "Table & list",

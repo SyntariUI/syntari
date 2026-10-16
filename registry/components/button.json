@@ -7,18 +7,57 @@
   "status": "authored",
   "purpose": "Trigger an immediate user action.",
   "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
-  "intents": ["submit", "continue", "confirm", "cancel", "destructive-action", "open", "close"],
+  "intents": [
+    "submit",
+    "continue",
+    "confirm",
+    "cancel",
+    "destructive-action",
+    "open",
+    "close"
+  ],
   "variants": {
-    "hierarchy": ["primary", "secondary", "ghost", "danger"],
-    "size": ["sm", "md", "lg"],
-    "loading": [true, false],
-    "disabled": [true, false]
+    "hierarchy": [
+      "primary",
+      "secondary",
+      "ghost",
+      "danger"
+    ],
+    "size": [
+      "sm",
+      "md",
+      "lg"
+    ],
+    "loading": [
+      true,
+      false
+    ],
+    "disabled": [
+      true,
+      false
+    ]
   },
-  "states": ["default", "hover", "focus", "pressed", "disabled", "loading"],
-  "anatomy": ["root", "label", "leadingIcon", "trailingIcon", "spinner"],
+  "states": [
+    "default",
+    "hover",
+    "focus",
+    "pressed",
+    "disabled",
+    "loading"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "leadingIcon",
+    "trailingIcon",
+    "spinner"
+  ],
   "accessibility": {
     "role": "button",
-    "keyboard": ["Enter", "Space"],
+    "keyboard": [
+      "Enter",
+      "Space"
+    ],
     "accessibleNameRequired": true
   },
   "rules": [
@@ -39,20 +78,112 @@
     "motion.duration.fast",
     "shadow.soft"
   ],
-  "compatibleWith": ["dialog", "form", "card", "tool-approval", "page-header", "empty-state"],
-  "avoidWhen": ["navigating-between-pages", "standalone-inline-navigation"],
+  "compatibleWith": [
+    "dialog",
+    "form",
+    "card",
+    "tool-approval",
+    "page-header",
+    "empty-state"
+  ],
+  "avoidWhen": [
+    "navigating-between-pages",
+    "standalone-inline-navigation"
+  ],
   "semantics": {
-    "intent": ["confirmation", "navigation", "editing", "destructive"],
-    "density": ["compact", "comfortable"],
-    "attention": ["low", "normal", "high"],
+    "intent": [
+      "confirmation",
+      "navigation",
+      "editing",
+      "destructive"
+    ],
+    "density": [
+      "compact",
+      "comfortable"
+    ],
+    "attention": [
+      "low",
+      "normal",
+      "high"
+    ],
     "risk": "none",
     "interaction": "immediate",
-    "context": ["workspace", "onboarding", "settings", "agent"]
+    "context": [
+      "workspace",
+      "onboarding",
+      "settings",
+      "agent"
+    ]
   },
   "examples": {
-    "good": ["A single primary “Save changes” in a settings form."],
-    "bad": ["Two primary buttons side by side in the same dialog."],
-    "boundary": ["A destructive action must pair danger hierarchy with explicit confirmation."]
+    "good": [
+      "A single primary “Save changes” in a settings form."
+    ],
+    "bad": [
+      "Two primary buttons side by side in the same dialog."
+    ],
+    "boundary": [
+      "A destructive action must pair danger hierarchy with explicit confirmation."
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 32
+    },
+    "variant": {
+      "type": "enum",
+      "values": [
+        "primary",
+        "secondary",
+        "ghost",
+        "danger",
+        "outline"
+      ],
+      "default": "primary",
+      "description": "One primary per region. Danger only for destructive actions."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "ir": {
+    "node": ".button.secondary",
+    "lead": {
+      "label": ""
+    },
+    "variant": {
+      "variant": {
+        "selector": "",
+        "values": {
+          "primary": "primary",
+          "secondary": "secondary",
+          "ghost": "ghost",
+          "danger": "danger",
+          "outline": ""
+        }
+      }
+    },
+    "attributes": {
+      "disabled": {
+        "selector": "",
+        "attribute": "disabled"
+      }
+    }
+  },
+  "actions": {
+    "press": {
+      "selector": ".button",
+      "description": "The person pressed the button."
+    }
+  },
+  "sample": {
+    "props": {
+      "label": "Save changes",
+      "variant": "primary"
+    }
   },
   "source": "components/button/"
 }

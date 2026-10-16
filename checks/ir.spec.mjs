@@ -48,7 +48,7 @@ test('both render modes work from the registry, and the catalogue matches it', a
     await expect(page.locator('[data-ir-intent]')).not.toBeEmpty();
     await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   }
-  expect(supported).toBe(22);
+  expect(supported).toBe(31);
 });
 
 test('the interactive mode responds to its own controls', async ({ page }) => {
@@ -139,7 +139,7 @@ test('validation refuses invented components, missing props, and values outside 
     const codesFor = async spec => (await validate(spec)).diagnostics.map(diagnostic => `${diagnostic.severity}:${diagnostic.code}`);
     return {
       unknown: await codesFor(screen({ component: 'syntari.wizard-hat', props: {} })),
-      unrenderable: await codesFor(screen({ component: 'syntari.button', props: {} })),
+      unrenderable: await codesFor(screen({ component: 'syntari.slider', props: {} })),
       prefix: await codesFor(screen({ component: 'banner', props: { message: 'ok' } })),
       missing: await codesFor(screen({ component: 'syntari.tool-approval', props: { title: 'Run it?' } })),
       wrongType: await codesFor(screen({ component: 'syntari.banner', props: { message: 42 } })),
@@ -174,7 +174,7 @@ test('the generative UI guide explains how to inspect the registry-backed catalo
   await page.goto(`${origin}/guides/generative-ui/`);
   await expect(page.locator('[data-guide-content]')).toContainText('syntari info <id> --json');
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
-  expect(supported).toHaveLength(22);
+  expect(supported).toHaveLength(31);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
 });
 
@@ -234,4 +234,30 @@ test('a mounted component keeps the internal rhythm it was authored for', async 
   expect(report.valueGap).toBeGreaterThanOrEqual(0);
   expect(report.pairWidth).toBeGreaterThan(120);
   expect(report.tallest).toBeLessThanOrEqual(report.pairHeight);
+});
+
+test('every render contract sample paints without errors, fallbacks, or demo copy', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const rows = await page.evaluate(async () => {
+    const { render, renderableSlugs, registry } = await import('/ir.js');
+    const reg = await registry();
+    const stage = document.querySelector('[data-ir-output]');
+    const out = [];
+    for (const slug of await renderableSlugs()) {
+      const manifest = await reg.manifest(slug);
+      /* The full sample, then only its required props: optional props left out must not reveal demo copy. */
+      const required = Object.fromEntries(Object.entries(manifest.sample.props).filter(([key]) => manifest.props[key]?.required));
+      for (const props of [manifest.sample.props, required]) {
+        const result = await render({ type: 'screen', children: [{ component: `syntari.${slug}`, props }] }, stage);
+        const text = result.element.textContent;
+        const errors = result.diagnostics.filter(d => d.severity === 'error').map(d => `${d.severity}:${d.code}`);
+        out.push({ slug, errors, fallback: result.element.querySelectorAll('.ir-fallback').length, undefinedText: text.includes('undefined'), demoCopy: /Local (preview|demonstration|sample)|nothing is sent|in this preview/i.test(text) });
+        result.destroy();
+      }
+    }
+    return out;
+  });
+  expect(rows).toHaveLength(62);
+  for (const row of rows) expect(row, row.slug).toEqual({ slug: row.slug, errors: [], fallback: 0, undefinedText: false, demoCopy: false });
 });

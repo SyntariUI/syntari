@@ -3,6 +3,22 @@
   "id": "filter-bar",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "period": "Last 90 days",
+      "periods": [
+        {
+          "label": "Last 7 days",
+          "value": "Last 7 days"
+        },
+        {
+          "label": "Last 90 days",
+          "value": "Last 90 days"
+        }
+      ],
+      "filtersLabel": "Filters"
+    }
+  },
   "source": "components/filter-bar/",
   "name": "Filter bar",
   "category": "Action",

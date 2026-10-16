@@ -3,6 +3,22 @@
   "id": "chart-bars",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Runs by period",
+      "note": "Indexed",
+      "seriesA": "This week",
+      "seriesB": "Last",
+      "chartLabel": "Two series",
+      "columns": [
+        {
+          "label": "Mon",
+          "a": 41,
+          "b": 30
+        }
+      ]
+    }
+  },
   "source": "components/chart-bars/",
   "name": "Chart bars",
   "category": "Data display",

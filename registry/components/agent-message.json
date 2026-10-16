@@ -1,0 +1,156 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "agent-message",
+  "name": "Agent message",
+  "version": "0.2.3",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Show one settled agent response with its author and the follow-ups a person can ask for.",
+  "description": "A response with source identity, a copy control, a helpful toggle, and a regenerate request.",
+  "intents": [
+    "answer",
+    "explain",
+    "respond"
+  ],
+  "variants": {},
+  "states": [
+    "settled",
+    "rated-helpful"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "author",
+    "time",
+    "body",
+    "copyAction",
+    "helpfulAction",
+    "regenerateAction"
+  ],
+  "accessibility": {
+    "role": "article",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": false,
+    "focusTrap": false
+  },
+  "rules": [
+    "response-names-its-author",
+    "regenerate-is-a-request",
+    "feedback-is-reversible"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card"
+  ],
+  "compatibleWith": [
+    "citations",
+    "prompt-input",
+    "tool-result",
+    "streaming-response"
+  ],
+  "avoidWhen": [
+    "response-still-streaming",
+    "system-notice"
+  ],
+  "agentEvents": [
+    "MessageCompleted",
+    "FeedbackGiven",
+    "RegenerateRequested"
+  ],
+  "semantics": {
+    "intent": [
+      "answer"
+    ],
+    "interaction": "read",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "A finished answer with the assistant's name and a regenerate request."
+    ],
+    "bad": [
+      "A message whose text is still arriving; use streaming-response."
+    ],
+    "boundary": [
+      "A warning about a failed run belongs in a banner."
+    ]
+  },
+  "props": {
+    "author": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "text": {
+      "type": "string",
+      "required": true,
+      "maxLength": 600,
+      "description": "The settled response."
+    },
+    "time": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Relative or absolute time, as written."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "bot"
+    },
+    "helpful": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the person already marked the response as helpful."
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": ".agent-heading .icon"
+    },
+    "lead": {
+      "author": ".agent-heading strong"
+    },
+    "text": {
+      "time": ".agent-heading .hint",
+      "text": ".agent-surface > p"
+    },
+    "attributes": {
+      "helpful": {
+        "selector": "[data-agent-action=like]",
+        "attribute": "aria-pressed"
+      }
+    }
+  },
+  "actions": {
+    "helpful": {
+      "selector": "[data-agent-action=like]",
+      "description": "The person toggled 'helpful'. Re-render with the new helpful value."
+    },
+    "regenerate": {
+      "selector": "[data-agent-action=regenerate]",
+      "description": "The person asked for a new response."
+    }
+  },
+  "sample": {
+    "props": {
+      "author": "Research assistant",
+      "text": "Revenue grew 12% in Q3, led by renewals in the enterprise tier.",
+      "time": "just now"
+    }
+  },
+  "source": "components/agent-message/"
+}

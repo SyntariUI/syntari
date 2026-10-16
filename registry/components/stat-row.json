@@ -3,6 +3,18 @@
   "id": "stat-row",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "stats": [
+        {
+          "label": "Runs",
+          "value": "1,284",
+          "badge": "+18.6%",
+          "note": "this week"
+        }
+      ]
+    }
+  },
   "source": "components/stat-row/",
   "name": "Stat row",
   "category": "Data display",

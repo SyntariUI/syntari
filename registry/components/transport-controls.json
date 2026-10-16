@@ -3,6 +3,12 @@
   "id": "transport-controls",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "speed": 12,
+      "steps": 60
+    }
+  },
   "source": "components/transport-controls/",
   "name": "Transport controls",
   "category": "Action",

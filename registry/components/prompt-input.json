@@ -1,0 +1,159 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "prompt-input",
+  "name": "Prompt input",
+  "version": "0.2.3",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Let a person write the next request to an agent, optionally with one attachment.",
+  "description": "A growing prompt field with an attachment picker. Submitting sends the text and the chosen file to the host as one action.",
+  "intents": [
+    "ask",
+    "instruct",
+    "compose",
+    "attach"
+  ],
+  "variants": {},
+  "states": [
+    "idle",
+    "typing",
+    "submitting",
+    "disabled"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "field",
+    "attachmentButton",
+    "hint",
+    "submitButton",
+    "status"
+  ],
+  "accessibility": {
+    "role": "form",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Shift+Enter"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "prompt-states-what-it-sends",
+    "attachments-are-explicit",
+    "status-announces-outcome"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "agent-message",
+    "streaming-response",
+    "chat-composer",
+    "citations"
+  ],
+  "avoidWhen": [
+    "structured-input-with-known-fields",
+    "single-choice-question"
+  ],
+  "agentEvents": [
+    "PromptSubmitted"
+  ],
+  "semantics": {
+    "intent": [
+      "input"
+    ],
+    "interaction": "compose",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "A research assistant asks for the next question and accepts one PDF."
+    ],
+    "bad": [
+      "A settings form with five known fields rendered as a free-text prompt."
+    ],
+    "boundary": [
+      "A single yes or no decision belongs in agent-questions, not a prompt."
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "Message to Syntari",
+      "description": "Accessible name of the field."
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "What would you like to make?"
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Text beside the attachment button."
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "",
+      "description": "Status line under the field. Empty by default; the host fills it after a submission."
+    },
+    "submitLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Send message",
+      "description": "Accessible name of the send button."
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "lead": {
+      "label": "label.sr-only"
+    },
+    "text": {
+      "hint": "[data-attachment-name]",
+      "status": "[data-prompt-status]"
+    },
+    "attributes": {
+      "placeholder": {
+        "selector": "textarea",
+        "attribute": "placeholder"
+      },
+      "submitLabel": {
+        "selector": "button[type=submit]",
+        "attribute": "aria-label"
+      }
+    }
+  },
+  "actions": {
+    "submit": {
+      "selector": "form",
+      "event": "submit",
+      "description": "The person sent a prompt. values.prompt holds the text; values.attachment holds a File when one was chosen."
+    }
+  },
+  "sample": {
+    "props": {
+      "label": "Ask the research assistant",
+      "placeholder": "Ask about the Q3 report",
+      "hint": "PDF or CSV"
+    }
+  },
+  "source": "components/prompt-input/"
+}

@@ -3,6 +3,14 @@
   "id": "chart-toolbar",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "compareLabel": "Compare with the prior period",
+      "compare": false,
+      "viewLabel": "View numbers",
+      "legend": "Mention rate"
+    }
+  },
   "source": "components/chart-toolbar/",
   "name": "Chart toolbar",
   "category": "Data display",

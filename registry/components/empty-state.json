@@ -3,6 +3,14 @@
   "id": "empty-state",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Nothing here",
+      "body": "Add one",
+      "action": "Create",
+      "icon": "plus"
+    }
+  },
   "source": "components/empty-state/",
   "name": "Empty state",
   "category": "Content",

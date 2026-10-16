@@ -179,6 +179,13 @@
               }
             ]
           }
+        },
+        "remove": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Selectors for demo-only parts removed from a contract instance."
         }
       },
       "additionalProperties": false
@@ -333,6 +340,26 @@
       "items": {
         "type": "string"
       }
+    },
+    "actions": {
+      "type": "object",
+      "description": "Things a person can ask for from this component. In contract mode (Screen IR or mount with props) a declared action never runs demo behaviour: it fires a syntari:action event and the host decides what happens.",
+      "additionalProperties": {
+        "$ref": "#/definitions/action"
+      }
+    },
+    "sample": {
+      "type": "object",
+      "description": "A complete, valid props object. Agents can start from it; tests render it.",
+      "required": [
+        "props"
+      ],
+      "properties": {
+        "props": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {
@@ -560,6 +587,34 @@
         },
         "cells": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "selector"
+      ],
+      "properties": {
+        "selector": {
+          "type": "string",
+          "description": "Element inside the instance that carries the action."
+        },
+        "event": {
+          "enum": [
+            "click",
+            "submit"
+          ],
+          "default": "click",
+          "description": "submit sends the form's named values with the event."
+        },
+        "description": {
+          "type": "string"
+        },
+        "consequential": {
+          "type": "boolean",
+          "description": "True when acting on it changes something outside the screen. The host must authorise it."
         }
       },
       "additionalProperties": false

@@ -56,9 +56,11 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const dependency of manifest.dependencies ?? []) if (!componentEntries.some(item => item.id === dependency)) problems.push(`Unknown component dependency for ${entry.id}: ${dependency}`);
     for (const token of manifest.tokens ?? []) if (!(token in semantic.tokens) && !(token.startsWith('--') && runtimeTokens.includes(`${token}:`))) problems.push(`Unknown token for ${entry.id}: ${token}`);
     if (Boolean(manifest.props) !== Boolean(manifest.ir)) problems.push(`Incomplete render contract: ${entry.id} needs both props and ir.`);
+    if ((manifest.actions || manifest.sample) && !(manifest.props && manifest.ir)) problems.push(`Actions and samples need a render contract: ${entry.id}`);
+    for (const [name, action] of Object.entries(manifest.actions ?? {})) if (!safeId(name)) problems.push(`Invalid action name for ${entry.id}: ${name}`);
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
-        if (binding === 'node') continue;
+        if (binding === 'node' || binding === 'remove') continue;
         for (const prop of Object.keys(value ?? {})) if (!(prop in manifest.props)) problems.push(`Unknown render binding ${entry.id}.${prop}`);
       }
     }

@@ -1,0 +1,226 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "file-diff",
+  "name": "File diff",
+  "version": "0.2.3",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Show a proposed change to one file and ask the person to keep or discard it.",
+  "description": "Additions, deletions, and context lines for one file, with keep and discard requests.",
+  "intents": [
+    "review-change",
+    "approve",
+    "reject"
+  ],
+  "variants": {},
+  "states": [
+    "proposed",
+    "kept",
+    "discarded"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "file",
+    "summary",
+    "lines",
+    "line",
+    "keepAction",
+    "discardAction"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "diff-names-the-file",
+    "keep-is-a-request",
+    "destructive-agent-action-requires-confirmation"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card",
+    "color.status.success",
+    "color.status.danger",
+    "color.action.primary"
+  ],
+  "compatibleWith": [
+    "tool-approval",
+    "agent-activity",
+    "code-block"
+  ],
+  "avoidWhen": [
+    "many-files-at-once",
+    "binary-files"
+  ],
+  "agentEvents": [
+    "ChangeProposed",
+    "ChangeKept",
+    "ChangeDiscarded"
+  ],
+  "semantics": {
+    "intent": [
+      "confirmation"
+    ],
+    "interaction": "approval_required",
+    "context": [
+      "agent"
+    ],
+    "risk": "consequential",
+    "reversibility": "reversible"
+  },
+  "examples": {
+    "good": [
+      "One CSS file with two replaced lines and keep or discard."
+    ],
+    "bad": [
+      "A 40-file refactor squeezed into one diff."
+    ],
+    "boundary": [
+      "A change outside the workspace needs tool-approval as well."
+    ]
+  },
+  "props": {
+    "file": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Such as '2 additions · 2 deletions'."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "file"
+    },
+    "lines": {
+      "type": "array",
+      "required": true,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "fields": {
+          "kind": {
+            "type": "enum",
+            "values": [
+              "add",
+              "remove",
+              "context"
+            ],
+            "required": true
+          },
+          "text": {
+            "type": "string",
+            "required": true,
+            "maxLength": 160,
+            "description": "The line as shown, including its + or − marker."
+          }
+        }
+      }
+    },
+    "open": {
+      "type": "boolean",
+      "default": true
+    },
+    "approveLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Keep changes"
+    },
+    "rejectLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Discard"
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": "summary > .icon"
+    },
+    "lead": {
+      "file": "summary > span",
+      "approveLabel": "[data-agent-action=approve]",
+      "rejectLabel": "[data-agent-action=reject]"
+    },
+    "text": {
+      "summary": "summary small"
+    },
+    "attributes": {
+      "open": {
+        "selector": "details",
+        "attribute": "open"
+      }
+    },
+    "list": {
+      "lines": {
+        "container": "code",
+        "item": "span",
+        "variant": {
+          "kind": {
+            "values": {
+              "add": "diff-add",
+              "remove": "diff-remove",
+              "context": "diff-neutral"
+            }
+          }
+        },
+        "text": {
+          "text": ""
+        }
+      }
+    }
+  },
+  "actions": {
+    "approve": {
+      "selector": "[data-agent-action=approve]",
+      "consequential": true,
+      "description": "The person asked to keep the change. Apply it only after the host's own checks."
+    },
+    "reject": {
+      "selector": "[data-agent-action=reject]",
+      "description": "The person asked to discard the change."
+    }
+  },
+  "sample": {
+    "props": {
+      "file": "pricing.css",
+      "summary": "1 addition · 1 deletion",
+      "lines": [
+        {
+          "kind": "context",
+          "text": "  .plan {"
+        },
+        {
+          "kind": "remove",
+          "text": "−   padding: 12px;"
+        },
+        {
+          "kind": "add",
+          "text": "+   padding: var(--space-4);"
+        },
+        {
+          "kind": "context",
+          "text": "  }"
+        }
+      ]
+    }
+  },
+  "source": "components/file-diff/"
+}

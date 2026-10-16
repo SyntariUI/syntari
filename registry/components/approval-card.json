@@ -3,6 +3,24 @@
   "id": "approval-card",
   "version": "1.0.0",
   "status": "authored",
+  "actions": {
+    "approve": {
+      "selector": "[data-agent-action=approve]",
+      "consequential": true,
+      "description": "The person approved the result. The host decides what approval allows."
+    },
+    "reject": {
+      "selector": "[data-agent-action=reject]",
+      "description": "The person declined the result."
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Review",
+      "summary": "Summary line",
+      "detail": "Detail scope"
+    }
+  },
   "source": "components/approval-card/",
   "name": "Approval card",
   "category": "Agents",
@@ -88,7 +106,9 @@
     },
     "hint": {
       "type": "string",
-      "maxLength": 120
+      "maxLength": 120,
+      "default": "",
+      "description": "Small print under the request. Empty by default."
     },
     "icon": {
       "type": "string",

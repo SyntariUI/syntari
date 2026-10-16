@@ -3,6 +3,25 @@
   "id": "table",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "caption": "Caption here",
+      "columns": [
+        {
+          "label": "Tool"
+        },
+        {
+          "label": "Runs"
+        }
+      ],
+      "rows": [
+        [
+          "read_files",
+          "412"
+        ]
+      ]
+    }
+  },
   "source": "components/table/",
   "name": "Table",
   "category": "Table & list",

@@ -1,0 +1,187 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "agent-activity",
+  "name": "Agent activity",
+  "version": "0.2.3",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Keep a chronological record of what an agent did, separate from its plan.",
+  "description": "A titled timeline of events, each with an icon, a detail line, and a time.",
+  "intents": [
+    "log",
+    "report-progress",
+    "audit"
+  ],
+  "variants": {},
+  "states": [
+    "empty",
+    "populated"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "title",
+    "meta",
+    "timeline",
+    "event",
+    "eventIcon",
+    "eventTitle",
+    "eventDetail",
+    "eventTime"
+  ],
+  "accessibility": {
+    "role": "region",
+    "keyboard": [],
+    "accessibleNameRequired": true,
+    "focusTrap": false
+  },
+  "rules": [
+    "events-are-chronological",
+    "activity-is-not-a-plan"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card"
+  ],
+  "compatibleWith": [
+    "agent-todo-list",
+    "tool-result",
+    "tool-approval"
+  ],
+  "avoidWhen": [
+    "future-steps",
+    "single-event"
+  ],
+  "agentEvents": [
+    "ToolStarted",
+    "ToolCompleted",
+    "ToolFailed"
+  ],
+  "semantics": {
+    "intent": [
+      "status"
+    ],
+    "interaction": "read",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "Opened the workspace, read 3 files, proposed one change."
+    ],
+    "bad": [
+      "Upcoming steps listed as if they already happened."
+    ],
+    "boundary": [
+      "Planned steps belong in agent-todo-list."
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Recent activity"
+    },
+    "meta": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Scope, such as 'This run'."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "list"
+    },
+    "events": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "fields": {
+          "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "time": {
+            "type": "string",
+            "maxLength": 24
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 24,
+            "default": "circlecheck"
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "remove": [
+      ".agent-footer"
+    ],
+    "icon": {
+      "icon": ".agent-heading .icon"
+    },
+    "lead": {
+      "title": ".agent-heading strong"
+    },
+    "text": {
+      "meta": ".agent-heading .hint"
+    },
+    "list": {
+      "events": {
+        "container": "ol.agent-timeline",
+        "item": "li",
+        "icon": {
+          "icon": ".icon"
+        },
+        "lead": {
+          "title": "span"
+        },
+        "text": {
+          "detail": "span small",
+          "time": "time"
+        }
+      }
+    }
+  },
+  "sample": {
+    "props": {
+      "meta": "This run",
+      "events": [
+        {
+          "title": "Workspace opened",
+          "detail": "3 files in scope",
+          "time": "2m ago"
+        },
+        {
+          "title": "Files read",
+          "detail": "pricing.css, plans.json, README.md",
+          "time": "1m ago"
+        },
+        {
+          "title": "Change proposed",
+          "detail": "pricing.css",
+          "time": "now",
+          "icon": "file"
+        }
+      ]
+    }
+  },
+  "source": "components/agent-activity/"
+}

@@ -3,6 +3,23 @@
   "id": "streaming-response",
   "version": "1.0.0",
   "status": "authored",
+  "actions": {
+    "generate": {
+      "selector": "[data-agent-action=stream-start]",
+      "description": "The person asked for a response. Stream it by re-rendering with new text."
+    },
+    "stop": {
+      "selector": "[data-agent-action=stream-stop]",
+      "description": "The person asked to stop the response."
+    }
+  },
+  "sample": {
+    "props": {
+      "author": "Agent",
+      "text": "Streamed body",
+      "status": "Idle"
+    }
+  },
   "source": "components/streaming-response/",
   "name": "Streaming response",
   "category": "Agents",
@@ -83,7 +100,8 @@
     "status": {
       "type": "string",
       "maxLength": 40,
-      "description": "Short status shown beside the author."
+      "description": "Short status shown beside the author.",
+      "default": ""
     },
     "action": {
       "type": "string",
