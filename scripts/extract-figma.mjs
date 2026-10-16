@@ -13,7 +13,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 process.chdir(root);
 const output = resolve(root, 'figma/extracted');
 const digest = value => createHash('sha256').update(value).digest('hex');
-const sourceFiles = ['package.json', 'syntari.js', 'support.html', 'app.js', 'starter.js', 'agents.js', 'extras.js', 'controls.js', 'motion.js', 'numbers.js', 'docs-data.js', 'docs.js', 'docs.html', 'gallery.html', ...['tokens','styles','controls','motion','numbers','starter','agents','extras','docs'].map(name => `${name}.css`)];
+const sourceFiles = ['package.json', 'syntari.js', 'support.html', 'app.js', 'starter.js', 'agents.js', 'extras.js', 'controls.js', 'motion.js', 'numbers.js', 'docs-data.js', ...['tokens','styles','controls','motion','numbers','starter','agents','extras'].map(name => `${name}.css`)];
 const sourceCatalog = await catalog();
 const source = { commit: execFileSync('git', ['rev-parse', 'HEAD'], {encoding:'utf8'}).trim(), files: Object.fromEntries(await Promise.all(sourceFiles.map(async file => [file, digest(await readFile(file))]))), version: JSON.parse(await readFile('package.json','utf8')).version };
 const failures = [];
