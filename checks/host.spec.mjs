@@ -1,0 +1,73 @@
+import { test, expect } from '@playwright/test';
+import { origin } from './component.mjs';
+
+/* A blank page that is not the Syntari site: what a team gets after `npm install syntari-ui`. */
+const host = async page => {
+  await page.route(`${origin}/__host.html`, route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Host</title></head><body><main id="app"></main></body></html>' }));
+  await page.goto(`${origin}/__host.html`);
+};
+
+test('importing the runtime leaves the host page alone', async ({ page }) => {
+  await host(page);
+  await page.evaluate(async () => {
+    document.body.insertAdjacentHTML('beforeend', '<div id="hist"></div><form class="composer" id="hostform"><input name="q" value="hello"><button id="go">Go</button></form><button id="notify" data-notify="Saved">Host save</button><button id="elsewhere">Elsewhere</button><dialog id="hostdialog"><p>Host dialog</p></dialog>');
+    window.seen = [];
+    window.addEventListener('submit', event => { window.seen.push(`submit:${event.defaultPrevented}`); event.preventDefault(); });
+    window.addEventListener('click', event => { if (event.target.id === 'notify') window.seen.push(`notify:${event.defaultPrevented}`); });
+    const { mount } = await import('/syntari.js');
+    await mount('filter-bar', document.querySelector('#app'), { props: { period: 'Last 7 days', periods: [{ label: 'Last 7 days', value: '7d', selected: true }, { label: 'Last 30 days', value: '30d' }] } });
+  });
+  await page.click('#go');
+  await page.click('#notify');
+  expect(await page.evaluate(() => window.seen)).toEqual(['submit:false', 'notify:false']);
+  expect(await page.evaluate(() => ({ hist: document.querySelector('#hist').innerHTML, input: document.querySelector('#hostform input').value }))).toEqual({ hist: '', input: 'hello' });
+  await expect(page.locator('#toast')).toBeHidden();
+  /* Syntari's own menu still closes when the person clicks the host page. */
+  await page.locator('[data-select-toggle]').click();
+  await expect(page.locator('#app .control-panel')).toBeVisible();
+  await page.click('#elsewhere');
+  await expect(page.locator('#app .control-panel')).toBeHidden();
+  await page.evaluate(() => document.querySelector('#hostdialog').showModal());
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#hostdialog')).not.toHaveAttribute('open');
+  /* Contract styles load with the runtime: a screen keeps its layout without extra stylesheets. */
+  expect(await page.evaluate(() => [...document.styleSheets].some(sheet => sheet.href?.endsWith('/ir.css')))).toBe(true);
+});
+
+test('charts, figures, and tables show the agent data in a host page', async ({ page }) => {
+  await host(page);
+  const result = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const target = document.querySelector('#app');
+    const points = [3.0, 3.1, 3.4, 3.2, 3.5, 3.3, 3.0].map((value, i) => ({ label: `W${i + 1}`, value }));
+    const rendered = await render({ type: 'screen', children: [
+      { component: 'syntari.area-chart', props: { title: 'Conversion', points } },
+      { component: 'syntari.metric-and-sparkline', props: { stats: [{ label: 'Orders', value: '512' }], series: [{ label: 'Mon', value: 30 }, { label: 'Tue', value: 60 }] } },
+      { component: 'syntari.chart-bars', props: { title: 'Runs', columns: [{ label: 'Mon', a: 40, b: 30 }] } },
+      { component: 'syntari.table', props: { columns: ['Tool', 'Calls', 'Owner', 'Region', 'Cost', 'Status'].map(label => ({ label })), rows: [['read', '4', 'Ada', 'EU', '$1', 'Failed']] } }
+    ] }, target);
+    await new Promise(resolve => setTimeout(resolve, 1600));
+    const area = target.querySelector('.area-figure');
+    const stat = target.querySelector('.mini-stats .stat strong');
+    return {
+      errors: rendered.diagnostics.filter(item => item.severity === 'error'),
+      axis: [...area.querySelectorAll('.plot-axis span')].map(span => span.textContent),
+      points: [...area.querySelectorAll('.area-point')].map(point => point.getAttribute('aria-label')),
+      ticks: [...area.querySelectorAll('.plot-labels span')].map(span => span.textContent),
+      stat: { text: stat.textContent.trim(), label: stat.getAttribute('aria-label') },
+      bars: target.querySelector('.chart-bars-modern .column-fill')?.getBoundingClientRect().width ?? target.querySelector('.column-fill').getBoundingClientRect().width,
+      barsLabel: target.querySelector('.chart-columns').getAttribute('aria-label'),
+      sparkNames: [...target.querySelectorAll('.bar-chart .bar')].map(bar => bar.textContent.replace(/\s+/g, ' ').trim()),
+      cells: [...target.querySelectorAll('.table tbody td')].map(cell => cell.textContent)
+    };
+  });
+  expect(result.errors).toEqual([]);
+  expect(result.axis).toEqual(['3.6%', '3.4%', '3.2%', '3%']);
+  expect(result.points).toEqual(['W1: 3%', 'W2: 3.1%', 'W3: 3.4%', 'W4: 3.2%', 'W5: 3.5%', 'W6: 3.3%', 'W7: 3%']);
+  expect(result.ticks).toEqual(['W1', 'W3', 'W5', 'W7']);
+  expect(result.stat).toEqual({ text: '512', label: null });
+  expect(result.bars).toBeGreaterThan(50);
+  expect(result.barsLabel).toBe('Runs');
+  expect(result.sparkNames).toEqual(['Mon: 30', 'Tue: 60']);
+  expect(result.cells).toEqual(['read', '4', 'Ada', 'EU', '$1', 'Failed']);
+});

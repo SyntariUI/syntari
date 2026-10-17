@@ -80,7 +80,8 @@
     "steps": {
       "type": "number",
       "minimum": 4,
-      "maximum": 200
+      "maximum": 200,
+      "default": 40
     },
     "label": {
       "type": "string",

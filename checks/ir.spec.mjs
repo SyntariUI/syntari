@@ -195,7 +195,7 @@ test('leaving an optional prop out never writes "undefined" into the screen', as
       ['stat-row', { stats: [{ label: 'Runs', value: '12' }] }]
     ];
     for (const [slug, props] of cases) {
-      const spec = { type: 'screen', layout: 'stack', children: [{ component: `syntari.${slug}`, props }] };
+      const spec = { type: 'screen', layout: 'stack', children: [{ id: slug, component: `syntari.${slug}`, props }] };
       const result = await render(spec, stage);
       rows.push({
         slug,

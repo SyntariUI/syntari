@@ -142,10 +142,12 @@ async function main() {
   const catalog = await getCatalog(registry);
   const patternIndex = await getPatterns();
 
+  /* The registry index, not the page catalogue, knows which components have a render contract. */
+  const renderable = new Set((registry.components ?? []).filter(entry => entry.renderable).map(entry => entry.id));
   if (command === 'list') {
     const items = catalog.map((item) => ({
       id: item.slug ?? item.id, name: item.name, category: item.category,
-      description: item.description, status: item.status ?? 'available'
+      description: item.description, status: item.status ?? 'available', renderable: renderable.has(item.slug ?? item.id)
     })).sort((a, b) => a.id.localeCompare(b.id));
     return emit(jsonOutput ? { version: pkg.version, count: items.length, components: items } : items.map((item) => `${item.id.padEnd(30)} ${item.category}`).join('\n'));
   }
@@ -154,7 +156,7 @@ async function main() {
     const query = values.join(' ').trim().toLocaleLowerCase();
     if (!query) fail('Provide a search query, for example: syntari search dashboard.', 'INVALID_ARGUMENT');
     const components = catalog.filter((item) => [item.slug, item.id, item.name, item.category, item.description].join(' ').toLocaleLowerCase().includes(query))
-      .map((item) => ({ id: item.slug ?? item.id, kind: 'component', name: item.name, category: item.category, description: item.description }));
+      .map((item) => ({ id: item.slug ?? item.id, kind: 'component', name: item.name, category: item.category, description: item.description, renderable: renderable.has(item.slug ?? item.id) }));
     const patterns = (patternIndex.patterns ?? []).filter((item) => [item.id, item.name, item.type, item.description, ...(item.keywords ?? [])].join(' ').toLocaleLowerCase().includes(query))
       .map((item) => ({ id: item.id, kind: 'pattern', name: item.name, category: item.type, description: item.description }));
     const items = [...components, ...patterns].sort((a, b) => a.id.localeCompare(b.id));
@@ -205,15 +207,9 @@ async function main() {
     }
     if (spec) {
       const screen = await readJson(resolve(spec));
-      const { validate } = await import('./kit/runtime/ir.js');
-      const registryDir = await getRegistryDir();
-      const screenSchema = await validateScreenSchema(screen, registryDir);
-      if (!screenSchema.valid) result.problems.push(...screenSchema.problems.map(problem => `Screen schema ${problem}`));
-      const entries = new Map(registry.components.map(entry => [entry.id, entry]));
-      result.screen = await validate(screen, { registry: {
-        entries,
-        manifest: async slug => entries.has(slug) ? readJson(join(registryDir, 'components', `${slug}.json`)) : null
-      } });
+      /* The same validator the Node API and MCP use, so all three report the same diagnostics. */
+      const { validateScreen } = await import('./agent.mjs');
+      result.screen = await validateScreen(screen);
       if (!result.screen.ok) result.problems.push(...result.screen.diagnostics.filter(item => item.severity === 'error').map(item => `${item.path}: ${item.code}: ${item.message}`));
     }
     result.valid = result.problems.length === 0;

@@ -504,9 +504,14 @@
         "invert": {
           "type": "boolean",
           "description": "Write the opposite of the prop value, such as disabled when streaming is false."
+        },
+        "fallback": {
+          "type": "string",
+          "description": "Prop whose value is used when this prop is unset, such as a chart label that falls back to the title."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "Writes a prop into an attribute. When the prop and its fallback are unset, the template attribute is removed."
     },
     "seriesBinding": {
       "type": "object",
@@ -552,15 +557,52 @@
           }
         },
         "scale": {
-          "type": "object",
-          "properties": {
-            "min": {
-              "type": "number"
+          "description": "Fixed bounds, or \"auto\" for round bounds that fit the data.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
             },
-            "max": {
-              "type": "number"
+            {
+              "const": "auto"
             }
-          }
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "Field of each point that carries its label. Defaults to label."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Suffix shown after each value, such as %."
+        },
+        "markers": {
+          "type": "string",
+          "description": "Point marker inside the SVG. The first is cloned for every point; the demo markers are removed."
+        },
+        "markerText": {
+          "type": "string",
+          "description": "Text inside a marker that shows its label and value."
+        },
+        "grid": {
+          "type": "string",
+          "description": "Grid lines inside the SVG, top to bottom, placed on the axis ticks."
+        },
+        "axis": {
+          "type": "string",
+          "description": "Axis labels, top to bottom, written from the scale."
+        },
+        "ticks": {
+          "type": "string",
+          "description": "Labels along the series, written from evenly spaced points."
         }
       },
       "additionalProperties": false
@@ -632,6 +674,10 @@
         },
         "cells": {
           "type": "string"
+        },
+        "cellCount": {
+          "type": "string",
+          "description": "Array prop whose length sets the number of cells in each item, such as table columns."
         }
       },
       "additionalProperties": false

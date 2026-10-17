@@ -94,7 +94,7 @@
       "type": "string",
       "default": "circlecheck",
       "maxLength": 24,
-      "description": "Lucide icon name."
+      "description": "Syntari icon name. The registry index lists every name as icons."
     }
   },
   "ir": {

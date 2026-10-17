@@ -4,6 +4,10 @@ const base = new URL('.', import.meta.url);
 export const IR_LAYOUTS = ['stack', 'row', 'grid', 'two-column'];
 export const IR_LIMITS = { maxDepth: 8, maxNodes: 120, maxChildren: 40, maxListItems: 40 };
 const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
+/** The keys Screen IR defines. Anything else is reported, as the published schema reports it. */
+const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta'];
+const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
+const REGION_KEYS = ['type', 'label', 'open', 'children', 'provenance'];
 /** A node id lets the host match an action to its own state. It never names code to run. */
 export const NODE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/i;
 /** Icon names reach markup, so they are limited to lowercase words joined by dashes. */
@@ -84,6 +88,8 @@ function checkValue(value, descriptor, path, report) {
     }
     return;
   }
+  /* Required text, and text whose default names something, must say something: an empty label leaves a control unnamed. */
+  if (typeof value === 'string' && !value.trim() && (descriptor.required || (typeof descriptor.default === 'string' && descriptor.default.trim()))) report('error', 'empty-value', path, 'This text is required or names a control, so it cannot be empty.');
   if (descriptor.maxLength && value.length > descriptor.maxLength) report('error', 'over-length', path, `Received ${value.length} characters; the limit is ${descriptor.maxLength}.`);
   if (descriptor.minimum !== undefined && value < descriptor.minimum) report('error', 'below-minimum', path, `Received ${value}; the minimum is ${descriptor.minimum}.`);
   if (descriptor.maximum !== undefined && value > descriptor.maximum) report('error', 'above-maximum', path, `Received ${value}; the maximum is ${descriptor.maximum}.`);
@@ -94,12 +100,14 @@ async function checkNode(node, context, path) {
   const { reg, report } = context;
   if (!node || typeof node !== 'object' || Array.isArray(node)) { report('error', 'invalid-node', path, 'A node must be an object with a component id.'); return null; }
   if (node.type === 'region') {
+    for (const key of Object.keys(node)) if (!REGION_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Regions take ${REGION_KEYS.join(', ')}.`);
     if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-region', `${path}.label`, 'A region needs a label; it becomes the summary a person reads.');
     else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Region labels stay under 60 characters.');
     if (node.open !== undefined && typeof node.open !== 'boolean') report('error', 'wrong-type', `${path}.open`, 'A region is either open or closed.');
     return { region: true };
   }
   const { component } = node;
+  for (const key of Object.keys(node)) if (!NODE_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Component nodes take ${NODE_KEYS.join(', ')}.`);
   if (typeof component !== 'string' || !ID_PATTERN.test(component)) {
     report('error', 'invalid-component-id', `${path}.component`, 'Component ids use the form "syntari.component-slug".');
     return null;
@@ -113,6 +121,7 @@ async function checkNode(node, context, path) {
     else if (context.ids?.has(node.id)) report('error', 'duplicate-node-id', `${path}.id`, `"${node.id}" is already used by another node.`);
     else context.ids?.add(node.id);
   }
+  if (Object.keys(manifest.actions ?? {}).length && node.id === undefined) report('warning', 'missing-node-id', `${path}.id`, `${component} sends action requests. Give it an id so the host can match each request to its own state.`);
   checkProps(manifest, node.props ?? {}, `${path}.props`, report, reg.index?.icons);
   return { slug, manifest };
 }
@@ -139,6 +148,11 @@ export function checkProps(manifest, props, path, report, icons) {
     const fields = [].concat(parts).flatMap(part => Object.keys(part.icon ?? {}));
     if (!fields.length || !Array.isArray(props[key])) continue;
     props[key].forEach((item, i) => { for (const field of fields) badIcon(item?.[field], `${path}.${key}[${i}].${field}`); });
+  }
+  for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
+    const columns = part.cellCount && props[part.cellCount];
+    if (!part.cells || !Array.isArray(columns) || !Array.isArray(props[key])) continue;
+    props[key].forEach((row, i) => { if (Array.isArray(row) && row.length !== columns.length) report('warning', 'row-length', `${path}.${key}[${i}]`, `This row has ${row.length} cells for ${columns.length} columns. Missing cells render empty and extra cells are dropped.`); });
   }
 }
 
@@ -183,7 +197,10 @@ export async function validate(spec, options = {}) {
   }
   const screen = spec.type === 'screen' ? spec : { type: 'screen', layout: 'stack', children: [spec] };
   if (spec.type === 'screen' && spec.version !== undefined && spec.version !== 'syntari-ir-1') report('error', 'unsupported-version', 'version', 'Screen version must be "syntari-ir-1".');
-  if (spec.type === 'screen' && spec.layout !== undefined && !IR_LAYOUTS.includes(spec.layout)) report('warning', 'unknown-layout', 'layout', `"${spec.layout}" is not a reference layout. The screen renders as a stack.`);
+  if (spec.type === 'screen') for (const key of Object.keys(spec)) if (!SCREEN_KEYS.includes(key)) report('error', 'unknown-key', key, `Screens take ${SCREEN_KEYS.join(', ')}.`);
+  if (spec.type === 'screen' && spec.title !== undefined && typeof spec.title !== 'string') report('error', 'wrong-type', 'title', 'A screen title is text.');
+  if (spec.type === 'screen' && spec.layout !== undefined && typeof spec.layout !== 'string') report('error', 'wrong-type', 'layout', `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
+  else if (spec.type === 'screen' && spec.layout !== undefined && !IR_LAYOUTS.includes(spec.layout)) report('warning', 'unknown-layout', 'layout', `"${spec.layout}" is not a reference layout. The screen renders as a stack.`);
   if (!Array.isArray(screen.children)) report('error', 'wrong-type', 'children', 'Screen children must be an array.');
   const children = Array.isArray(screen.children) ? screen.children : [];
   if (children.length > limits.maxChildren) report('error', 'over-node-budget', 'children', `${children.length} top-level nodes were supplied; the limit is ${limits.maxChildren}.`);
@@ -191,7 +208,7 @@ export async function validate(spec, options = {}) {
   async function walk(node, path, depth) {
     context.count += 1;
     if (depth > limits.maxDepth) { report('error', 'over-depth-budget', path, `The spec nests deeper than ${limits.maxDepth} levels.`); return; }
-    if (context.count > limits.maxNodes) { report('error', 'over-node-budget', path, `The spec holds more than ${limits.maxNodes} nodes.`); return; }
+    if (context.count > limits.maxNodes) { if (!context.overNodes) report('error', 'over-node-budget', path, `The spec holds more than ${limits.maxNodes} nodes.`); context.overNodes = true; return; }
     const resolved = await checkNode(node, context, path);
     if (!resolved) return;
     const nested = node.children;
@@ -212,8 +229,16 @@ function markEmpty(target, empty) {
   if (!target || /^(td|th)$/i.test(target.tagName)) return;
   if (empty) target.dataset.syntariEmpty = ''; else delete target.dataset.syntariEmpty;
 }
+/** A rolling number animates a figure the template chose. A contract writes the agent's text, so the slot becomes plain. */
+function settleNumber(target) {
+  if (!target.classList.contains('rolling-number') && !target.hasAttribute('data-number')) return;
+  target.classList.remove('rolling-number');
+  for (const name of ['data-number', 'data-format', 'data-number-kind', 'data-value', 'role', 'aria-label']) target.removeAttribute(name);
+  target.dataset.staticNumber = '';
+}
 function fillText(target, value) {
   if (!target) return;
+  settleNumber(target);
   setText(target, value);
   markEmpty(target, String(value) === '');
 }
@@ -229,6 +254,17 @@ function setAttributes(target, binding, current) {
   /* aria attributes state a value, so false is written; markup flags like checked are removed. */
   if (on === false && !binding.attribute.startsWith('aria-')) target.removeAttribute(binding.attribute);
   else target.setAttribute(binding.attribute, String(on));
+}
+const tidy = number => Number(Number(number).toPrecision(12));
+/** Round steps (1, 2, 2.5, or 5 times a power of ten) from below the smallest value to above the largest. */
+function niceScale(values, intervals) {
+  const finite = values.filter(Number.isFinite);
+  const lo = finite.length ? Math.min(...finite) : 0, hi = finite.length ? Math.max(...finite) : 1;
+  const nice = raw => { const power = 10 ** Math.floor(Math.log10(raw)); return [1, 2, 2.5, 5, 10].map(factor => factor * power).find(step => step >= raw * (1 - 1e-9)); };
+  let step = nice(hi > lo ? (hi - lo) / intervals : Math.max(Math.abs(hi), 1) / 10);
+  let min = Math.floor(lo / step) * step;
+  while (min + intervals * step < hi) { step = nice(step * 1.01); min = Math.floor(lo / step) * step; }
+  return { min: tidy(min), max: tidy(min + intervals * step) };
 }
 /** Resolve a contract selector. An empty selector, or one that matches the scope itself, returns the scope. */
 function pick(scope, selector) {
@@ -283,6 +319,8 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   /* Contract mode: demo-only parts go, and the runtime leaves declared actions to the host. */
   root.dataset.syntariContract = manifest.id;
   for (const selector of ir.remove ?? []) root.querySelectorAll(selector).forEach(node => node.remove());
+  /* An action slot inside an empty list is not missing; only a template without it means the markup changed. */
+  const authored = new Set(Object.entries(manifest.actions ?? {}).filter(([, action]) => root.matches(action.selector) || root.querySelector(action.selector)).map(([name]) => name));
   /* A contract button is not a form's submit button unless the contract's own form owns it. */
   for (const button of root.querySelectorAll('button:not([type])')) if (!button.closest('form') || !root.contains(button.closest('form'))) button.type = 'button';
   if (root.matches('button:not([type])')) root.type = 'button';
@@ -297,7 +335,12 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   for (const [key, selector] of Object.entries(ir.showWhen ?? {})) { const current = value(key); each(selector, target => markEmpty(target, current === undefined || current === '' || (Array.isArray(current) && !current.length))); }
   for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
-    bound(key, current => { for (const one of [].concat(binding)) setAttributes(pick(root, one.selector), one, current); });
+    for (const one of [].concat(binding)) {
+      const current = value(key) ?? (one.fallback ? value(one.fallback) : undefined);
+      /* An unset value leaves no template attribute behind: the example's label or value describes other data. */
+      if (current === undefined) pick(root, one.selector)?.removeAttribute(one.attribute);
+      else setAttributes(pick(root, one.selector), one, current);
+    }
   }
   for (const [key, className] of Object.entries(ir.class ?? {})) bound(key, current => toggleClass(root, className, current));
   /** Chart geometry stays data: the series arrives as numbers and the renderer draws the path. */
@@ -309,14 +352,48 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     const [width, height] = String(declared.viewBox ?? svg.getAttribute('viewBox') ?? '0 0 360 160').split(/\s+/).slice(2).map(Number);
     const inset = declared.inset ?? (svg.dataset.inset ? Object.fromEntries(['top', 'bottom', 'left', 'right'].map((side, index) => [side, Number(svg.dataset.inset.split(/\s+/)[index])])) : {});
     const top = inset.top ?? 18, bottom = inset.bottom ?? 24, left = inset.left ?? 12, right = inset.right ?? 12;
-    const scale = declared.scale ?? (svg.dataset.scale ? { min: Number(svg.dataset.scale.split(/\s+/)[0]), max: Number(svg.dataset.scale.split(/\s+/)[1]) } : {});
-    const min = scale.min ?? 0, max = scale.max ?? 100, field = declared.value ?? 'value';
+    const field = declared.value ?? 'value', labelField = declared.label ?? 'label', unit = declared.unit ?? '';
+    const numbers = points.map(point => Number(point[field]));
+    const axis = declared.axis ? [...root.querySelectorAll(declared.axis)] : [];
+    const preset = typeof declared.scale === 'object' ? declared.scale : (svg.dataset.scale ? { min: Number(svg.dataset.scale.split(/\s+/)[0]), max: Number(svg.dataset.scale.split(/\s+/)[1]) } : {});
+    /* An automatic scale fits the agent's data, so the axis, the grid, and the line always agree. */
+    const { min, max } = declared.scale === 'auto' ? niceScale(numbers, Math.max(1, (axis.length || 4) - 1)) : { min: preset.min ?? 0, max: preset.max ?? 100 };
     const x = index => left + index * ((width - left - right) / Math.max(1, points.length - 1));
     const y = number => height - bottom - ((Number(number) - min) / ((max - min) || 1)) * (height - top - bottom);
-    const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(point[field]).toFixed(1)}`).join(' ');
+    const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(numbers[index]).toFixed(1)}`).join(' ');
     line.setAttribute('d', path);
     const fill = declared.fill && pick(svg, declared.fill);
     if (fill) fill.setAttribute('d', `${path} L${x(points.length - 1).toFixed(1)},${height - bottom} L${x(0).toFixed(1)},${height - bottom} Z`);
+    const tick = (index, count) => tidy(max - index * ((max - min) / Math.max(1, count - 1)));
+    if (declared.scale === 'auto') {
+      axis.forEach((label, index) => { label.textContent = `${tick(index, axis.length)}${unit}`; });
+      const grid = declared.grid ? [...svg.querySelectorAll(declared.grid)] : [];
+      grid.forEach((rule, index) => { const at = y(tick(index, grid.length)).toFixed(1); rule.setAttribute('y1', at); rule.setAttribute('y2', at); });
+    }
+    if (declared.markers) {
+      const markers = [...svg.querySelectorAll(declared.markers)];
+      markers.forEach(marker => marker.remove());
+      if (markers[0]) points.forEach((point, index) => {
+        const marker = markers[0].cloneNode(true);
+        const reading = `${tidy(numbers[index])}${unit}`;
+        marker.setAttribute('transform', `translate(${x(index).toFixed(1)} ${y(numbers[index]).toFixed(1)})`);
+        marker.setAttribute('aria-label', `${point[labelField]}: ${reading}`);
+        marker.style.setProperty('--point-order', String(index));
+        const text = declared.markerText && marker.querySelector(declared.markerText);
+        if (text) text.textContent = `${point[labelField]} · ${reading}`;
+        svg.append(marker);
+      });
+      /* The template's description named its own data; the points now describe themselves. */
+      svg.setAttribute('aria-label', 'Focus a point to read its value.');
+    }
+    if (declared.ticks) {
+      const labels = [...root.querySelectorAll(declared.ticks)];
+      const count = Math.min(labels.length, points.length);
+      labels.forEach((label, index) => {
+        if (index >= count) { label.remove(); return; }
+        label.textContent = String(points[count === 1 ? 0 : Math.round(index * (points.length - 1) / (count - 1))][labelField]);
+      });
+    }
   }
   for (const [key, declared] of Object.entries(ir.list ?? {})) {
     const items = Array.isArray(value(key)) ? value(key) : [];
@@ -335,7 +412,15 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         const field = name => { const current = Array.isArray(data) ? data[Number(name)] : data?.[name]; return current === undefined ? fieldContract[name]?.default : current; };
         item.dataset.syntariIndex = String(i);
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
-        if (part.cells) [...item.querySelectorAll(part.cells)].forEach((cell, index) => setText(cell, Array.isArray(data) ? data[index] ?? '' : ''));
+        if (part.cells) {
+          const cellValues = Array.isArray(data) ? data : [];
+          const columns = part.cellCount && Array.isArray(value(part.cellCount)) ? value(part.cellCount).length : cellValues.length;
+          const cells = [...item.querySelectorAll(part.cells)];
+          /* One cell per column: the template's cell count is an example, not a limit. */
+          while (cells.length < columns) { const cell = (cells.at(-1) ?? document.createElement('td')).cloneNode(false); item.append(cell); cells.push(cell); }
+          cells.splice(columns).forEach(cell => cell.remove());
+          cells.forEach((cell, index) => setText(cell, cellValues[index] ?? ''));
+        }
         const filled = (name, apply, clear) => { const current = field(name); if (current !== undefined) apply(current); else clear?.(); };
         for (const [name, selector] of Object.entries(part.text ?? {})) filled(name, current => fillText(pick(item, selector), current), () => fillText(pick(item, selector), ''));
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
@@ -345,7 +430,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
-          filled(name, current => { for (const one of [].concat(binding)) setAttributes(pick(item, one.selector), one, current); });
+          filled(name, current => { for (const one of [].concat(binding)) setAttributes(pick(item, one.selector), one, current); }, () => { for (const one of [].concat(binding)) pick(item, one.selector)?.removeAttribute(one.attribute); });
         }
         /* The template carries the demo's classes, so a managed class starts from nothing. */
         for (const [name, className] of Object.entries(part.class ?? {})) { toggleClass(item, className, false); filled(name, current => toggleClass(item, className, current)); }
@@ -356,7 +441,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   for (const [name, action] of Object.entries(manifest.actions ?? {})) {
     const targets = [...root.querySelectorAll(action.selector)];
     if (root.matches(action.selector)) targets.unshift(root);
-    if (!targets.length) report('warning', 'action-slot-missing', path, `The contract declares "${name}" at "${action.selector}", but the markup has no such element.`);
+    if (!targets.length && !authored.has(name)) report('warning', 'action-slot-missing', path, `The contract declares "${name}" at "${action.selector}", but the markup has no such element.`);
     for (const target of targets) {
       target.dataset.syntariAction = name;
       if (action.local) target.dataset.syntariLocal = '';
@@ -379,6 +464,7 @@ function formValues(form) {
 /** The state a view control shows after a person used it. */
 function controlState(source) {
   if (source.matches('input[type=checkbox], input[type=radio]')) return { checked: source.checked };
+  if (source.matches('input[type=range], input[type=number]')) return { value: Number(source.value) };
   if (source.matches('input, select, textarea')) return { value: source.value };
   if (source.hasAttribute('value')) return { value: source.getAttribute('value') };
   if (source.hasAttribute('aria-pressed')) return { pressed: source.getAttribute('aria-pressed') === 'true' };

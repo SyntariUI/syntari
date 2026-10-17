@@ -147,7 +147,7 @@ test('view controls update themselves and report their new state; run controls w
     { component: 'chart-toolbar', action: 'view', id: 'chart', values: { pressed: true }, consequential: false },
     { component: 'metric-strip', action: 'select', id: 'measures', index: 1, values: { pressed: true }, consequential: false },
     { component: 'transport-controls', action: 'play', id: 'run', consequential: false },
-    { component: 'transport-controls', action: 'speed', id: 'run', values: { value: '20' }, consequential: false }
+    { component: 'transport-controls', action: 'speed', id: 'run', values: { value: 20 }, consequential: false }
   ]);
 });
 

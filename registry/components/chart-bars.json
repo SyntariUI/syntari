@@ -91,7 +91,8 @@
     },
     "chartLabel": {
       "type": "string",
-      "maxLength": 160
+      "maxLength": 160,
+      "description": "Accessible name for the columns. Defaults to the title."
     },
     "columns": {
       "type": "array",
@@ -134,7 +135,8 @@
     "attributes": {
       "chartLabel": {
         "selector": ".chart-columns",
-        "attribute": "aria-label"
+        "attribute": "aria-label",
+        "fallback": "title"
       }
     },
     "list": {

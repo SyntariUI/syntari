@@ -183,6 +183,7 @@
           "container": ".bar-chart",
           "item": "button.bar",
           "text": {
+            "label": ".bar-label",
             "value": ".bar-value"
           },
           "style": {

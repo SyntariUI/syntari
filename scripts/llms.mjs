@@ -5,12 +5,23 @@ import { join } from 'node:path';
 const site = 'https://syntariui.giovanitier.com';
 const readJson = async path => JSON.parse(await readFile(path, 'utf8'));
 
+function constraints(prop) {
+  return [
+    prop.default !== undefined && prop.default !== '' ? `default ${JSON.stringify(prop.default)}` : null,
+    prop.maxLength ? `max ${prop.maxLength} characters` : null,
+    prop.minimum !== undefined && prop.maximum !== undefined ? `${prop.minimum} to ${prop.maximum}` : prop.minimum !== undefined ? `at least ${prop.minimum}` : prop.maximum !== undefined ? `at most ${prop.maximum}` : null
+  ].filter(Boolean);
+}
+const typeName = prop => prop.type === 'enum' ? prop.values.map(value => JSON.stringify(value)).join(' | ') : prop.type;
+
 function describeProp(name, prop) {
-  const type = prop.type === 'enum' ? prop.values.map(value => JSON.stringify(value)).join(' | ')
-    : prop.type === 'array' ? `array of ${prop.items?.type === 'object' ? `{ ${Object.keys(prop.items.fields ?? {}).join(', ')} }` : prop.items?.type ?? 'values'}${prop.maxItems ? `, at most ${prop.maxItems}` : ''}`
-    : prop.type;
-  const notes = [prop.required ? 'required' : 'optional', prop.default !== undefined && prop.default !== '' ? `default ${JSON.stringify(prop.default)}` : null, prop.maxLength ? `max ${prop.maxLength} characters` : null, prop.description].filter(Boolean);
-  return `- \`${name}\` (${type}): ${notes.join('; ')}`;
+  const type = prop.type === 'array' ? `array${prop.maxItems ? `, at most ${prop.maxItems} items` : ''}` : typeName(prop);
+  const notes = [prop.required ? 'required' : 'optional', ...constraints(prop), prop.description].filter(Boolean);
+  const line = `- \`${name}\` (${type}): ${notes.join('; ')}`;
+  /* List items carry their own types and limits; a model without tools needs them as much as the top-level ones. */
+  const fields = prop.type === 'array' && prop.items?.type === 'object' ? Object.entries(prop.items.fields ?? {}) : [];
+  const items = prop.type === 'array' && prop.items && prop.items.type !== 'object' ? [`  - each item: ${[typeName(prop.items), ...constraints(prop.items)].join('; ')}`] : [];
+  return [line, ...items, ...fields.map(([field, spec]) => `  - \`${field}\` (${typeName(spec)}): ${[spec.required ? 'required' : 'optional', ...constraints(spec), spec.description].filter(Boolean).join('; ')}`)].join('\n');
 }
 
 function actionNote(action) {

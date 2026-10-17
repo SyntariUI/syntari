@@ -50,7 +50,8 @@
     "kit/",
     "README.md",
     "LICENSE",
-    "AGENT-GUIDE.md"
+    "AGENT-GUIDE.md",
+    "types"
   ],
   "dependencies": {
     "ajv": "^8.20.0"
@@ -64,6 +65,14 @@
       "default": "./agent.mjs"
     },
     "./registry/*": "./kit/runtime/registry/*",
+    "./runtime/syntari.js": {
+      "types": "./types/syntari.d.ts",
+      "default": "./kit/runtime/syntari.js"
+    },
+    "./runtime/ir.js": {
+      "types": "./types/ir.d.ts",
+      "default": "./kit/runtime/ir.js"
+    },
     "./runtime/*": "./kit/runtime/*",
     "./package.json": "./package.json"
   }

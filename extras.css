@@ -139,6 +139,7 @@
   grid-column:3;
   grid-row:1;
   display:grid;
+  justify-content:stretch;
   grid-template-rows:repeat(2,6px);
   gap:4px;
   width:100%;

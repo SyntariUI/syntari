@@ -54,6 +54,8 @@ for(const c of components){
 
 }
 await mkdir('downloads',{recursive:true});
+/* Only the current release is downloadable; older archives would contradict the changelog. */
+for(const file of await readdir('downloads'))if(/^syntari-ui-.*\.tgz$/.test(file))await rm(join('downloads',file));
 execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{
   stdio:'inherit',
   env:{...process.env,npm_config_cache:join(tmpdir(),'syntari-npm-cache')}

@@ -53,15 +53,20 @@ export async function searchRegistry(query) {
 }
 
 export async function validateScreen(spec) {
-  const [schema, index] = await Promise.all([validateScreenSchema(spec, registryDir), readJson('index.json')]);
+  const index = await readJson('index.json');
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
   const runtime = await validateRuntime(spec, { registry: {
     index,
     entries,
     manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null
   } });
+  /* The runtime checks the budget first; a spec over it is rejected without walking the whole schema. */
+  const overBudget = runtime.diagnostics.some(item => item.code === 'over-depth-budget' || item.code === 'over-node-budget');
+  const schema = overBudget ? { valid: false, details: [] } : await validateScreenSchema(spec, registryDir);
+  const covered = path => runtime.diagnostics.some(item => item.severity === 'error' && (item.path === path || item.path.startsWith(`${path}.`) || item.path.startsWith(`${path}[`)));
   const diagnostics = [
-    ...schema.problems.map(message => ({ severity: 'error', code: 'screen-schema', path: 'spec', message })),
+    /* The runtime already explains most schema problems in its own words; the schema adds only what it alone found. */
+    ...schema.details.filter(item => !covered(item.path)).map(({ path, message }) => ({ severity: 'error', code: 'screen-schema', path, message })),
     ...runtime.diagnostics
   ];
   return { ok: schema.valid && runtime.ok, diagnostics };

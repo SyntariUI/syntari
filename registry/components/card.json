@@ -92,7 +92,7 @@
       "type": "string",
       "maxLength": 24,
       "default": "file",
-      "description": "Lucide icon shown in the card's leading mark, so the card says what kind of thing it holds."
+      "description": "Syntari icon shown in the card's leading mark, so the card says what kind of thing it holds. The registry index lists every name as icons."
     }
   },
   "ir": {

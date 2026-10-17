@@ -89,11 +89,50 @@ test('node ids are validated and must be unique', async () => {
 });
 
 test('icon props accept only the registry vocabulary', async () => {
-  const message = icon => ({ type: 'screen', children: [{ component: 'syntari.agent-message', props: { author: 'Agent', text: 'Hello', icon } }] });
+  const message = icon => ({ type: 'screen', children: [{ id: 'reply', component: 'syntari.agent-message', props: { author: 'Agent', text: 'Hello', icon } }] });
   const codes = result => result.diagnostics.map(item => `${item.severity}:${item.code}`);
   assert.deepEqual(codes(await validateScreen(message('bot'))), []);
   assert.deepEqual(codes(await validateScreen(message('rocketship'))), ['warning:unknown-icon']);
   const injected = await validateScreen(message('"><svg onload=x>'));
   assert.equal(injected.ok, false);
   assert.deepEqual(codes(injected), ['error:invalid-icon']);
+});
+
+test('validation names the exact problem, at its own path, and stays fast on hostile specs', async () => {
+  const codes = result => result.diagnostics.map(item => `${item.severity}:${item.code}:${item.path}`);
+  const approval = { title: 'Run it?', question: 'Apply the change.', scope: 'billing' };
+  assert.deepEqual(codes(await validateScreen({ type: 'screen', children: [{ component: 'syntari.tool-approval', props: approval }] })), ['warning:missing-node-id:children[0].id']);
+  const empty = await validateScreen({ type: 'screen', children: [{ id: 'run', component: 'syntari.tool-approval', props: { ...approval, title: ' ' } }] });
+  assert.deepEqual(codes(empty), ['error:empty-value:children[0].props.title']);
+  const stray = await validateScreen({ type: 'screen', layout: 7, children: [{ id: 'run', component: 'syntari.tool-approval', props: approval, onClick: 'x' }] });
+  assert.deepEqual(codes(stray).sort(), ['error:unknown-key:children[0].onClick', 'error:wrong-type:layout']);
+  const table = await validateScreen({ type: 'screen', children: [{ component: 'syntari.table', props: { columns: [{ label: 'Tool' }, { label: 'Calls' }], rows: [['read_files', '412', 'extra']] } }] });
+  assert.deepEqual(codes(table), ['warning:row-length:children[0].props.rows[0]']);
+  let deep = { component: 'syntari.button', props: { label: 'Go' } };
+  for (let i = 0; i < 400; i += 1) deep = { type: 'region', label: 'Level', children: [deep] };
+  const started = performance.now();
+  const result = await validateScreen({ type: 'screen', children: [deep] });
+  assert.ok(performance.now() - started < 2000, 'a deep spec is rejected quickly');
+  assert.ok(result.diagnostics.some(item => item.code === 'over-depth-budget'));
+});
+
+test('the CLI validates a screen with the same diagnostics as the Node API', async () => {
+  const { mkdtemp, writeFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { execFileSync } = await import('node:child_process');
+  const screen = { type: 'screen', children: [{ id: 'reply', component: 'syntari.agent-message', props: { author: 'Agent', text: 'Hello', icon: 'rocketship' } }] };
+  const file = join(await mkdtemp(join(tmpdir(), 'syntari-')), 'screen.json');
+  await writeFile(file, JSON.stringify(screen));
+  const cli = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'validate', '--spec', file, '--json'], { encoding: 'utf8' }));
+  assert.deepEqual(cli.screen.diagnostics, (await validateScreen(screen)).diagnostics);
+  const listed = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'list', '--json'], { encoding: 'utf8' }));
+  assert.equal(listed.components.filter(item => item.renderable).length, 31);
+});
+
+test('pattern screens that agents copy validate without warnings', async () => {
+  for (const pattern of (await listPatterns()).filter(item => item.screenMode)) {
+    const { screen } = await getPattern(pattern.id);
+    const result = await validateScreen(screen);
+    assert.deepEqual(result.diagnostics, [], `${pattern.id} raised diagnostics`);
+  }
 });

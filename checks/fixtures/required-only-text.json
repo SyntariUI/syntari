@@ -1,6 +1,6 @@
 {
   "button": "Save changes",
-  "metric-and-sparkline": "Runs 1,284 +18.6% 33 61 Mon Tue",
+  "metric-and-sparkline": "Runs 1,284 +18.6% Mon: 33 Tue: 61 Mon Tue",
   "banner": "Build 4281 passed",
   "table": "Records Tool Calls read_files 412 search_docs 238 run_tests 96",
   "card": "Q3 board pack",
@@ -24,7 +24,7 @@
   "process-ledger": "Resolve Match the intent 0.3ms",
   "transport-controls": "Play Step Reset Speed 8 fps",
   "live-readout": "Render run Running Generation 27 Nodes 1,204",
-  "area-chart": "Mention rate 60% 50% 40% 30% Day 1 · 43% Day 2 · 41% Day 3 · 39% Day 4 · 40% Day 5 · 46% Day 6 · 48% Day 7 · 44% Day 8 · 41% Day 9 · 39% Day 10 · 42% Day 11 · 46% Day 12 · 48% Day 13 · 44% Day 14 · 41% Day 15 · 40% Day 16 · 45% Day 17 · 50% Day 18 · 52% Day 19 · 47% Day 20 · 44% Day 21 · 42% Day 22 · 48% Day 23 · 53% Day 24 · 57% Day 25 · 58% Day 26 · 55% Day 27 · 49% Day 28 · 45% Day 29 · 42% Day 30 · 48% Day 1 Day 10 Day 20 Day 30",
+  "area-chart": "Mention rate 55% 50% 45% 40% D1 · 40% D2 · 55% D1 D2",
   "chart-toolbar": "",
   "metric-strip": "Mention rate 45.4% 3.3 pp of answers Leads 2",
   "headline-metric": "Lost questions 12 / 125 50.0%",

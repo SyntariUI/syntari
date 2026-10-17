@@ -82,7 +82,8 @@
     },
     "chartLabel": {
       "type": "string",
-      "maxLength": 160
+      "maxLength": 160,
+      "description": "Accessible name for the plot. Defaults to the title."
     },
     "points": {
       "type": "array",
@@ -115,7 +116,8 @@
     "attributes": {
       "chartLabel": {
         "selector": ".plot",
-        "attribute": "aria-label"
+        "attribute": "aria-label",
+        "fallback": "title"
       }
     },
     "series": {
@@ -123,7 +125,15 @@
         "selector": ".chart-svg",
         "line": ".area-line",
         "fill": ".area-fill",
-        "value": "value"
+        "value": "value",
+        "label": "label",
+        "unit": "%",
+        "scale": "auto",
+        "markers": ".area-point",
+        "markerText": ".chart-tooltip text",
+        "grid": ".chart-grid line",
+        "axis": ".plot-axis span",
+        "ticks": ".plot-labels span"
       }
     }
   }

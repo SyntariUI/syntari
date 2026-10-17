@@ -155,6 +155,12 @@
         },
         "class": {
           "active": "active"
+        },
+        "attributes": {
+          "active": {
+            "selector": "",
+            "attribute": "aria-pressed"
+          }
         }
       }
     }

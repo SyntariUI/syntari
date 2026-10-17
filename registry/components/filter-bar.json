@@ -91,17 +91,24 @@
             "type": "string",
             "maxLength": 24,
             "required": true
+          },
+          "selected": {
+            "type": "boolean",
+            "default": false,
+            "description": "The period the view shows now."
           }
         }
       }
     },
     "filtersLabel": {
       "type": "string",
-      "maxLength": 30
+      "maxLength": 30,
+      "default": "Filters"
     },
     "settingsLabel": {
       "type": "string",
-      "maxLength": 30
+      "maxLength": 30,
+      "default": "Chart settings"
     }
   },
   "ir": {
@@ -136,7 +143,11 @@
               "selector": "",
               "attribute": "value"
             }
-          ]
+          ],
+          "selected": {
+            "selector": "",
+            "attribute": "aria-selected"
+          }
         }
       }
     },
