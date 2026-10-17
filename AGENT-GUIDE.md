@@ -2,26 +2,43 @@
 
 Use Syntari as a bounded interface renderer. Retrieve its current contracts before composing a screen.
 
-1. Run `syntari list --json`, `syntari patterns --json`, and `syntari info <id> --json` to discover components and authored patterns. The registry JSON is included in the package and served at `/registry/` on the site.
-   Read `syntari registry policy --json` for the machine-readable rendering and action boundary.
-2. Choose a pattern and components that fit the user's intent. Use only component ids declared by the registry. Prefer an authored manifest with `props` and `ir`; other components are documented but cannot render from Screen IR yet.
-3. Produce JSON that matches `registry/schema/sui.schema.json`. Keep values inside each manifest's prop types, enum values, ranges, and list limits. Put evidence and provenance in labelled regions when a decision needs explanation.
-4. Run `syntari validate --spec screen.json --json` or call `validateScreen(spec)` from `syntari-ui`. Repair every error before presenting the screen. Preserve warnings in the decision trace.
-5. Render with `render(spec, target)` from the installed browser runtime. Show the intent, selected pattern, candidate components, decision, Screen IR, validation results, and rendered interface so a person can inspect why the screen looks as it does.
+1. Discover components and patterns. From a terminal, run `syntari list --json`, `syntari patterns --json`, and `syntari info <id> --json`. From an MCP client, connect `npx -y syntari-ui mcp` and use `search_components`, `list_components`, `get_component`, and `get_pattern`. Models without tools can read [llms.txt](https://syntariui.giovanitier.com/llms.txt) and [llms-full.txt](https://syntariui.giovanitier.com/llms-full.txt).
+   Read `syntari registry policy --json` or the MCP tool `get_agent_policy` for the machine-readable rendering and action boundary.
+2. Choose a pattern and components that fit the user's intent. Use only component ids declared by the registry. Prefer components marked `renderable`: they declare `props`, `ir`, `actions`, and a valid `sample`. Other components are documented but cannot render from Screen IR yet.
+3. Produce JSON that matches `registry/schema/sui.schema.json`. Keep values inside each manifest's prop types, enum values, ranges, and list limits. Give every node that a person can act on a unique `id`. Put evidence and provenance in labelled regions when a decision needs explanation.
+4. Run `syntari validate --spec screen.json --json`, call `validateScreen(spec)` from `syntari-ui`, or use the MCP tool `validate_screen`. Repair every error before presenting the screen. Preserve warnings in the decision trace.
+5. Render with `render(spec, target, { onActionRequest })` from the installed browser runtime. Show the intent, selected pattern, candidate components, decision, Screen IR, validation results, and rendered interface so a person can inspect why the screen looks as it does.
+
+## Actions
+
+A contract declares what a person can ask for, such as `approve` and `reject` on Tool approval, `submit` on Prompt input, or `open` on Citations. When a person acts, the renderer calls `onActionRequest` and dispatches a bubbling `syntari:action` event with:
+
+```json
+{ "component": "tool-approval", "action": "approve", "id": "deploy", "path": "children[0]", "consequential": true }
+```
+
+Form actions add `values` with what the person entered. List actions add `index`. Declared actions never run demo behaviour and never perform anything. Re-render with the outcome once the host has decided.
+
+View controls, such as the period on Filter bar, Compare on Chart toolbar, or the chosen measure on Metric strip, are `local` actions: the control updates itself, then the request reports its new state in `values` (`value`, `checked`, or `pressed`) so the host can load the matching data. Set an instance's consequence with its props where the contract allows it, such as `consequential: true` on a Delete button.
+
+Leave an optional prop out and its slot stays empty: the renderer never shows the template's example copy. Required text and labels cannot be empty strings, and every component that declares actions needs an `id`. Icon props take a name from `icons` in the registry index (also returned by `get_component`): a malformed name is an `invalid-icon` error, and a well-formed name the runtime does not ship is an `unknown-icon` warning that keeps the component's own icon.
 
 ## Action boundary
 
-Screen validation controls UI composition. A button or approval card is a visual affordance; it does not grant permission to run a tool. The host application must keep authentication, tool allowlists, data scope, and human approval in trusted code outside the model's Screen IR. A model-provided `approved: true` value is not evidence of human consent.
+Screen validation controls UI composition. A button or approval card is a visual affordance; it does not grant permission to run a tool. The host application must keep authentication, tool allowlists, data scope, and human approval in trusted code outside the model's Screen IR. A model-provided `approved: true` value is not evidence of human consent, and an `approve` request is consent to ask for, not authorization.
 
 For a consequential action, the host should validate its arguments and scope, obtain approval through its own trusted state, then execute the action. Show the outcome and any failure in a new validated Screen IR result. Never infer permission from a rendered component or a model-authored provenance field.
 
 ## Example
 
 ```js
-import { getPattern, validateScreen } from 'syntari-ui';
+import { getComponent, getPattern, validateScreen } from 'syntari-ui';
 
-const { screen } = await getPattern('release-review');
+const approval = await getComponent('tool-approval');
+const screen = {
+  type: 'screen',
+  children: [{ id: 'deploy', component: 'syntari.tool-approval', props: approval.sample.props }]
+};
 const { ok, diagnostics } = await validateScreen(screen);
-if (!ok) return { status: 'repair', diagnostics };
-return { status: 'ready', screen, diagnostics };
+const next = ok ? { status: 'ready', screen, diagnostics } : { status: 'repair', diagnostics };
 ```

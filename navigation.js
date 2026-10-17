@@ -83,7 +83,7 @@
   }
   function open(root, trigger) {
     if (!drawer) {
-      drawer = document.createElement('dialog'); drawer.id = 'syntari-navigation-drawer'; drawer.className = 'syntari-navigation-dialog'; drawer.setAttribute('aria-label','Workspace navigation'); document.body.append(drawer);
+      drawer = document.createElement('dialog'); drawer.id = 'syntari-navigation-drawer'; drawer.className = 'syntari-navigation-dialog'; drawer.setAttribute('aria-label','Workspace navigation'); drawer.dataset.syntariRoot = ''; document.body.append(drawer);
       drawer.addEventListener('cancel', event => { event.preventDefault(); close(); });
       drawer.addEventListener('click', event => { if (event.target === drawer) close(); });
       drawer.addEventListener('keydown', event => {

@@ -58,3 +58,5 @@
 .agent-surface[data-agent-kind=notfound]>p{max-width:34ch;margin:0;color:var(--muted);font-size:var(--type-body);line-height:1.6}
 .agent-surface[data-agent-kind=notfound]>.button{margin:8px 0 0;min-height:40px}
 @media(max-width:520px){.agent-chat-layout{grid-template-columns:minmax(110px,32%) minmax(0,1fr);min-height:min(440px,64vh)}.agent-chat-main{padding:16px}.agent-chat-sidebar{padding:14px 8px}.agent-surface[data-agent-kind=notfound]{min-height:280px;padding:30px 20px}}
+/* Contract instances leave optional small print empty; an empty line takes no space. */
+.agent-surface .hint:empty,.agent-surface>p:empty{display:none}

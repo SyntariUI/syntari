@@ -11,4 +11,4 @@ Use the Syntari tokens, Geist typography, component anatomy, and motion. Keep th
 
 Pattern selection currently uses deterministic keyword matching against the published registry and renders sample data. Describe that honestly. Confidence figures must come from a measured model or clearly identified evidence. UI approval affordances never authorize external operations; the host owns action authorization.
 
-The earlier `/tmp/system/` and `/Jev/` URLs lead to the production workspaces. Their original source remains in the repository for historical reference.
+The earlier `/tmp/`, `/Jev/`, `/new/`, and `/art-atlas/` URLs lead to the production workspaces. Their original prototype source lives on the `archive/prototypes` branch.

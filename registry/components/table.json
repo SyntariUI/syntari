@@ -3,6 +3,33 @@
   "id": "table",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "caption": "Tool calls this week",
+      "columns": [
+        {
+          "label": "Tool"
+        },
+        {
+          "label": "Calls"
+        }
+      ],
+      "rows": [
+        [
+          "read_files",
+          "412"
+        ],
+        [
+          "search_docs",
+          "238"
+        ],
+        [
+          "run_tests",
+          "96"
+        ]
+      ]
+    }
+  },
   "source": "components/table/",
   "name": "Table",
   "category": "Table & list",
@@ -82,7 +109,7 @@
       "type": "array",
       "required": true,
       "maxItems": 10,
-      "description": "One array of cell strings per row.",
+      "description": "One array of cell strings per row, one cell for each column.",
       "items": {
         "type": "array",
         "maxItems": 6,
@@ -109,7 +136,8 @@
       "rows": {
         "container": "tbody",
         "item": "tr",
-        "cells": "td"
+        "cells": "td",
+        "cellCount": "columns"
       }
     }
   }

@@ -3,6 +3,23 @@
   "id": "streaming-response",
   "version": "1.0.0",
   "status": "authored",
+  "actions": {
+    "generate": {
+      "selector": "[data-agent-action=stream-start]",
+      "description": "The person asked for a response. Stream it by re-rendering with new text."
+    },
+    "stop": {
+      "selector": "[data-agent-action=stream-stop]",
+      "description": "The person asked to stop the response."
+    }
+  },
+  "sample": {
+    "props": {
+      "author": "Research assistant",
+      "text": "Renewals grew 18% quarter over quarter, mostly in the enterprise tier.",
+      "status": "Complete"
+    }
+  },
   "source": "components/streaming-response/",
   "name": "Streaming response",
   "category": "Agents",
@@ -83,7 +100,8 @@
     "status": {
       "type": "string",
       "maxLength": 40,
-      "description": "Short status shown beside the author."
+      "description": "Short status shown beside the author.",
+      "default": ""
     },
     "action": {
       "type": "string",
@@ -94,6 +112,11 @@
       "type": "string",
       "default": "bot",
       "maxLength": 24
+    },
+    "streaming": {
+      "type": "boolean",
+      "default": false,
+      "description": "True while text is arriving: Stop is available and Generate is not."
     }
   },
   "ir": {
@@ -108,6 +131,19 @@
     "text": {
       "status": ".agent-heading .hint",
       "text": ".stream-content"
+    },
+    "attributes": {
+      "streaming": [
+        {
+          "selector": "[data-agent-action=stream-stop]",
+          "attribute": "disabled",
+          "invert": true
+        },
+        {
+          "selector": "[data-agent-action=stream-start]",
+          "attribute": "disabled"
+        }
+      ]
     }
   }
 }

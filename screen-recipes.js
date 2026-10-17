@@ -19,7 +19,7 @@ export const modes = {
         note: 'Indexed · this week against last',
         seriesA: 'This week',
         seriesB: 'Last week',
-        chartLabel: 'Runs by day: this week compared with last week',
+        chartLabel: 'Runs by day, this week against last: Mon 41 vs 30, Tue 58 vs 44, Wed 47 vs 51, Thu 66 vs 52, Fri 52 vs 61, Sat 74 vs 58',
         columns: [
           { label: 'Mon', a: 41, b: 30 }, { label: 'Tue', a: 58, b: 44 }, { label: 'Wed', a: 47, b: 51 },
           { label: 'Thu', a: 66, b: 52 }, { label: 'Fri', a: 52, b: 61 }, { label: 'Sat', a: 74, b: 58 }
@@ -54,7 +54,7 @@ export const modes = {
     intent: 'The north-star screen: a report a product team opens every morning.',
     does: 'Scope the period, choose the measure, compare against the previous one, and open the sources behind the number.',
     spec: screen('Product overview', 'stack', [
-      { component: 'syntari.filter-bar', props: {
+      { id: 'scope', component: 'syntari.filter-bar', props: {
         period: 'Last 30 days',
         periods: [{ label: 'Last 7 days', value: 'Last 7 days' }, { label: 'Last 30 days', value: 'Last 30 days' }, { label: 'Last 90 days', value: 'Last 90 days' }],
         filtersLabel: 'Filters',
@@ -64,13 +64,13 @@ export const modes = {
         { label: 'Recommendation share', value: '45.4%', delta: '3.3 pp', direction: 'up' },
         { label: 'Lost questions', value: '12', total: '/ 12', delta: '50.0%', direction: 'down' }
       ] } },
-      { component: 'syntari.metric-strip', props: { items: [
+      { id: 'measures', component: 'syntari.metric-strip', props: { items: [
         { label: 'Mention rate', icon: 'eye', value: '45.4%', delta: '3.3 pp', direction: 'up', meaning: 'of sampled answers', active: true },
         { label: 'Citations', icon: 'link', value: '1,155', delta: '5.2%', direction: 'up', meaning: 'distinct sources' },
         { label: 'AI referrals', icon: 'globe', value: '54', delta: '3.8%', direction: 'up', meaning: 'sessions from answers' },
         { label: 'Leads', icon: 'star', value: '2', delta: '50.0%', direction: 'down', meaning: 'converted from AI traffic' }
       ] } },
-      { component: 'syntari.chart-toolbar', props: {
+      { id: 'chart-options', component: 'syntari.chart-toolbar', props: {
         compareLabel: 'Compare with the prior 30 days',
         compare: false,
         viewLabel: 'View daily numbers',
@@ -138,7 +138,7 @@ modes.approval = {
   does: 'Show the proposed action, affected scope, and the evidence a reviewer needs.',
   spec: screen('Review before applying changes', 'stack', [
     { component: 'syntari.banner', props: { message: 'Approval needed', detail: 'The agent has prepared a change and is waiting for a decision.', tone: 'info', icon: 'circlecheck' } },
-    { component: 'syntari.tool-approval', props: { title: 'Run the migration?', question: 'Apply three schema changes to the billing database.', scope: 'Billing production · write access', hint: 'Review the plan and scope before authorizing.' } },
+    { id: 'run-migration', component: 'syntari.tool-approval', props: { title: 'Run the migration?', question: 'Apply three schema changes to the billing database.', scope: 'Billing production · write access', hint: 'Review the plan and scope before authorizing.' } },
     { component: 'syntari.metadata-list', props: { items: [
       { label: 'Requested by', value: 'Migration assistant' },
       { label: 'Environment', value: 'Production' },

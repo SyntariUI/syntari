@@ -67,6 +67,6 @@
   }
   if(b.dataset.numberAction){const demo=b.closest('[data-number-demo]'),el=demo.querySelector('[data-number]');let value=Number(el.dataset.value);value=b.dataset.numberAction==='increase'?value+127:b.dataset.numberAction==='decrease'?Math.max(0,value-89):2369;el.dataset.number=value;set(el,value);demo.querySelector('[role=status]').textContent=`Current value: ${format(value)}`;}
  });
- addEventListener('DOMContentLoaded',()=>prepare(document));
+ addEventListener('DOMContentLoaded',()=>SyntariRoots().forEach(root=>prepare(root)));
  window.SyntariNumbers={prepare,reveal,set};
 })();

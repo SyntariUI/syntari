@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { catalog as readCatalog } from '../scripts/catalog.mjs';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const origin='http://127.0.0.1:4398';
 test('implementation lives beside the component, with legacy routes preserved',async({page,context})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await context.grantPermissions(['clipboard-read','clipboard-write']);
@@ -26,7 +28,7 @@ test('implementation lives beside the component, with legacy routes preserved',a
  await page.getByRole('button',{name:'Install',exact:true}).click();
  for(const pm of ['pnpm','yarn','bun','npm']){await page.getByRole('button',{name:pm,exact:true}).click();await expect(page.locator('[data-install-command]')).toContainText(pm);}
  await expect(page.locator('[data-install-details]')).toContainText('doctor --dir ./components/syntari');
- await expect(page.locator('[data-download-source]')).toHaveAttribute('href',/syntari-ui-0.2.2.tgz$/);
+ await expect(page.locator('[data-download-source]')).toHaveAttribute('href',new RegExp(`syntari-ui-${version.replaceAll('.','\\.')}\\.tgz$`));
  await page.goto(origin+'/guides/theming/');await expect(page).toHaveURL(/system\/\?guide=theming#button$/);
  await expect(page.locator('[data-guide-content]')).toContainText('One shared language.');
  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

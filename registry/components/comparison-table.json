@@ -3,6 +3,21 @@
   "id": "comparison-table",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "caption": "Plans compared",
+      "optionA": "Free",
+      "optionB": "Growth",
+      "rows": [
+        {
+          "metric": "Projects",
+          "a": "1",
+          "b": "Unlimited",
+          "advantage": "Growth"
+        }
+      ]
+    }
+  },
   "source": "components/comparison-table/",
   "name": "Comparison table",
   "category": "Table & list",
@@ -64,11 +79,13 @@
     },
     "optionA": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "required": true
     },
     "optionB": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "required": true
     },
     "rows": {
       "type": "array",

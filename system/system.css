@@ -243,3 +243,4 @@ button,input{font:inherit}
 /* Keep standalone action specimens in the center of their preview canvas. */
 .sys-preview-host [data-extra-kind="action"]{min-height:280px;display:grid!important;place-items:center!important;align-content:center!important;padding:24px}
 .sys-preview-host [data-extra-kind="action"] .action-swap-stage{width:100%;min-height:230px;place-items:center}
+[data-guide-content] a{color:var(--accent-text);text-decoration:underline;text-underline-offset:3px}

@@ -12,18 +12,19 @@ npm run build
 npm start
 ```
 
-Open http://127.0.0.1:4318/ for the landing page, `/library.html` for the library, and `/gallery.html` for the gallery.
+Open http://127.0.0.1:4318/ for the homepage, `/system/` for the component workspace, and `/renderer/` for the Screen IR renderer.
 
 ## Checks
 
-Run the full browser and installer suite before opening a pull request:
+Run the Node and browser suites before opening a pull request:
 
 ```sh
 npx playwright install chromium
 npm test
+npm run test:browser
 ```
 
-The suite covers every component route, authored preview state, theme, responsive layout, and the source installer.
+`npm test` covers the registry, CLI, and Node API. `npm run test:browser` runs every Playwright suite in `checks/`: component routes and behaviour, authored preview states, both themes, responsive layouts, and the source installer. CI runs both.
 
 ## Components and tokens
 

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { component } from './component.mjs';
 
 test('bloom menu floats above its active trigger and closes accessibly', async ({page}) => {
-  await page.goto('http://127.0.0.1:4398/gallery.html');
-  const root = page.locator('[data-extra-kind="bloom"]');
+  const root = (await component(page, 'Bloom menu')).locator('[data-extra-kind="bloom"]');
   const trigger = root.locator('[data-extra="bloom-toggle"]');
   await trigger.click();
 

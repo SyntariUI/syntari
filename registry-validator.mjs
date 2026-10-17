@@ -8,11 +8,20 @@ const exists = async path => { try { await access(path); return true; } catch { 
 const safeId = id => typeof id === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
 const semver = version => typeof version === 'string' && /^\d+\.\d+\.\d+$/.test(version);
 
+const screenChecks = new Map();
+/** "/children/0/props" becomes "children[0].props", the path form the runtime diagnostics use. */
+const irPath = pointer => pointer.split('/').slice(1).reduce((path, part) => /^\d+$/.test(part) ? `${path}[${part}]` : path ? `${path}.${part}` : part, '') || 'spec';
+
 export async function validateScreenSchema(spec, registryDir) {
-  const schema = await readJson(join(registryDir, 'schema/sui.schema.json'));
-  const check = new Ajv({ allErrors: true, strict: false }).compile(schema);
+  if (!screenChecks.has(registryDir)) screenChecks.set(registryDir, new Ajv({ allErrors: true, strict: false }).compile(await readJson(join(registryDir, 'schema/sui.schema.json'))));
+  const check = screenChecks.get(registryDir);
   const valid = check(spec);
-  return { valid, problems: valid ? [] : check.errors.map(error => `${error.instancePath || '/'}: ${error.message}`) };
+  /* The if/then branches add a summary error for every failed branch; the specific errors beneath them say what is wrong. */
+  const details = valid ? [] : check.errors.filter(error => error.keyword !== 'if').map(error => {
+    const extra = error.params?.additionalProperty ? ` ("${error.params.additionalProperty}")` : error.params?.allowedValues ? ` (${error.params.allowedValues.join(', ')})` : '';
+    return { path: irPath(error.instancePath), message: `${error.message}${extra}` };
+  });
+  return { valid, details, problems: details.map(item => `${item.path}: ${item.message}`) };
 }
 
 export async function validateRegistry(registryDir, kitDir, packageVersion) {
@@ -56,9 +65,23 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const dependency of manifest.dependencies ?? []) if (!componentEntries.some(item => item.id === dependency)) problems.push(`Unknown component dependency for ${entry.id}: ${dependency}`);
     for (const token of manifest.tokens ?? []) if (!(token in semantic.tokens) && !(token.startsWith('--') && runtimeTokens.includes(`${token}:`))) problems.push(`Unknown token for ${entry.id}: ${token}`);
     if (Boolean(manifest.props) !== Boolean(manifest.ir)) problems.push(`Incomplete render contract: ${entry.id} needs both props and ir.`);
+    if ((manifest.actions || manifest.sample) && !(manifest.props && manifest.ir)) problems.push(`Actions and samples need a render contract: ${entry.id}`);
+    for (const [name, action] of Object.entries(manifest.actions ?? {})) {
+      if (!safeId(name)) problems.push(`Invalid action name for ${entry.id}: ${name}`);
+      if (action.consequentialProp && manifest.props?.[action.consequentialProp]?.type !== 'boolean') problems.push(`consequentialProp for ${entry.id}.${name} must name a boolean prop`);
+    }
+    for (const [key, binding] of Object.entries(manifest.ir?.attributes ?? {})) for (const one of [].concat(binding)) {
+      if (one.fallback && !(one.fallback in (manifest.props ?? {}))) problems.push(`Attribute fallback for ${entry.id}.${key} names an unknown prop: ${one.fallback}`);
+    }
+    for (const [key, binding] of Object.entries(manifest.ir?.select ?? {})) {
+      if (!manifest.ir?.list?.[binding.list]) problems.push(`select for ${entry.id}.${key} names a list the contract does not bind: ${binding.list}`);
+    }
+    for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
+      if (part.cellCount && manifest.props?.[part.cellCount]?.type !== 'array') problems.push(`cellCount for ${entry.id}.${key} must name an array prop`);
+    }
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
-        if (binding === 'node') continue;
+        if (binding === 'node' || binding === 'remove') continue;
         for (const prop of Object.keys(value ?? {})) if (!(prop in manifest.props)) problems.push(`Unknown render binding ${entry.id}.${prop}`);
       }
     }

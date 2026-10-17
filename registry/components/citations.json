@@ -1,0 +1,196 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "citations",
+  "name": "Citations",
+  "version": "0.3.0",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Disclose the sources behind an answer next to the answer, numbered and expandable.",
+  "description": "A numbered source list with an excerpt per source and a request to open each one.",
+  "intents": [
+    "cite",
+    "attribute",
+    "disclose-evidence"
+  ],
+  "variants": {},
+  "states": [
+    "collapsed",
+    "expanded"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "title",
+    "meta",
+    "text",
+    "source",
+    "sourceNumber",
+    "sourceTitle",
+    "excerpt",
+    "openAction"
+  ],
+  "accessibility": {
+    "role": "region",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false
+  },
+  "rules": [
+    "sources-are-numbered",
+    "excerpt-matches-claim",
+    "open-is-a-request"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card"
+  ],
+  "compatibleWith": [
+    "agent-message",
+    "source-list",
+    "streaming-response"
+  ],
+  "avoidWhen": [
+    "no-sources",
+    "ranking-sources-by-share"
+  ],
+  "agentEvents": [
+    "SourcesAttached",
+    "SourceOpenRequested"
+  ],
+  "semantics": {
+    "intent": [
+      "evidence"
+    ],
+    "interaction": "inspect",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "Two numbered sources with the passage each claim rests on."
+    ],
+    "bad": [
+      "Sources invented to make an answer look supported."
+    ],
+    "boundary": [
+      "Traffic share by source belongs in source-list."
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Sources"
+    },
+    "meta": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Count or scope, such as '2 references'."
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "The claim the sources support."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "link"
+    },
+    "sources": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "fields": {
+          "number": {
+            "type": "number",
+            "required": true,
+            "minimum": 1,
+            "maximum": 99
+          },
+          "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60
+          },
+          "excerpt": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "The passage the claim rests on."
+          },
+          "linkLabel": {
+            "type": "string",
+            "maxLength": 32,
+            "default": "Open source"
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "icon": {
+      "icon": ".agent-heading .icon"
+    },
+    "lead": {
+      "title": ".agent-heading strong"
+    },
+    "text": {
+      "meta": ".agent-heading .hint",
+      "text": ".agent-surface > p"
+    },
+    "list": {
+      "sources": {
+        "container": ".agent-surface",
+        "item": "details.citation",
+        "lead": {
+          "title": "summary",
+          "linkLabel": "[data-agent-action]"
+        },
+        "text": {
+          "number": ".citation-number",
+          "excerpt": "p"
+        }
+      }
+    }
+  },
+  "actions": {
+    "open": {
+      "selector": "details.citation [data-agent-action]",
+      "description": "The person asked to open a source. detail.index is its position in sources."
+    }
+  },
+  "sample": {
+    "props": {
+      "meta": "2 references",
+      "text": "Renewals drove most of the growth.",
+      "sources": [
+        {
+          "number": 1,
+          "title": "Q3 board report",
+          "excerpt": "Renewal revenue rose 18% quarter over quarter."
+        },
+        {
+          "number": 2,
+          "title": "Sales dashboard",
+          "excerpt": "Enterprise renewals closed at 94%."
+        }
+      ]
+    }
+  },
+  "source": "components/citations/"
+}

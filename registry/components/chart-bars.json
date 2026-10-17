@@ -3,6 +3,22 @@
   "id": "chart-bars",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Runs by period",
+      "note": "Indexed",
+      "seriesA": "This week",
+      "seriesB": "Last",
+      "chartLabel": "Runs by period, this week against last: Mon 41 vs 30",
+      "columns": [
+        {
+          "label": "Mon",
+          "a": 41,
+          "b": 30
+        }
+      ]
+    }
+  },
   "source": "components/chart-bars/",
   "name": "Chart bars",
   "category": "Data display",
@@ -75,7 +91,9 @@
     },
     "chartLabel": {
       "type": "string",
-      "maxLength": 160
+      "maxLength": 160,
+      "description": "What a screen reader hears instead of the bars, so include the values, such as 'Runs by day, this week against last: Mon 41 vs 30'.",
+      "required": true
     },
     "columns": {
       "type": "array",

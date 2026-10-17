@@ -3,6 +3,22 @@
   "id": "filter-bar",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "period": "Last 90 days",
+      "periods": [
+        {
+          "label": "Last 7 days",
+          "value": "Last 7 days"
+        },
+        {
+          "label": "Last 90 days",
+          "value": "Last 90 days"
+        }
+      ],
+      "filtersLabel": "Filters"
+    }
+  },
   "source": "components/filter-bar/",
   "name": "Filter bar",
   "category": "Action",
@@ -58,7 +74,8 @@
   "props": {
     "period": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "description": "The label of the period the view shows now. The matching period is marked selected."
     },
     "periods": {
       "type": "array",
@@ -81,11 +98,13 @@
     },
     "filtersLabel": {
       "type": "string",
-      "maxLength": 30
+      "maxLength": 30,
+      "default": "Filters"
     },
     "settingsLabel": {
       "type": "string",
-      "maxLength": 30
+      "maxLength": 30,
+      "default": "Chart settings"
     }
   },
   "ir": {
@@ -111,12 +130,43 @@
           "label": "span"
         },
         "attributes": {
-          "value": {
-            "selector": "",
-            "attribute": "data-option"
-          }
+          "value": [
+            {
+              "selector": "",
+              "attribute": "data-option"
+            },
+            {
+              "selector": "",
+              "attribute": "value"
+            }
+          ]
         }
       }
+    },
+    "showWhen": {
+      "periods": ".ds-select"
+    },
+    "select": {
+      "period": {
+        "list": "periods",
+        "field": "label",
+        "attribute": "aria-selected"
+      }
+    }
+  },
+  "actions": {
+    "period": {
+      "selector": "[role=option]",
+      "local": true,
+      "description": "The person chose a reporting period. values.value is that period's value; the host loads the data for it."
+    },
+    "filters": {
+      "selector": "[data-filter-action]",
+      "description": "The person asked for filters. The host opens its own filter controls."
+    },
+    "settings": {
+      "selector": "[data-settings-action]",
+      "description": "The person asked for chart settings. The host opens them."
     }
   }
 }

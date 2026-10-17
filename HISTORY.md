@@ -1,3 +1,42 @@
+# Syntari — version 0.3.0
+
+October 16, 2026. Version 0.2.3 was prepared but never published; its changes ship here.
+
+- Added contract mode. `mount(slug, target, { props })` validates props against the component contract and renders one configured instance, the same contract Screen IR uses. Invalid props reject with a TypeError that carries diagnostics.
+- Added Screen IR actions. Contracts declare what a person can ask for; the renderer reports each request through `onActionRequest` and a bubbling `syntari:action` event, with the node `id`, form `values`, and list `index`. Declared actions never run demo behaviour and never perform anything.
+- Added render contracts for Prompt input, Agent message, Tool result, Citations, File diff, Agent activity, Agent questions, Chat composer, and Button: 31 components now render from Screen IR. Tool approval, Approval card, and Streaming response declare their actions. Every contract ships a sample that validates.
+- Added `syntari mcp`, a read-only MCP server over stdio with tools to list, search, and read components and patterns, read the agent policy, and validate Screen IR. It has no dependencies and is tested with the official MCP client.
+- Published `llms.txt`, `llms-full.txt`, `README.md`, and `AGENT-GUIDE.md` on the site, generated from the same registry as the package.
+- Contract roots now discard every other branch of the example, as the schema documents. Demo small print no longer appears in contract instances.
+- Added `local` actions for view controls. Filter bar, Chart toolbar, Metric strip, and Transport controls declare actions: a period, a comparison, a view, or a measure updates the control and reports its new `value`, `checked`, or `pressed` state, and Play, Step, and Reset wait for the host. Actions can listen for `change`.
+- An optional prop that a spec leaves out now empties its slot instead of showing the template's example copy. Contracts can hide chrome that only means something beside a value (`ir.showWhen`), such as the Process ledger total.
+- Model-authored icon names can no longer inject markup. A malformed icon name is an `invalid-icon` error, a name the runtime does not ship is an `unknown-icon` warning, and `SyntariIcon()` falls back to a safe icon. The registry index publishes the icon vocabulary as `icons`, and MCP `get_component` returns it for components with icon props.
+- Button takes `consequential`, so one instance, such as Delete, can mark its requests consequential. Streaming response takes `streaming`, which enables Stop and disables Generate. Agent questions names its option group with the question.
+- Comparison table requires `optionA` and `optionB`: a column of values without a name is not readable.
+- Contract buttons outside a form no longer submit a surrounding form. Renderer warnings now carry their own message instead of their path, and a reset instance reports its diagnostics once.
+- The MCP server answers JSON-RPC batches, malformed requests, and missing params with the specified error codes instead of failing.
+- Removed the Transport controls keyboard hint: no shortcut handler existed. A dropdown shows the option's label, not its value, and the Chart toolbar view toggle keeps its label while `aria-pressed` carries the state.
+- Charts show the agent's data, never the template's. Area chart draws its points, axis, grid, and labels from `points` on a percentage scale that fits them, with each label under its point; Metric & sparkline values stay the agent's text instead of rolling back to the example figure; Chart bars render outside the Syntari site, where they used to collapse to zero width.
+- Importing the runtime no longer changes the host page. Its styles and design tokens are scoped to Syntari markup (`.syntari-component` or `[data-syntari-root]`) with the same specificity, so a host's own `--accent` or `--text` never changes; the outermost Syntari element paints its canvas, so the dark theme stays readable on any page. Its listeners and queries ignore everything else, so a host form, button, menu, dialog, keyboard shortcut, or radio group keeps its own behaviour and markup. The Ctrl+K command palette only opens on Syntari's own pages and screens. The runtime now loads `ir.css` itself.
+- Validation is linear in the size of the spec, checks the node budget before the schema, and reports schema problems at their own path. The browser and Node now agree: unknown keys and a non-text layout are errors everywhere. Required text and labels cannot be empty (`empty-value`), a component with actions and no `id` raises `missing-node-id`, and a table row that does not match its columns raises `row-length`.
+- Table renders one cell for each column instead of the template's three. An attribute whose prop is unset is removed instead of keeping the template's label; Area chart's label falls back to the title, and Chart bars requires `chartLabel`, the summary a screen reader hears instead of the bars. Filter bar marks the period whose label matches `period` as selected (`ir.select`), and Metric strip marks the active measure `aria-pressed`.
+- A required list cannot be empty (`empty-list`), a label cannot be empty, and a `period` that matches no option raises `no-matching-item`. Unresolved nodes still count toward the budget, and the browser validator checks slots, provenance, region children, and screen meta like the schema.
+- `syntari validate --spec` uses the same validator as the Node API and MCP, and `syntari list` and `search` report `renderable`. `llms-full.txt` lists the types and limits of list item fields. The package ships types for `syntari-ui/runtime/syntari.js` and `syntari-ui/runtime/ir.js`. Range and number controls report numeric values.
+- The pattern screens give every actionable node an id.
+- Agent questions submits its choice as `choice` instead of `focus`. The component index marks each entry `renderable`.
+- Published the six AI behaviour patterns (clarification, uncertainty, delegation, recovery, memory, and generation) as a System guide that links each pattern to the components that carry it. The former standalone page redirects there, and the pattern registry points agents to it.
+- Raised light-theme text contrast to WCAG AA. Tertiary labels, success text, danger text, and banner details now reach 4.5:1; all 131 components in their default state, the homepage, Renderer, and System pass an automated contrast check in both themes.
+- Fixed System clearing the first row of components whose rows carry a `data-status` attribute, such as Simple data table.
+- Pointed workspace preview links at System instead of the retired gallery.
+- Moved the prototype workspaces (`Jev/`, `tmp/`, `new/`, `morrow/`, `art-atlas/`) to the `archive/prototypes` branch. Their public URLs redirect to the production surfaces.
+- Disclosed the site's Kobbe analytics on the homepage and in the README. A test keeps analytics out of the npm package.
+- Unified the product sentence and component count across the README, package metadata, site, and coverage notes, with a test that keeps them in step with the registry.
+- Ported component behaviour checks from the retired gallery to System routes, and CI now runs every browser suite.
+- Synced the committed registry index with current component descriptions.
+- The release workflow skips versions that are already on npm, and `npm publish` always builds and tests first.
+
+---
+
 # Syntari UI — version 0.2.2
 
 September 26, 2026.
@@ -65,7 +104,7 @@ A working, framework-independent component gallery with 38 component families, l
 
 From this directory, run `python3 -m http.server 4318 --bind 127.0.0.1`, then open http://127.0.0.1:4318.
 
-No install or build is needed. Font files are local. There are no analytics, API calls, or external runtime dependencies.
+No install or build is needed. Font files are local. There are no analytics, API calls, or external runtime dependencies. (Since September 22, 2026 the documentation site loads Kobbe analytics; the npm package and installed components still contain none.)
 
 ## Files
 

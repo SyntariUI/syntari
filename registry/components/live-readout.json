@@ -3,6 +3,22 @@
   "id": "live-readout",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Render run",
+      "state": "Running",
+      "values": [
+        {
+          "label": "Generation",
+          "value": "27"
+        },
+        {
+          "label": "Nodes",
+          "value": "1,204"
+        }
+      ]
+    }
+  },
   "source": "components/live-readout/",
   "name": "Live readout",
   "category": "Feedback & status",

@@ -30,7 +30,7 @@ async function loadGallery(){
   for(const slug of slugs){
     const c=catalog.find(item=>item.slug===slug);if(!c)continue;
     const article=document.createElement('article');article.className='home-card';
-    const preview=document.createElement('div');preview.className='home-card-stage';preview.dataset.homePreview=slug;preview.setAttribute('aria-label',`${c.name} live preview`);
+    const preview=document.createElement('div');preview.className='home-card-stage';preview.dataset.homePreview=slug;preview.setAttribute('role','group');preview.setAttribute('aria-label',`${c.name} live preview`);
     const info=document.createElement('div');info.className='home-card-info';const link=document.createElement('a');link.href=`/system/#${slug}`;link.append(document.createTextNode(c.name));const arrow=document.createElement('span');arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');link.append(arrow);
     info.append(link);article.append(preview,info);grid.append(article);observer.observe(preview);
   }

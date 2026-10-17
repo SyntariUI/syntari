@@ -3,6 +3,14 @@
   "id": "transport-controls",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "speed": 12,
+      "steps": 60,
+      "playing": false,
+      "label": "Paused at step 12 of 60"
+    }
+  },
   "source": "components/transport-controls/",
   "name": "Transport controls",
   "category": "Action",
@@ -66,22 +74,30 @@
     "speed": {
       "type": "number",
       "minimum": 1,
-      "maximum": 30
+      "maximum": 30,
+      "default": 8
     },
     "steps": {
       "type": "number",
       "minimum": 4,
-      "maximum": 200
+      "maximum": 200,
+      "default": 40
     },
     "label": {
       "type": "string",
       "maxLength": 60
+    },
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the host is running it. Sets the Play button's pressed state."
     }
   },
   "ir": {
     "node": ".transport",
     "text": {
-      "label": "[data-transport-status]"
+      "label": "[data-transport-status]",
+      "speed": "[data-transport-number]"
     },
     "attributes": {
       "steps": {
@@ -91,7 +107,31 @@
       "speed": {
         "selector": "[data-transport-speed]",
         "attribute": "value"
+      },
+      "playing": {
+        "selector": "[data-transport-play]",
+        "attribute": "aria-pressed"
       }
+    }
+  },
+  "actions": {
+    "play": {
+      "selector": "[data-transport-play]",
+      "description": "The person asked to start or pause. The host runs or pauses the work, then renders playing and label."
+    },
+    "step": {
+      "selector": "[data-transport-step]",
+      "description": "The person asked to advance one step."
+    },
+    "reset": {
+      "selector": "[data-transport-reset]",
+      "description": "The person asked to return to the first step."
+    },
+    "speed": {
+      "selector": "[data-transport-speed]",
+      "event": "change",
+      "local": true,
+      "description": "The person set a new speed. values.value is frames per second."
     }
   }
 }

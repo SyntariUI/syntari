@@ -3,6 +3,21 @@
   "id": "process-ledger",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "total": "3.1ms",
+      "budget": "under budget",
+      "stages": [
+        {
+          "title": "Resolve",
+          "detail": "Match the intent",
+          "time": "0.3ms",
+          "mark": "check",
+          "state": "done"
+        }
+      ]
+    }
+  },
   "source": "components/process-ledger/",
   "name": "Process ledger",
   "category": "Data display",
@@ -134,6 +149,9 @@
           }
         }
       }
+    },
+    "showWhen": {
+      "total": ".ledger-total"
     }
   }
 }

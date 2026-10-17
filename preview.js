@@ -1,4 +1,4 @@
-import { initialize, setTheme } from './syntari.js';
+import { initialize, setTheme, slugify } from './syntari.js';
 const root = document.querySelector('#screens');
 const themeButton = document.querySelector('[data-preview-theme]');
 function theme(value) {
@@ -24,7 +24,7 @@ try {
   themeButton.addEventListener('click', () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
   window.addEventListener('syntari:navigate', event => {
     if (event.detail.view === 'screens') render(event.detail.screen, true);
-    else if (event.detail.component) location.href = new URL(`gallery.html?q=${encodeURIComponent(event.detail.component)}`, import.meta.url);
+    else if (event.detail.component) location.href = `/system/#${slugify(event.detail.component)}`;
   });
 } catch (error) {
   root.textContent = 'The workspace could not load. Refresh to try again.';

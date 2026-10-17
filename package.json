@@ -1,13 +1,13 @@
 {
   "name": "syntari-ui",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": false,
-  "description": "Syntari design system runtime, deterministic installer CLI, and machine-readable component registry for agents.",
+  "description": "A design system for people and agents. 131 components, a machine-readable registry, and a renderer that validates what agents compose.",
   "homepage": "https://syntariui.giovanitier.com/",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SyntariUI/syntari.git"
+    "url": "git+https://github.com/SyntariUI/syntari.git"
   },
   "keywords": [
     "design-system",
@@ -24,15 +24,18 @@
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test",
+    "prepublishOnly": "npm test",
     "figma:extract": "node scripts/extract-figma.mjs",
     "deploy": "wrangler deploy",
-    "test:browser": "npm run build && playwright test checks/ir.spec.mjs checks/intent.spec.mjs checks/installer.spec.mjs"
+    "test:browser": "npm run build && playwright test"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.30.1",
     "@playwright/test": "^1.55.0",
+    "typescript": "5.6.3",
     "wrangler": "4.138.0"
   },
   "bin": {
@@ -41,20 +44,35 @@
   "files": [
     "cli.mjs",
     "agent.mjs",
+    "agent.d.ts",
+    "mcp.mjs",
     "registry-validator.mjs",
     "kit/",
     "README.md",
     "LICENSE",
-    "AGENT-GUIDE.md"
+    "AGENT-GUIDE.md",
+    "types"
   ],
   "dependencies": {
     "ajv": "^8.20.0"
   },
   "type": "module",
   "main": "./agent.mjs",
+  "types": "./agent.d.ts",
   "exports": {
-    ".": "./agent.mjs",
+    ".": {
+      "types": "./agent.d.ts",
+      "default": "./agent.mjs"
+    },
     "./registry/*": "./kit/runtime/registry/*",
+    "./runtime/syntari.js": {
+      "types": "./types/syntari.d.ts",
+      "default": "./kit/runtime/syntari.js"
+    },
+    "./runtime/ir.js": {
+      "types": "./types/ir.d.ts",
+      "default": "./kit/runtime/ir.js"
+    },
     "./runtime/*": "./kit/runtime/*",
     "./package.json": "./package.json"
   }

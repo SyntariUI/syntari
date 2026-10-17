@@ -161,7 +161,18 @@
         "attributes": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/attributeBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/attributeBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/attributeBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "list": {
@@ -178,6 +189,45 @@
                 }
               }
             ]
+          }
+        },
+        "remove": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Selectors for demo-only parts removed from a contract instance."
+        },
+        "showWhen": {
+          "description": "Prop name to an element that only means something beside that value, such as a Total label or a picker without options. The element is hidden while the prop is unset, empty, or an empty list.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/selectorMap"
+            }
+          ]
+        },
+        "select": {
+          "type": "object",
+          "description": "Prop name to the list item it selects: the item whose field equals the prop gets the attribute, such as aria-selected.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "list",
+              "field",
+              "attribute"
+            ],
+            "properties": {
+              "list": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "attribute": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
           }
         }
       },
@@ -333,6 +383,26 @@
       "items": {
         "type": "string"
       }
+    },
+    "actions": {
+      "type": "object",
+      "description": "Things a person can ask for from this component. In contract mode (Screen IR or mount with props) a declared action never runs demo behaviour: it fires a syntari:action event and the host decides what happens.",
+      "additionalProperties": {
+        "$ref": "#/definitions/action"
+      }
+    },
+    "sample": {
+      "type": "object",
+      "description": "A complete, valid props object. Agents can start from it; tests render it.",
+      "required": [
+        "props"
+      ],
+      "properties": {
+        "props": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {
@@ -392,7 +462,18 @@
       "type": "object",
       "description": "Prop name to CSS selector, resolved inside the instance root or the list item.",
       "additionalProperties": {
-        "type": "string"
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        ]
       }
     },
     "variantBinding": {
@@ -443,9 +524,18 @@
         },
         "attribute": {
           "type": "string"
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "Write the opposite of the prop value, such as disabled when streaming is false."
+        },
+        "fallback": {
+          "type": "string",
+          "description": "Prop whose value is used when this prop is unset, such as a chart label that falls back to the title."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "Writes a prop into an attribute. When the prop and its fallback are unset, the template attribute is removed."
     },
     "seriesBinding": {
       "type": "object",
@@ -491,15 +581,52 @@
           }
         },
         "scale": {
-          "type": "object",
-          "properties": {
-            "min": {
-              "type": "number"
+          "description": "Fixed bounds, or \"auto\" for round bounds that fit the data.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
             },
-            "max": {
-              "type": "number"
+            {
+              "const": "auto"
             }
-          }
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "Field of each point that carries its label. Defaults to label."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Suffix shown after each value, such as %."
+        },
+        "markers": {
+          "type": "string",
+          "description": "Point marker inside the SVG. The first is cloned for every point; the demo markers are removed."
+        },
+        "markerText": {
+          "type": "string",
+          "description": "Text inside a marker that shows its label and value."
+        },
+        "grid": {
+          "type": "string",
+          "description": "Grid lines inside the SVG, top to bottom, placed on the axis ticks."
+        },
+        "axis": {
+          "type": "string",
+          "description": "Axis labels, top to bottom, written from the scale."
+        },
+        "ticks": {
+          "type": "string",
+          "description": "Labels along the series, written from evenly spaced points."
         }
       },
       "additionalProperties": false
@@ -542,7 +669,18 @@
         "attributes": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/attributeBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/attributeBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/attributeBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "style": {
@@ -560,6 +698,48 @@
         },
         "cells": {
           "type": "string"
+        },
+        "cellCount": {
+          "type": "string",
+          "description": "Array prop whose length sets the number of cells in each item, such as table columns."
+        }
+      },
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "selector"
+      ],
+      "properties": {
+        "selector": {
+          "type": "string",
+          "description": "Element inside the instance that carries the action."
+        },
+        "event": {
+          "enum": [
+            "click",
+            "submit",
+            "change"
+          ],
+          "default": "click",
+          "description": "submit sends the form's named values; change sends a checkbox's checked or a field's value."
+        },
+        "description": {
+          "type": "string"
+        },
+        "consequential": {
+          "type": "boolean",
+          "description": "True when acting on it changes something outside the screen. The host must authorise it."
+        },
+        "consequentialProp": {
+          "type": "string",
+          "description": "Boolean prop that marks this instance's requests consequential, such as a Delete button."
+        },
+        "local": {
+          "type": "boolean",
+          "default": false,
+          "description": "The component also updates itself, as a view control does. The request reports its new state (value, checked, or pressed) so the host can update the data."
         }
       },
       "additionalProperties": false

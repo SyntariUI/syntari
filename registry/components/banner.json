@@ -3,6 +3,14 @@
   "id": "banner",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "message": "Build 4281 passed",
+      "detail": "128 tests in 42 seconds.",
+      "tone": "success",
+      "icon": "circlecheck"
+    }
+  },
   "source": "components/banner/",
   "name": "Banner",
   "category": "Feedback & status",
@@ -86,7 +94,7 @@
       "type": "string",
       "default": "circlecheck",
       "maxLength": 24,
-      "description": "Lucide icon name."
+      "description": "Syntari icon name. The registry index lists every name as icons."
     }
   },
   "ir": {

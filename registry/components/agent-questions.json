@@ -1,0 +1,200 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "agent-questions",
+  "name": "Agent questions",
+  "version": "0.3.0",
+  "category": "Agents",
+  "status": "authored",
+  "purpose": "Ask the person one focused question with a small set of answers, plus an optional note.",
+  "description": "A single-choice question with a free-text note. Submitting sends the choice and note to the host.",
+  "intents": [
+    "clarify",
+    "ask",
+    "choose"
+  ],
+  "variants": {},
+  "states": [
+    "unanswered",
+    "answered"
+  ],
+  "anatomy": [
+    "root",
+    "question",
+    "options",
+    "option",
+    "noteField",
+    "status",
+    "submitAction"
+  ],
+  "accessibility": {
+    "role": "form",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Space",
+      "Enter"
+    ],
+    "accessibleNameRequired": true,
+    "focusTrap": false,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "one-question-at-a-time",
+    "options-resolve-the-ambiguity",
+    "note-is-optional"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card",
+    "space.4",
+    "motion.duration.medium",
+    "shadow.card",
+    "color.action.primary"
+  ],
+  "compatibleWith": [
+    "agent-message",
+    "prompt-input"
+  ],
+  "avoidWhen": [
+    "open-ended-request",
+    "consequential-approval"
+  ],
+  "agentEvents": [
+    "ClarificationRequested",
+    "ClarificationAnswered"
+  ],
+  "semantics": {
+    "intent": [
+      "clarification"
+    ],
+    "interaction": "choose",
+    "context": [
+      "agent"
+    ],
+    "risk": "low"
+  },
+  "examples": {
+    "good": [
+      "Which audience should the summary target? Board, team, or customers."
+    ],
+    "bad": [
+      "Ten questions in one card."
+    ],
+    "boundary": [
+      "Consent to an external action belongs in tool-approval."
+    ]
+  },
+  "props": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "fields": {
+          "value": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "selected": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "noteLabel": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Anything to preserve?"
+    },
+    "notePlaceholder": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "Optional details"
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 60,
+      "default": ""
+    },
+    "submitLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Send answer"
+    }
+  },
+  "ir": {
+    "node": "[data-extra-kind=questions]",
+    "text": {
+      "question": [
+        "h3",
+        "legend"
+      ],
+      "status": "[data-question-result]"
+    },
+    "lead": {
+      "noteLabel": "label.field",
+      "submitLabel": "button[type=submit]"
+    },
+    "attributes": {
+      "notePlaceholder": {
+        "selector": "textarea",
+        "attribute": "placeholder"
+      }
+    },
+    "list": {
+      "options": {
+        "container": "fieldset",
+        "item": "label.choice",
+        "lead": {
+          "value": ""
+        },
+        "attributes": {
+          "value": {
+            "selector": "input",
+            "attribute": "value"
+          },
+          "selected": {
+            "selector": "input",
+            "attribute": "checked"
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "submit": {
+      "selector": "form",
+      "event": "submit",
+      "description": "The person answered. values.choice holds the chosen option; values.notes holds the note."
+    }
+  },
+  "sample": {
+    "props": {
+      "question": "Who is this summary for?",
+      "options": [
+        {
+          "value": "Board",
+          "selected": true
+        },
+        {
+          "value": "Team"
+        },
+        {
+          "value": "Customers"
+        }
+      ]
+    }
+  },
+  "source": "components/agent-questions/"
+}

@@ -7,16 +7,52 @@
   "status": "authored",
   "purpose": "Require explicit human consent before an agent runs a consequential or external operation.",
   "description": "Surfaces what the agent wants to do, the consequence, the affected scope, and explicit approve or reject actions.",
-  "intents": ["approve", "reject", "confirm", "authorize", "cancel"],
+  "intents": [
+    "approve",
+    "reject",
+    "confirm",
+    "authorize",
+    "cancel"
+  ],
   "variants": {
-    "risk": ["moderate", "high", "critical"],
-    "reversibility": ["reversible", "partially-reversible", "irreversible"]
+    "risk": [
+      "moderate",
+      "high",
+      "critical"
+    ],
+    "reversibility": [
+      "reversible",
+      "partially-reversible",
+      "irreversible"
+    ]
   },
-  "states": ["idle", "pending", "approved", "rejected", "expired", "blocked"],
-  "anatomy": ["root", "title", "actionDescription", "consequence", "scope", "affectedResources", "approveAction", "rejectAction", "reversibleStatus"],
+  "states": [
+    "idle",
+    "pending",
+    "approved",
+    "rejected",
+    "expired",
+    "blocked"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "actionDescription",
+    "consequence",
+    "scope",
+    "affectedResources",
+    "approveAction",
+    "rejectAction",
+    "reversibleStatus"
+  ],
   "accessibility": {
     "role": "region",
-    "keyboard": ["Tab", "Enter", "Space", "Escape"],
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space",
+      "Escape"
+    ],
     "accessibleNameRequired": true,
     "focusTrap": false,
     "liveRegion": "polite"
@@ -40,33 +76,82 @@
     "motion.duration.medium",
     "shadow.card"
   ],
-  "compatibleWith": ["agent-activity", "tool-result", "file-diff", "agent-message", "confirmation-dialog"],
-  "avoidWhen": ["low-risk-reversible-action", "background-local-read"],
-  "agentEvents": ["ToolRequested", "ApprovalRequired", "ToolStarted", "ToolCompleted", "ToolFailed"],
+  "compatibleWith": [
+    "agent-activity",
+    "tool-result",
+    "file-diff",
+    "agent-message",
+    "confirmation-dialog"
+  ],
+  "avoidWhen": [
+    "low-risk-reversible-action",
+    "background-local-read"
+  ],
+  "agentEvents": [
+    "ToolRequested",
+    "ApprovalRequired",
+    "ToolStarted",
+    "ToolCompleted",
+    "ToolFailed"
+  ],
   "composition": {
-    "requires": ["actionDescription", "consequence", "scope", "approveAction", "rejectAction"],
-    "mayContain": ["text", "badge", "code", "diff"],
-    "forbidden": ["dialog", "bottom-sheet"],
+    "requires": [
+      "actionDescription",
+      "consequence",
+      "scope",
+      "approveAction",
+      "rejectAction"
+    ],
+    "mayContain": [
+      "text",
+      "badge",
+      "code",
+      "diff"
+    ],
+    "forbidden": [
+      "dialog",
+      "bottom-sheet"
+    ],
     "actions": {
       "primaryMax": 1,
       "destructiveRequiresConfirmation": true
     }
   },
   "semantics": {
-    "intent": ["confirmation", "authorization"],
-    "density": ["comfortable"],
+    "intent": [
+      "confirmation",
+      "authorization"
+    ],
+    "density": [
+      "comfortable"
+    ],
     "attention": "high",
     "risk": "consequential",
     "interaction": "approval_required",
-    "action": ["modify", "delete", "publish", "send", "execute", "purchase"],
+    "action": [
+      "modify",
+      "delete",
+      "publish",
+      "send",
+      "execute",
+      "purchase"
+    ],
     "reversibility": "partially_reversible",
     "ownership": "external",
-    "context": ["agent"]
+    "context": [
+      "agent"
+    ]
   },
   "examples": {
-    "good": ["A destructive external action shows a tool-approval card before the agent proceeds."],
-    "bad": ["A low-risk local read blocks the user behind a tool-approval card."],
-    "boundary": ["A consequential but reversible action may use inline confirmation instead of tool approval."]
+    "good": [
+      "A destructive external action shows a tool-approval card before the agent proceeds."
+    ],
+    "bad": [
+      "A low-risk local read blocks the user behind a tool-approval card."
+    ],
+    "boundary": [
+      "A consequential but reversible action may use inline confirmation instead of tool approval."
+    ]
   },
   "props": {
     "title": {
@@ -88,7 +173,9 @@
     },
     "hint": {
       "type": "string",
-      "maxLength": 120
+      "maxLength": 120,
+      "default": "",
+      "description": "Small print under the request. Empty by default."
     },
     "icon": {
       "type": "string",
@@ -120,6 +207,24 @@
     "text": {
       "question": ".agent-surface > p",
       "hint": ".agent-surface > p.hint"
+    }
+  },
+  "actions": {
+    "approve": {
+      "selector": "[data-agent-action=approve]",
+      "consequential": true,
+      "description": "The person approved the request. This is consent to ask for, not authorisation: the host still checks scope and policy before running anything."
+    },
+    "reject": {
+      "selector": "[data-agent-action=reject]",
+      "description": "The person declined. Do not run the tool."
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Run the billing migration?",
+      "question": "Apply three schema changes to the billing database in production.",
+      "scope": "billing-production · write access"
     }
   },
   "source": "components/tool-approval/"

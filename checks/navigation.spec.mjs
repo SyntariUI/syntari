@@ -98,11 +98,11 @@ test('navigation fits phones and tablets, and the catalog exposes both layouts',
   }
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('http://127.0.0.1:4398/components/app-shell/');
-  const example=page.locator('#live-example');
+  const example=page.locator('[data-component-mount]');
   await example.getByRole('button',{name:'Topbar',exact:true}).click();
   await example.getByRole('link',{name:'People',exact:true}).click();
   await expect(example.getByRole('heading',{name:'People',exact:true})).toBeVisible();
   await expect(page).toHaveURL(/components\/app-shell\//);
-  await page.getByRole('button',{name:'Reset and replay preview'}).click();
+  await page.locator('[data-states]').getByRole('button',{name:'Default',exact:true}).click();
   await expect(example.locator('[data-syntari-shell]')).toHaveAttribute('data-layout','sidebar');
 });

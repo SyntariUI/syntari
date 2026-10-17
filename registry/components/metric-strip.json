@@ -3,6 +3,26 @@
   "id": "metric-strip",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "items": [
+        {
+          "label": "Mention rate",
+          "icon": "eye",
+          "value": "45.4%",
+          "delta": "3.3 pp",
+          "direction": "up",
+          "meaning": "of answers"
+        },
+        {
+          "label": "Leads",
+          "icon": "star",
+          "value": "2",
+          "direction": "down"
+        }
+      ]
+    }
+  },
   "source": "components/metric-strip/",
   "name": "Metric strip",
   "category": "Data display",
@@ -135,8 +155,21 @@
         },
         "class": {
           "active": "active"
+        },
+        "attributes": {
+          "active": {
+            "selector": "",
+            "attribute": "aria-pressed"
+          }
         }
       }
+    }
+  },
+  "actions": {
+    "select": {
+      "selector": "[data-metric]",
+      "local": true,
+      "description": "The person chose the measure to chart. index says which; the host charts it."
     }
   }
 }

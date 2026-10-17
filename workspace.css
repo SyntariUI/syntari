@@ -72,8 +72,6 @@
   .sys-preview-controls{left:8px;right:8px;gap:6px}
 }
 
-/* Horizontal comparison rows must fill their grid track. */
-:is(.renderer-page,.sys-body) .chart-bars-modern .column-pair{justify-content:stretch}
 /* Implementation reference belongs beside the live component. */
 .sys-workspace{--sys-drawer:min(540px,48vw)}
 .sys-workspace:is([data-panel=usage],[data-panel=api],[data-panel=guide]){--panel-offset:var(--sys-drawer)}

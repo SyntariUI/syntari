@@ -3,6 +3,19 @@
   "id": "headline-metric",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "metrics": [
+        {
+          "label": "Lost questions",
+          "value": "12",
+          "total": "/ 125",
+          "delta": "50.0%",
+          "direction": "down"
+        }
+      ]
+    }
+  },
   "source": "components/headline-metric/",
   "name": "Headline metric",
   "category": "Data display",

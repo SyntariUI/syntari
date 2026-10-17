@@ -3,6 +3,23 @@
   "id": "area-chart",
   "version": "1.0.0",
   "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Mention rate",
+      "note": "Last 30 days",
+      "chartLabel": "Mention rate",
+      "points": [
+        {
+          "label": "D1",
+          "value": 40
+        },
+        {
+          "label": "D2",
+          "value": 55
+        }
+      ]
+    }
+  },
   "source": "components/area-chart/",
   "name": "Area chart",
   "category": "Data display",
@@ -65,7 +82,8 @@
     },
     "chartLabel": {
       "type": "string",
-      "maxLength": 160
+      "maxLength": 160,
+      "description": "Accessible name for the plot. Defaults to the title."
     },
     "points": {
       "type": "array",
@@ -83,10 +101,12 @@
             "type": "number",
             "minimum": 0,
             "maximum": 100,
-            "required": true
+            "required": true,
+            "description": "A percentage from 0 to 100."
           }
         }
-      }
+      },
+      "description": "Percentages over time, oldest first. Each value is shown with a % sign."
     }
   },
   "ir": {
@@ -98,7 +118,8 @@
     "attributes": {
       "chartLabel": {
         "selector": ".plot",
-        "attribute": "aria-label"
+        "attribute": "aria-label",
+        "fallback": "title"
       }
     },
     "series": {
@@ -106,7 +127,15 @@
         "selector": ".chart-svg",
         "line": ".area-line",
         "fill": ".area-fill",
-        "value": "value"
+        "value": "value",
+        "label": "label",
+        "unit": "%",
+        "scale": "auto",
+        "markers": ".area-point",
+        "markerText": ".chart-tooltip text",
+        "grid": ".chart-grid line",
+        "axis": ".plot-axis span",
+        "ticks": ".plot-labels span"
       }
     }
   }

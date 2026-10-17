@@ -3,17 +3,6 @@
   "$id": "https://syntariui.giovanitier.com/registry/schema/sui.schema.json",
   "title": "SyntariUI",
   "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements.",
-  "oneOf": [
-    {
-      "$ref": "#/definitions/screen"
-    },
-    {
-      "$ref": "#/definitions/node"
-    },
-    {
-      "$ref": "#/definitions/region"
-    }
-  ],
   "definitions": {
     "node": {
       "type": "object",
@@ -25,6 +14,11 @@
           "type": "string",
           "pattern": "^syntari\\.[a-z0-9]+(-[a-z0-9]+)*$",
           "description": "Registry component id in syntari.<slug> form. Referential checks happen at the boundary against registry/index.json."
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Action events carry it so the host can match a request to its own state."
         },
         "slot": {
           "type": "string"
@@ -73,14 +67,23 @@
     "children": {
       "type": "array",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/definitions/node"
-          },
-          {
-            "$ref": "#/definitions/region"
+        "if": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "region"
+            }
           }
-        ]
+        },
+        "then": {
+          "$ref": "#/definitions/region"
+        },
+        "else": {
+          "$ref": "#/definitions/node"
+        }
       }
     },
     "screen": {
@@ -133,6 +136,39 @@
         }
       },
       "additionalProperties": false
+    }
+  },
+  "if": {
+    "type": "object",
+    "required": [
+      "type"
+    ],
+    "properties": {
+      "type": {
+        "const": "screen"
+      }
+    }
+  },
+  "then": {
+    "$ref": "#/definitions/screen"
+  },
+  "else": {
+    "if": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "region"
+        }
+      }
+    },
+    "then": {
+      "$ref": "#/definitions/region"
+    },
+    "else": {
+      "$ref": "#/definitions/node"
     }
   }
 }
