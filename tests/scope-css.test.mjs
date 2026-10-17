@@ -12,8 +12,11 @@ test('runtime CSS applies only to Syntari markup, with the same specificity', ()
   assert.equal(scopeCss('@media(max-width:700px){main{padding:0}}'), `@media(max-width:700px){${S} main,main${S}{padding:0}}`);
 });
 
-test('theme context and keyframes stay global; body styles only Syntari pages', () => {
-  assert.equal(scopeCss(':root{--a:1}html[data-theme="dark"]{color-scheme:dark}'), ':root{--a:1}html[data-theme="dark"]{color-scheme:dark}');
+test('tokens land on the outermost Syntari element; keyframes stay global; body and html style only Syntari pages', () => {
+  const TOP = `${S}:not(${S} *)`;
+  assert.equal(scopeCss(':root{--a:1}'), `${TOP}{--a:1}`);
+  assert.equal(scopeCss('[data-theme="dark"]{--a:2}'), `[data-theme="dark"] ${TOP},[data-theme="dark"]${TOP}{--a:2}`);
+  assert.equal(scopeCss('html{scrollbar-gutter:stable}'), `html${S}{scrollbar-gutter:stable}`);
   assert.equal(scopeCss('[data-theme=dark] .code{color:red}'), `[data-theme=dark] ${S} .code,[data-theme=dark] .code${S}{color:red}`);
   assert.equal(scopeCss('body{margin:0}'), ':where(html[data-syntari-root]) body{margin:0}');
   assert.equal(scopeCss('@keyframes spin{from{opacity:0}to{opacity:1}}'), '@keyframes spin{from{opacity:0}to{opacity:1}}');

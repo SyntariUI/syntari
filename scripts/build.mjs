@@ -44,8 +44,8 @@ const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
 for(const file of runtime)await copyFile(file,'kit/runtime/'+file);
-/* The runtime styles apply only inside Syntari markup, so a host page keeps its own look. Tokens stay global. */
-const scopedStyles=runtime.filter(file=>file.endsWith('.css')&&file!=='tokens.css');
+/* The runtime styles and tokens apply only inside Syntari markup, so a host page keeps its own look. */
+const scopedStyles=runtime.filter(file=>file.endsWith('.css'));
 for(const file of scopedStyles)await writeFile('kit/runtime/'+file,(file==='styles.css'?ROOT_TYPOGRAPHY:'')+scopeCss(await readFile(file,'utf8')));
 await cp('assets','kit/runtime/assets',{recursive:true});
 await cp('registry','kit/runtime/registry',{recursive:true});

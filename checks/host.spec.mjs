@@ -78,7 +78,8 @@ test('a host page keeps its markup, styles, shortcuts, dialogs, and menus', asyn
     document.querySelector('#app').insertAdjacentHTML('beforebegin', `<section id="hostside"><h1>Host title</h1><p>Host text <a href="#">link</a></p><button id="plain">Plain</button>
       <div class="selectable-cards"><input type="radio" name="plan" value="a"><input type="radio" name="plan" value="b"></div>
       <div class="dropdown"><button id="menu" data-menu-toggle aria-expanded="true">Menu</button><div class="dropdown-panel">Open</div></div>
-      <span class="sidebar">Host sidebar</span><textarea id="editor"></textarea><dialog id="hostdialog"><p>Host dialog</p></dialog></section>`);
+      <span class="sidebar">Host sidebar</span><textarea id="editor"></textarea><dialog id="hostdialog"><p>Host dialog</p></dialog>
+      <style>:root{--accent:rgb(200,0,0);--text:rgb(0,90,0)}#plain{color:var(--accent);border:1px solid var(--text)}</style></section>`);
     window.snapshot = () => ({
       markup: document.querySelector('#hostside').outerHTML,
       styles: ['h1', 'p', 'a', '#plain', '.sidebar', 'body'].map(selector => { const style = getComputedStyle(document.querySelector(selector)); return [selector, style.fontFamily, style.fontSize, style.margin, style.color, style.position, style.border].join('|'); })
@@ -88,7 +89,11 @@ test('a host page keeps its markup, styles, shortcuts, dialogs, and menus', asyn
   await page.evaluate(async () => {
     const { mount } = await import('/syntari.js');
     await mount('tool-approval', '#app', { props: { title: 'Run it?', question: 'Apply the change.', scope: 'billing' } });
+    await mount('prompt-input', '#app', { props: { label: 'Ask' } });
   });
+  /* The command palette belongs to Syntari's own pages and screens, not to a component in someone else's app. */
+  await page.locator('#app textarea').first().press('Control+k');
+  expect(await page.evaluate(() => document.querySelector('#starter-dialog')?.open ?? false)).toBe(false);
   await page.click('#plain');
   await page.locator('#editor').press('Control+k');
   expect(await page.evaluate(() => document.querySelector('#starter-dialog')?.open ?? false)).toBe(false);
@@ -97,4 +102,19 @@ test('a host page keeps its markup, styles, shortcuts, dialogs, and menus', asyn
   await expect(page.locator('#hostdialog')).toHaveAttribute('open');
   await page.evaluate(() => document.querySelector('#hostdialog').close());
   expect(await page.evaluate(() => window.snapshot())).toEqual(await page.evaluate(() => window.before));
+});
+
+test('in a host page the dark theme paints its own canvas', async ({ page }) => {
+  await host(page);
+  const colors = await page.evaluate(async () => {
+    const { setTheme } = await import('/syntari.js');
+    const { render } = await import('/ir.js');
+    setTheme('dark');
+    await render({ type: 'screen', children: [{ component: 'syntari.metadata-list', props: { items: [{ label: 'Owner', value: 'Ada' }] } }] }, '#app');
+    const root = document.querySelector('#app .ir-screen');
+    return { background: getComputedStyle(root).backgroundColor, text: getComputedStyle(root.querySelector('dd') ?? root).color, body: getComputedStyle(document.body).backgroundColor };
+  });
+  expect(colors.background).toBe('rgb(20, 20, 31)');
+  expect(colors.body).toBe('rgba(0, 0, 0, 0)');
+  expect(colors.text).not.toBe(colors.background);
 });

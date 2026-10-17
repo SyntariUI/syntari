@@ -2,9 +2,12 @@
  * Scope the runtime stylesheets to Syntari's own markup, so importing them never restyles a host page.
  * Every selector applies inside a component (.syntari-component) or an element marked data-syntari-root, and to
  * that element itself. :where() keeps each selector's specificity, so the cascade is unchanged.
- * Theme context (:root, html, [data-theme]) stays global; a bare body rule applies only to Syntari's own pages.
+ * Tokens declared on :root, and theme switches such as [data-theme=dark], land on the outermost Syntari element, so a
+ * host's own --accent or --text never changes. A bare body or html rule applies only to Syntari's own pages.
  */
 const SCOPE = ':where(.syntari-component,[data-syntari-root])';
+/** The outermost Syntari element. Tokens live here, so they never reach host CSS and nested parts inherit them. */
+const TOP = `${SCOPE}:not(${SCOPE} *)`;
 const SITE_BODY = ':where(html[data-syntari-root])';
 const SCOPED_AT_RULES = new Set(['media', 'supports', 'container', 'layer']);
 const LEGACY_PSEUDO_ELEMENTS = /^:(before|after|first-line|first-letter)\b/;
@@ -61,11 +64,11 @@ function firstCompound(selector) {
 }
 
 /** The selector with the scope attached to its first compound, before any pseudo-element. */
-function self(selector) {
+function self(selector, scope = SCOPE) {
   const [first, rest] = firstCompound(selector);
   let at = first.length;
   for (let i = 0; i < first.length; i += 1) if (first.startsWith('::', i) || LEGACY_PSEUDO_ELEMENTS.test(first.slice(i))) { at = i; break; }
-  return `${first.slice(0, at)}${SCOPE}${first.slice(at)}${rest}`;
+  return `${first.slice(0, at)}${scope}${first.slice(at)}${rest}`;
 }
 
 const scoped = selector => `${SCOPE} ${selector},${self(selector)}`;
@@ -76,16 +79,23 @@ function scopeSelector(raw) {
   const [first, rest] = firstCompound(selector);
   const context = /^(:root|html|body|\[data-theme)/i.test(first);
   if (!context) return scoped(selector);
-  if (!rest.trim()) return /^body/i.test(first) ? `${SITE_BODY} ${selector}` : selector;
+  if (!rest.trim()) {
+    if (/^body/i.test(first)) return `${SITE_BODY} ${selector}`;
+    /* Tokens and theme switches land on the outermost Syntari element; a bare html rule is for Syntari pages only. */
+    if (/^:root$/i.test(first)) return TOP;
+    if (/^html$/i.test(first)) return self(first);
+    return `${first} ${TOP},${self(first, TOP)}`;
+  }
   /* Theme or page context followed by a descendant: the context stays global, the rest is scoped. */
   if (!/^\s+[^\s>+~]/.test(rest)) throw new Error(`scope-css: cannot scope "${selector}"; use a descendant after the theme context.`);
   const tail = rest.trim();
   return `${first} ${SCOPE} ${tail},${first} ${self(tail)}`;
 }
 
-/** What the Syntari page body gives its content, given instead to the outermost Syntari element in a host page.
+/** What the Syntari page body gives its content, given instead to the outermost Syntari element in a host page:
+ * its canvas too, so text keeps the contrast it was designed for on any host background.
  * Never html: its font size sets rem for the whole page. */
-export const ROOT_TYPOGRAPHY = ':where(.syntari-component,[data-syntari-root]):not(html,:where(.syntari-component,[data-syntari-root]) *){color:var(--text);font:var(--type-body)/1.5 var(--font-sans);-webkit-font-smoothing:antialiased}';
+export const ROOT_TYPOGRAPHY = ':where(.syntari-component,[data-syntari-root]):not(html,:where(.syntari-component,[data-syntari-root]) *){background:var(--canvas);color:var(--text);font:var(--type-body)/1.5 var(--font-sans);-webkit-font-smoothing:antialiased}';
 
 export function scopeCss(css) {
   let out = '', i = 0;
