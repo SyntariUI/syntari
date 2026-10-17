@@ -34,6 +34,7 @@ October 16, 2026. Version 0.2.3 was prepared but never published; its changes sh
 - Ported component behaviour checks from the retired gallery to System routes, and CI now runs every browser suite.
 - Synced the committed registry index with current component descriptions.
 - The release workflow skips versions that are already on npm, and `npm publish` always builds and tests first.
+- Removed the legacy documentation and gallery shell (`index.html`, `docs.html`, `gallery.html`, `library.html`, `docs.js`, `docs.css`, `docs-gallery.js`) and the unused root preview screenshots. The build had stopped shipping them; `/gallery.html`, `/library.html`, `/docs.html`, and `/docs/` still redirect to the System workspace.
 
 ---
 
