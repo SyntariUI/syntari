@@ -29,6 +29,10 @@ Screen validation controls UI composition. A button or approval card is a visual
 
 For a consequential action, the host should validate its arguments and scope, obtain approval through its own trusted state, then execute the action. Show the outcome and any failure in a new validated Screen IR result. Never infer permission from a rendered component or a model-authored provenance field.
 
+## React hosts
+
+A React project can render the trust components with their React versions: `npx shadcn@latest add https://syntariui.giovanitier.com/r/<id>.json`, listed at [r/registry.json](https://syntariui.giovanitier.com/r/registry.json). Each takes the same props as its contract, so a validated node renders as `<ToolApproval id={node.id} {...node.props} onActionRequest={handle} />` and reports the same request, without `path`. Props outside the contract, such as `risk`, `reversibility`, and `status` on Tool approval, are host-only: set them from trusted state, never from the node.
+
 ## Example
 
 ```js

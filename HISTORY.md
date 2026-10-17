@@ -1,3 +1,12 @@
+# Syntari — unreleased
+
+- Added React versions of ten agent trust components as a shadcn registry at `/r/`: Tool approval, Approval card, File diff, Agent questions, Citations, Tool result, Agent activity, Streaming response, Agent message, and Banner. `npx shadcn@latest add https://syntariui.giovanitier.com/r/<id>.json` installs one with a shared helper file and no dependencies beyond React. Each takes exactly its Screen IR contract's props, uses the project's shadcn theme tokens, and reports the runtime's request through `onActionRequest` and `syntari:action`.
+- Tool approval takes host-only `risk`, `reversibility`, and `status`. An irreversible request asks the person to confirm twice, and a blocked or expired one offers no action.
+- System's Installation panel shows the shadcn command for components with a React version.
+- A browser check installs the registry into a fresh Vite, React, Tailwind v4, and shadcn project, type-checks every contract sample, and runs axe in both themes. Node tests keep props, actions, and icons in step with the contracts and runtime.
+
+---
+
 # Syntari — version 0.3.0
 
 October 16, 2026. Version 0.2.3 was prepared but never published; its changes ship here.

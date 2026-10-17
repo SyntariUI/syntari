@@ -5,6 +5,8 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const $=selector=>document.querySelector(selector);
 const files=new Map();
 let component, version, manager='npm', currentState='default', revision=0, activeGuide='getting-started';
+/* Components with a React version in the shadcn registry the site publishes at /r/. */
+const reactComponents=fetch('/r/registry.json').then(response=>response.ok?response.json():{items:[]}).then(registry=>new Set(registry.items.filter(item=>item.type==='registry:component').map(item=>item.name))).catch(()=>new Set());
 export function command(slug,pm=manager){
  const pkg=`https://syntariui.giovanitier.com/downloads/syntari-ui-${version}.tgz`;
  return {npm:`npm exec --yes --package=${pkg} -- syntari add ${slug}`,pnpm:`pnpm dlx --package=${pkg} syntari add ${slug}`,yarn:`yarn dlx -p ${pkg} syntari add ${slug}`,bun:`bunx -p ${pkg} syntari add ${slug}`}[pm];
@@ -42,6 +44,11 @@ function updateInstall(){
  $('[data-download-source]').href=`/downloads/syntari-ui-${version}.tgz`;
  $('[data-download-source]').textContent=`Download Syntari ${version} source`;
  $('[data-install-details]').innerHTML=`<h2>What gets installed</h2>${snippet(`components/syntari/\n  ${component.slug}.js\n  ${component.slug}.html\n  syntari.json\n  runtime/   # shared styles, interactions, fonts, and registry`,'Installed files')}<p>The runtime is shared across components. Existing customized files are preserved; choose a new directory when upgrading.</p><h2>Manual setup</h2><p>Extract the archive. Copy package/kit/runtime to components/syntari/runtime and package/kit/components/${esc(component.slug)}.js and .html next to it. Serve your project over HTTP, then use the Usage example.</p><h2>Verify the installation</h2>${snippet(`npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-${version}.tgz -- syntari doctor --dir ./components/syntari`,'Doctor command')}<p>Use the CLI diagnostics to check your local setup. The versioned archive is the available distribution path while npm publication is pending.</p>`;
+ const slug=component.slug,details=$('[data-install-details]');
+ reactComponents.then(names=>{
+  if(!names.has(slug)||component.slug!==slug||details.querySelector('[data-react-install]'))return;
+  details.insertAdjacentHTML('beforeend',`<h2 data-react-install>Install in React with shadcn</h2><p>A React version of ${esc(component.name)} takes the same props as this contract and uses your project’s shadcn theme. It reports each action through onActionRequest; your app decides whether anything runs.</p>${snippet(`npx shadcn@latest add https://syntariui.giovanitier.com/r/${slug}.json`,'React install')}`);
+ });
 }
 export function renderGuide(id){
  activeGuide=guideLinks.some(([key])=>key===id)?id:'getting-started';
