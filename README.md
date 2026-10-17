@@ -53,6 +53,33 @@ Props are validated against the component contract, the same one Screen IR uses.
 
 The runtime only touches Syntari markup. Its styles apply inside an element with the `syntari-component` class or the `data-syntari-root` attribute, which `mount()`, `prepare()`, and the renderer add for you; its listeners ignore the rest of the page. If you paste component HTML yourself, put it inside one of those and call `prepare()` on it.
 
+## Use in React with shadcn
+
+Ten components that keep people in control of an agent have React versions in a shadcn registry: Tool approval, Approval card, File diff, Agent questions, Citations, Tool result, Agent activity, Streaming response, Agent message, and Banner. Each takes the same props as its Screen IR contract, uses your project's shadcn theme tokens, and needs nothing beyond React.
+
+```sh
+npx shadcn@latest add https://syntariui.giovanitier.com/r/tool-approval.json
+```
+
+```tsx
+import { ToolApproval } from '@/components/tool-approval';
+
+<ToolApproval
+  title="Run the billing migration?"
+  question="Apply three schema changes."
+  scope="billing-production · write access"
+  risk="high"
+  reversibility="irreversible"
+  onActionRequest={request => {
+    // request.action is "approve" or "reject". Nothing has run: check scope and policy first.
+  }}
+/>
+```
+
+`risk`, `reversibility`, and `status` are host-only props: set them from your own tool registry and state, never from model output. An irreversible request asks the person to confirm twice. Every component reports the same request as the runtime, through `onActionRequest` and a bubbling `syntari:action` event.
+
+To install by name, add `"registries": { "@syntari": "https://syntariui.giovanitier.com/r/{name}.json" }` to `components.json` and run `npx shadcn@latest add @syntari/tool-approval`. The index is at [r/registry.json](https://syntariui.giovanitier.com/r/registry.json).
+
 ## Use the Node API
 
 ```js
@@ -78,7 +105,7 @@ npm run test:browser
 npm start
 ```
 
-`npm test` builds `kit/` and `dist/`, checks the registry schemas, and exercises the CLI and Node API. `npm run test:browser` runs every Playwright suite in `checks/`: the homepage, Renderer, System, Screen IR, component behaviour, and clean-project installation. `npm start` serves the built site locally.
+`npm test` builds `kit/` and `dist/`, checks the registry schemas, and exercises the CLI and Node API. `npm run test:browser` runs every Playwright suite in `checks/`: the homepage, Renderer, System, Screen IR, component behaviour, clean-project installation, and a shadcn install of the React registry into a fresh Vite, React, and Tailwind project (it needs network access to npm). `npm start` serves the built site locally.
 
 Earlier prototype workspaces (`Jev/`, `tmp/`, `new/`, `morrow/`, `art-atlas/`) live on the `archive/prototypes` branch.
 

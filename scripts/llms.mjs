@@ -46,7 +46,7 @@ export async function buildLlms(registryDir) {
 
 Syntari ships editable HTML, CSS, and JavaScript components. An agent describes a screen as Screen IR (JSON), validates it against the published contracts, and renders it with the same components people use. Actions in a rendered screen are requests: the host application decides whether anything runs.
 
-Install: \`npm install syntari-ui\`. MCP (read-only, stdio): \`npx -y syntari-ui mcp\`. Version ${index.version}.`;
+Install: \`npm install syntari-ui\`. MCP (read-only, stdio): \`npx -y syntari-ui mcp\`. React: \`npx shadcn@latest add ${site}/r/<id>.json\` for the components listed in [r/registry.json](${site}/r/registry.json), with the same props as their contracts. Version ${index.version}.`;
 
   const short = `${intro}
 

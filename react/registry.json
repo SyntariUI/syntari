@@ -1,0 +1,163 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "syntari",
+  "homepage": "https://syntariui.giovanitier.com",
+  "items": [
+    {
+      "name": "syntari",
+      "type": "registry:lib",
+      "title": "Syntari trust helpers",
+      "description": "Action requests, the Syntari icon vocabulary, and the shared styles every Syntari React component uses. No dependencies beyond React.",
+      "files": [
+        {
+          "path": "registry/syntari/lib/syntari.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/syntari/lib/syntari-icons.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "tool-approval",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/tool-approval.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "approval-card",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/approval-card.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "file-diff",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/file-diff.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "agent-questions",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/agent-questions.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "citations",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/citations.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "tool-result",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/tool-result.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "agent-activity",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/agent-activity.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "streaming-response",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/streaming-response.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "agent-message",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/agent-message.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    },
+    {
+      "name": "banner",
+      "type": "registry:component",
+      "registryDependencies": [
+        "syntari"
+      ],
+      "files": [
+        {
+          "path": "registry/syntari/banner.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "docs": "A request is never permission: check scope and policy in onActionRequest before anything runs. Host-only props, such as risk and status, come from your app, never from model output."
+    }
+  ]
+}

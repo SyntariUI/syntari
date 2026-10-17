@@ -6,6 +6,7 @@ import { catalog } from './catalog.mjs';
 import { scopeCss, ROOT_TYPOGRAPHY } from './scope-css.mjs';
 import { modes } from '../screen-recipes.js';
 import { buildLlms } from './llms.mjs';
+import { buildReactRegistry } from './react-registry.mjs';
 
 const kobbeTracker = `  <script
     src="https://app.kobbe.io/tracker.js"
@@ -81,6 +82,8 @@ await cp('kit/runtime/registry','dist/registry',{recursive:true});
 const llms=await buildLlms('kit/runtime/registry');
 await writeFile('dist/llms.txt',llms.short);await writeFile('dist/llms-full.txt',llms.full);
 for(const file of ['README.md','AGENT-GUIDE.md'])await copyFile(file,'dist/'+file);
+// The React trust components as a shadcn registry: npx shadcn add https://syntariui.giovanitier.com/r/<name>.json
+await buildReactRegistry({outDir:'dist/r'});
 // Legacy documentation routes now lead to the integrated component reference.
 await mkdir('dist/docs',{recursive:true});
 await writeFile('dist/docs/index.html',redirect('/system/?guide=getting-started#button'));

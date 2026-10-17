@@ -100,3 +100,15 @@ test('components with a contract document mounting with props and their actions'
  await expect(page.locator('[data-ir-api]')).toContainText('has not been authored');
  await expect(page.locator('[data-ir-api]').getByRole('heading', {name: 'Mount with props'})).toHaveCount(0);
 });
+
+test('components with a React version show its shadcn install command', async ({page}) => {
+ await page.goto('http://127.0.0.1:4398/system/?panel=install#tool-approval');
+ const details = page.locator('[data-install-details]');
+ await expect(details.getByRole('heading', {name: 'Install in React with shadcn'})).toBeVisible();
+ await expect(details).toContainText('npx shadcn@latest add https://syntariui.giovanitier.com/r/tool-approval.json');
+ const item = await page.evaluate(async () => (await fetch('/r/tool-approval.json')).json());
+ expect(item.files[0].content).toContain('export function ToolApproval');
+ await page.goto('http://127.0.0.1:4398/system/?panel=install#slider');
+ await expect(page.locator('[data-install-command]')).toContainText('syntari add slider');
+ await expect(page.locator('[data-react-install]')).toHaveCount(0);
+});
