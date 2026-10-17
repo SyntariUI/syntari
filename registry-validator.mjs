@@ -73,6 +73,9 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const [key, binding] of Object.entries(manifest.ir?.attributes ?? {})) for (const one of [].concat(binding)) {
       if (one.fallback && !(one.fallback in (manifest.props ?? {}))) problems.push(`Attribute fallback for ${entry.id}.${key} names an unknown prop: ${one.fallback}`);
     }
+    for (const [key, binding] of Object.entries(manifest.ir?.select ?? {})) {
+      if (!manifest.ir?.list?.[binding.list]) problems.push(`select for ${entry.id}.${key} names a list the contract does not bind: ${binding.list}`);
+    }
     for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
       if (part.cellCount && manifest.props?.[part.cellCount]?.type !== 'array') problems.push(`cellCount for ${entry.id}.${key} must name an array prop`);
     }

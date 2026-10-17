@@ -80,7 +80,7 @@
  function decide(root,approved){const result=root.querySelector('.agent-decision'),footer=root.querySelector('.agent-footer');result.textContent=approved?'Approved · ready for the next step':'Declined · no changes applied';result.className='agent-decision '+(approved?'accepted':'declined');if(root.dataset.showResetPreview==='false')footer.hidden=true;else footer.innerHTML=b('Reset preview','decision-reset','small ghost');motion(result);result.setAttribute('tabindex','-1');result.focus()}
  function openContext(root){const menu=root.querySelector('.agent-context-menu');menu.hidden=false;menu.querySelector('button').focus();motion(menu)}
  document.addEventListener('click',async e=>{
- const el=e.target.closest('[data-agent-action]');if(!el){document.querySelectorAll('.agent-context-menu').forEach(x=>x.hidden=true);return}const action=el.dataset.agentAction,root=el.closest('[data-agent-kind]');if(!root)return;
+ const el=e.target.closest('[data-agent-action]');if(!el){SyntariAll('.agent-context-menu').forEach(x=>x.hidden=true);return}const action=el.dataset.agentAction,root=el.closest('[data-agent-kind]');if(!root)return;
  /* In contract mode a declared action belongs to the host: the demo behaviour must not run. */
  if(el.matches('[data-syntari-action]:not([data-syntari-local])'))return;
  if(action==='todo-run')runTodo(root);
@@ -112,7 +112,7 @@
  if(action==='wheel-select'){const list=root.querySelector('.duration-wheel');root.querySelectorAll('[role=option]').forEach(x=>x.setAttribute('aria-selected',x===el));el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});list?.focus({preventScroll:true})}
  if(action==='swipe-archive'){const item=el.closest('.swipe-item');await SyntariMotion.remove(item);delete item.dataset.removing;item.inert=false;root._archived=item;root.querySelector('[data-agent-action="swipe-undo"]').disabled=false;root.querySelector('p').textContent='Item archived. Undo to restore it.';root.querySelector('[data-agent-action="swipe-undo"]').focus()}
  if(action==='swipe-undo'&&root._archived){SyntariMotion.rearrange(root.querySelector('.swipe-items'),()=>root.querySelector('.swipe-items').append(root._archived));root._archived=null;el.disabled=true;root.querySelector('p').textContent='Item restored.'}
- if(action==='foundations'||action==='gallery'){setView(action);document.querySelector('#main')?.scrollIntoView({block:'start'})}
+ if(action==='foundations'||action==='gallery'){setView(action);SyntariOne('#main')?.scrollIntoView({block:'start'})}
  });
  document.addEventListener('submit',e=>{const form=e.target,root=form.closest('[data-agent-kind]');if(!root||form.hasAttribute('data-syntari-action'))return;
  if(form.matches('[data-agent-prompt]')){e.preventDefault();const text=form.elements.prompt.value.trim();if(!text)return;const log=root.querySelector('.agent-messages');if(log){const user=document.createElement('div');user.className='user-message';user.textContent=text;log.append(user);const reply=document.createElement('div');reply.className='assistant-message';reply.textContent='Saved to this local conversation. Connect your own assistant to respond to messages.';log.append(reply);log.scrollTop=log.scrollHeight;motion(reply)}else root.querySelector('[data-prompt-status]').textContent='Prompt captured in preview: '+text;form.elements.prompt.value='';form.elements.prompt.focus()}

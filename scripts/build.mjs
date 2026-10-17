@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
+import { scopeCss, ROOT_TYPOGRAPHY } from './scope-css.mjs';
 import { modes } from '../screen-recipes.js';
 import { buildLlms } from './llms.mjs';
 
@@ -17,9 +18,12 @@ function withKobbeTracker(html) {
   return html.replace('</head>', `${kobbeTracker}\n</head>`);
 }
 
+/* Syntari's own pages are Syntari markup from top to bottom, so the scoped runtime styles and listeners cover them. */
+const withSiteRoot = html => /<html\b[^>]*data-syntari-root/.test(html) ? html : html.replace(/<html\b/, '<html data-syntari-root');
+
 async function injectKobbeTracking(file) {
   const html = await readFile(file, 'utf8');
-  const tracked = withKobbeTracker(html);
+  const tracked = withSiteRoot(withKobbeTracker(html));
   if (tracked !== html) await writeFile(file, tracked);
 }
 
@@ -40,6 +44,9 @@ const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
 for(const file of runtime)await copyFile(file,'kit/runtime/'+file);
+/* The runtime styles apply only inside Syntari markup, so a host page keeps its own look. Tokens stay global. */
+const scopedStyles=runtime.filter(file=>file.endsWith('.css')&&file!=='tokens.css');
+for(const file of scopedStyles)await writeFile('kit/runtime/'+file,(file==='styles.css'?ROOT_TYPOGRAPHY:'')+scopeCss(await readFile(file,'utf8')));
 await cp('assets','kit/runtime/assets',{recursive:true});
 await cp('registry','kit/runtime/registry',{recursive:true});
 execFileSync(process.execPath,['scripts/generate-registry.mjs','--skeleton','all'],{
@@ -67,6 +74,7 @@ await copyFile('renderer.html','dist/renderer/index.html');
 await writeFile('dist/library.html',redirect('/system/'));
 await writeFile('dist/gallery.html',redirect('/system/'));
 for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
+for(const file of scopedStyles)await copyFile('kit/runtime/'+file,'dist/'+file);
 for(const dir of ['assets','downloads','system'])await cp(dir,'dist/'+dir,{recursive:true});
 await cp('kit/runtime/registry','dist/registry',{recursive:true});
 // Plain-text entry points for models, generated from the same registry the package ships.

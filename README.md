@@ -51,6 +51,8 @@ await mount('#consent', {
 
 Props are validated against the component contract, the same one Screen IR uses. Declared actions report requests and never run demo behaviour. Without props, `mount()` renders the documented example.
 
+The runtime only touches Syntari markup. Its styles apply inside an element with the `syntari-component` class or the `data-syntari-root` attribute, which `mount()`, `prepare()`, and the renderer add for you; its listeners ignore the rest of the page. If you paste component HTML yourself, put it inside one of those and call `prepare()` on it.
+
 ## Use the Node API
 
 ```js

@@ -9,7 +9,7 @@
       "note": "Indexed",
       "seriesA": "This week",
       "seriesB": "Last",
-      "chartLabel": "Two series",
+      "chartLabel": "Runs by period, this week against last: Mon 41 vs 30",
       "columns": [
         {
           "label": "Mon",
@@ -92,7 +92,8 @@
     "chartLabel": {
       "type": "string",
       "maxLength": 160,
-      "description": "Accessible name for the columns. Defaults to the title."
+      "description": "What a screen reader hears instead of the bars, so include the values, such as 'Runs by day, this week against last: Mon 41 vs 30'.",
+      "required": true
     },
     "columns": {
       "type": "array",
@@ -135,8 +136,7 @@
     "attributes": {
       "chartLabel": {
         "selector": ".chart-columns",
-        "attribute": "aria-label",
-        "fallback": "title"
+        "attribute": "aria-label"
       }
     },
     "list": {

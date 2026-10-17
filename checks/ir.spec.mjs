@@ -191,7 +191,7 @@ test('leaving an optional prop out never writes "undefined" into the screen', as
       ['banner', { message: 'Only a message' }],
       ['approval-card', { title: 'Review', summary: 'Summary only', detail: 'One place' }],
       ['streaming-response', { author: 'Agent', text: 'Body only' }],
-      ['chart-bars', { title: 'Bars', columns: [{ label: 'Mon', a: 10, b: 5 }] }],
+      ['chart-bars', { title: 'Bars', chartLabel: 'Bars: Mon 10 vs 5', columns: [{ label: 'Mon', a: 10, b: 5 }] }],
       ['stat-row', { stats: [{ label: 'Runs', value: '12' }] }]
     ];
     for (const [slug, props] of cases) {

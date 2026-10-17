@@ -67,6 +67,7 @@ function checkValue(value, descriptor, path, report) {
     if (actual !== 'array') { report('error', 'wrong-type', path, `Expected an array, received ${actual}.`); return; }
     const max = Math.min(descriptor.maxItems ?? IR_LIMITS.maxListItems, IR_LIMITS.maxListItems);
     if (value.length > max) report('error', 'over-item-budget', path, `Received ${value.length} items; the limit for this prop is ${max}.`);
+    if (!value.length && descriptor.required) report('error', 'empty-list', path, 'This list is required, so it needs at least one item.');
     const itemDescriptor = descriptor.items;
     if (itemDescriptor) value.forEach((item, i) => {
       if (itemDescriptor.type === 'object') {
@@ -89,10 +90,20 @@ function checkValue(value, descriptor, path, report) {
     return;
   }
   /* Required text, and text whose default names something, must say something: an empty label leaves a control unnamed. */
-  if (typeof value === 'string' && !value.trim() && (descriptor.required || (typeof descriptor.default === 'string' && descriptor.default.trim()))) report('error', 'empty-value', path, 'This text is required or names a control, so it cannot be empty.');
+  if (typeof value === 'string' && !value.trim() && (descriptor.required || /label$/i.test(path.split('.').pop()))) report('error', 'empty-value', path, 'This text is required or names a control, so it cannot be empty.');
   if (descriptor.maxLength && value.length > descriptor.maxLength) report('error', 'over-length', path, `Received ${value.length} characters; the limit is ${descriptor.maxLength}.`);
   if (descriptor.minimum !== undefined && value < descriptor.minimum) report('error', 'below-minimum', path, `Received ${value}; the minimum is ${descriptor.minimum}.`);
   if (descriptor.maximum !== undefined && value > descriptor.maximum) report('error', 'above-maximum', path, `Received ${value}; the maximum is ${descriptor.maximum}.`);
+}
+
+/** Provenance says where a node came from: text fields and a list of rules. */
+function checkProvenance(provenance, path, report) {
+  if (provenance === undefined) return;
+  if (typeOf(provenance) !== 'object') { report('error', 'wrong-type', path, 'Provenance is an object.'); return; }
+  for (const [key, value] of Object.entries(provenance)) {
+    if (!['component', 'source', 'reason', 'rulesApplied'].includes(key)) report('error', 'unknown-key', `${path}.${key}`, 'Provenance takes component, source, reason, and rulesApplied.');
+    else if (key === 'rulesApplied' ? !Array.isArray(value) || value.some(rule => typeof rule !== 'string') : typeof value !== 'string') report('error', 'wrong-type', `${path}.${key}`, key === 'rulesApplied' ? 'rulesApplied is a list of rule names.' : 'This provenance field is text.');
+  }
 }
 
 /** Validate one node against the registry. Returns the diagnostics raised for that node only. */
@@ -101,6 +112,8 @@ async function checkNode(node, context, path) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) { report('error', 'invalid-node', path, 'A node must be an object with a component id.'); return null; }
   if (node.type === 'region') {
     for (const key of Object.keys(node)) if (!REGION_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Regions take ${REGION_KEYS.join(', ')}.`);
+    if (!Array.isArray(node.children)) report('error', 'missing-required', `${path}.children`, 'A region needs a children array, even an empty one.');
+    checkProvenance(node.provenance, `${path}.provenance`, report);
     if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-region', `${path}.label`, 'A region needs a label; it becomes the summary a person reads.');
     else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Region labels stay under 60 characters.');
     if (node.open !== undefined && typeof node.open !== 'boolean') report('error', 'wrong-type', `${path}.open`, 'A region is either open or closed.');
@@ -108,6 +121,8 @@ async function checkNode(node, context, path) {
   }
   const { component } = node;
   for (const key of Object.keys(node)) if (!NODE_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Component nodes take ${NODE_KEYS.join(', ')}.`);
+  if (node.slot !== undefined && typeof node.slot !== 'string') report('error', 'wrong-type', `${path}.slot`, 'A slot name is text.');
+  checkProvenance(node.provenance, `${path}.provenance`, report);
   if (typeof component !== 'string' || !ID_PATTERN.test(component)) {
     report('error', 'invalid-component-id', `${path}.component`, 'Component ids use the form "syntari.component-slug".');
     return null;
@@ -148,6 +163,10 @@ export function checkProps(manifest, props, path, report, icons) {
     const fields = [].concat(parts).flatMap(part => Object.keys(part.icon ?? {}));
     if (!fields.length || !Array.isArray(props[key])) continue;
     props[key].forEach((item, i) => { for (const field of fields) badIcon(item?.[field], `${path}.${key}[${i}].${field}`); });
+  }
+  for (const [key, binding] of Object.entries(manifest.ir?.select ?? {})) {
+    const items = props[binding.list];
+    if (typeof props[key] === 'string' && Array.isArray(items) && !items.some(item => item?.[binding.field] === props[key])) report('warning', 'no-matching-item', `${path}.${key}`, `"${props[key]}" is not the ${binding.field} of any item in ${binding.list}, so nothing is marked selected.`);
   }
   for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
     const columns = part.cellCount && props[part.cellCount];
@@ -199,6 +218,7 @@ export async function validate(spec, options = {}) {
   if (spec.type === 'screen' && spec.version !== undefined && spec.version !== 'syntari-ir-1') report('error', 'unsupported-version', 'version', 'Screen version must be "syntari-ir-1".');
   if (spec.type === 'screen') for (const key of Object.keys(spec)) if (!SCREEN_KEYS.includes(key)) report('error', 'unknown-key', key, `Screens take ${SCREEN_KEYS.join(', ')}.`);
   if (spec.type === 'screen' && spec.title !== undefined && typeof spec.title !== 'string') report('error', 'wrong-type', 'title', 'A screen title is text.');
+  if (spec.type === 'screen' && spec.meta !== undefined && typeOf(spec.meta) !== 'object') report('error', 'wrong-type', 'meta', 'Screen meta is an object.');
   if (spec.type === 'screen' && spec.layout !== undefined && typeof spec.layout !== 'string') report('error', 'wrong-type', 'layout', `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
   else if (spec.type === 'screen' && spec.layout !== undefined && !IR_LAYOUTS.includes(spec.layout)) report('warning', 'unknown-layout', 'layout', `"${spec.layout}" is not a reference layout. The screen renders as a stack.`);
   if (!Array.isArray(screen.children)) report('error', 'wrong-type', 'children', 'Screen children must be an array.');
@@ -210,8 +230,9 @@ export async function validate(spec, options = {}) {
     if (depth > limits.maxDepth) { report('error', 'over-depth-budget', path, `The spec nests deeper than ${limits.maxDepth} levels.`); return; }
     if (context.count > limits.maxNodes) { if (!context.overNodes) report('error', 'over-node-budget', path, `The spec holds more than ${limits.maxNodes} nodes.`); context.overNodes = true; return; }
     const resolved = await checkNode(node, context, path);
-    if (!resolved) return;
-    const nested = node.children;
+    const nested = node?.children;
+    /* A node that does not resolve still holds children; they count toward the budget and are checked too. */
+    if (!resolved) { if (Array.isArray(nested)) for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1); return; }
     if (nested === undefined) return;
     if (!Array.isArray(nested)) { report('error', 'wrong-type', `${path}.children`, 'Children must be an array.'); return; }
     if (nested.length && !resolved.region) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children yet, so these render as siblings. Wrap them in a region to group them.');
@@ -257,14 +278,18 @@ function setAttributes(target, binding, current) {
 }
 const tidy = number => Number(Number(number).toPrecision(12));
 /** Round steps (1, 2, 2.5, or 5 times a power of ten) from below the smallest value to above the largest. */
-function niceScale(values, intervals) {
+function niceScale(values, intervals, bounds = {}) {
   const finite = values.filter(Number.isFinite);
   const lo = finite.length ? Math.min(...finite) : 0, hi = finite.length ? Math.max(...finite) : 1;
   const nice = raw => { const power = 10 ** Math.floor(Math.log10(raw)); return [1, 2, 2.5, 5, 10].map(factor => factor * power).find(step => step >= raw * (1 - 1e-9)); };
   let step = nice(hi > lo ? (hi - lo) / intervals : Math.max(Math.abs(hi), 1) / 10);
   let min = Math.floor(lo / step) * step;
   while (min + intervals * step < hi) { step = nice(step * 1.01); min = Math.floor(lo / step) * step; }
-  return { min: tidy(min), max: tidy(min + intervals * step) };
+  let max = min + intervals * step;
+  /* Round bounds can overshoot what the contract allows, such as 150%; slide the window back inside. */
+  if (bounds.max !== undefined && max > bounds.max) { min = Math.max(bounds.min ?? -Infinity, min - (max - bounds.max)); max = bounds.max; }
+  if (bounds.min !== undefined && min < bounds.min) min = bounds.min;
+  return { min: tidy(min), max: tidy(max) };
 }
 /** Resolve a contract selector. An empty selector, or one that matches the scope itself, returns the scope. */
 function pick(scope, selector) {
@@ -357,7 +382,8 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     const axis = declared.axis ? [...root.querySelectorAll(declared.axis)] : [];
     const preset = typeof declared.scale === 'object' ? declared.scale : (svg.dataset.scale ? { min: Number(svg.dataset.scale.split(/\s+/)[0]), max: Number(svg.dataset.scale.split(/\s+/)[1]) } : {});
     /* An automatic scale fits the agent's data, so the axis, the grid, and the line always agree. */
-    const { min, max } = declared.scale === 'auto' ? niceScale(numbers, Math.max(1, (axis.length || 4) - 1)) : { min: preset.min ?? 0, max: preset.max ?? 100 };
+    const limits = manifest.props?.[key]?.items?.fields?.[field] ?? {};
+    const { min, max } = declared.scale === 'auto' ? niceScale(numbers, Math.max(1, (axis.length || 4) - 1), { min: limits.minimum, max: limits.maximum }) : { min: preset.min ?? 0, max: preset.max ?? 100 };
     const x = index => left + index * ((width - left - right) / Math.max(1, points.length - 1));
     const y = number => height - bottom - ((Number(number) - min) / ((max - min) || 1)) * (height - top - bottom);
     const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(numbers[index]).toFixed(1)}`).join(' ');
@@ -365,8 +391,10 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     const fill = declared.fill && pick(svg, declared.fill);
     if (fill) fill.setAttribute('d', `${path} L${x(points.length - 1).toFixed(1)},${height - bottom} L${x(0).toFixed(1)},${height - bottom} Z`);
     const tick = (index, count) => tidy(max - index * ((max - min) / Math.max(1, count - 1)));
+    const step = (max - min) / Math.max(1, axis.length - 1) || 1;
+    const readable = number => String(Number(number.toFixed(Math.max(0, 1 - Math.floor(Math.log10(step))))));
     if (declared.scale === 'auto') {
-      axis.forEach((label, index) => { label.textContent = `${tick(index, axis.length)}${unit}`; });
+      axis.forEach((label, index) => { label.textContent = `${readable(tick(index, axis.length))}${unit}`; });
       const grid = declared.grid ? [...svg.querySelectorAll(declared.grid)] : [];
       grid.forEach((rule, index) => { const at = y(tick(index, grid.length)).toFixed(1); rule.setAttribute('y1', at); rule.setAttribute('y2', at); });
     }
@@ -391,7 +419,11 @@ export function applyContract(element, manifest, props, diagnostics, path) {
       const count = Math.min(labels.length, points.length);
       labels.forEach((label, index) => {
         if (index >= count) { label.remove(); return; }
-        label.textContent = String(points[count === 1 ? 0 : Math.round(index * (points.length - 1) / (count - 1))][labelField]);
+        const at = count === 1 ? 0 : Math.round(index * (points.length - 1) / (count - 1));
+        label.textContent = String(points[at][labelField]);
+        /* Under its point, not spread across the figure. */
+        label.style.left = `${(x(at) / width) * 100}%`;
+        label.parentElement.dataset.placed = '';
       });
     }
   }
@@ -437,6 +469,13 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         container.append(item);
       }
     }
+  }
+  /* The item whose field matches the prop is the selected one, so the two can never disagree. */
+  for (const [key, binding] of Object.entries(ir.select ?? {})) {
+    const part = [].concat(ir.list?.[binding.list] ?? [])[0];
+    const container = part && pick(root, part.container);
+    const data = Array.isArray(value(binding.list)) ? value(binding.list) : [];
+    container?.querySelectorAll('[data-syntari-index]').forEach(item => item.setAttribute(binding.attribute, String(data[Number(item.dataset.syntariIndex)]?.[binding.field] === value(key))));
   }
   for (const [name, action] of Object.entries(manifest.actions ?? {})) {
     const targets = [...root.querySelectorAll(action.selector)];
@@ -543,6 +582,7 @@ export async function render(spec, target, options = {}) {
   const mounted = [];
   const root = document.createElement('div');
   root.className = 'ir-screen';
+  root.dataset.syntariRoot = '';
   root.dataset.irLayout = layoutName(screen?.layout);
   if (screen?.title) {
     const heading = document.createElement('h2');

@@ -136,3 +136,17 @@ test('pattern screens that agents copy validate without warnings', async () => {
     assert.deepEqual(result.diagnostics, [], `${pattern.id} raised diagnostics`);
   }
 });
+
+test('validation covers unresolved subtrees, structure, empty lists, labels, and selection', async () => {
+  const codes = result => result.diagnostics.map(item => `${item.severity}:${item.code}:${item.path}`);
+  let deep = { component: 'syntari.button', props: { label: 'Go' } };
+  for (let i = 0; i < 3000; i += 1) deep = { component: 'syntari.not-a-component', children: [deep] };
+  const bypass = await validateScreen({ type: 'screen', children: [deep] });
+  assert.ok(bypass.diagnostics.some(item => item.code === 'over-depth-budget'), 'an unresolved node cannot hide a deep subtree');
+  const shape = await validateScreen({ type: 'screen', meta: 'x', children: [{ component: 'syntari.banner', slot: 5, props: { message: 'ok' }, provenance: { source: 'model', extra: 1 } }, { type: 'region', label: 'Evidence' }] });
+  assert.deepEqual(codes(shape).sort(), ['error:missing-required:children[1].children', 'error:unknown-key:children[0].provenance.extra', 'error:wrong-type:children[0].slot', 'error:wrong-type:meta']);
+  const lists = await validateScreen({ type: 'screen', children: [{ id: 'diff', component: 'syntari.file-diff', props: { file: 'a.css', lines: [] } }, { id: 'ask', component: 'syntari.prompt-input', props: { placeholder: '' } }] });
+  assert.deepEqual(codes(lists), ['error:empty-list:children[0].props.lines']);
+  const period = await validateScreen({ type: 'screen', children: [{ id: 'scope', component: 'syntari.filter-bar', props: { period: 'Last year', periods: [{ label: 'Last 7 days', value: '7d' }] } }] });
+  assert.deepEqual(codes(period), ['warning:no-matching-item:children[0].props.period']);
+});

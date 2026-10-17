@@ -19,7 +19,7 @@ export const modes = {
         note: 'Indexed · this week against last',
         seriesA: 'This week',
         seriesB: 'Last week',
-        chartLabel: 'Runs by day: this week compared with last week',
+        chartLabel: 'Runs by day, this week against last: Mon 41 vs 30, Tue 58 vs 44, Wed 47 vs 51, Thu 66 vs 52, Fri 52 vs 61, Sat 74 vs 58',
         columns: [
           { label: 'Mon', a: 41, b: 30 }, { label: 'Tue', a: 58, b: 44 }, { label: 'Wed', a: 47, b: 51 },
           { label: 'Thu', a: 66, b: 52 }, { label: 'Fri', a: 52, b: 61 }, { label: 'Sat', a: 74, b: 58 }

@@ -16,7 +16,7 @@ export function initialize() {
     try {
       const support = await fetch(new URL('support.html', base));
       if (support.ok) {
-        host = document.createElement('div'); host.dataset.syntariSupport = ''; host.innerHTML = await support.text(); document.body.append(host);
+        host = document.createElement('div'); host.dataset.syntariSupport = ''; host.dataset.syntariRoot = ''; host.innerHTML = await support.text(); document.body.append(host);
       }
     } catch {}
     /* The runtime's document listeners see the host page's events as happening nowhere: they can close Syntari's own
@@ -26,7 +26,7 @@ export function initialize() {
     const runtime = new Set();
     const listen = document.addEventListener, ownListen = Object.hasOwn(document, 'addEventListener');
     const nowhere = document.createElement('div');
-    const inside = node => Boolean((node instanceof Element ? node : node?.parentElement)?.closest?.('.syntari-component, [data-syntari-support], [data-syntari-root]'));
+    const inside = node => Boolean((node instanceof Element ? node : node?.parentElement)?.closest?.('.syntari-component, [data-syntari-root]'));
     const outside = event => new Proxy(event, { get(source, key) {
       if (key === 'target') return nowhere;
       if (key === 'preventDefault' || key === 'stopPropagation' || key === 'stopImmediatePropagation') return () => {};

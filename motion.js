@@ -1,3 +1,10 @@
+/* Syntari only reads and changes its own markup: components, and anything marked data-syntari-root, such as the
+   support layer, a dialog Syntari appends, or a page of the Syntari site. A host page stays untouched. */
+window.SyntariOwns = node => Boolean(node?.closest?.('.syntari-component, [data-syntari-root]'));
+window.SyntariAll = selector => [...document.querySelectorAll(selector)].filter(window.SyntariOwns);
+window.SyntariOne = selector => window.SyntariAll(selector)[0] ?? null;
+window.SyntariRoots = () => window.SyntariAll('.syntari-component, [data-syntari-root]').filter(root => !window.SyntariOwns(root.parentElement));
+
 /* Syntari motion: progressive enhancement; content never depends on animation. */
 (() => {
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
@@ -13,7 +20,7 @@
     a.finished.catch(() => {}).finally(() => active.delete(a));
     return a;
   }
-  preference.addEventListener('change', () => { if (preference.matches) {active.forEach(a => a.cancel());document.querySelectorAll('details[data-motion-target]').forEach(el=>{el.open=el.dataset.motionTarget==='open';delete el.dataset.motionTarget;el.style.overflow=''});} });
+  preference.addEventListener('change', () => { if (preference.matches) {active.forEach(a => a.cancel());SyntariAll('details[data-motion-target]').forEach(el=>{el.open=el.dataset.motionTarget==='open';delete el.dataset.motionTarget;el.style.overflow=''});} });
   function enter(el, delay = 0) {
     animate(el, [{opacity: 0, transform: 'translateY(14px) scale(.98)'}, {opacity: 1, transform: 'translateY(0) scale(1)'}], 420, {delay, easing: 'cubic-bezier(.3,1.12,.4,1)'});
   }
@@ -58,16 +65,16 @@
     cards.forEach((card,index)=>{if(!seen.has(card)){seen.add(card);card.dataset.syntariDelay=String((index%6)*45);observed.add(card);observer.observe(card)}});
     root.querySelectorAll(groups).forEach(group => indicator(group,true));
   }
-  function refresh() { document.querySelectorAll(groups).forEach(group=>indicator(group,true)); }
+  function refresh() { SyntariAll(groups).forEach(group=>indicator(group,true)); }
   const resize = new ResizeObserver(refresh);
   function start() {
-    resize.observe(document.querySelector('.page') || document.body);
+    resize.observe(SyntariOne('.page') || document.body);
     document.fonts.ready.then(refresh);
-    enter(document.querySelector('.intro'));
+    enter(SyntariOne('.intro'));
     prepare();
-    document.querySelectorAll('dialog').forEach(dialog => {
+    SyntariAll('dialog').forEach(dialog => {
       dialog.addEventListener('cancel',e => {
-        if (e.defaultPrevented || document.querySelector('[data-menu-toggle][aria-expanded="true"]')) return;
+        if (e.defaultPrevented || SyntariOne('[data-menu-toggle][aria-expanded="true"]')) return;
         e.preventDefault();closeDialog(dialog);
       });
       dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(dialog)});
@@ -128,7 +135,7 @@
     if(parent)rearrange(parent,()=>el.remove());
   }
   function replay() {
-    document.querySelectorAll('.specimen, .syntari-component, [data-syntari-reveal]').forEach((el,index)=>{const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0){enter(el,(index%6)*45);chart(el)}});
+    SyntariAll('.specimen, .syntari-component, [data-syntari-reveal]').forEach((el,index)=>{const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0){enter(el,(index%6)*45);chart(el)}});
   }
   // Native disclosure semantics are preserved during an interruptible height transition.
   document.addEventListener('click',e=>{

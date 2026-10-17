@@ -205,6 +205,30 @@
               "$ref": "#/definitions/selectorMap"
             }
           ]
+        },
+        "select": {
+          "type": "object",
+          "description": "Prop name to the list item it selects: the item whose field equals the prop gets the attribute, such as aria-selected.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "list",
+              "field",
+              "attribute"
+            ],
+            "properties": {
+              "list": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "attribute": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

@@ -15,7 +15,7 @@ test('importing the runtime leaves the host page alone', async ({ page }) => {
     window.addEventListener('submit', event => { window.seen.push(`submit:${event.defaultPrevented}`); event.preventDefault(); });
     window.addEventListener('click', event => { if (event.target.id === 'notify') window.seen.push(`notify:${event.defaultPrevented}`); });
     const { mount } = await import('/syntari.js');
-    await mount('filter-bar', document.querySelector('#app'), { props: { period: 'Last 7 days', periods: [{ label: 'Last 7 days', value: '7d', selected: true }, { label: 'Last 30 days', value: '30d' }] } });
+    await mount('filter-bar', document.querySelector('#app'), { props: { period: 'Last 7 days', periods: [{ label: 'Last 7 days', value: '7d' }, { label: 'Last 30 days', value: '30d' }] } });
   });
   await page.click('#go');
   await page.click('#notify');
@@ -43,7 +43,7 @@ test('charts, figures, and tables show the agent data in a host page', async ({ 
     const rendered = await render({ type: 'screen', children: [
       { component: 'syntari.area-chart', props: { title: 'Conversion', points } },
       { component: 'syntari.metric-and-sparkline', props: { stats: [{ label: 'Orders', value: '512' }], series: [{ label: 'Mon', value: 30 }, { label: 'Tue', value: 60 }] } },
-      { component: 'syntari.chart-bars', props: { title: 'Runs', columns: [{ label: 'Mon', a: 40, b: 30 }] } },
+      { component: 'syntari.chart-bars', props: { title: 'Runs', chartLabel: 'Runs: Mon 40 vs 30', columns: [{ label: 'Mon', a: 40, b: 30 }] } },
       { component: 'syntari.table', props: { columns: ['Tool', 'Calls', 'Owner', 'Region', 'Cost', 'Status'].map(label => ({ label })), rows: [['read', '4', 'Ada', 'EU', '$1', 'Failed']] } }
     ] }, target);
     await new Promise(resolve => setTimeout(resolve, 1600));
@@ -67,7 +67,34 @@ test('charts, figures, and tables show the agent data in a host page', async ({ 
   expect(result.ticks).toEqual(['W1', 'W3', 'W5', 'W7']);
   expect(result.stat).toEqual({ text: '512', label: null });
   expect(result.bars).toBeGreaterThan(50);
-  expect(result.barsLabel).toBe('Runs');
+  expect(result.barsLabel).toBe('Runs: Mon 40 vs 30');
   expect(result.sparkNames).toEqual(['Mon: 30', 'Tue: 60']);
   expect(result.cells).toEqual(['read', '4', 'Ada', 'EU', '$1', 'Failed']);
+});
+
+test('a host page keeps its markup, styles, shortcuts, dialogs, and menus', async ({ page }) => {
+  await host(page);
+  await page.evaluate(() => {
+    document.querySelector('#app').insertAdjacentHTML('beforebegin', `<section id="hostside"><h1>Host title</h1><p>Host text <a href="#">link</a></p><button id="plain">Plain</button>
+      <div class="selectable-cards"><input type="radio" name="plan" value="a"><input type="radio" name="plan" value="b"></div>
+      <div class="dropdown"><button id="menu" data-menu-toggle aria-expanded="true">Menu</button><div class="dropdown-panel">Open</div></div>
+      <span class="sidebar">Host sidebar</span><textarea id="editor"></textarea><dialog id="hostdialog"><p>Host dialog</p></dialog></section>`);
+    window.snapshot = () => ({
+      markup: document.querySelector('#hostside').outerHTML,
+      styles: ['h1', 'p', 'a', '#plain', '.sidebar', 'body'].map(selector => { const style = getComputedStyle(document.querySelector(selector)); return [selector, style.fontFamily, style.fontSize, style.margin, style.color, style.position, style.border].join('|'); })
+    });
+    window.before = window.snapshot();
+  });
+  await page.evaluate(async () => {
+    const { mount } = await import('/syntari.js');
+    await mount('tool-approval', '#app', { props: { title: 'Run it?', question: 'Apply the change.', scope: 'billing' } });
+  });
+  await page.click('#plain');
+  await page.locator('#editor').press('Control+k');
+  expect(await page.evaluate(() => document.querySelector('#starter-dialog')?.open ?? false)).toBe(false);
+  await page.evaluate(() => document.querySelector('#hostdialog').showModal());
+  await page.mouse.click(5, 5);
+  await expect(page.locator('#hostdialog')).toHaveAttribute('open');
+  await page.evaluate(() => document.querySelector('#hostdialog').close());
+  expect(await page.evaluate(() => window.snapshot())).toEqual(await page.evaluate(() => window.before));
 });
