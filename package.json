@@ -1,6 +1,6 @@
 {
   "name": "syntari-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": false,
   "description": "A design system for people and agents. 131 components, a machine-readable registry, and a renderer that validates what agents compose.",
   "homepage": "https://syntariui.giovanitier.com/",

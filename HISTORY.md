@@ -1,3 +1,16 @@
+# Syntari — version 0.3.1
+
+October 19, 2026. Fixes from the first audit of the published 0.3.0.
+
+- The install commands use the published npm package: `npx syntari-ui add`, `pnpm dlx syntari-ui add`, `yarn dlx syntari-ui add` (Yarn 2 or later), and `bunx syntari-ui add`. The Yarn command used to fail on every Yarn version. System no longer says npm publication is pending, and the Install panel shows how to mount the component.
+- An example mounted with `onActionRequest` and no props reports its declared actions instead of running the demo, as the documentation says.
+- `syntari doctor` accepts a manual setup: a missing installation marker is a note, and only a marker for another version fails.
+- System guide links such as `/system/?guide=ai-patterns` open the guide. The page's `<base href>` used to drop the query before the guide was read.
+- Code no longer shows Geist Mono ligatures: `var(--surface)` used to render with an arrow.
+- Pattern previews point to the Renderer page, and the guides name the inspector panels and install paths that exist.
+
+---
+
 # Syntari — version 0.3.0
 
 October 16, 2026. Version 0.2.3 was prepared but never published; its changes ship here.

@@ -9,7 +9,7 @@ export function initHomepage() {
 async function loadGallery(){
   const response=await fetch('/registry/index.json');if(!response.ok)throw new Error('The registry could not load.');
   const registry=await response.json();document.querySelector('[data-home-count]').textContent=`${registry.components.length} components`;
-  const command=document.querySelector('[data-home-command]');command.textContent=`npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-${registry.version}.tgz -- syntari add app-shell`;
+  const command=document.querySelector('[data-home-command]');command.textContent='npx syntari-ui add app-shell';
   const copy=document.querySelector('[data-home-copy]');copy.disabled=false;copy.addEventListener('click',()=>copyText(command.textContent,document.querySelector('[data-home-copy-status]')));
   const catalog=await getComponents();const grid=document.querySelector('[data-home-gallery]');grid.replaceChildren();
   const slugs=['metric-and-sparkline','button','tool-approval','chart-bars','tabs','otp-input'];

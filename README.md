@@ -9,7 +9,7 @@ People install the components as editable HTML, CSS, and JavaScript. Agents read
 Node.js 22 or newer is required.
 
 ```sh
-npm install syntari-ui@0.3.0
+npm install syntari-ui
 npx syntari list --json
 npx syntari search dashboard --json
 npx syntari info approval-review --json
@@ -21,7 +21,7 @@ npx syntari validate --spec ./screen.json --dir ./components/syntari --json
 The same package archive is served from the site as an installation fallback:
 
 ```sh
-npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.3.0.tgz -- syntari add button app-shell
+npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.3.1.tgz -- syntari add button app-shell
 ```
 
 The CLI copies editable HTML, JavaScript, CSS, fonts, registry JSON, and runtime files into the project. It refuses to overwrite existing component files or a mismatched installation. `syntari info <id> --json` returns manifests, dependencies, tokens, examples, package files, and, for renderer patterns, a complete Screen IR example.
@@ -49,7 +49,7 @@ await mount('#consent', {
 });
 ```
 
-Props are validated against the component contract, the same one Screen IR uses. Declared actions report requests and never run demo behaviour. Without props, `mount()` renders the documented example.
+Props are validated against the component contract, the same one Screen IR uses. Declared actions report requests and never run demo behaviour. Without props, `mount()` renders the documented example; pass `onActionRequest` and its declared actions report requests the same way instead of running the demo.
 
 The runtime only touches Syntari markup. Its styles apply inside an element with the `syntari-component` class or the `data-syntari-root` attribute, which `mount()`, `prepare()`, and the renderer add for you; its listeners ignore the rest of the page. If you paste component HTML yourself, put it inside one of those and call `prepare()` on it.
 

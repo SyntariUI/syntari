@@ -26,7 +26,7 @@ test('implementation lives beside the component, with legacy routes preserved',a
  await expect(page.locator('[data-api-content]')).toContainText('configure');
  await expect(page.locator('[data-inspector] .sys-reference-tabs')).toHaveCount(0);
  await page.getByRole('button',{name:'Install',exact:true}).click();
- for(const pm of ['pnpm','yarn','bun','npm']){await page.getByRole('button',{name:pm,exact:true}).click();await expect(page.locator('[data-install-command]')).toContainText(pm);}
+ for(const [pm,runner] of [['pnpm','pnpm dlx syntari-ui'],['yarn','yarn dlx syntari-ui'],['bun','bunx syntari-ui'],['npm','npx syntari-ui']]){await page.getByRole('button',{name:pm,exact:true}).click();await expect(page.locator('[data-install-command]')).toHaveText(new RegExp(`^${runner} add `));}
  await expect(page.locator('[data-install-details]')).toContainText('doctor --dir ./components/syntari');
  await expect(page.locator('[data-download-source]')).toHaveAttribute('href',new RegExp(`syntari-ui-${version.replaceAll('.','\\.')}\\.tgz$`));
  await page.goto(origin+'/guides/theming/');await expect(page).toHaveURL(/system\/\?guide=theming#button$/);

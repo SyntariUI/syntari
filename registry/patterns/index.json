@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/patterns.schema.json",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "patterns": [
     {
       "id": "app-shell",
@@ -193,7 +193,7 @@
         "deploy",
         "compare"
       ],
-      "preview": "https://syntariui.giovanitier.com/#renderer"
+      "preview": "https://syntariui.giovanitier.com/renderer/"
     },
     {
       "id": "analytics-overview",
@@ -230,7 +230,7 @@
         "product",
         "filter"
       ],
-      "preview": "https://syntariui.giovanitier.com/#renderer"
+      "preview": "https://syntariui.giovanitier.com/renderer/"
     },
     {
       "id": "approval-review",
@@ -262,7 +262,7 @@
         "production",
         "review"
       ],
-      "preview": "https://syntariui.giovanitier.com/#renderer"
+      "preview": "https://syntariui.giovanitier.com/renderer/"
     }
   ]
 }

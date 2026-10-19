@@ -38,7 +38,7 @@ test('homepage previews components and keeps the primary CTA visible',async({pag
  await expect(tabs.getByRole('tab',{name:'Activity'})).toHaveAttribute('aria-selected','true');
  await expect(tabs.getByRole('tabpanel')).toContainText('Jamie published');
  await expect(page.locator('.home-card')).toHaveCount(6);
- await expect(page.locator('[data-home-command]')).toContainText(`syntari-ui-${version}.tgz`);
+ await expect(page.locator('[data-home-command]')).toHaveText('npx syntari-ui add app-shell');
  await page.getByRole('link',{name:'Explore components',exact:false}).click();
  await expect(page).toHaveURL('http://127.0.0.1:4398/system/');
  expect(errors).toEqual([]);
