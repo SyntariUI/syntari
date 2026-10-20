@@ -195,6 +195,14 @@ export interface AgentPolicy {
     onError: 'reject';
     onWarning: string;
     allowedComponentStatus: string;
+    /** Model-written HTML is rejected unless the host opts in, and is then isolated and labelled. */
+    unverifiedBlocks: {
+      default: 'reject';
+      enabledBy: 'host-render-option';
+      isolation: string;
+      canRequestActions: false;
+      label: 'always-shown';
+    };
   };
   actions: {
     authorizationOwner: 'host-application';

@@ -21,7 +21,7 @@ npx syntari validate --spec ./screen.json --dir ./components/syntari --json
 The same package archive is served from the site as an installation fallback:
 
 ```sh
-npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.3.1.tgz -- syntari add button app-shell
+npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-0.4.0.tgz -- syntari add button app-shell
 ```
 
 The CLI copies editable HTML, JavaScript, CSS, fonts, registry JSON, and runtime files into the project. It refuses to overwrite existing component files or a mismatched installation. `syntari info <id> --json` returns manifests, dependencies, tokens, examples, package files, and, for renderer patterns, a complete Screen IR example.
@@ -52,6 +52,10 @@ await mount('#consent', {
 Props are validated against the component contract, the same one Screen IR uses. Declared actions report requests and never run demo behaviour. Without props, `mount()` renders the documented example; pass `onActionRequest` and its declared actions report requests the same way instead of running the demo.
 
 The runtime only touches Syntari markup. Its styles apply inside an element with the `syntari-component` class or the `data-syntari-root` attribute, which `mount()`, `prepare()`, and the renderer add for you; its listeners ignore the rest of the page. If you paste component HTML yourself, put it inside one of those and call `prepare()` on it.
+
+## Explain, then decide
+
+A screen can be organised in sections, each a heading over a group with its own layout, and can explain a number before it asks for a decision with Text block, Breakdown, Checklist, Media cards, and Calculator. Calculator formulas are arithmetic that the renderer parses and never runs as code. Media cards show only images the host passes as `render(spec, target, { assets })`. Model-written HTML, an unverified block, is rejected unless the host passes `{ sandbox: true }`, and is then shown in a labelled frame with no scripts, no network, and no actions.
 
 ## Use the Node API
 
