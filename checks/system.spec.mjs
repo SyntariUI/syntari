@@ -114,6 +114,8 @@ test('a guide link without a component opens the guide and keeps its address', a
 test('every package manager gets a command for the published package, and the panel shows how to use it', async ({page}) => {
  await page.goto('http://127.0.0.1:4398/system/?panel=install#file-diff');
  const command = page.locator('[data-install-command]'), hint = page.locator('[data-install-hint]');
+ /* The buttons are wired when System boots; a click before that is lost. The default command means it has. */
+ await expect(command).toHaveText('npx syntari-ui add file-diff');
  for (const [manager, expected] of [['pnpm', 'pnpm dlx syntari-ui add file-diff'], ['yarn', 'yarn dlx syntari-ui add file-diff'], ['bun', 'bunx syntari-ui add file-diff'], ['npm', 'npx syntari-ui add file-diff']]) {
   await page.locator(`[data-package-manager="${manager}"]`).click();
   await expect(command).toHaveText(expected);
