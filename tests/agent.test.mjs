@@ -164,6 +164,8 @@ test('formulas are arithmetic only and never run as code', async () => {
   for (const source of ['alert(1)', 'a.b', 'x[0]', 'a;b', '`x`', '"x"', '1 +', '(1', 'min()', 'fv(1, 2)', 'x'.repeat(201)]) assert.throws(() => parseFormula(source), SyntaxError, source);
   assert.equal(run('constructor'), null);
   assert.equal(formatValue(416129.3, 'currency'), '$416,129');
+  assert.equal(formatValue(40, 'currency'), '$40');
+  assert.equal(formatValue(2.1, 'currency'), '$2.10');
   assert.equal(formatValue(12.5, 'percent'), '12.5%');
   assert.equal(formatValue(null), '—');
 });

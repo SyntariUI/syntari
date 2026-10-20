@@ -35,5 +35,5 @@
   "breakdown": "Where the $48,200 invoice comes from Seats $31,000 64 API overage $14,400 30 Storage $2,800 6",
   "checklist": "Security review before launch Monday Rotate production keys Tuesday Review admin access Remove anyone who left this quarter.",
   "media-cards": "Starter For teams trying the product. Business For teams that run on it every day. Enterprise For companies that need SSO and audit logs.",
-  "calculator": "Annual cost for your team Annual cost $19,200 Seats 40 5 200 Price per seat a month $40.00 $10.00 $80.00"
+  "calculator": "Annual cost for your team Annual cost $19,200 Seats 40 5 200 Price per seat a month $40 $10 $80"
 }

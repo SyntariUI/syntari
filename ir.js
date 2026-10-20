@@ -145,7 +145,8 @@ export function evaluateFormula(tree, scope) {
 export function formatValue(value, format = 'number', currency = 'USD') {
   if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
   const number = Number(value);
-  if (format === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: Math.abs(number) >= 100 ? 0 : 2 }).format(number);
+  /* Cents only where they say something: $2.10, but $40 and $416,129. */
+  if (format === 'currency') { const cents = Math.abs(number) < 100 && !Number.isInteger(number) ? 2 : 0; return new Intl.NumberFormat('en-US', { style: 'currency', currency, minimumFractionDigits: cents, maximumFractionDigits: cents }).format(number); }
   if (format === 'percent') return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(number)}%`;
   if (format === 'integer') return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(number);
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(number);
