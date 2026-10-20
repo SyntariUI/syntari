@@ -106,7 +106,7 @@ export async function mount(slug, target, options = {}) {
     if (destroyed) { element.remove(); return; }
     if (contract) {
       contract.diagnostics = [...contract.validation];
-      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props');
+      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props', { assets: options.assets });
       contract.bind(element, contract.manifest, { props: contract.props, onAction: options.onActionRequest });
     } else if (example) {
       /* Marked actions are the host's: the demo handlers skip them, as they do in contract mode. */

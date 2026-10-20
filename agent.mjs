@@ -52,10 +52,11 @@ export async function searchRegistry(query) {
   return [...components, ...patterns];
 }
 
-export async function validateScreen(spec) {
+/** Validate a screen as the host would. Pass { sandbox: true } only for a host that allows unverified blocks. */
+export async function validateScreen(spec, options = {}) {
   const index = await readJson('index.json');
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
-  const runtime = await validateRuntime(spec, { registry: {
+  const runtime = await validateRuntime(spec, { sandbox: options.sandbox === true, registry: {
     index,
     entries,
     manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null

@@ -82,6 +82,12 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
         if (binding === 'node' || binding === 'remove') continue;
+        /* A computing contract maps its roles to props and its slots to selectors, so only the roles name props. */
+        if (binding === 'compute') {
+          for (const role of ['inputs', 'outputs', 'parts']) if (value[role] !== undefined && manifest.props[value[role]]?.type !== 'array') problems.push(`compute.${role} for ${entry.id} must name an array prop`);
+          if (value.currency !== undefined && !(value.currency in manifest.props)) problems.push(`compute.currency for ${entry.id} must name a prop`);
+          continue;
+        }
         for (const prop of Object.keys(value ?? {})) if (!(prop in manifest.props)) problems.push(`Unknown render binding ${entry.id}.${prop}`);
       }
     }

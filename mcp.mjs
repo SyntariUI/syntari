@@ -81,8 +81,11 @@ const tools = {
   validate_screen: {
     title: 'Validate Screen IR',
     description: 'Check a Screen IR spec against the schema and every component contract. Errors must be repaired before rendering; warnings describe repairs the renderer makes.',
-    inputSchema: object({ screen: { type: 'object', description: 'A Screen IR object: { "type": "screen", "children": [...] }.' } }, ['screen']),
-    async run({ screen }) { return validateScreen(screen); }
+    inputSchema: object({
+      screen: { type: 'object', description: 'A Screen IR object: { "type": "screen", "children": [...] }.' },
+      sandbox: { type: 'boolean', description: 'True only when the host has said it allows unverified blocks. Otherwise a sandbox node is an error.' }
+    }, ['screen']),
+    async run({ screen, sandbox }) { return validateScreen(screen, { sandbox: sandbox === true }); }
   }
 };
 

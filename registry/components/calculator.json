@@ -1,0 +1,312 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "calculator",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Annual cost for your team",
+      "inputs": [
+        {
+          "name": "seats",
+          "label": "Seats",
+          "min": 5,
+          "max": 200,
+          "step": 5,
+          "value": 40,
+          "format": "integer"
+        },
+        {
+          "name": "price",
+          "label": "Price per seat a month",
+          "min": 10,
+          "max": 80,
+          "step": 5,
+          "value": 40,
+          "format": "currency"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "annual",
+          "label": "Annual cost",
+          "formula": "seats * price * 12",
+          "format": "currency"
+        }
+      ]
+    }
+  },
+  "source": "components/calculator/",
+  "name": "Calculator",
+  "category": "Data display",
+  "purpose": "Let a person explore how a result depends on a few inputs.",
+  "description": "Sliders a person moves and results computed from them by declared formulas, with the parts of the main result shown as shares.",
+  "intents": [
+    "explore",
+    "estimate",
+    "explain",
+    "price"
+  ],
+  "variants": {
+    "inputs": [
+      "1 to 4"
+    ],
+    "results": [
+      "1 to 4"
+    ],
+    "parts": [
+      "none",
+      "2 to 4"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "result",
+    "parts",
+    "input",
+    "readout",
+    "scale",
+    "note"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Home",
+      "End"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "formulas-are-arithmetic-only",
+    "the-first-result-is-the-answer",
+    "state-the-assumptions-in-the-note",
+    "illustrative-not-advice"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.status.success",
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card"
+  ],
+  "compatibleWith": [
+    "text-block",
+    "breakdown",
+    "headline-metric",
+    "comparison-table"
+  ],
+  "avoidWhen": [
+    "the-result-needs-data-the-screen-does-not-have",
+    "a-change-should-be-saved-or-charged"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the calculator estimates. Say if it is illustrative."
+    },
+    "currency": {
+      "type": "enum",
+      "values": [
+        "USD",
+        "EUR",
+        "GBP"
+      ],
+      "default": "USD"
+    },
+    "inputs": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "description": "Sliders. Each name is usable in formulas.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "name": {
+            "type": "string",
+            "required": true,
+            "maxLength": 24,
+            "description": "Formula name: a lowercase letter, then letters, digits, or underscores."
+          },
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "min": {
+            "type": "number",
+            "required": true
+          },
+          "max": {
+            "type": "number",
+            "required": true
+          },
+          "step": {
+            "type": "number",
+            "description": "Defaults to any value."
+          },
+          "value": {
+            "type": "number",
+            "required": true,
+            "description": "Starting value, between min and max."
+          },
+          "format": {
+            "type": "enum",
+            "values": [
+              "number",
+              "integer",
+              "currency",
+              "percent"
+            ],
+            "default": "number"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 12,
+            "description": "Word after the value, such as 'years' or 'seats'."
+          }
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "description": "Results in display order; the first is the answer. Each formula may use input names and earlier output names.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "name": {
+            "type": "string",
+            "required": true,
+            "maxLength": 24
+          },
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "formula": {
+            "type": "string",
+            "required": true,
+            "maxLength": 200,
+            "description": "Arithmetic: numbers, names, + - * / ^, parentheses, min, max, round, floor, ceil, abs, and fv(rate per period, periods, payment)."
+          },
+          "format": {
+            "type": "enum",
+            "values": [
+              "number",
+              "integer",
+              "currency",
+              "percent"
+            ],
+            "default": "number"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 12
+          }
+        }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "maxItems": 4,
+      "description": "Parts of the first result, shown as a bar with shares, such as contributions and growth.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 32
+          },
+          "formula": {
+            "type": "string",
+            "required": true,
+            "maxLength": 200
+          },
+          "format": {
+            "type": "enum",
+            "values": [
+              "number",
+              "integer",
+              "currency",
+              "percent"
+            ]
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "The assumptions, in plain words."
+    }
+  },
+  "ir": {
+    "node": ".calculator",
+    "text": {
+      "title": ".calculator-title",
+      "note": ".calculator-note"
+    },
+    "showWhen": {
+      "note": ".calculator-note"
+    },
+    "list": {
+      "inputs": {
+        "container": ".calculator-inputs",
+        "item": ".calculator-input",
+        "text": {
+          "label": ".calculator-input-label"
+        }
+      },
+      "outputs": {
+        "container": ".calculator-results",
+        "item": ".calculator-result",
+        "text": {
+          "label": ".calculator-result-label"
+        }
+      },
+      "parts": [
+        {
+          "container": ".calculator-parts .breakdown-bar",
+          "item": ".breakdown-segment"
+        },
+        {
+          "container": ".calculator-parts .breakdown-legend",
+          "item": "li",
+          "text": {
+            "label": ".breakdown-label"
+          }
+        }
+      ]
+    },
+    "compute": {
+      "inputs": "inputs",
+      "outputs": "outputs",
+      "parts": "parts",
+      "currency": "currency",
+      "control": ".calculator-input input[type=range]",
+      "input": ".calculator-input",
+      "readout": ".calculator-input-value",
+      "min": ".calculator-input-min",
+      "max": ".calculator-input-max",
+      "result": ".calculator-result",
+      "value": ".calculator-result-value",
+      "segment": ".calculator-parts .breakdown-segment",
+      "part": ".calculator-parts .breakdown-legend li",
+      "partValue": ".breakdown-value",
+      "partShare": ".breakdown-share"
+    }
+  }
+}

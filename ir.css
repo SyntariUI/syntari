@@ -32,6 +32,18 @@
 .ir-region[open]>summary::after{transform:rotate(-135deg)}
 .ir-region-body{display:grid;gap:16px;padding:2px 14px 16px}
 @media(min-width:760px){.ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+/* A section is a heading over a group that keeps its own layout and never collapses. It lays out by its own width, so a narrow host gets one column. */
+.ir-section{display:grid;gap:12px;min-width:0;container-type:inline-size}
+.ir-section-heading{margin:0;font-size:var(--type-title-sm);font-weight:500;letter-spacing:-.2px;text-wrap:balance}
+.ir-section-body{display:grid;gap:16px;grid-template-columns:minmax(0,1fr);align-items:start;min-width:0}
+.ir-section-body[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.ir-section-body[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+@container (min-width:560px){.ir-section-body[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/* An unverified block says so where a person reads it, not only in diagnostics. */
+.ir-sandbox{display:grid;gap:6px;margin:0;min-width:0}
+.ir-sandbox figcaption{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;font-size:var(--type-caption);color:var(--muted)}
+.ir-sandbox-badge{padding:1px 8px;border:1px dashed currentColor;border-radius:999px;color:var(--warning-text)}
+.ir-sandbox iframe{display:block;width:100%;border:1px dashed var(--bg-a4);border-radius:12px;background:var(--surface)}
 
 /* Renderer page: one framed stage, the catalogue it draws from, and the words that explain it. */
 .ir-page{background:var(--background-subtle);margin:0}
