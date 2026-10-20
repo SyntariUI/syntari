@@ -21,7 +21,7 @@ export interface Provenance {
   rulesApplied?: string[];
 }
 
-/** A component node. Components do not take children; group them in a region. */
+/** A component node. Components do not take children; group them in a section or a region. */
 export interface ScreenNode {
   /** Unique within the screen. Action requests carry it so the host can match them to its own state. */
   id?: string;
@@ -35,16 +35,40 @@ export interface ScreenRegion {
   type: 'region';
   label: string;
   open?: boolean;
-  children: Array<ScreenNode | ScreenRegion>;
+  children: ScreenChild[];
   provenance?: Provenance;
 }
+
+/** A heading over a group of nodes that keeps its own layout. It never collapses. */
+export interface ScreenSection {
+  type: 'section';
+  heading: string;
+  layout?: 'stack' | 'row' | 'grid' | 'two-column';
+  children: ScreenChild[];
+  provenance?: Provenance;
+}
+
+/**
+ * Unverified static HTML. Rejected unless the host allows unverified blocks; when allowed it renders in an
+ * isolated frame with no scripts, no network, no forms, and no actions, and is labelled as unverified.
+ */
+export interface ScreenSandbox {
+  type: 'sandbox';
+  label: string;
+  html: string;
+  /** Pixels, 80 to 1200. Defaults to 320. */
+  height?: number;
+  provenance?: Provenance;
+}
+
+export type ScreenChild = ScreenNode | ScreenRegion | ScreenSection | ScreenSandbox;
 
 export interface Screen {
   version?: 'syntari-ir-1';
   type: 'screen';
   layout?: 'stack' | 'row' | 'grid' | 'two-column';
   title?: string;
-  children: Array<ScreenNode | ScreenRegion>;
+  children: ScreenChild[];
   meta?: Record<string, unknown>;
 }
 
@@ -171,6 +195,14 @@ export interface AgentPolicy {
     onError: 'reject';
     onWarning: string;
     allowedComponentStatus: string;
+    /** Model-written HTML is rejected unless the host opts in, and is then isolated and labelled. */
+    unverifiedBlocks: {
+      default: 'reject';
+      enabledBy: 'host-render-option';
+      isolation: string;
+      canRequestActions: false;
+      label: 'always-shown';
+    };
   };
   actions: {
     authorizationOwner: 'host-application';
@@ -186,4 +218,5 @@ export function getAgentPolicy(): Promise<AgentPolicy>;
 export function getPattern(id: string): Promise<Pattern | null>;
 export function getComponent(id: string): Promise<ComponentDetails | null>;
 export function searchRegistry(query: string): Promise<SearchResult[]>;
-export function validateScreen(spec: Screen | ScreenNode | ScreenRegion | unknown): Promise<ValidationResult>;
+/** Pass `{ sandbox: true }` only to validate for a host that allows unverified blocks. */
+export function validateScreen(spec: Screen | ScreenChild | unknown, options?: { sandbox?: boolean }): Promise<ValidationResult>;

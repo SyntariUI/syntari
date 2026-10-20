@@ -1,4 +1,4 @@
-/** Syntari 0.3.1 · HTML, CSS and DOM interactions. No framework runtime required. */
+/** Syntari 0.4.0 · HTML, CSS and DOM interactions. No framework runtime required. */
 const base = new URL('.', import.meta.url);
 let ready;
 const scripts = ['motion.js', 'numbers.js', 'app.js', 'controls.js', 'navigation.js', 'starter.js', 'agents.js', 'extras.js'];
@@ -106,7 +106,7 @@ export async function mount(slug, target, options = {}) {
     if (destroyed) { element.remove(); return; }
     if (contract) {
       contract.diagnostics = [...contract.validation];
-      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props');
+      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props', { assets: options.assets });
       contract.bind(element, contract.manifest, { props: contract.props, onAction: options.onActionRequest });
     } else if (example) {
       /* Marked actions are the host's: the demo handlers skip them, as they do in contract mode. */

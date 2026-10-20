@@ -9,7 +9,7 @@ The registry is the machine-readable source of truth for what Syntari contains, 
 - `tokens/primitive.json` — raw values (colors, radii, motion, spacing).
 - `tokens/semantic.json` — meaningful roles mapped to primitives and CSS variables.
 - `schema/component.schema.json` — the component manifest contract.
-- `schema/sui.schema.json` — the Syntari UI IR (screen) contract.
+- `schema/sui.schema.json` — the Syntari UI IR (screen) contract: component nodes, sections, regions, and unverified blocks.
 - `patterns/index.json` — installable layouts, documented interaction patterns, and intent patterns.
 - `patterns/screens.json` — Screen IR for the renderer's three bounded compositions, produced by the build from `screen-recipes.js`.
 - `agent-policy.json` — machine-readable boundary between Screen IR rules and host-authorized actions.

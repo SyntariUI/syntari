@@ -1,3 +1,22 @@
+# Syntari — version 0.4.0
+
+October 20, 2026. Screens that explain, not only show.
+
+- Added sections to Screen IR: `{ "type": "section", "heading", "layout", "children" }` puts a heading over a group with its own layout and never collapses, so an answer can read as numbered steps. Regions stay the disclosure for detail a person may skip.
+- Added unverified blocks for visuals no contract covers, such as a diagram: `{ "type": "sandbox", "label", "html", "height" }`. They are rejected unless the host passes `{ sandbox: true }` to `render()`, `validateScreen()`, or the MCP tool `validate_screen`. When allowed, each renders in a sandboxed frame with no scripts, no network, no forms, and no navigation, is labelled as unverified on screen, warns in the diagnostics, and can never request an action. The agent policy records the rule as `screenIR.unverifiedBlocks`.
+- Added five components with render contracts: Text block (a paragraph with steps and small print), Breakdown (a whole split into shares, which must add up to 100), Checklist (progress counted from its own boxes, with a `check` action), Media cards (artwork with captions), and Calculator (sliders whose results are recomputed from declared formulas, with the parts of the main result as shares, and an `adjust` action that reports each new input value). Selectable cards now has a contract with a `select` action. 37 components render from Screen IR.
+- Calculator formulas are arithmetic only: numbers, input and earlier result names, `+ - * / ^`, parentheses, and `min`, `max`, `round`, `floor`, `ceil`, `abs`, and `fv`. They are parsed by the renderer and never run as code. Validation reports `invalid-formula`, `unknown-name`, `invalid-range`, and `off-step`.
+- Media cards never load an image URL from a spec. A card names an id, and only images the host passes as `render(spec, target, { assets })` or `mount(slug, target, { props, assets })` are shown; anything else keeps the card's icon and warns `unknown-asset`.
+- A list prop can declare that its parts add up to a total (`sum` in the manifest schema), reported as `wrong-sum`.
+- A Process ledger stage without a `mark` shows the icon of its state: a check when done, a clock when current, a circle when pending. It used to keep the template's check, so a stage that had not happened looked finished; pending stages are now neutral instead of green. An explicit `mark` still wins. A list item field can follow another this way (`defaultFrom` in the manifest schema), and `syntari validate` checks the mapping.
+- A Live readout's status dot follows its `tone`, so a degraded service no longer shows a green dot beside a red badge. A `variant` binding can set classes in several places from one value.
+- `renderableSlugs()` answers from the component index, which records each component's renderable flag at build time. It used to fetch every authored manifest one at a time, so a page took 37 serial requests to start on a slow connection.
+- The runtime exports `parseFormula`, `evaluateFormula`, and `formatValue`.
+- A region whose `children` is not a list no longer stops the renderer.
+- In a rendered screen, rows of equal cards no longer leave one card alone: four stats sit two by two instead of three plus one, and where no even split exists the last card spans the row. This covers Stat row, Headline metric, Media cards, Live readout values, Metric strip, and three Selectable cards.
+
+---
+
 # Syntari — version 0.3.1
 
 October 19, 2026. Fixes from the first audit of the published 0.3.0.

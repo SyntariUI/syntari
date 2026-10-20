@@ -48,6 +48,10 @@ test('an agent can discover a contract, compose from its sample, and validate th
     assert.equal(invalid.ok, false);
     assert.ok(invalid.diagnostics.some(item => item.code === 'unknown-component'));
 
+    const block = { type: 'screen', children: [{ type: 'sandbox', label: 'Doors', html: '<p>Door 1</p>' }] };
+    assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: block } })).structuredContent.ok, false);
+    assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: block, sandbox: true } })).structuredContent.ok, true);
+
     const pattern = (await client.callTool({ name: 'get_pattern', arguments: { id: 'approval-review' } })).structuredContent;
     assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: pattern.screen } })).structuredContent.ok, true);
 

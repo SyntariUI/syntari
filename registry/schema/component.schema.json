@@ -140,8 +140,20 @@
         },
         "variant": {
           "type": "object",
+          "description": "Prop name to the classes it sets. A list of bindings sets classes in several places from one value, such as a status badge and the dot beside it.",
           "additionalProperties": {
-            "$ref": "#/definitions/variantBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/variantBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/variantBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "class": {
@@ -229,6 +241,67 @@
             },
             "additionalProperties": false
           }
+        },
+        "compute": {
+          "type": "object",
+          "description": "A computing contract. Inputs are range controls; each output and part is a formula over input names and earlier output names, parsed without running code. The renderer recomputes as a person moves an input.",
+          "required": [
+            "inputs",
+            "outputs",
+            "control",
+            "input",
+            "readout",
+            "result",
+            "value"
+          ],
+          "properties": {
+            "inputs": {
+              "type": "string"
+            },
+            "outputs": {
+              "type": "string"
+            },
+            "parts": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "control": {
+              "type": "string"
+            },
+            "input": {
+              "type": "string"
+            },
+            "readout": {
+              "type": "string"
+            },
+            "min": {
+              "type": "string"
+            },
+            "max": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "segment": {
+              "type": "string"
+            },
+            "part": {
+              "type": "string"
+            },
+            "partValue": {
+              "type": "string"
+            },
+            "partShare": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -454,6 +527,48 @@
           "additionalProperties": {
             "$ref": "#/definitions/prop"
           }
+        },
+        "sum": {
+          "type": "object",
+          "description": "For a list whose items are parts of one whole: the named number field must add up to total, within tolerance.",
+          "required": [
+            "field",
+            "total"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "total": {
+              "type": "number"
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "defaultFrom": {
+          "type": "object",
+          "description": "For a field of a list item: when the item leaves the field out, its value is taken from another field of the same item, such as a stage's mark from its state. The other field's own default applies first; a value with no mapping falls back to default.",
+          "required": [
+            "field",
+            "values"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -702,6 +817,26 @@
         "cellCount": {
           "type": "string",
           "description": "Array prop whose length sets the number of cells in each item, such as table columns."
+        },
+        "image": {
+          "type": "object",
+          "description": "Field name to an img element. The field names an image the host provides through the assets option; any other value leaves the image hidden and reports unknown-asset.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "selector"
+            ],
+            "properties": {
+              "selector": {
+                "type": "string"
+              },
+              "alt": {
+                "type": "string",
+                "description": "Field that holds the image's text alternative."
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

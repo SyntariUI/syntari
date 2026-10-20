@@ -7,6 +7,7 @@
   "empty-state": "No reports yet",
   "activity-list": "Run started 3 tasks queued 2m ago Tests passed 128 tests in 42 s 1m ago",
   "chat-composer": "",
+  "selectable-cards": "Which plan fits your team? Business Unlimited projects and SSO. Enterprise Audit logs and a dedicated contact.",
   "metadata-list": "Owner Ada Okafor Updated Oct 14, 2026 Status In review",
   "agent-message": "Research assistant Revenue grew 12% in Q3, led by renewals in the enterprise tier.",
   "prompt-input": "Message",
@@ -29,5 +30,10 @@
   "metric-strip": "Mention rate 45.4% 3.3 pp of answers Leads 2",
   "headline-metric": "Lost questions 12 / 125 50.0%",
   "filter-bar": "",
-  "source-list": "ChatGPT 42 Perplexity 26"
+  "source-list": "ChatGPT 42 Perplexity 26",
+  "text-block": "Economists usually measure GDP by adding up four kinds of spending in a year.",
+  "breakdown": "Where the $48,200 invoice comes from Seats $31,000 64 API overage $14,400 30 Storage $2,800 6",
+  "checklist": "Security review before launch Monday Rotate production keys Tuesday Review admin access Remove anyone who left this quarter.",
+  "media-cards": "Starter For teams trying the product. Business For teams that run on it every day. Enterprise For companies that need SSO and audit logs.",
+  "calculator": "Annual cost for your team Annual cost $19,200 Seats 40 5 200 Price per seat a month $40 $10 $80"
 }

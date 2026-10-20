@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://syntariui.giovanitier.com/registry/schema/sui.schema.json",
   "title": "SyntariUI",
-  "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements.",
+  "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements. Sections group nodes under a heading, regions group them in a disclosure, and unverified blocks hold static HTML only when the host allows them.",
   "definitions": {
     "node": {
       "type": "object",
@@ -82,7 +82,39 @@
           "$ref": "#/definitions/region"
         },
         "else": {
-          "$ref": "#/definitions/node"
+          "if": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "section"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/section"
+          },
+          "else": {
+            "if": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "sandbox"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/sandbox"
+            },
+            "else": {
+              "$ref": "#/definitions/node"
+            }
+          }
         }
       }
     },
@@ -136,6 +168,68 @@
         }
       },
       "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "description": "A heading over a group of nodes that keeps its own layout. Unlike a region it never collapses; use it for the numbered parts of an answer.",
+      "required": [
+        "type",
+        "heading",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "section"
+        },
+        "heading": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "layout": {
+          "type": "string",
+          "default": "stack",
+          "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+        },
+        "children": {
+          "$ref": "#/definitions/children"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sandbox": {
+      "type": "object",
+      "description": "Unverified, model-written static HTML. The renderer rejects it unless the host allows unverified blocks; when allowed it renders in an isolated frame with no scripts, no network, no forms, and no actions, and is always labelled as unverified.",
+      "required": [
+        "type",
+        "label",
+        "html"
+      ],
+      "properties": {
+        "type": {
+          "const": "sandbox"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "html": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "height": {
+          "type": "number",
+          "minimum": 80,
+          "maximum": 1200,
+          "default": 320
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "if": {
@@ -168,7 +262,39 @@
       "$ref": "#/definitions/region"
     },
     "else": {
-      "$ref": "#/definitions/node"
+      "if": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "const": "section"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/section"
+      },
+      "else": {
+        "if": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "sandbox"
+            }
+          }
+        },
+        "then": {
+          "$ref": "#/definitions/sandbox"
+        },
+        "else": {
+          "$ref": "#/definitions/node"
+        }
+      }
     }
   }
 }

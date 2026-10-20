@@ -8,6 +8,10 @@ const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta'];
 const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
 const REGION_KEYS = ['type', 'label', 'open', 'children', 'provenance'];
+const SECTION_KEYS = ['type', 'heading', 'layout', 'children', 'provenance'];
+const SANDBOX_KEYS = ['type', 'label', 'html', 'height', 'provenance'];
+/** An unverified block is model-written HTML the host chose to allow. It is never validated, so it is bounded and isolated instead. */
+export const SANDBOX_LIMITS = { maxHtml: 20000, minHeight: 80, maxHeight: 1200, defaultHeight: 320 };
 /** A node id lets the host match an action to its own state. It never names code to run. */
 export const NODE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/i;
 /** Icon names reach markup, so they are limited to lowercase words joined by dashes. */
@@ -43,13 +47,109 @@ export const isRenderable = manifest => Boolean(manifest?.props && manifest?.ir)
 export const layoutName = layout => IR_LAYOUTS.includes(layout) ? layout : 'stack';
 export async function renderableSlugs() {
   const reg = await registry();
+  const authored = reg.index.components.filter(entry => entry.status === 'authored');
+  /* The index records each component's renderable flag at build time, so no manifest is fetched just to answer this.
+     An index without the flag is read the slow way, one manifest at a time. */
+  if (authored.every(entry => typeof entry.renderable === 'boolean')) return authored.filter(entry => entry.renderable).map(entry => entry.id);
   const found = [];
-  for (const entry of reg.index.components) {
-    if (entry.status !== 'authored') continue;
-    const manifest = await reg.manifest(entry.id);
-    if (isRenderable(manifest)) found.push(entry.id);
-  }
+  for (const entry of authored) if (isRenderable(await reg.manifest(entry.id))) found.push(entry.id);
   return found;
+}
+
+/**
+ * Formulas let a contract compute a value from a person's inputs without running model-written code.
+ * The grammar is arithmetic only: numbers, names, + - * / ^, parentheses, and the functions below.
+ */
+const FORMULA_FUNCTIONS = {
+  min: { arity: [1, 8], run: (...args) => Math.min(...args) },
+  max: { arity: [1, 8], run: (...args) => Math.max(...args) },
+  round: { arity: [1, 2], run: (x, digits = 0) => { const scale = 10 ** Math.max(0, Math.min(6, Math.trunc(digits))); return Math.round(x * scale) / scale; } },
+  floor: { arity: [1, 1], run: Math.floor },
+  ceil: { arity: [1, 1], run: Math.ceil },
+  abs: { arity: [1, 1], run: Math.abs },
+  /* Future value of a payment made at the end of each period: fv(rate per period, periods, payment). */
+  fv: { arity: [3, 3], run: (rate, periods, payment) => rate === 0 ? payment * periods : payment * ((1 + rate) ** periods - 1) / rate }
+};
+export const FORMULA_NAMES = Object.keys(FORMULA_FUNCTIONS);
+const FORMULA_LIMIT = 200;
+/** Parse a formula into a tree. Throws a SyntaxError that says what is wrong in words a person can act on. */
+export function parseFormula(source) {
+  const text = String(source ?? '');
+  if (!text.trim()) throw new SyntaxError('A formula cannot be empty.');
+  if (text.length > FORMULA_LIMIT) throw new SyntaxError(`A formula has at most ${FORMULA_LIMIT} characters.`);
+  const tokens = [];
+  const pattern = /\s*(?:(\d+(?:\.\d+)?|\.\d+)|([A-Za-z_][A-Za-z0-9_]*)|([-+*/^(),]))/y;
+  let at = 0;
+  while (at < text.length) {
+    if (!text.slice(at).trim()) break;
+    pattern.lastIndex = at;
+    const match = pattern.exec(text);
+    if (!match) throw new SyntaxError(`"${text.slice(at).trim()[0]}" is not allowed in a formula. Use numbers, names, + - * / ^, and parentheses.`);
+    tokens.push(match[1] !== undefined ? { kind: 'number', value: Number(match[1]) } : match[2] !== undefined ? { kind: 'name', value: match[2] } : { kind: match[3] });
+    at = pattern.lastIndex;
+  }
+  let index = 0, depth = 0;
+  const peek = () => tokens[index], take = () => tokens[index++];
+  const expect = kind => { if (peek()?.kind !== kind) throw new SyntaxError(`Expected "${kind}" in the formula.`); take(); };
+  const nest = parse => { if (++depth > 24) throw new SyntaxError('The formula nests too deeply.'); const node = parse(); depth -= 1; return node; };
+  function primary() {
+    const token = take();
+    if (!token) throw new SyntaxError('The formula ends too early.');
+    if (token.kind === 'number') return { kind: 'number', value: token.value };
+    if (token.kind === '(') { const inner = nest(expression); expect(')'); return inner; }
+    if (token.kind === 'name') {
+      if (peek()?.kind !== '(') return { kind: 'name', name: token.value };
+      const fn = FORMULA_FUNCTIONS[token.value];
+      if (!fn) throw new SyntaxError(`"${token.value}" is not a formula function. Use ${FORMULA_NAMES.join(', ')}.`);
+      take();
+      const args = [];
+      if (peek()?.kind !== ')') { args.push(nest(expression)); while (peek()?.kind === ',') { take(); args.push(nest(expression)); } }
+      expect(')');
+      if (args.length < fn.arity[0] || args.length > fn.arity[1]) throw new SyntaxError(`${token.value}() takes ${fn.arity[0] === fn.arity[1] ? fn.arity[0] : `${fn.arity[0]} to ${fn.arity[1]}`} values.`);
+      return { kind: 'call', name: token.value, args };
+    }
+    throw new SyntaxError(`"${token.kind}" is out of place in the formula.`);
+  }
+  /* As in written arithmetic, -2^2 is -(2^2), and 2^3^2 is 2^(3^2). */
+  function unary() { if (peek()?.kind === '-') { take(); return { kind: 'negate', value: nest(unary) }; } if (peek()?.kind === '+') { take(); return nest(unary); } return power(); }
+  function power() { const base = primary(); if (peek()?.kind === '^') { take(); return { kind: '^', left: base, right: nest(unary) }; } return base; }
+  function term() { let node = unary(); while (['*', '/'].includes(peek()?.kind)) { const op = take().kind; node = { kind: op, left: node, right: unary() }; } return node; }
+  function expression() { let node = term(); while (['+', '-'].includes(peek()?.kind)) { const op = take().kind; node = { kind: op, left: node, right: term() }; } return node; }
+  const tree = expression();
+  if (index < tokens.length) throw new SyntaxError(`"${tokens[index].kind === 'name' || tokens[index].kind === 'number' ? tokens[index].value : tokens[index].kind}" is out of place in the formula.`);
+  const names = new Set();
+  const collect = node => { if (node.kind === 'name') names.add(node.name); for (const child of [node.left, node.right, node.value, ...(node.args ?? [])]) if (child && typeof child === 'object') collect(child); };
+  collect(tree);
+  return { tree, names: [...names] };
+}
+/** Evaluate a parsed formula. A result that is not a finite number is null, so it reads as unknown rather than wrong. */
+export function evaluateFormula(tree, scope) {
+  const run = node => {
+    switch (node.kind) {
+      case 'number': return node.value;
+      case 'name': return Object.hasOwn(scope, node.name) ? Number(scope[node.name]) : NaN;
+      case 'negate': return -run(node.value);
+      case 'call': return FORMULA_FUNCTIONS[node.name].run(...node.args.map(run));
+      case '+': return run(node.left) + run(node.right);
+      case '-': return run(node.left) - run(node.right);
+      case '*': return run(node.left) * run(node.right);
+      case '/': return run(node.left) / run(node.right);
+      case '^': return run(node.left) ** run(node.right);
+      default: return NaN;
+    }
+  };
+  const result = run(tree);
+  return Number.isFinite(result) ? result : null;
+}
+/** Write a number the way its format reads: currency in the given code, percent as written, everything else grouped. */
+export function formatValue(value, format = 'number', currency = 'USD') {
+  if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
+  const number = Number(value);
+  /* Cents only where they say something: $2.10, but $40 and $416,129. */
+  if (format === 'currency') { const cents = Math.abs(number) < 100 && !Number.isInteger(number) ? 2 : 0; return new Intl.NumberFormat('en-US', { style: 'currency', currency, minimumFractionDigits: cents, maximumFractionDigits: cents }).format(number); }
+  if (format === 'percent') return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(number)}%`;
+  if (format === 'integer') return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(number);
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(number);
 }
 
 const typeOf = value => Array.isArray(value) ? 'array' : value === null ? 'null' : typeof value;
@@ -68,6 +168,11 @@ function checkValue(value, descriptor, path, report) {
     const max = Math.min(descriptor.maxItems ?? IR_LIMITS.maxListItems, IR_LIMITS.maxListItems);
     if (value.length > max) report('error', 'over-item-budget', path, `Received ${value.length} items; the limit for this prop is ${max}.`);
     if (!value.length && descriptor.required) report('error', 'empty-list', path, 'This list is required, so it needs at least one item.');
+    /* Parts of one whole must add up to it: a breakdown whose shares do not is wrong, whatever it looks like. */
+    if (descriptor.sum && value.length) {
+      const total = value.reduce((sum, item) => sum + (typeof item?.[descriptor.sum.field] === 'number' ? item[descriptor.sum.field] : 0), 0);
+      if (Math.abs(total - descriptor.sum.total) > (descriptor.sum.tolerance ?? 0)) report('error', 'wrong-sum', path, `The ${descriptor.sum.field} values add up to ${tidy(total)}; they must add up to ${descriptor.sum.total}.`);
+    }
     const itemDescriptor = descriptor.items;
     if (itemDescriptor) value.forEach((item, i) => {
       if (itemDescriptor.type === 'object') {
@@ -117,7 +222,31 @@ async function checkNode(node, context, path) {
     if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-region', `${path}.label`, 'A region needs a label; it becomes the summary a person reads.');
     else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Region labels stay under 60 characters.');
     if (node.open !== undefined && typeof node.open !== 'boolean') report('error', 'wrong-type', `${path}.open`, 'A region is either open or closed.');
-    return { region: true };
+    return { region: true, group: true };
+  }
+  if (node.type === 'section') {
+    for (const key of Object.keys(node)) if (!SECTION_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Sections take ${SECTION_KEYS.join(', ')}.`);
+    if (!Array.isArray(node.children)) report('error', 'missing-required', `${path}.children`, 'A section needs a children array.');
+    checkProvenance(node.provenance, `${path}.provenance`, report);
+    if (typeof node.heading !== 'string' || !node.heading.trim()) report('error', 'invalid-section', `${path}.heading`, 'A section needs a heading; it is what a person scans for.');
+    else if (node.heading.length > 80) report('error', 'over-length', `${path}.heading`, 'Section headings stay under 80 characters.');
+    if (node.layout !== undefined && typeof node.layout !== 'string') report('error', 'wrong-type', `${path}.layout`, `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
+    else if (node.layout !== undefined && !IR_LAYOUTS.includes(node.layout)) report('warning', 'unknown-layout', `${path}.layout`, `"${node.layout}" is not a reference layout. The section renders as a stack.`);
+    return { section: true, group: true };
+  }
+  if (node.type === 'sandbox') {
+    for (const key of Object.keys(node)) if (!SANDBOX_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Unverified blocks take ${SANDBOX_KEYS.join(', ')}.`);
+    checkProvenance(node.provenance, `${path}.provenance`, report);
+    if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-sandbox', `${path}.label`, 'An unverified block needs a label that says what it shows.');
+    else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Labels stay under 60 characters.');
+    if (typeof node.html !== 'string' || !node.html.trim()) report('error', 'invalid-sandbox', `${path}.html`, 'An unverified block needs its HTML as a string.');
+    else if (node.html.length > SANDBOX_LIMITS.maxHtml) report('error', 'over-length', `${path}.html`, `Received ${node.html.length} characters; the limit is ${SANDBOX_LIMITS.maxHtml}.`);
+    if (node.height !== undefined && typeof node.height !== 'number') report('error', 'wrong-type', `${path}.height`, 'Height is a number of pixels.');
+    else if (node.height < SANDBOX_LIMITS.minHeight) report('error', 'below-minimum', `${path}.height`, `Received ${node.height}; the minimum is ${SANDBOX_LIMITS.minHeight}.`);
+    else if (node.height > SANDBOX_LIMITS.maxHeight) report('error', 'above-maximum', `${path}.height`, `Received ${node.height}; the maximum is ${SANDBOX_LIMITS.maxHeight}.`);
+    if (!context.sandbox) report('error', 'sandbox-not-allowed', path, 'This host does not allow unverified blocks. Compose this part from registry components.');
+    else report('warning', 'unverified-block', path, 'Syntari does not validate this block. It shows static HTML in an isolated frame with no scripts, no network, and no actions.');
+    return { sandbox: true };
   }
   const { component } = node;
   for (const key of Object.keys(node)) if (!NODE_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Component nodes take ${NODE_KEYS.join(', ')}.`);
@@ -164,6 +293,7 @@ export function checkProps(manifest, props, path, report, icons) {
     if (!fields.length || !Array.isArray(props[key])) continue;
     props[key].forEach((item, i) => { for (const field of fields) badIcon(item?.[field], `${path}.${key}[${i}].${field}`); });
   }
+  if (manifest.ir?.compute) checkCompute(manifest.ir.compute, props, path, report);
   for (const [key, binding] of Object.entries(manifest.ir?.select ?? {})) {
     const items = props[binding.list];
     if (typeof props[key] === 'string' && Array.isArray(items) && !items.some(item => item?.[binding.field] === props[key])) report('warning', 'no-matching-item', `${path}.${key}`, `"${props[key]}" is not the ${binding.field} of any item in ${binding.list}, so nothing is marked selected.`);
@@ -173,6 +303,41 @@ export function checkProps(manifest, props, path, report, icons) {
     if (!part.cells || !Array.isArray(columns) || !Array.isArray(props[key])) continue;
     props[key].forEach((row, i) => { if (Array.isArray(row) && row.length !== columns.length) report('warning', 'row-length', `${path}.${key}[${i}]`, `This row has ${row.length} cells for ${columns.length} columns. Missing cells render empty and extra cells are dropped.`); });
   }
+}
+
+const COMPUTE_NAME = /^[a-z][A-Za-z0-9_]{0,23}$/;
+/** A computing contract names its inputs and results; every formula may use only names defined before it. */
+function checkCompute(binding, props, path, report) {
+  const known = new Set();
+  const define = (item, at) => {
+    const name = item?.name;
+    if (typeof name !== 'string') return;
+    if (!COMPUTE_NAME.test(name) || FORMULA_NAMES.includes(name)) report('error', 'invalid-name', `${at}.name`, 'Names start with a lowercase letter and use letters, digits, or underscores, and cannot be a formula function.');
+    else if (known.has(name)) report('error', 'duplicate-name', `${at}.name`, `"${name}" is already defined.`);
+    else known.add(name);
+  };
+  const formula = (source, at) => {
+    if (typeof source !== 'string') return;
+    try {
+      const { names } = parseFormula(source);
+      for (const name of names) if (!known.has(name)) report('error', 'unknown-name', at, `"${name}" is not an input or an earlier result. Use ${[...known].join(', ') || 'the input names'}.`);
+    } catch (error) { report('error', 'invalid-formula', at, error.message); }
+  };
+  (Array.isArray(props[binding.inputs]) ? props[binding.inputs] : []).forEach((input, i) => {
+    const at = `${path}.${binding.inputs}[${i}]`;
+    define(input, at);
+    if ([input?.min, input?.max, input?.value].some(number => typeof number !== 'number')) return;
+    if (input.min >= input.max) report('error', 'invalid-range', `${at}.max`, 'max must be greater than min.');
+    else if (input.value < input.min || input.value > input.max) report('error', 'invalid-range', `${at}.value`, `The starting value must sit between ${input.min} and ${input.max}.`);
+    if (typeof input.step === 'number' && input.step <= 0) report('error', 'invalid-range', `${at}.step`, 'step must be greater than 0.');
+    else if (typeof input.step === 'number' && Math.abs((input.value - input.min) / input.step - Math.round((input.value - input.min) / input.step)) > 1e-6) report('warning', 'off-step', `${at}.value`, `${input.value} is not min plus a whole number of steps, so the slider starts at ${tidy(input.min + Math.round((input.value - input.min) / input.step) * input.step)}.`);
+  });
+  (Array.isArray(props[binding.outputs]) ? props[binding.outputs] : []).forEach((output, i) => {
+    const at = `${path}.${binding.outputs}[${i}]`;
+    formula(output?.formula, `${at}.formula`);
+    define(output, at);
+  });
+  if (binding.parts) (Array.isArray(props[binding.parts]) ? props[binding.parts] : []).forEach((part, i) => formula(part?.formula, `${path}.${binding.parts}[${i}].formula`));
 }
 
 /** Validate props for one component before mount() applies them. */
@@ -209,7 +374,7 @@ export async function validate(spec, options = {}) {
   const limits = { ...IR_LIMITS, ...options.limits };
   const diagnostics = [];
   const report = (severity, code, path, message) => diagnostics.push({ severity, code, path, message });
-  const context = { reg, report, limits, count: 0, ids: new Set() };
+  const context = { reg, report, limits, count: 0, ids: new Set(), sandbox: options.sandbox === true };
   if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
     report('error', 'invalid-spec', '', 'The spec must be an object describing a screen or a node.');
     return { ok: false, diagnostics, screen: null };
@@ -235,7 +400,7 @@ export async function validate(spec, options = {}) {
     if (!resolved) { if (Array.isArray(nested)) for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1); return; }
     if (nested === undefined) return;
     if (!Array.isArray(nested)) { report('error', 'wrong-type', `${path}.children`, 'Children must be an array.'); return; }
-    if (nested.length && !resolved.region) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children yet, so these render as siblings. Wrap them in a region to group them.');
+    if (nested.length && !resolved.group) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children, so these render as siblings. Group them in a section or a region.');
     for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1);
   }
   for (const [i, child] of children.entries()) await walk(child, `children[${i}]`, 1);
@@ -333,8 +498,72 @@ function toggleClass(target, className, value) {
   else target.classList.remove(...className.split(/\s+/));
 }
 
+/** An image is the host's: only an id the host mapped to an https, relative, or data:image URL is ever loaded. */
+function assetUrl(assets, id) {
+  if (typeof id !== 'string' || !assets || !Object.hasOwn(assets, id)) return null;
+  const url = String(assets[id]);
+  return /^(https:\/\/|data:image\/|\/|\.\/)/i.test(url) ? url : null;
+}
+/** Results follow their inputs as a person moves them. Formulas were checked by validation; a result that cannot be computed reads as unknown. */
+function bindCompute(root, binding, props) {
+  const inputs = Array.isArray(props[binding.inputs]) ? props[binding.inputs] : [];
+  const outputs = Array.isArray(props[binding.outputs]) ? props[binding.outputs] : [];
+  const parts = binding.parts && Array.isArray(props[binding.parts]) ? props[binding.parts] : [];
+  const currency = props[binding.currency] ?? 'USD';
+  const parse = source => { try { return parseFormula(source).tree; } catch { return null; } };
+  const outputTrees = outputs.map(output => parse(output.formula));
+  const partTrees = parts.map(part => parse(part.formula));
+  const controls = [...root.querySelectorAll(binding.control)];
+  const show = (value, format, unit) => `${formatValue(value, format, currency)}${unit && value !== null ? ` ${unit}` : ''}`;
+  controls.forEach((control, i) => {
+    const input = inputs[i];
+    if (!input) return;
+    control.min = String(input.min);
+    control.max = String(input.max);
+    control.step = String(input.step ?? 'any');
+    control.value = String(input.value);
+    control.setAttribute('aria-label', String(input.label ?? input.name));
+    const field = control.closest(binding.input);
+    const low = field?.querySelector(binding.min), high = field?.querySelector(binding.max);
+    if (low) low.textContent = show(input.min, input.format, input.unit);
+    if (high) high.textContent = show(input.max, input.format, input.unit);
+  });
+  function update() {
+    const scope = {};
+    controls.forEach((control, i) => {
+      const input = inputs[i];
+      if (!input?.name) return;
+      scope[input.name] = Number(control.value);
+      control.style.setProperty('--range-fill', `${((Number(control.value) - input.min) / ((input.max - input.min) || 1)) * 100}%`);
+      const readout = control.closest(binding.input)?.querySelector(binding.readout);
+      if (readout) readout.textContent = show(Number(control.value), input.format, input.unit);
+    });
+    const results = [...root.querySelectorAll(binding.result)];
+    outputs.forEach((output, i) => {
+      const value = outputTrees[i] ? evaluateFormula(outputTrees[i], scope) : null;
+      if (output?.name) scope[output.name] = value ?? NaN;
+      const slot = results[i]?.querySelector(binding.value);
+      if (slot) slot.textContent = show(value, output.format, output.unit);
+    });
+    const values = partTrees.map(tree => tree ? evaluateFormula(tree, scope) : null);
+    const total = values.reduce((sum, value) => sum + Math.max(0, value ?? 0), 0);
+    const segments = [...root.querySelectorAll(binding.segment)], rows = [...root.querySelectorAll(binding.part)];
+    values.forEach((value, i) => {
+      const share = total > 0 ? Math.max(0, value ?? 0) / total * 100 : 0;
+      segments[i]?.style.setProperty('--share', `${share}%`);
+      const row = rows[i];
+      if (!row) return;
+      const amount = row.querySelector(binding.partValue), percent = row.querySelector(binding.partShare);
+      if (amount) amount.textContent = show(value, parts[i].format ?? outputs[0]?.format, parts[i].unit);
+      if (percent) percent.textContent = total > 0 ? String(Math.round(share)) : '';
+    });
+  }
+  root.addEventListener('input', event => { if (controls.includes(event.target)) update(); });
+  update();
+}
+
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
-export function applyContract(element, manifest, props, diagnostics, path) {
+export function applyContract(element, manifest, props, diagnostics, path, context = {}) {
   const ir = manifest.ir;
   const report = (severity, code, at, message) => diagnostics.push({ severity, code, path: at, message });
   const root = ir.node ? element.querySelector(ir.node) : element;
@@ -358,7 +587,8 @@ export function applyContract(element, manifest, props, diagnostics, path) {
   for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => each(selector, target => setIcon(target, current)));
   /* Chrome that only means something beside a value, like a "Total" label, goes when that value is unset. */
   for (const [key, selector] of Object.entries(ir.showWhen ?? {})) { const current = value(key); each(selector, target => markEmpty(target, current === undefined || current === '' || (Array.isArray(current) && !current.length))); }
-  for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
+  /* One prop can set classes in several places, such as a status badge and the dot beside it. */
+  for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => { for (const one of [].concat(binding)) applyVariant(pick(root, one.selector), one.values, current, report, path); });
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
     for (const one of [].concat(binding)) {
       const current = value(key) ?? (one.fallback ? value(one.fallback) : undefined);
@@ -441,7 +671,15 @@ export function applyContract(element, manifest, props, diagnostics, path) {
       for (let i = 0; i < limit; i += 1) {
         const item = clone.cloneNode(true);
         const data = items[i];
-        const field = name => { const current = Array.isArray(data) ? data[Number(name)] : data?.[name]; return current === undefined ? fieldContract[name]?.default : current; };
+        /* "." names the item itself, for a list of plain strings. */
+        const given = name => name === '.' ? data : Array.isArray(data) ? data[Number(name)] : data?.[name];
+        /* A field left out can follow another, such as a stage's mark following its state, so a pending stage never keeps the template's check. */
+        const field = (name, follow = true) => {
+          const current = given(name);
+          if (current !== undefined) return current;
+          const from = follow ? fieldContract[name]?.defaultFrom : null;
+          return (from ? from.values[field(from.field, false)] : undefined) ?? fieldContract[name]?.default;
+        };
         item.dataset.syntariIndex = String(i);
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
         if (part.cells) {
@@ -466,6 +704,19 @@ export function applyContract(element, manifest, props, diagnostics, path) {
         }
         /* The template carries the demo's classes, so a managed class starts from nothing. */
         for (const [name, className] of Object.entries(part.class ?? {})) { toggleClass(item, className, false); filled(name, current => toggleClass(item, className, current)); }
+        for (const [name, binding] of Object.entries(part.image ?? {})) {
+          const image = pick(item, binding.selector);
+          if (!image) continue;
+          image.hidden = true;
+          image.removeAttribute('src');
+          filled(name, current => {
+            const source = assetUrl(context.assets, current);
+            if (!source) { report('warning', 'unknown-asset', `${path === 'props' ? path : `${path}.props`}.${key}[${i}].${name}`, `"${current}" is not an image this host provides, so the card shows its icon.`); return; }
+            image.src = source;
+            image.alt = binding.alt ? String(field(binding.alt) ?? '') : '';
+            image.hidden = false;
+          });
+        }
         container.append(item);
       }
     }
@@ -477,6 +728,7 @@ export function applyContract(element, manifest, props, diagnostics, path) {
     const data = Array.isArray(value(binding.list)) ? value(binding.list) : [];
     container?.querySelectorAll('[data-syntari-index]').forEach(item => item.setAttribute(binding.attribute, String(data[Number(item.dataset.syntariIndex)]?.[binding.field] === value(key))));
   }
+  if (ir.compute) bindCompute(root, ir.compute, props);
   for (const [name, action] of Object.entries(manifest.actions ?? {})) {
     const targets = [...root.querySelectorAll(action.selector)];
     if (root.matches(action.selector)) targets.unshift(root);
@@ -567,6 +819,46 @@ function fallback(node, reason, component) {
   box.querySelector('p').textContent = reason;
   return box;
 }
+/* Children that are not a list were reported by validation; rendering skips them rather than failing. */
+const listed = children => (Array.isArray(children) ? children : []).entries();
+/** Remove what could leave the frame or reload it: navigation, embedded documents, forms, and meta refreshes. */
+function sanitizeSandbox(html) {
+  const doc = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html');
+  doc.body.querySelectorAll('script, meta, base, link, iframe, frame, frameset, object, embed, form, portal').forEach(node => node.remove());
+  for (const node of doc.body.querySelectorAll('*')) for (const attribute of [...node.attributes]) {
+    const name = attribute.name.toLowerCase();
+    if (name.startsWith('on') || name === 'formaction' || name === 'action' || name === 'srcdoc') node.removeAttribute(attribute.name);
+    else if ((name === 'href' || name === 'xlink:href') && !attribute.value.trim().startsWith('#')) node.removeAttribute(attribute.name);
+  }
+  return doc.body.innerHTML;
+}
+const SANDBOX_THEMES = {
+  light: '--text:#181925;--muted:#5f6075;--surface:#fff;--subtle:#f5f5f7;--border:#1819251a;--accent:#2c78fc;--success:#1d7f37;--warning:#8f5b00;--danger:#bf2a0f',
+  dark: '--text:#eaeaeb;--muted:#a2a3b5;--surface:#181925;--subtle:#212131;--border:#cccfff1a;--accent:#6f9dff;--success:#65da82;--warning:#ffc65c;--danger:#ff9078'
+};
+/** An unverified block renders in an opaque-origin frame: no scripts, no network, no forms, no navigation, no actions. */
+function sandboxFrame(node, host) {
+  /* Syntari components follow the nearest data-theme, so the block does too. */
+  const theme = host.closest('[data-theme]')?.dataset.theme === 'dark' ? 'dark' : 'light';
+  const policy = "default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; media-src data:; form-action 'none'";
+  const figure = document.createElement('figure');
+  figure.className = 'ir-sandbox';
+  const caption = document.createElement('figcaption');
+  const label = document.createElement('span');
+  label.textContent = String(node.label);
+  const badge = document.createElement('span');
+  badge.className = 'ir-sandbox-badge';
+  badge.textContent = 'Unverified · not from the registry';
+  caption.append(label, badge);
+  const frame = document.createElement('iframe');
+  frame.setAttribute('sandbox', '');
+  frame.setAttribute('referrerpolicy', 'no-referrer');
+  frame.setAttribute('title', String(node.label));
+  frame.style.height = `${Math.round(node.height ?? SANDBOX_LIMITS.defaultHeight)}px`;
+  frame.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${policy}"><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:${theme};${SANDBOX_THEMES[theme]}}body{margin:0;padding:16px;background:var(--surface);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}</style></head><body>${sanitizeSandbox(node.html)}</body></html>`;
+  figure.append(caption, frame);
+  return figure;
+}
 const errorFor = (diagnostics, path) => diagnostics.find(d => d.severity === 'error' && (d.path === path || d.path.startsWith(`${path}.`)));
 
 /**
@@ -576,7 +868,7 @@ const errorFor = (diagnostics, path) => diagnostics.find(d => d.severity === 'er
 export async function render(spec, target, options = {}) {
   const reg = options.registry ?? await registry();
   const limits = { ...IR_LIMITS, ...options.limits };
-  const { diagnostics, screen } = await validate(spec, { registry: reg, limits });
+  const { diagnostics, screen } = await validate(spec, { registry: reg, limits, sandbox: options.sandbox });
   const host = typeof target === 'string' ? document.querySelector(target) : target;
   if (!(host instanceof Element)) throw new TypeError('Syntari IR render() needs a matching selector or Element.');
   const mounted = [];
@@ -602,7 +894,27 @@ export async function render(spec, target, options = {}) {
       body.className = 'ir-region-body';
       region.append(summary, body);
       parent.append(region);
-      for (const [i, child] of (node.children ?? []).entries()) await paint(child, body, `${path}.children[${i}]`);
+      for (const [i, child] of listed(node.children)) await paint(child, body, `${path}.children[${i}]`);
+      return;
+    }
+    if (node?.type === 'section') {
+      const section = document.createElement('section');
+      section.className = 'ir-section';
+      const heading = document.createElement('h3');
+      heading.className = 'ir-section-heading';
+      heading.textContent = typeof node.heading === 'string' ? node.heading : '';
+      const body = document.createElement('div');
+      body.className = 'ir-section-body';
+      body.dataset.irLayout = layoutName(node.layout);
+      section.append(heading, body);
+      parent.append(section);
+      for (const [i, child] of listed(node.children)) await paint(child, body, `${path}.children[${i}]`);
+      return;
+    }
+    if (node?.type === 'sandbox') {
+      const failure = errorFor(diagnostics, path);
+      if (failure) { const slot = document.createElement('div'); slot.className = 'ir-node'; slot.dataset.irStatus = 'fallback'; slot.append(fallback(node, failure.message, 'Unverified block')); parent.append(slot); return; }
+      parent.append(sandboxFrame(node, host));
       return;
     }
     const slot = document.createElement('div');
@@ -617,16 +929,16 @@ export async function render(spec, target, options = {}) {
     if (node.id) slot.dataset.irId = node.id;
     const instance = await mount(slug, slot, {
       configure: element => {
-        const painted = applyContract(element, manifest, props, diagnostics, path);
+        const painted = applyContract(element, manifest, props, diagnostics, path, { assets: options.assets });
         if (node.provenance) painted.dataset.irProvenance = JSON.stringify(node.provenance);
         bindActions(element, manifest, { id: node.id, path, props, onAction: options.onActionRequest });
       }
     });
     mounted.push(instance);
-    for (const [i, child] of (node.children ?? []).entries()) await paint(child, parent, `${path}.children[${i}]`);
+    for (const [i, child] of listed(node.children)) await paint(child, parent, `${path}.children[${i}]`);
   }
 
-  for (const [i, child] of (screen?.children ?? []).entries()) await paint(child, root, `children[${i}]`);
+  for (const [i, child] of listed(screen?.children)) await paint(child, root, `children[${i}]`);
   if (diagnostics.some(d => d.severity === 'error')) root.dataset.irStatus = 'partial';
   host.replaceChildren(root);
   options.onDiagnostics?.(diagnostics);

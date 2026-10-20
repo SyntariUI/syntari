@@ -12,7 +12,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await expect(page.locator('[data-preview-skeleton]')).toHaveCount(0);
  const preview=page.locator('[data-component-mount] > [data-syntari-component]');
  await expect(preview).toHaveAttribute('data-syntari-component','button');
- await expect(page.locator('[data-component-count]')).toHaveText('131');
+ await expect(page.locator('[data-component-count]')).toHaveText('136');
  expect(await page.locator('.sys-workspace').evaluate(el=>el.getBoundingClientRect().width/innerWidth)).toBeGreaterThan(.75);
  const initial=await preview.elementHandle();
  await page.getByRole('button',{name:'Inspect component'}).click();

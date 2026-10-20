@@ -1,0 +1,172 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "breakdown",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Where the $48,200 invoice comes from",
+      "total": "$48,200",
+      "segments": [
+        {
+          "label": "Seats",
+          "value": "$31,000",
+          "share": 64
+        },
+        {
+          "label": "API overage",
+          "value": "$14,400",
+          "share": 30
+        },
+        {
+          "label": "Storage",
+          "value": "$2,800",
+          "share": 6
+        }
+      ]
+    }
+  },
+  "source": "components/breakdown/",
+  "name": "Breakdown",
+  "category": "Data display",
+  "purpose": "Show how one whole splits into parts.",
+  "description": "How a whole splits into parts: one bar, each part named with its value and share, in words as well as colour.",
+  "intents": [
+    "break-down",
+    "explain",
+    "compare-parts"
+  ],
+  "variants": {
+    "parts": [
+      "2 to 6"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "total",
+    "bar",
+    "legend",
+    "note"
+  ],
+  "accessibility": {
+    "role": "figure",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "shares-add-up-to-100",
+    "parts-are-of-one-total",
+    "the-legend-carries-the-meaning-not-the-colour"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.status.success",
+    "color.status.warning",
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default"
+  ],
+  "compatibleWith": [
+    "text-block",
+    "headline-metric",
+    "calculator",
+    "stat-row"
+  ],
+  "avoidWhen": [
+    "the-parts-are-not-shares-of-one-total",
+    "more-than-six-parts",
+    "values-change-over-time"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the whole is."
+    },
+    "total": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "The whole, as written, such as '$1T'."
+    },
+    "segments": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "sum": {
+        "field": "share",
+        "total": 100,
+        "tolerance": 1
+      },
+      "description": "Parts in display order. Shares add up to 100.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 32
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 16,
+            "description": "The part's amount as written, such as '$600B'."
+          },
+          "share": {
+            "type": "number",
+            "required": true,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percent of the whole."
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "Small print, such as a source or an assumption."
+    }
+  },
+  "ir": {
+    "node": ".breakdown",
+    "text": {
+      "title": ".breakdown-title",
+      "total": ".breakdown-total",
+      "note": ".breakdown-note"
+    },
+    "showWhen": {
+      "total": ".breakdown-total",
+      "note": ".breakdown-note"
+    },
+    "list": {
+      "segments": [
+        {
+          "container": ".breakdown-bar",
+          "item": ".breakdown-segment",
+          "style": {
+            "share": {
+              "selector": "",
+              "name": "--share",
+              "suffix": "%"
+            }
+          }
+        },
+        {
+          "container": ".breakdown-legend",
+          "item": "li",
+          "text": {
+            "label": ".breakdown-label",
+            "value": ".breakdown-value",
+            "share": ".breakdown-share"
+          }
+        }
+      ]
+    }
+  }
+}

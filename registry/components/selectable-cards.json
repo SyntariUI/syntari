@@ -1,0 +1,157 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "selectable-cards",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "question": "Which plan fits your team?",
+      "options": [
+        {
+          "title": "Business",
+          "description": "Unlimited projects and SSO.",
+          "icon": "layers",
+          "selected": true
+        },
+        {
+          "title": "Enterprise",
+          "description": "Audit logs and a dedicated contact.",
+          "icon": "lock"
+        }
+      ]
+    }
+  },
+  "source": "components/selectable-cards/",
+  "name": "Selectable cards",
+  "category": "Form controls",
+  "purpose": "Let a person choose one option when each needs a sentence to explain it.",
+  "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
+  "intents": [
+    "choose",
+    "compare-options",
+    "decide"
+  ],
+  "variants": {
+    "options": [
+      "2 to 4"
+    ]
+  },
+  "states": [
+    "default",
+    "selected",
+    "focus"
+  ],
+  "anatomy": [
+    "root",
+    "legend",
+    "option",
+    "icon",
+    "title",
+    "description",
+    "check"
+  ],
+  "accessibility": {
+    "role": "radiogroup",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-choice",
+    "options-are-mutually-exclusive",
+    "the-description-says-what-changes"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card"
+  ],
+  "compatibleWith": [
+    "text-block",
+    "comparison-table",
+    "calculator"
+  ],
+  "avoidWhen": [
+    "more-than-four-options",
+    "choosing-commits-a-consequential-change"
+  ],
+  "props": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80,
+      "description": "What the person is choosing."
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "fields": {
+          "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 24,
+            "default": "circle"
+          },
+          "selected": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".selectable-cards",
+    "text": {
+      "question": "legend"
+    },
+    "list": {
+      "options": {
+        "container": ".selectable-cards",
+        "item": "label",
+        "text": {
+          "title": "strong",
+          "description": "small"
+        },
+        "icon": {
+          "icon": "label > span > svg"
+        },
+        "attributes": {
+          "title": {
+            "selector": "input",
+            "attribute": "value"
+          },
+          "selected": {
+            "selector": "input",
+            "attribute": "checked"
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "select": {
+      "selector": "input[type=radio]",
+      "event": "change",
+      "local": true,
+      "description": "The person chose an option. index names it; the choice is shown at once and the host decides what it means."
+    }
+  }
+}
