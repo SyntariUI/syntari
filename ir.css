@@ -12,7 +12,7 @@
  * a negative margin. Only the preview padding, centring, and minimum height belong to
  * the documentation stage, so those are the only things reset here.
  */
-.ir-node{min-width:0;grid-column:auto}
+.ir-node{min-width:0;grid-column:auto;container:ir-node/inline-size}
 .ir-node>.syntari-component{width:100%;padding:0;margin:0;min-height:0;max-width:none;align-items:stretch;justify-content:flex-start}
 /* A screen is full-bleed: parts pinned to a preview width fill the column instead. */
 .ir-node>.syntari-component>*{max-width:none}
@@ -39,6 +39,37 @@
 .ir-section-body[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .ir-section-body[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 @container (min-width:560px){.ir-section-body[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/**
+ * Balanced rows: a row of equal cards never leaves one card alone. Each component keeps its own minimum card width;
+ * at widths where auto-fit would wrap four cards as 3 + 1 (or five as 4 + 1), the screen picks a count that divides
+ * the cards evenly, and where none does, the last card takes the whole row. Generated from each component's
+ * minimum width and gap, measured inside .ir-node.
+ */
+@container ir-node (min-width:348px) and (max-width:525.98px){.stat-row:has(>.stat-card:nth-child(3):last-child)>.stat-card:last-child{grid-column:1/-1}}
+@container ir-node (min-width:526px) and (max-width:703.98px){.stat-row:has(>.stat-card:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container ir-node (min-width:348px) and (max-width:525.98px){.stat-row:has(>.stat-card:nth-child(5):last-child)>.stat-card:last-child{grid-column:1/-1}}
+@container ir-node (min-width:704px) and (max-width:881.98px){.stat-row:has(>.stat-card:nth-child(5):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:704px) and (max-width:881.98px){.stat-row:has(>.stat-card:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:882px) and (max-width:1059.98px){.stat-row:has(>.stat-card:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:426px) and (max-width:651.98px){.headline-row:has(>.headline-metric:nth-child(3):last-child)>.headline-metric:last-child{grid-column:1/-1}}
+@container ir-node (min-width:652px) and (max-width:877.98px){.headline-row:has(>.headline-metric:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container ir-node (min-width:356px) and (max-width:541.98px){.media-cards:has(>.media-card:nth-child(3):last-child)>.media-card:last-child{grid-column:1/-1}}
+@container ir-node (min-width:542px) and (max-width:727.98px){.media-cards:has(>.media-card:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container ir-node (min-width:241px) and (max-width:355.98px){.readout-values:has(>div:nth-child(3):last-child)>div:last-child{grid-column:1/-1}}
+@container ir-node (min-width:356px) and (max-width:470.98px){.readout-values:has(>div:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container ir-node (min-width:241px) and (max-width:355.98px){.readout-values:has(>div:nth-child(5):last-child)>div:last-child{grid-column:1/-1}}
+@container ir-node (min-width:471px) and (max-width:585.98px){.readout-values:has(>div:nth-child(5):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:471px) and (max-width:585.98px){.readout-values:has(>div:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:586px) and (max-width:700.98px){.readout-values:has(>div:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:318px) and (max-width:475.98px){.metric-strip:has(>.metric-item:nth-child(3):last-child)>.metric-item:last-child{grid-column:1/-1}}
+@container ir-node (min-width:476px) and (max-width:633.98px){.metric-strip:has(>.metric-item:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container ir-node (min-width:318px) and (max-width:475.98px){.metric-strip:has(>.metric-item:nth-child(5):last-child)>.metric-item:last-child{grid-column:1/-1}}
+@container ir-node (min-width:634px) and (max-width:791.98px){.metric-strip:has(>.metric-item:nth-child(5):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:634px) and (max-width:791.98px){.metric-strip:has(>.metric-item:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container ir-node (min-width:792px) and (max-width:949.98px){.metric-strip:has(>.metric-item:nth-child(6):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Three options in a two-column choice would leave one alone: they sit in a row when there is room, and the third spans otherwise. */
+.selectable-cards:has(>label:nth-of-type(3):last-of-type)>label:last-of-type{grid-column:1/-1}
+@container ir-node (min-width:600px){.selectable-cards:has(>label:nth-of-type(3):last-of-type){grid-template-columns:repeat(3,minmax(0,1fr))}.selectable-cards:has(>label:nth-of-type(3):last-of-type)>label:last-of-type{grid-column:auto}}
 /* An unverified block says so where a person reads it, not only in diagnostics. */
 .ir-sandbox{display:grid;gap:6px;margin:0;min-width:0}
 .ir-sandbox figcaption{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;font-size:var(--type-caption);color:var(--muted)}

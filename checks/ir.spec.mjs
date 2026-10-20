@@ -451,3 +451,30 @@ test('required-only renders show the props and the component chrome, nothing els
   if (process.env.UPDATE_FIXTURES) await writeFile(fixture, `${JSON.stringify(texts, null, 2)}\n`);
   expect(texts).toEqual(JSON.parse(await readFile(fixture, 'utf8')));
 });
+
+test('a row of equal cards never leaves one card alone at any width', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const stat = n => Array.from({ length: n }, (_, i) => ({ label: `Measure ${i + 1}`, value: String(i + 1) }));
+  const rows = await page.evaluate(async ({ stats }) => {
+    const { render } = await import('/ir.js');
+    const target = document.querySelector('[data-ir-output]');
+    const found = [];
+    for (const width of [330, 420, 560, 616, 680, 760, 900, 1000]) {
+      for (const n of [3, 4, 5, 6]) {
+        target.style.width = `${width}px`;
+        await render({ type: 'screen', children: [{ component: 'syntari.stat-row', props: { stats: stats[n] } }, { component: 'syntari.selectable-cards', props: { question: 'Pick one', options: stats[3].map(s => ({ title: s.label })) } }] }, target, {});
+        for (const [grid, item] of [['.stat-row', '.stat-card'], ['.selectable-cards', 'label']]) {
+          const box = target.querySelector(grid);
+          const cards = [...box.querySelectorAll(`:scope > ${item}`)];
+          const tops = [...new Set(cards.map(card => Math.round(card.getBoundingClientRect().top)))];
+          const last = cards.filter(card => Math.round(card.getBoundingClientRect().top) === tops.at(-1));
+          if (tops.length > 1 && last.length === 1 && last[0].getBoundingClientRect().width < box.clientWidth * 0.75) found.push(`${grid} ${cards.length} at ${width}px`);
+        }
+      }
+    }
+    target.style.width = '';
+    return found;
+  }, { stats: { 3: stat(3), 4: stat(4), 5: stat(5), 6: stat(6) } });
+  expect(rows).toEqual([]);
+});
