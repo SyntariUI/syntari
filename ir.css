@@ -4,7 +4,8 @@
 .ir-screen[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:start}
 .ir-screen[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:start}
 .ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr);align-items:start}
-.ir-screen-title{font-size:var(--type-title-md);font-weight:500;letter-spacing:-.4px}
+/* The title heads the whole screen; in a multi-column layout it would otherwise take the first cell. */
+.ir-screen-title{grid-column:1/-1;font-size:var(--type-title-md);font-weight:500;letter-spacing:-.4px}
 /**
  * A mounted component keeps the flow it was authored for: the shared runtime stacks
  * its parts in a flex column with a gap, and some parts compensate for that gap with

@@ -7,6 +7,7 @@ October 19, 2026. Fixes from the first audit of the published 0.3.0.
 - `syntari doctor` accepts a manual setup: a missing installation marker is a note, and only a marker for another version fails.
 - System guide links such as `/system/?guide=ai-patterns` open the guide. The page's `<base href>` used to drop the query before the guide was read.
 - Code no longer shows Geist Mono ligatures: `var(--surface)` used to render with an arrow.
+- A `two-column` screen keeps its title above both columns. The title used to take the first cell and push every node one cell along.
 - Pattern previews point to the Renderer page, and the guides name the inspector panels and install paths that exist.
 
 ---

@@ -212,6 +212,26 @@ test('leaving an optional prop out never writes "undefined" into the screen', as
   }
 });
 
+test('a two-column screen keeps its title above both columns', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const layout = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const stage = document.querySelector('[data-ir-output]');
+    const spec = { type: 'screen', layout: 'two-column', title: 'Two columns', children: [
+      { component: 'syntari.card', props: { title: 'Left' } },
+      { component: 'syntari.card', props: { title: 'Right' } }
+    ] };
+    const result = await render(spec, stage);
+    const box = element => element.getBoundingClientRect();
+    const [left, right] = [...result.element.querySelectorAll('.ir-node')].map(box);
+    return { screen: box(result.element), title: box(result.element.querySelector('.ir-screen-title')), left, right };
+  });
+  expect(layout.title.width).toBeCloseTo(layout.screen.width, 0);
+  expect(layout.left.top).toBeCloseTo(layout.right.top, 0);
+  expect(layout.left.top).toBeGreaterThan(layout.title.bottom);
+});
+
 test('a mounted component keeps the internal rhythm it was authored for', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   await page.locator('[data-ir-output] .ir-screen').waitFor();
