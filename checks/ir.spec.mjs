@@ -253,6 +253,39 @@ test('a section groups nodes under a heading in its own layout', async ({ page }
   expect(layout.right.left).toBeGreaterThan(layout.left.right);
 });
 
+test('an unfinished stage never shows a check, and a live status dot follows its tone', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const shown = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const readout = tone => ({ component: 'syntari.live-readout', props: { title: 'Checkout API', state: tone === 'danger' ? 'Degraded' : 'Healthy', tone, values: [{ label: 'p95', value: '840 ms' }] } });
+    const spec = { type: 'screen', children: [
+      { component: 'syntari.process-ledger', props: { stages: [
+        { title: 'Deploy', state: 'done' },
+        { title: 'Verify', state: 'current' },
+        { title: 'Announce' },
+        { title: 'Retire the old build', state: 'pending', mark: 'minus' }
+      ] } },
+      readout('success'),
+      readout('danger')
+    ] };
+    const result = await render(spec, document.querySelector('[data-ir-output]'));
+    const marks = [...result.element.querySelectorAll('.process-ledger .stage-mark')];
+    return {
+      diagnostics: result.diagnostics,
+      icons: marks.map(mark => mark.dataset.irIcon ?? null),
+      fills: marks.map(mark => getComputedStyle(mark).backgroundColor),
+      dots: [...result.element.querySelectorAll('.live-readout .status-dot')].map(dot => getComputedStyle(dot).backgroundColor)
+    };
+  });
+  expect(shown.diagnostics).toEqual([]);
+  /* Left out, a mark follows the stage's state; given, it wins. */
+  expect(shown.icons).toEqual(['check', 'clock', 'circle', 'minus']);
+  expect(shown.fills[2]).not.toBe(shown.fills[0]);
+  expect(shown.dots).toHaveLength(2);
+  expect(shown.dots[1]).not.toBe(shown.dots[0]);
+});
+
 test('an unverified block is refused unless the host allows it, and is isolated when it is', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   await page.locator('[data-ir-output] .ir-screen').waitFor();

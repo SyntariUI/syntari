@@ -587,7 +587,8 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
   for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => each(selector, target => setIcon(target, current)));
   /* Chrome that only means something beside a value, like a "Total" label, goes when that value is unset. */
   for (const [key, selector] of Object.entries(ir.showWhen ?? {})) { const current = value(key); each(selector, target => markEmpty(target, current === undefined || current === '' || (Array.isArray(current) && !current.length))); }
-  for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => applyVariant(pick(root, binding.selector), binding.values, current, report, path));
+  /* One prop can set classes in several places, such as a status badge and the dot beside it. */
+  for (const [key, binding] of Object.entries(ir.variant ?? {})) bound(key, current => { for (const one of [].concat(binding)) applyVariant(pick(root, one.selector), one.values, current, report, path); });
   for (const [key, binding] of Object.entries(ir.attributes ?? {})) {
     for (const one of [].concat(binding)) {
       const current = value(key) ?? (one.fallback ? value(one.fallback) : undefined);
@@ -671,7 +672,14 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
         const item = clone.cloneNode(true);
         const data = items[i];
         /* "." names the item itself, for a list of plain strings. */
-        const field = name => { const current = name === '.' ? data : Array.isArray(data) ? data[Number(name)] : data?.[name]; return current === undefined ? fieldContract[name]?.default : current; };
+        const given = name => name === '.' ? data : Array.isArray(data) ? data[Number(name)] : data?.[name];
+        /* A field left out can follow another, such as a stage's mark following its state, so a pending stage never keeps the template's check. */
+        const field = (name, follow = true) => {
+          const current = given(name);
+          if (current !== undefined) return current;
+          const from = follow ? fieldContract[name]?.defaultFrom : null;
+          return (from ? from.values[field(from.field, false)] : undefined) ?? fieldContract[name]?.default;
+        };
         item.dataset.syntariIndex = String(i);
         for (const attribute of part.strip ?? []) item.removeAttribute(attribute);
         if (part.cells) {

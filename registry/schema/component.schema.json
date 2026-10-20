@@ -140,8 +140,20 @@
         },
         "variant": {
           "type": "object",
+          "description": "Prop name to the classes it sets. A list of bindings sets classes in several places from one value, such as a status badge and the dot beside it.",
           "additionalProperties": {
-            "$ref": "#/definitions/variantBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/variantBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/variantBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "class": {
@@ -533,6 +545,27 @@
             "tolerance": {
               "type": "number",
               "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "defaultFrom": {
+          "type": "object",
+          "description": "For a field of a list item: when the item leaves the field out, its value is taken from another field of the same item, such as a stage's mark from its state. The other field's own default applies first; a value with no mapping falls back to default.",
+          "required": [
+            "field",
+            "values"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           },
           "additionalProperties": false
