@@ -10,6 +10,7 @@ October 20, 2026. Screens that explain, not only show.
 - A list prop can declare that its parts add up to a total (`sum` in the manifest schema), reported as `wrong-sum`.
 - The runtime exports `parseFormula`, `evaluateFormula`, and `formatValue`.
 - A region whose `children` is not a list no longer stops the renderer.
+- In a rendered screen, rows of equal cards no longer leave one card alone: four stats sit two by two instead of three plus one, and where no even split exists the last card spans the row. This covers Stat row, Headline metric, Media cards, Live readout values, Metric strip, and three Selectable cards.
 
 ---
 
