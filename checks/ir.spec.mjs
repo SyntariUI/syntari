@@ -232,6 +232,149 @@ test('a two-column screen keeps its title above both columns', async ({ page }) 
   expect(layout.left.top).toBeGreaterThan(layout.title.bottom);
 });
 
+test('a section groups nodes under a heading in its own layout', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const layout = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const spec = { type: 'screen', children: [{ type: 'section', heading: '1. What changed', layout: 'two-column', children: [
+      { id: 'left', component: 'syntari.card', props: { title: 'Left' } },
+      { id: 'right', component: 'syntari.card', props: { title: 'Right' } }
+    ] }] };
+    const result = await render(spec, document.querySelector('[data-ir-output]'));
+    const section = result.element.querySelector('.ir-section');
+    const [left, right] = [...section.querySelectorAll('.ir-node')].map(node => node.getBoundingClientRect());
+    return { heading: section.querySelector('h3').textContent, collapsible: Boolean(section.closest('details')), diagnostics: result.diagnostics, left, right };
+  });
+  expect(layout.heading).toBe('1. What changed');
+  expect(layout.collapsible).toBe(false);
+  expect(layout.diagnostics).toEqual([]);
+  expect(layout.left.top).toBeCloseTo(layout.right.top, 0);
+  expect(layout.right.left).toBeGreaterThan(layout.left.right);
+});
+
+test('an unverified block is refused unless the host allows it, and is isolated when it is', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const report = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const stage = document.querySelector('[data-ir-output]');
+    window.ranInside = false;
+    const html = '<meta http-equiv="refresh" content="0;url=https://example.com"><h1>Doors</h1><a href="https://example.com">Open</a><img src="x" onerror="parent.ranInside = true"><script>parent.ranInside = true</script><form action="https://example.com"><button>Send</button></form>';
+    const spec = { type: 'screen', children: [{ type: 'sandbox', label: 'Three doors', html, height: 160 }] };
+    const refused = await render(spec, stage);
+    const refusedFallback = Boolean(refused.element.querySelector('.ir-fallback')), refusedFrame = Boolean(refused.element.querySelector('iframe'));
+    const refusedCodes = refused.diagnostics.map(d => `${d.severity}:${d.code}`);
+    const allowed = await render(spec, stage, { sandbox: true });
+    const frame = allowed.element.querySelector('.ir-sandbox iframe');
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return {
+      refusedFallback, refusedFrame, refusedCodes,
+      allowedCodes: allowed.diagnostics.map(d => `${d.severity}:${d.code}`),
+      sandbox: frame.getAttribute('sandbox'), height: frame.style.height, label: allowed.element.querySelector('.ir-sandbox figcaption').textContent,
+      srcdoc: frame.srcdoc, readable: (() => { try { return Boolean(frame.contentDocument); } catch { return false; } })(), ranInside: window.ranInside
+    };
+  });
+  expect(report.refusedFallback).toBe(true);
+  expect(report.refusedFrame).toBe(false);
+  expect(report.refusedCodes).toContain('error:sandbox-not-allowed');
+  expect(report.allowedCodes).toEqual(['warning:unverified-block']);
+  expect(report.sandbox).toBe('');
+  expect(report.height).toBe('160px');
+  expect(report.label).toContain('Unverified');
+  expect(report.srcdoc).toContain("default-src 'none'");
+  expect(report.srcdoc).toContain('<h1>Doors</h1>');
+  for (const removed of ['refresh', 'https://example.com', '<script', 'onerror', '<form']) expect(report.srcdoc).not.toContain(removed);
+  expect(report.readable).toBe(false);
+  expect(report.ranInside).toBe(false);
+});
+
+test('a calculator recomputes its results from declared formulas as a person moves an input', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    const spec = { type: 'screen', children: [{ component: 'syntari.calculator', props: {
+      title: 'Illustrative retirement savings',
+      inputs: [{ name: 'monthly', label: 'Monthly contribution', min: 0, max: 1000, step: 25, value: 500, format: 'currency' }, { name: 'years', label: 'Years invested', min: 5, max: 45, step: 1, value: 30, unit: 'years' }, { name: 'rate', label: 'Annual return', min: 0, max: 12, step: 0.5, value: 5, format: 'percent' }],
+      outputs: [{ name: 'balance', label: 'Balance', formula: 'fv(rate / 1200, years * 12, monthly)', format: 'currency' }, { name: 'paid', label: 'You paid in', formula: 'monthly * 12 * years', format: 'currency' }],
+      parts: [{ label: 'Contributions', formula: 'paid' }, { label: 'Growth', formula: 'balance - paid' }]
+    } }] };
+    window.result = await render(spec, document.querySelector('[data-ir-output]'));
+  });
+  const output = page.locator('[data-ir-output]');
+  await expect(output.locator('.calculator-result-value')).toHaveText(['$416,129', '$180,000']);
+  await expect(output.locator('.calculator-parts .breakdown-share')).toHaveText(['43', '57']);
+  await expect(output.locator('.calculator-input-value').nth(1)).toHaveText('30 years');
+  const years = output.locator('.calculator-input input[type=range]').nth(1);
+  await years.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(output.locator('.calculator-input-value').nth(1)).toHaveText('29 years');
+  await expect(output.locator('.calculator-result-value').nth(1)).toHaveText('$174,000');
+  expect(await page.evaluate(() => window.result.diagnostics)).toEqual([]);
+});
+
+test('checklists and selectable cards report what a person chose, and media cards load only host images', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const diagnostics = await page.evaluate(async () => {
+    const { render } = await import('/ir.js');
+    window.requests = [];
+    const pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const spec = { type: 'screen', children: [
+      { id: 'launch', component: 'syntari.checklist', props: { title: 'Launch', items: [{ title: 'Freeze', done: true }, { title: 'Migrate' }] } },
+      { id: 'plan', component: 'syntari.selectable-cards', props: { question: 'Which plan?', options: [{ title: 'Business', selected: true }, { title: 'Enterprise' }] } },
+      { component: 'syntari.media-cards', props: { items: [{ title: 'Hosted', image: 'hosted', alt: 'A server rack' }, { title: 'Invented', image: 'https://example.com/x.png' }, { title: 'Unsafe', image: 'unsafe' }] } }
+    ] };
+    const result = await render(spec, document.querySelector('[data-ir-output]'), { assets: { hosted: pixel, unsafe: 'javascript:alert(1)' }, onActionRequest: request => window.requests.push(request) });
+    return result.diagnostics.map(d => `${d.severity}:${d.code}@${d.path}`);
+  });
+  const output = page.locator('[data-ir-output]');
+  expect(await output.locator('.checklist-item input').evaluateAll(boxes => boxes.map(box => box.checked))).toEqual([true, false]);
+  await output.locator('.checklist-item').nth(1).click();
+  await output.locator('.selectable-cards label').nth(1).click();
+  await expect.poll(() => page.evaluate(() => window.requests.length)).toBe(2);
+  const requests = await page.evaluate(() => window.requests);
+  expect(requests[0]).toMatchObject({ component: 'checklist', action: 'check', id: 'launch', index: 1, values: { checked: true }, consequential: false });
+  expect(requests[1]).toMatchObject({ component: 'selectable-cards', action: 'select', id: 'plan', index: 1, values: { checked: true } });
+  const images = await output.locator('.media-card-image').evaluateAll(nodes => nodes.map(node => ({ hidden: node.hidden, src: node.getAttribute('src'), alt: node.alt })));
+  expect(images[0]).toMatchObject({ hidden: false, alt: 'A server rack' });
+  expect(images[0].src).toMatch(/^data:image\/png/);
+  expect(images.slice(1).every(image => image.hidden && !image.src)).toBe(true);
+  expect(diagnostics.filter(code => code.startsWith('warning:unknown-asset'))).toHaveLength(2);
+});
+
+test('validation explains broken sections, formulas, shares, and ranges', async ({ page }) => {
+  await page.goto(`${origin}/generative-ui.html`);
+  await page.locator('[data-ir-output] .ir-screen').waitFor();
+  const report = await page.evaluate(async () => {
+    const { validate } = await import('/ir.js');
+    const codesFor = async (child, options) => (await validate({ type: 'screen', children: [child] }, options)).diagnostics.map(d => `${d.severity}:${d.code}`);
+    const calculator = (inputs, outputs) => ({ component: 'syntari.calculator', props: { title: 'Cost', inputs, outputs } });
+    const seats = { name: 'seats', label: 'Seats', min: 1, max: 100, step: 1, value: 10 };
+    return {
+      sectionNoHeading: await codesFor({ type: 'section', children: [] }),
+      sectionLayout: await codesFor({ type: 'section', heading: 'Plan', layout: 'carousel', children: [] }),
+      shares: await codesFor({ component: 'syntari.breakdown', props: { title: 'Invoice', segments: [{ label: 'Seats', share: 70 }, { label: 'API', share: 20 }] } }),
+      code: await codesFor(calculator([seats], [{ name: 'cost', label: 'Cost', formula: 'seats * fetch(1)' }])),
+      unknownName: await codesFor(calculator([seats], [{ name: 'cost', label: 'Cost', formula: 'seats * price' }])),
+      laterName: await codesFor(calculator([seats], [{ name: 'cost', label: 'Cost', formula: 'total / 2' }, { name: 'total', label: 'Total', formula: 'seats * 4' }])),
+      range: await codesFor(calculator([{ ...seats, value: 200 }], [{ name: 'cost', label: 'Cost', formula: 'seats' }])),
+      offStep: await codesFor(calculator([{ ...seats, step: 5, value: 12 }], [{ name: 'cost', label: 'Cost', formula: 'seats' }])),
+      sandboxBounds: await codesFor({ type: 'sandbox', label: 'Doors', html: '<p>x</p>', height: 4000 }, { sandbox: true })
+    };
+  });
+  expect(report.sectionNoHeading).toContain('error:invalid-section');
+  expect(report.sectionLayout).toEqual(['warning:unknown-layout']);
+  expect(report.shares).toContain('error:wrong-sum');
+  expect(report.code).toContain('error:invalid-formula');
+  expect(report.unknownName).toContain('error:unknown-name');
+  expect(report.laterName).toContain('error:unknown-name');
+  expect(report.range).toContain('error:invalid-range');
+  expect(report.offStep).toEqual(['warning:off-step']);
+  expect(report.sandboxBounds).toContain('error:above-maximum');
+});
+
 test('a mounted component keeps the internal rhythm it was authored for', async ({ page }) => {
   await page.goto(`${origin}/generative-ui.html`);
   await page.locator('[data-ir-output] .ir-screen').waitFor();
