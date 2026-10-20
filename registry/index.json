@@ -1811,8 +1811,8 @@
       ],
       "source": "components/selectable-cards/",
       "manifest": "components/selectable-cards.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -4307,6 +4307,166 @@
         "kit/runtime/styles.css"
       ],
       "preview": "https://syntariui.giovanitier.com/components/source-list/"
+    },
+    {
+      "id": "text-block",
+      "name": "Text block",
+      "category": "Content",
+      "version": "0.3.1",
+      "description": "A paragraph that explains, with optional numbered or bulleted steps and small print.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/text-block/",
+      "manifest": "components/text-block.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/text-block.js",
+        "kit/components/text-block.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/text-block/"
+    },
+    {
+      "id": "breakdown",
+      "name": "Breakdown",
+      "category": "Data display",
+      "version": "0.3.1",
+      "description": "How a whole splits into parts: one bar, each part named with its value and share, in words as well as colour.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/breakdown/",
+      "manifest": "components/breakdown.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/breakdown.js",
+        "kit/components/breakdown.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/breakdown/"
+    },
+    {
+      "id": "checklist",
+      "name": "Checklist",
+      "category": "Content",
+      "version": "0.3.1",
+      "description": "Steps a person ticks off. Progress is counted from the boxes themselves, so it can never disagree with them.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/checklist/",
+      "manifest": "components/checklist.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/checklist.js",
+        "kit/components/checklist.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/checklist/"
+    },
+    {
+      "id": "media-cards",
+      "name": "Media cards",
+      "category": "Content",
+      "version": "0.3.1",
+      "description": "A short row of cards, each with artwork, a title, and a caption. Images come only from the host; without one a card shows its icon.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/media-cards/",
+      "manifest": "components/media-cards.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/media-cards.js",
+        "kit/components/media-cards.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/media-cards/"
+    },
+    {
+      "id": "calculator",
+      "name": "Calculator",
+      "category": "Data display",
+      "version": "0.3.1",
+      "description": "Sliders a person moves and results computed from them by declared formulas, with the parts of the main result shown as shares.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/calculator/",
+      "manifest": "components/calculator.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/calculator.js",
+        "kit/components/calculator.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/calculator/"
     }
   ]
 }
