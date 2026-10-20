@@ -294,13 +294,14 @@ test('a calculator recomputes its results from declared formulas as a person mov
   await page.locator('[data-ir-output] .ir-screen').waitFor();
   await page.evaluate(async () => {
     const { render } = await import('/ir.js');
-    const spec = { type: 'screen', children: [{ component: 'syntari.calculator', props: {
+    const spec = { type: 'screen', children: [{ id: 'savings', component: 'syntari.calculator', props: {
       title: 'Illustrative retirement savings',
       inputs: [{ name: 'monthly', label: 'Monthly contribution', min: 0, max: 1000, step: 25, value: 500, format: 'currency' }, { name: 'years', label: 'Years invested', min: 5, max: 45, step: 1, value: 30, unit: 'years' }, { name: 'rate', label: 'Annual return', min: 0, max: 12, step: 0.5, value: 5, format: 'percent' }],
       outputs: [{ name: 'balance', label: 'Balance', formula: 'fv(rate / 1200, years * 12, monthly)', format: 'currency' }, { name: 'paid', label: 'You paid in', formula: 'monthly * 12 * years', format: 'currency' }],
       parts: [{ label: 'Contributions', formula: 'paid' }, { label: 'Growth', formula: 'balance - paid' }]
     } }] };
-    window.result = await render(spec, document.querySelector('[data-ir-output]'));
+    window.requests = [];
+    window.result = await render(spec, document.querySelector('[data-ir-output]'), { onActionRequest: request => window.requests.push(request) });
   });
   const output = page.locator('[data-ir-output]');
   await expect(output.locator('.calculator-result-value')).toHaveText(['$416,129', '$180,000']);
@@ -312,6 +313,7 @@ test('a calculator recomputes its results from declared formulas as a person mov
   await expect(output.locator('.calculator-input-value').nth(1)).toHaveText('29 years');
   await expect(output.locator('.calculator-result-value').nth(1)).toHaveText('$174,000');
   expect(await page.evaluate(() => window.result.diagnostics)).toEqual([]);
+  expect(await page.evaluate(() => window.requests.at(-1))).toMatchObject({ component: 'calculator', action: 'adjust', id: 'savings', index: 1, values: { value: 29 }, consequential: false });
 });
 
 test('checklists and selectable cards report what a person chose, and media cards load only host images', async ({ page }) => {
@@ -350,7 +352,7 @@ test('validation explains broken sections, formulas, shares, and ranges', async 
   const report = await page.evaluate(async () => {
     const { validate } = await import('/ir.js');
     const codesFor = async (child, options) => (await validate({ type: 'screen', children: [child] }, options)).diagnostics.map(d => `${d.severity}:${d.code}`);
-    const calculator = (inputs, outputs) => ({ component: 'syntari.calculator', props: { title: 'Cost', inputs, outputs } });
+    const calculator = (inputs, outputs) => ({ id: 'cost', component: 'syntari.calculator', props: { title: 'Cost', inputs, outputs } });
     const seats = { name: 'seats', label: 'Seats', min: 1, max: 100, step: 1, value: 10 };
     return {
       sectionNoHeading: await codesFor({ type: 'section', children: [] }),

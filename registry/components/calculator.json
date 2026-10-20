@@ -308,5 +308,13 @@
       "partValue": ".breakdown-value",
       "partShare": ".breakdown-share"
     }
+  },
+  "actions": {
+    "adjust": {
+      "selector": ".calculator-input input[type=range]",
+      "event": "change",
+      "local": true,
+      "description": "The person moved an input. index names the input and values.value its new value. Results are already recomputed on screen; the host can use the value, for example to quote a charge."
+    }
   }
 }
