@@ -10,6 +10,7 @@ October 20, 2026. Screens that explain, not only show.
 - A list prop can declare that its parts add up to a total (`sum` in the manifest schema), reported as `wrong-sum`.
 - A Process ledger stage without a `mark` shows the icon of its state: a check when done, a clock when current, a circle when pending. It used to keep the template's check, so a stage that had not happened looked finished; pending stages are now neutral instead of green. An explicit `mark` still wins. A list item field can follow another this way (`defaultFrom` in the manifest schema), and `syntari validate` checks the mapping.
 - A Live readout's status dot follows its `tone`, so a degraded service no longer shows a green dot beside a red badge. A `variant` binding can set classes in several places from one value.
+- `renderableSlugs()` answers from the component index, which records each component's renderable flag at build time. It used to fetch every authored manifest one at a time, so a page took 37 serial requests to start on a slow connection.
 - The runtime exports `parseFormula`, `evaluateFormula`, and `formatValue`.
 - A region whose `children` is not a list no longer stops the renderer.
 - In a rendered screen, rows of equal cards no longer leave one card alone: four stats sit two by two instead of three plus one, and where no even split exists the last card spans the row. This covers Stat row, Headline metric, Media cards, Live readout values, Metric strip, and three Selectable cards.

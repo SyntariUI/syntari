@@ -47,12 +47,12 @@ export const isRenderable = manifest => Boolean(manifest?.props && manifest?.ir)
 export const layoutName = layout => IR_LAYOUTS.includes(layout) ? layout : 'stack';
 export async function renderableSlugs() {
   const reg = await registry();
+  const authored = reg.index.components.filter(entry => entry.status === 'authored');
+  /* The index records each component's renderable flag at build time, so no manifest is fetched just to answer this.
+     An index without the flag is read the slow way, one manifest at a time. */
+  if (authored.every(entry => typeof entry.renderable === 'boolean')) return authored.filter(entry => entry.renderable).map(entry => entry.id);
   const found = [];
-  for (const entry of reg.index.components) {
-    if (entry.status !== 'authored') continue;
-    const manifest = await reg.manifest(entry.id);
-    if (isRenderable(manifest)) found.push(entry.id);
-  }
+  for (const entry of authored) if (isRenderable(await reg.manifest(entry.id))) found.push(entry.id);
   return found;
 }
 
