@@ -2,7 +2,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validate as validateRuntime } from './kit/runtime/ir.js';
+import { validate as validateRuntime, applyOperations as applyRuntime, assignIds, versionOf, diffScreens, findNode, OPS_VERSION } from './kit/runtime/ir.js';
 import { validateScreenSchema } from './registry-validator.mjs';
 
 const registryDir = fileURLToPath(new URL('./kit/runtime/registry/', import.meta.url));
@@ -52,15 +52,15 @@ export async function searchRegistry(query) {
   return [...components, ...patterns];
 }
 
-/** Validate a screen as the host would. Pass { sandbox: true } only for a host that allows unverified blocks. */
-export async function validateScreen(spec, options = {}) {
+async function nodeRegistry() {
   const index = await readJson('index.json');
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
-  const runtime = await validateRuntime(spec, { sandbox: options.sandbox === true, registry: {
-    index,
-    entries,
-    manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null
-  } });
+  return { index, entries, manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null };
+}
+
+/** Validate a screen as the host would. Pass { sandbox: true } only for a host that allows unverified blocks. */
+export async function validateScreen(spec, options = {}) {
+  const runtime = await validateRuntime(spec, { sandbox: options.sandbox === true, registry: await nodeRegistry() });
   /* The runtime checks the budget first; a spec over it is rejected without walking the whole schema. */
   const overBudget = runtime.diagnostics.some(item => item.code === 'over-depth-budget' || item.code === 'over-node-budget');
   const schema = overBudget ? { valid: false, details: [] } : await validateScreenSchema(spec, registryDir);
@@ -71,4 +71,14 @@ export async function validateScreen(spec, options = {}) {
     ...runtime.diagnostics
   ];
   return { ok: schema.valid && runtime.ok, diagnostics };
+}
+
+export { assignIds, versionOf, diffScreens, findNode, OPS_VERSION };
+/**
+ * Apply a model's proposed change to one version of a screen, as a host would. The model proposes operations by node id;
+ * the runtime applies only those, refuses anything outside their scope, protects existing data, and validates the whole
+ * result. On any error the result has ok: false and spec: null, so the host keeps the last valid screen.
+ */
+export async function applyScreenOperations(spec, change, options = {}) {
+  return applyRuntime(spec, change, { ...options, sandbox: options.sandbox === true, registry: await nodeRegistry() });
 }

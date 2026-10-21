@@ -44,6 +44,11 @@
         "children"
       ],
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
         "type": {
           "const": "region"
         },
@@ -178,6 +183,11 @@
         "children"
       ],
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
         "type": {
           "const": "section"
         },
@@ -208,6 +218,11 @@
         "html"
       ],
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
         "type": {
           "const": "sandbox"
         },

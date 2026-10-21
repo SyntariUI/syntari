@@ -6,6 +6,9 @@
 .ir-screen[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr);align-items:start}
 /* The title heads the whole screen; in a multi-column layout it would otherwise take the first cell. */
 .ir-screen-title{grid-column:1/-1;font-size:var(--type-title-md);font-weight:500;letter-spacing:-.4px}
+/* Demonstration data is named on the screen itself, under the title, so illustrative figures never pass for real ones. */
+.ir-data-note{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:-12px 0 0;font-size:var(--type-caption);line-height:1.6;color:var(--muted)}
+.ir-data-badge{padding:0 8px;border:1px dashed var(--amber-a3);border-radius:999px;background:var(--amber-a1);color:var(--warning-text);font-weight:500;white-space:nowrap}
 /**
  * A mounted component keeps the flow it was authored for: the shared runtime stacks
  * its parts in a flex column with a gap, and some parts compensate for that gap with

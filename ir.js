@@ -7,9 +7,9 @@ const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 /** The keys Screen IR defines. Anything else is reported, as the published schema reports it. */
 const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta'];
 const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
-const REGION_KEYS = ['type', 'label', 'open', 'children', 'provenance'];
-const SECTION_KEYS = ['type', 'heading', 'layout', 'children', 'provenance'];
-const SANDBOX_KEYS = ['type', 'label', 'html', 'height', 'provenance'];
+const REGION_KEYS = ['id', 'type', 'label', 'open', 'children', 'provenance'];
+const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'children', 'provenance'];
+const SANDBOX_KEYS = ['id', 'type', 'label', 'html', 'height', 'provenance'];
 /** An unverified block is model-written HTML the host chose to allow. It is never validated, so it is bounded and isolated instead. */
 export const SANDBOX_LIMITS = { maxHtml: 20000, minHeight: 80, maxHeight: 1200, defaultHeight: 320 };
 /** A node id lets the host match an action to its own state. It never names code to run. */
@@ -211,12 +211,22 @@ function checkProvenance(provenance, path, report) {
   }
 }
 
+/** Any node may carry an id: operations name nodes by it, and action requests carry it back to the host. */
+function checkId(node, context, path) {
+  if (node.id === undefined) return;
+  const { report } = context;
+  if (typeof node.id !== 'string' || !NODE_ID_PATTERN.test(node.id)) report('error', 'invalid-node-id', `${path}.id`, 'Node ids use letters, digits, dots, dashes, or underscores, up to 64 characters.');
+  else if (context.ids?.has(node.id)) report('error', 'duplicate-node-id', `${path}.id`, `"${node.id}" is already used by another node.`);
+  else context.ids?.add(node.id);
+}
+
 /** Validate one node against the registry. Returns the diagnostics raised for that node only. */
 async function checkNode(node, context, path) {
   const { reg, report } = context;
   if (!node || typeof node !== 'object' || Array.isArray(node)) { report('error', 'invalid-node', path, 'A node must be an object with a component id.'); return null; }
   if (node.type === 'region') {
     for (const key of Object.keys(node)) if (!REGION_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Regions take ${REGION_KEYS.join(', ')}.`);
+    checkId(node, context, path);
     if (!Array.isArray(node.children)) report('error', 'missing-required', `${path}.children`, 'A region needs a children array, even an empty one.');
     checkProvenance(node.provenance, `${path}.provenance`, report);
     if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-region', `${path}.label`, 'A region needs a label; it becomes the summary a person reads.');
@@ -226,6 +236,7 @@ async function checkNode(node, context, path) {
   }
   if (node.type === 'section') {
     for (const key of Object.keys(node)) if (!SECTION_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Sections take ${SECTION_KEYS.join(', ')}.`);
+    checkId(node, context, path);
     if (!Array.isArray(node.children)) report('error', 'missing-required', `${path}.children`, 'A section needs a children array.');
     checkProvenance(node.provenance, `${path}.provenance`, report);
     if (typeof node.heading !== 'string' || !node.heading.trim()) report('error', 'invalid-section', `${path}.heading`, 'A section needs a heading; it is what a person scans for.');
@@ -236,6 +247,7 @@ async function checkNode(node, context, path) {
   }
   if (node.type === 'sandbox') {
     for (const key of Object.keys(node)) if (!SANDBOX_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Unverified blocks take ${SANDBOX_KEYS.join(', ')}.`);
+    checkId(node, context, path);
     checkProvenance(node.provenance, `${path}.provenance`, report);
     if (typeof node.label !== 'string' || !node.label.trim()) report('error', 'invalid-sandbox', `${path}.label`, 'An unverified block needs a label that says what it shows.');
     else if (node.label.length > 60) report('error', 'over-length', `${path}.label`, 'Labels stay under 60 characters.');
@@ -260,11 +272,7 @@ async function checkNode(node, context, path) {
   if (!reg.entries.has(slug)) { report('error', 'unknown-component', `${path}.component`, `"${component}" is not in the Syntari registry.`); return null; }
   const manifest = await reg.manifest(slug);
   if (!isRenderable(manifest)) { report('error', 'unsupported-component', `${path}.component`, `"${component}" is documented but has no prop contract yet, so it cannot be rendered from IR.`); return null; }
-  if (node.id !== undefined) {
-    if (typeof node.id !== 'string' || !NODE_ID_PATTERN.test(node.id)) report('error', 'invalid-node-id', `${path}.id`, 'Node ids use letters, digits, dots, dashes, or underscores, up to 64 characters.');
-    else if (context.ids?.has(node.id)) report('error', 'duplicate-node-id', `${path}.id`, `"${node.id}" is already used by another node.`);
-    else context.ids?.add(node.id);
-  }
+  checkId(node, context, path);
   if (Object.keys(manifest.actions ?? {}).length && node.id === undefined) report('warning', 'missing-node-id', `${path}.id`, `${component} sends action requests. Give it an id so the host can match each request to its own state.`);
   checkProps(manifest, node.props ?? {}, `${path}.props`, report, reg.index?.icons);
   return { slug, manifest };
@@ -405,6 +413,340 @@ export async function validate(spec, options = {}) {
   }
   for (const [i, child] of children.entries()) await walk(child, `children[${i}]`, 1);
   return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, screen };
+}
+
+/* ---------- Iteration: a model proposes operations against one version of a screen; the runtime applies them ---------- */
+export const OPS_VERSION = 'syntari-ops-1';
+export const OPS_LIMITS = { maxOperations: 20 };
+const CHANGE_KEYS = ['version', 'base', 'summary', 'operations', 'clarify', 'needs'];
+const OP_KEYS = { insert: ['op', 'parent', 'after', 'before', 'node', 'reason'], replace: ['op', 'target', 'set', 'node', 'reason'], remove: ['op', 'target', 'reason'] };
+/** What `set` may change on each kind of node. A component's fields are its props, plus the reason it is on the screen. */
+const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'] };
+const kindOfNode = node => ['section', 'region', 'sandbox'].includes(node?.type) ? node.type : 'component';
+const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+/** Visit every node in reading order with its path, its parent's id ("screen" at the top), and the list that holds it. */
+function eachNode(screen, visit) {
+  const go = (list, path, parentId) => (Array.isArray(list) ? list : []).forEach((node, index) => {
+    const at = `${path ? `${path}.` : ''}children[${index}]`;
+    visit(node, { path: at, parentId, list, index });
+    if (isObject(node) && Array.isArray(node.children)) go(node.children, at, typeof node.id === 'string' ? node.id : at);
+  });
+  go(screen?.children, '', 'screen');
+}
+/** JSON with sorted keys, so two specs that are equal as data read the same. */
+const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(',')}]`
+  : isObject(value) ? `{${Object.keys(value).sort().filter(key => value[key] !== undefined).map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`
+  : JSON.stringify(value) ?? 'null';
+/** A short fingerprint of a screen's content. Operations name the version they were written against, so a change to a newer screen is refused. */
+export function versionOf(spec) {
+  const text = canonical(spec);
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) { hash ^= text.charCodeAt(i); hash = Math.imul(hash, 0x01000193); }
+  return `sv-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+const wordsOf = text => String(text ?? '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+function uniqueId(stem, used) {
+  const base = (stem.slice(0, 48).replace(/-+$/, '') || 'node').replace(/^[^a-z0-9]+/i, '') || 'node';
+  let id = base;
+  for (let n = 2; used.has(id); n += 1) id = `${base}-${n}`;
+  used.add(id);
+  return id;
+}
+function idStem(node) {
+  const kind = kindOfNode(node);
+  if (kind === 'component') return componentSlug(node.component).replace(/[^a-z0-9-]/g, '') || 'node';
+  return [kind === 'sandbox' ? 'block' : kind, ...wordsOf(kind === 'section' ? node.heading : node.label).slice(0, 4)].join('-');
+}
+function nameNodes(nodes, used) {
+  const go = list => (Array.isArray(list) ? list : []).forEach(node => {
+    if (!isObject(node)) return;
+    if (node.id === undefined) node.id = uniqueId(idStem(node), used);
+    go(node.children);
+  });
+  go(nodes);
+}
+/**
+ * Give every node an id it keeps from one version to the next: the ids operations name.
+ * Ids already written stay as they are; a node without one gets a readable id such as "table-2" or "section-where-absence-comes".
+ */
+export function assignIds(spec) {
+  const screen = structuredClone(spec);
+  if (!isObject(screen)) return screen;
+  const used = new Set();
+  eachNode(screen, node => { if (typeof node?.id === 'string') used.add(node.id); });
+  nameNodes(screen.type === 'screen' ? screen.children : [screen], used);
+  return screen;
+}
+/** Find a node by id: the node, its path, its parent's id, and its place in the parent's children. */
+export function findNode(spec, id) {
+  let found = null;
+  eachNode(spec, (node, at) => { if (!found && isObject(node) && node.id === id) found = { node, ...at }; });
+  return found;
+}
+
+/* Field paths name a field inside a node: "props.caption", "props.metrics[0].value", "heading". */
+const FIELD_PATH = /^[A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*|\[\d+\])*$/;
+const FORBIDDEN_STEPS = new Set(['__proto__', 'constructor', 'prototype']);
+const stepsOf = path => [...path.matchAll(/([A-Za-z_]\w*)|\[(\d+)\]/g)].map(m => m[1] ?? Number(m[2]));
+function writeAt(target, path, value) {
+  const steps = stepsOf(path);
+  let at = target;
+  for (const [i, step] of steps.slice(0, -1).entries()) {
+    if (!at[step] || typeof at[step] !== 'object') at[step] = typeof steps[i + 1] === 'number' ? [] : {};
+    at = at[step];
+  }
+  const last = steps.at(-1);
+  /* null removes an optional field, so a model can clear a note without inventing an empty one. */
+  if (value === null && !Array.isArray(at)) delete at[last]; else at[last] = value;
+}
+/** Every primitive inside a value, with its path and the name of the field that holds it. */
+function leaves(value, path = '', key = '', out = []) {
+  if (Array.isArray(value)) value.forEach((item, i) => leaves(item, `${path}[${i}]`, key, out));
+  else if (isObject(value)) for (const [k, v] of Object.entries(value)) leaves(v, path ? `${path}.${k}` : k, k, out);
+  else if (value !== undefined) out.push({ path, key, value });
+  return out;
+}
+/** Words a person reads about the data, as opposed to the data. Copy may be reworded on request; data is protected. */
+const COPY_KEY = /^(title|subtitle|caption|heading|label|chartlabel|note|description|summary|detail|hint|question|message|body|placeholder|reason|tooltip|eyebrow|.+label|.+title)$/i;
+const isCopy = key => COPY_KEY.test(key);
+/* Data is a figure, or a record in a list (a row, a point, a metric). A tone, an icon, or a layout is presentation. */
+const isData = leaf => !isCopy(leaf.key) && (typeof leaf.value === 'number' || /\d/.test(String(leaf.value)) || leaf.path.includes('['));
+const NUMBER = /\d+(?:[.,]\d+)*/g;
+/** A figure can be written 1,240 or 1240 or 4,8: each spelling counts as the same number. */
+function numberForms(token) {
+  const forms = new Set([token, token.replace(/,/g, ''), token.replace(/\./g, '').replace(',', '.')]);
+  for (const form of [...forms]) { const n = Number(form); if (Number.isFinite(n)) forms.add(String(n)); }
+  return forms;
+}
+const numbersIn = value => typeof value === 'number' ? [String(value)] : typeof value === 'string' ? value.match(NUMBER) ?? [] : [];
+function numberSet(values) {
+  const set = new Set();
+  for (const value of values) for (const token of numbersIn(value)) for (const form of numberForms(token)) set.add(form);
+  return set;
+}
+const sourced = (token, set) => [...numberForms(token)].some(form => set.has(form));
+/* In copy, a single digit is usually a count of what is on screen ("Top 5"), not a figure from the data. */
+const figuresIn = leaf => numbersIn(leaf.value).filter(token => !(isCopy(leaf.key) && /^\d$/.test(token)));
+const propLeaves = node => isObject(node?.props) ? leaves(node.props, 'props') : [];
+const ownFields = node => { if (!isObject(node)) return {}; const { children, ...rest } = node; return rest; };
+function ownLeaves(node) { return leaves(ownFields(node)); }
+const subtreeIds = node => { const ids = []; const go = n => { if (!isObject(n)) return; if (typeof n.id === 'string') ids.push(n.id); (Array.isArray(n.children) ? n.children : []).forEach(go); }; go(node); return ids; };
+
+/**
+ * Compare two versions of a screen node by node, by id. Each change names the node and the fields that differ,
+ * so a host can show exactly what an edit touched and prove that everything else is identical.
+ */
+export function diffScreens(before, after) {
+  const index = spec => { const map = new Map(); eachNode(spec, (node, at) => map.set(typeof node?.id === 'string' ? node.id : `@${at.path}`, { node, ...at })); return map; };
+  const differing = (x, y) => {
+    const a = new Map(ownLeaves(x).map(leaf => [leaf.path, JSON.stringify(leaf.value)]));
+    const b = new Map(ownLeaves(y).map(leaf => [leaf.path, JSON.stringify(leaf.value)]));
+    return [...new Set([...a.keys(), ...b.keys()])].filter(path => a.get(path) !== b.get(path)).sort();
+  };
+  const changes = [];
+  const screenFields = ['title', 'layout'].filter(key => JSON.stringify(before?.[key]) !== JSON.stringify(after?.[key]));
+  if (screenFields.length) changes.push({ change: 'changed', id: 'screen', kind: 'screen', path: '', fields: screenFields });
+  const a = index(before), b = index(after);
+  for (const [id, x] of a) if (!b.has(id)) changes.push({ change: 'removed', id, kind: kindOfNode(x.node), path: x.path, parent: x.parentId });
+  for (const [id, y] of b) {
+    const x = a.get(id);
+    if (!x) { changes.push({ change: 'added', id, kind: kindOfNode(y.node), path: y.path, parent: y.parentId }); continue; }
+    const fields = differing(x.node, y.node);
+    if (fields.length) changes.push({ change: 'changed', id, kind: kindOfNode(y.node), path: y.path, fields });
+    if (x.parentId !== y.parentId) changes.push({ change: 'moved', id, kind: kindOfNode(y.node), path: y.path, parent: y.parentId, from: x.parentId });
+  }
+  return changes;
+}
+
+/* A diagnostic belongs to the deepest node whose path it starts with; its key survives the node moving to another index. */
+function diagnosticKeys(spec, diagnostics) {
+  const paths = [];
+  eachNode(spec, (node, at) => paths.push([at.path, typeof node?.id === 'string' ? node.id : `@${at.path}`]));
+  paths.sort((x, y) => y[0].length - x[0].length);
+  return diagnostics.map(d => {
+    const owner = paths.find(([path]) => d.path === path || d.path.startsWith(`${path}.`));
+    return { diagnostic: d, id: owner?.[1] ?? 'screen', key: `${d.code}|${owner?.[1] ?? 'screen'}|${owner ? d.path.slice(owner[0].length) : d.path}` };
+  });
+}
+
+/**
+ * Apply a model's proposed change to one version of a screen. The model proposes; the runtime applies.
+ *
+ * A change is { version: "syntari-ops-1", base, summary?, operations: [...] }, where base is versionOf() of the screen it
+ * was written against. Each operation names its scope by node id:
+ *   insert  { op, parent?, after? | before?, node }  adds one node (and what it holds) at that place;
+ *   replace { op, target, set: { field: value } }     changes only those fields of one node ("screen" for the title);
+ *   replace { op, target, node }                      replaces one node, keeping its id and kind;
+ *   remove  { op, target }                            removes one node and what it holds.
+ * Nothing outside those scopes can change: the result is compared with the base node by node, and any difference no
+ * operation declared is refused. Existing data (values that are not copy, such as a metric, a row, or a chart point)
+ * cannot change unless the host passes allowDataChanges after a person confirmed it. With data: "strict" (the default),
+ * a number that appears neither on the screen nor in options.sources is refused; with data: "demo" it is reported.
+ * The whole result is validated before it is returned. On any error, ok is false and spec is null: keep the last valid screen.
+ * A change may instead carry clarify ({ kind, message }) or needs ([{ data, reason }]) and no operations: nothing applies,
+ * and the host asks the person.
+ */
+export async function applyOperations(spec, change, options = {}) {
+  const reg = options.registry ?? await registry();
+  const validation = { registry: reg, sandbox: options.sandbox === true, limits: options.limits };
+  const diagnostics = [];
+  const report = (severity, code, path, message, extra = {}) => diagnostics.push({ severity, code, path, message, ...extra });
+  const base = versionOf(spec);
+  const result = (fields = {}) => {
+    const ok = !diagnostics.some(d => d.severity === 'error') && Boolean(fields.spec);
+    return { ok, spec: ok ? fields.spec : null, base, version: ok ? versionOf(fields.spec) : null, diagnostics, effects: fields.effects ?? [], changes: fields.changes ?? [], authorization: fields.authorization ?? [], validation: fields.validation ?? null, summary: typeof change?.summary === 'string' ? change.summary : '', clarify: fields.clarify ?? null, needs: fields.needs ?? null };
+  };
+  if (!isObject(spec) || spec.type !== 'screen') { report('error', 'invalid-spec', '', 'Operations apply to a screen.'); return result(); }
+  if (!isObject(change)) { report('error', 'invalid-change', '', 'A change is an object with version, base, and operations.'); return result(); }
+  for (const key of Object.keys(change)) if (!CHANGE_KEYS.includes(key)) report('warning', 'unknown-key', key, `Changes take ${CHANGE_KEYS.join(', ')}. It was ignored.`);
+  if (change.version !== OPS_VERSION) report('error', 'unsupported-ops-version', 'version', `Change version must be "${OPS_VERSION}".`);
+  if (change.base !== base) report('error', 'stale-base', 'base', typeof change.base === 'string' ? `This change was written against ${change.base}, but the screen is now ${base}. Nothing was applied.` : `A change names the version it was written against: "base": "${base}".`);
+  let unnamed = null;
+  eachNode(spec, (node, at) => { if (!unnamed && isObject(node) && typeof node.id !== 'string') unnamed = at.path; });
+  if (unnamed) report('error', 'missing-node-id', unnamed, 'Every node needs an id before a model can change the screen. Call assignIds() on the screen first.');
+  if (diagnostics.some(d => d.severity === 'error')) return result();
+  const operations = change.operations ?? [];
+  if (!Array.isArray(operations)) { report('error', 'wrong-type', 'operations', 'Operations are a list.'); return result(); }
+  if (!operations.length) {
+    if (isObject(change.clarify) || Array.isArray(change.needs)) return result({ clarify: isObject(change.clarify) ? change.clarify : null, needs: Array.isArray(change.needs) ? change.needs : null });
+    report('error', 'empty-change', 'operations', 'The change holds no operations.');
+    return result();
+  }
+  if (operations.length > OPS_LIMITS.maxOperations) { report('error', 'over-operation-budget', 'operations', `${operations.length} operations were proposed; the limit is ${OPS_LIMITS.maxOperations}.`); return result(); }
+
+  const working = structuredClone(spec);
+  const used = new Set();
+  eachNode(working, node => { if (typeof node?.id === 'string') used.add(node.id); });
+  const effects = [];
+  for (const [i, op] of operations.entries()) {
+    const at = `operations[${i}]`;
+    const fail = (code, message, path = at) => { report('error', code, path, message, { operation: i }); };
+    if (!isObject(op) || !OP_KEYS[op.op]) { fail('invalid-operation', `Each operation is insert, replace, or remove.`, `${at}.op`); break; }
+    const unknown = Object.keys(op).filter(key => !OP_KEYS[op.op].includes(key));
+    if (unknown.length) { fail('unknown-key', `${op.op} takes ${OP_KEYS[op.op].join(', ')}; "${unknown[0]}" is not one of them.`, `${at}.${unknown[0]}`); break; }
+    const reason = typeof op.reason === 'string' ? op.reason : '';
+    if (op.op === 'insert') {
+      if (!isObject(op.node) || op.node.type === 'screen') { fail('invalid-node', 'insert needs one node to add.', `${at}.node`); break; }
+      if (op.after !== undefined && op.before !== undefined) { fail('invalid-operation', 'Name one place: after or before, not both.'); break; }
+      const anchorId = op.after ?? op.before;
+      const anchor = anchorId === undefined ? null : findNode(working, anchorId);
+      if (anchorId !== undefined && !anchor) { fail('unknown-anchor', `No node has the id "${anchorId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); break; }
+      const parentId = op.parent ?? anchor?.parentId ?? 'screen';
+      const parent = parentId === 'screen' ? null : findNode(working, parentId);
+      if (parentId !== 'screen' && (!parent || !['section', 'region'].includes(kindOfNode(parent.node)))) { fail(parent ? 'invalid-parent' : 'unknown-parent', parent ? `"${parentId}" is not a section or a region, so it holds no nodes.` : `No node has the id "${parentId}".`, `${at}.parent`); break; }
+      const list = parentId === 'screen' ? (working.children ??= []) : (parent.node.children ??= []);
+      if (anchor && anchor.parentId !== parentId) { fail('unknown-anchor', `"${anchorId}" is not inside "${parentId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); break; }
+      const node = structuredClone(op.node);
+      const collision = subtreeIds(node).find(id => used.has(id));
+      if (collision) { fail('duplicate-node-id', `"${collision}" is already used by another node. New nodes need new ids.`, `${at}.node`); break; }
+      subtreeIds(node).forEach(id => used.add(id));
+      nameNodes([node], used);
+      const index = anchor ? anchor.index + (op.after !== undefined ? 1 : 0) : list.length;
+      list.splice(index, 0, node);
+      effects.push({ index: i, op: 'insert', id: node.id, parent: parentId, after: op.after ?? null, before: op.before ?? null, ids: subtreeIds(node), reason });
+    } else if (op.op === 'replace') {
+      if ((op.set === undefined) === (op.node === undefined)) { fail('invalid-operation', 'replace takes either set (the fields to change) or node (the whole node), not both.'); break; }
+      const target = op.target === 'screen' ? { node: working, parentId: null } : findNode(working, op.target);
+      if (!target) { fail('unknown-target', typeof op.target === 'string' ? `No node has the id "${op.target}".` : 'replace names its target by id.', `${at}.target`); break; }
+      const kind = op.target === 'screen' ? 'screen' : kindOfNode(target.node);
+      if (op.set !== undefined) {
+        if (!isObject(op.set) || !Object.keys(op.set).length) { fail('invalid-operation', 'set lists at least one field and its new value.', `${at}.set`); break; }
+        const bad = Object.keys(op.set).find(path => !FIELD_PATH.test(path) || stepsOf(path).some(step => FORBIDDEN_STEPS.has(step)) || !SETTABLE[kind].some(root => path === root || path.startsWith(`${root}.`) || path.startsWith(`${root}[`)) || (kind === 'component' && path === 'props'));
+        if (bad !== undefined) { fail('invalid-field', `"${bad}" is not a field replace can set on a ${kind}. Settable: ${SETTABLE[kind].map(root => root === 'props' ? 'props.<prop>' : root).join(', ')}.`, `${at}.set`); break; }
+        for (const [path, value] of Object.entries(op.set)) writeAt(target.node, path, structuredClone(value));
+        effects.push({ index: i, op: 'replace', id: op.target, kind, fields: Object.keys(op.set), ids: op.target === 'screen' ? [] : [op.target], reason });
+      } else {
+        if (op.target === 'screen') { fail('invalid-operation', 'The screen itself is changed with set, one field at a time.', `${at}.node`); break; }
+        const node = structuredClone(op.node);
+        if (!isObject(node) || kindOfNode(node) !== kind || (kind === 'component' && node.component !== target.node.component)) { fail('scope-violation', `replace keeps the node's kind${kind === 'component' ? ` (${target.node.component})` : ''}. To show something else, remove it and insert a new node.`, `${at}.node`); break; }
+        if (node.id !== undefined && node.id !== op.target) { fail('scope-violation', `replace keeps the node's id "${op.target}".`, `${at}.node.id`); break; }
+        node.id = op.target;
+        const old = new Set(subtreeIds(target.node));
+        const collision = subtreeIds(node).find(id => used.has(id) && !old.has(id));
+        if (collision) { fail('duplicate-node-id', `"${collision}" is used by a node outside "${op.target}".`, `${at}.node`); break; }
+        old.forEach(id => used.delete(id));
+        subtreeIds(node).forEach(id => used.add(id));
+        nameNodes(node.children, used);
+        target.list[target.index] = node;
+        effects.push({ index: i, op: 'replace', id: op.target, kind, fields: null, ids: [...new Set([...old, ...subtreeIds(node)])], reason });
+      }
+    } else {
+      if (op.target === 'screen') { fail('invalid-operation', 'The screen itself cannot be removed.', `${at}.target`); break; }
+      const target = findNode(working, op.target);
+      if (!target) { fail('unknown-target', typeof op.target === 'string' ? `No node has the id "${op.target}".` : 'remove names its target by id.', `${at}.target`); break; }
+      const ids = subtreeIds(target.node);
+      target.list.splice(target.index, 1);
+      ids.forEach(id => used.delete(id));
+      effects.push({ index: i, op: 'remove', id: op.target, kind: kindOfNode(target.node), parent: target.parentId, ids, reason });
+    }
+  }
+  if (diagnostics.some(d => d.severity === 'error')) return result({ effects });
+
+  /* Scope: compare the result with the base, node by node. Every difference must belong to an operation that declared it. */
+  const changes = diffScreens(spec, working);
+  const added = new Set(), removed = new Set(), whole = new Set(), fieldsOf = new Map(), screenFields = new Set();
+  for (const effect of effects) {
+    if (effect.op === 'insert') effect.ids.forEach(id => added.add(id));
+    if (effect.op === 'remove') effect.ids.forEach(id => removed.add(id));
+    if (effect.op === 'replace' && effect.fields === null) effect.ids.forEach(id => whole.add(id));
+    if (effect.op === 'replace' && effect.fields && effect.id === 'screen') effect.fields.forEach(field => screenFields.add(field));
+    else if (effect.op === 'replace' && effect.fields) fieldsOf.set(effect.id, [...(fieldsOf.get(effect.id) ?? []), ...effect.fields]);
+  }
+  const within = (field, declared) => declared.some(path => field === path || field.startsWith(`${path}.`) || field.startsWith(`${path}[`));
+  for (const item of changes) {
+    const allowed = item.change === 'added' ? added.has(item.id) || whole.has(item.id)
+      : item.change === 'removed' ? removed.has(item.id) || whole.has(item.id)
+      : item.change === 'moved' ? false
+      : item.id === 'screen' ? item.fields.every(field => screenFields.has(field))
+      : whole.has(item.id) || added.has(item.id) || (fieldsOf.has(item.id) && item.fields.every(field => within(field, fieldsOf.get(item.id))));
+    if (!allowed) report('error', 'scope-violation', item.path, `${item.id === 'screen' ? 'The screen' : `"${item.id}"`} would be ${item.change}${item.fields ? ` (${item.fields.join(', ')})` : ''}, but no operation declared that.`, { id: item.id });
+  }
+
+  /* Data: existing values stay as they are unless a person allowed the change; new figures need a source. */
+  const before = new Map(), after = new Map();
+  eachNode(spec, node => { if (typeof node?.id === 'string') before.set(node.id, node); });
+  eachNode(working, node => { if (typeof node?.id === 'string') after.set(node.id, node); });
+  const sources = numberSet([...leaves({ title: spec.title, children: spec.children }).filter(leaf => !['id', 'component', 'type', 'layout'].includes(leaf.key)), ...leaves(options.sources ?? [])].map(leaf => leaf.value));
+  const strict = (options.data ?? 'strict') !== 'demo';
+  const authorization = [];
+  const checkFigures = (effect, list, id) => {
+    const unsourced = [...new Set(list.flatMap(figuresIn).filter(token => !sourced(token, sources)))];
+    if (!unsourced.length) return;
+    const shown = unsourced.slice(0, 6).join(', ') + (unsourced.length > 6 ? ` and ${unsourced.length - 6} more` : '');
+    if (strict) report('error', 'unsourced-data', `operations[${effect.index}]`, `${shown} ${unsourced.length === 1 ? 'appears' : 'appear'} neither on the screen nor in the data provided. Syntari does not show figures without a source.`, { operation: effect.index, id, values: unsourced });
+    else { effect.demo = true; report('warning', 'demo-data', `operations[${effect.index}]`, `${shown} ${unsourced.length === 1 ? 'is a demonstration value' : 'are demonstration values'}, not from a source. The screen is labelled as demonstration data.`, { operation: effect.index, id, values: unsourced }); }
+  };
+  for (const effect of effects) {
+    if (effect.op === 'insert') { const node = after.get(effect.id); const list = []; eachNode({ children: [node] }, n => list.push(...ownLeaves(n).filter(leaf => leaf.path.startsWith('props') || ['heading', 'label'].includes(leaf.path)))); checkFigures(effect, list, effect.id); continue; }
+    if (effect.op !== 'replace') continue;
+    if (effect.id === 'screen') { checkFigures(effect, effect.fields.includes('title') ? [{ key: 'title', value: working.title }] : [], 'screen'); continue; }
+    for (const id of effect.fields ? [effect.id] : effect.ids) {
+      const x = before.get(id), y = after.get(id);
+      if (!x || !y) { if (y) checkFigures(effect, propLeaves(y), id); continue; }
+      const a = new Map(propLeaves(x).filter(isData).map(leaf => [leaf.path, leaf.value]));
+      const b = new Map(propLeaves(y).filter(isData).map(leaf => [leaf.path, leaf.value]));
+      const changed = [...new Set([...a.keys(), ...b.keys()])].filter(path => JSON.stringify(a.get(path)) !== JSON.stringify(b.get(path)));
+      if (changed.length) {
+        const item = { operation: effect.index, id, fields: changed, before: changed.map(path => a.get(path)), after: changed.map(path => b.get(path)) };
+        authorization.push(item);
+        if (!options.allowDataChanges) report('error', 'protected-data', `operations[${effect.index}]`, `This would change existing data in "${id}" (${changed.slice(0, 3).join(', ')}${changed.length > 3 ? ` and ${changed.length - 3} more` : ''}). Data changes need a person's confirmation.`, item);
+      }
+      checkFigures(effect, propLeaves(y).filter(leaf => isCopy(leaf.key) || !a.has(leaf.path)), id);
+    }
+  }
+
+  /* The whole result is validated. Errors the base already had are not this change's; new ones refuse it. */
+  const checkedBase = options.baseDiagnostics ?? (await validate(spec, validation)).diagnostics;
+  const checked = await validate(working, validation);
+  const known = new Set(diagnosticKeys(spec, checkedBase.filter(d => d.severity === 'error')).map(item => item.key));
+  const touched = new Set([...added, ...whole, ...fieldsOf.keys()]);
+  for (const item of diagnosticKeys(working, checked.diagnostics)) {
+    const d = item.diagnostic;
+    if (d.severity === 'error' && !known.has(item.key)) report('error', d.code, d.path, d.message, { id: item.id, validation: true });
+    else if (d.severity !== 'error' && touched.has(item.id)) report(d.severity, d.code, d.path, d.message, { id: item.id, validation: true });
+  }
+  return result({ spec: working, effects, changes, authorization, validation: checked });
 }
 
 function setText(target, value) {
@@ -859,6 +1201,22 @@ function sandboxFrame(node, host) {
   figure.append(caption, frame);
   return figure;
 }
+/**
+ * A screen says where its figures come from in meta.data: { mode: "demo" | "provided", label? }.
+ * Demonstration data is always labelled on the screen, so illustrative numbers are never mistaken for real ones.
+ */
+export function dataNote(meta) {
+  const data = isObject(meta?.data) ? meta.data : null;
+  if (data?.mode !== 'demo' || typeof document === 'undefined') return null;
+  const note = document.createElement('p');
+  note.className = 'ir-data-note';
+  note.dataset.irData = 'demo';
+  const badge = document.createElement('span');
+  badge.className = 'ir-data-badge';
+  badge.textContent = 'Demonstration data';
+  note.append(badge, document.createTextNode(typeof data.label === 'string' && data.label.trim() ? data.label.trim().slice(0, 140) : 'Illustrative values, not from your systems.'));
+  return note;
+}
 const errorFor = (diagnostics, path) => diagnostics.find(d => d.severity === 'error' && (d.path === path || d.path.startsWith(`${path}.`)));
 
 /**
@@ -882,11 +1240,14 @@ export async function render(spec, target, options = {}) {
     heading.textContent = String(screen.title);
     root.append(heading);
   }
+  const note = dataNote(screen?.meta);
+  if (note) root.append(note);
 
   async function paint(node, parent, path) {
     if (node?.type === 'region') {
       const region = document.createElement('details');
       region.className = 'ir-region';
+      if (typeof node.id === 'string') region.dataset.irId = node.id;
       region.open = node.open === true;
       const summary = document.createElement('summary');
       summary.textContent = String(node.label ?? 'Details');
@@ -900,6 +1261,7 @@ export async function render(spec, target, options = {}) {
     if (node?.type === 'section') {
       const section = document.createElement('section');
       section.className = 'ir-section';
+      if (typeof node.id === 'string') section.dataset.irId = node.id;
       const heading = document.createElement('h3');
       heading.className = 'ir-section-heading';
       heading.textContent = typeof node.heading === 'string' ? node.heading : '';
@@ -914,7 +1276,9 @@ export async function render(spec, target, options = {}) {
     if (node?.type === 'sandbox') {
       const failure = errorFor(diagnostics, path);
       if (failure) { const slot = document.createElement('div'); slot.className = 'ir-node'; slot.dataset.irStatus = 'fallback'; slot.append(fallback(node, failure.message, 'Unverified block')); parent.append(slot); return; }
-      parent.append(sandboxFrame(node, host));
+      const figure = sandboxFrame(node, host);
+      if (typeof node.id === 'string') figure.dataset.irId = node.id;
+      parent.append(figure);
       return;
     }
     const slot = document.createElement('div');
@@ -949,4 +1313,4 @@ export async function render(spec, target, options = {}) {
   };
 }
 
-if (typeof window !== 'undefined') window.SyntariIR = { validate, validateProps, render, registry, resolveProps, renderableSlugs, layouts: IR_LAYOUTS, limits: IR_LIMITS };
+if (typeof window !== 'undefined') window.SyntariIR = { validate, validateProps, render, registry, resolveProps, renderableSlugs, applyOperations, assignIds, versionOf, diffScreens, findNode, layouts: IR_LAYOUTS, limits: IR_LIMITS };
