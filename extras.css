@@ -83,7 +83,7 @@
 
 /* Charts and data families: one series vocabulary, token colours, no decoration. */
 .chart-figure{margin:0 auto;display:grid;gap:14px;width:100%;max-width:720px;min-width:0}
-.chart-figure figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.chart-figure figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 12px}
 .chart-figure figcaption strong{font-size:var(--type-label);font-weight:500}
 .series-a{--series:var(--accent)}
 .series-b{--series:var(--fg-3)}
@@ -125,7 +125,7 @@
 .chart-bars-modern .chart-column .column-label{
   grid-column:1;
   grid-row:1;
-  font:var(--type-caption)/1 var(--font-mono);
+  font:var(--type-caption)/1.2 var(--font-sans);
   color:var(--muted);
   text-align:left;
 }

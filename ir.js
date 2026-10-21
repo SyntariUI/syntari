@@ -1157,6 +1157,10 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
   for (const button of root.querySelectorAll('button:not([type])')) if (!button.closest('form') || !root.contains(button.closest('form'))) button.type = 'button';
   if (root.matches('button:not([type])')) root.type = 'button';
   const value = key => props[key];
+  /* With screen data, figures are written in its locale: 14,5 % beside a table that says 14,5 %, not 14.5%. */
+  const number = n => context.locale && typeof n === 'number' && Number.isFinite(n) ? new Intl.NumberFormat(context.locale, { maximumFractionDigits: 4 }).format(n) : String(n);
+  const percentGap = context.locale && /\s/.test(new Intl.NumberFormat(context.locale, { style: 'percent' }).format(0.5)) ? '\u00a0' : '';
+  const unitAfter = suffix => suffix === '%' ? `${percentGap}%` : suffix;
   /** Text comes from props or defaults only: a slot whose optional prop is unset is emptied, never left with demo copy. */
   const bound = (key, apply, clear) => { const current = value(key); if (current !== undefined) apply(current); else clear?.(); };
   const each = (selector, fn) => { for (const one of [].concat(selector)) fn(pick(root, one)); };
@@ -1219,10 +1223,10 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
     const tick = (index, count) => tidy(max - index * ((max - min) / Math.max(1, count - 1)));
     const step = (max - min) / Math.max(1, axis.length - 1) || 1;
     const compact = number => { const size = Math.abs(number); return size >= 1e9 ? [number / 1e9, 'B'] : size >= 1e6 ? [number / 1e6, 'M'] : size >= 1e4 ? [number / 1e3, 'k'] : [number, '']; };
-    const readable = number => { const [n, suffix] = compact(number); const scaled = suffix ? step / (Math.abs(number) / Math.abs(n || 1)) : step; return `${String(Number(n.toFixed(Math.max(0, 1 - Math.floor(Math.log10(scaled || 1))))))}${suffix}`; };
+    const readable = figure => { const [n, suffix] = compact(figure); const scaled = suffix ? step / (Math.abs(figure) / Math.abs(n || 1)) : step; return `${number(Number(n.toFixed(Math.max(0, 1 - Math.floor(Math.log10(scaled || 1))))))}${suffix}`; };
     /* Dollars and pounds lead the figure, everything else follows it: $482k, 482k€, 3.4%. */
-    const withUnit = text => ['$', '£'].includes(unit) ? (text.startsWith('-') ? `-${unit}${text.slice(1)}` : `${unit}${text}`) : `${text}${unit}`;
-    const reading = number => { const [n, suffix] = compact(number); return withUnit(`${tidy(Number(n.toFixed(suffix ? 2 : 4)))}${suffix}`); };
+    const withUnit = text => ['$', '£'].includes(unit) ? (text.startsWith('-') ? `-${unit}${text.slice(1)}` : `${unit}${text}`) : `${text}${unitAfter(unit)}`;
+    const reading = figure => { const [n, suffix] = compact(figure); return withUnit(`${number(tidy(Number(n.toFixed(suffix ? 2 : 4))))}${suffix}`); };
     if (declared.scale === 'auto') {
       axis.forEach((label, index) => {
         label.textContent = withUnit(readable(tick(index, axis.length)));
@@ -1311,7 +1315,8 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
           const at = typeof selector === 'object' && selector ? selector.selector : selector;
           const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : '';
           const joined = typeof selector === 'object' && selector?.joinField ? given(selector.joinField) : undefined;
-          filled(name, current => fillText(pick(item, at), `${current}${suffix}${joined !== undefined ? ` · ${joined}${suffix}` : ''}`), () => fillText(pick(item, at), ''));
+          const write = figure => `${number(figure)}${typeof figure === 'number' ? unitAfter(suffix) : suffix}`;
+          filled(name, current => fillText(pick(item, at), `${write(current)}${joined !== undefined ? ` · ${write(joined)}` : ''}`), () => fillText(pick(item, at), ''));
         }
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
         for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current));
@@ -1508,7 +1513,8 @@ const errorFor = (diagnostics, path) => diagnostics.find(d => d.severity === 'er
 export async function render(spec, target, options = {}) {
   const reg = options.registry ?? await registry();
   const limits = { ...IR_LIMITS, ...options.limits };
-  const { diagnostics, screen } = await validate(spec, { registry: reg, limits, sandbox: options.sandbox });
+  const { diagnostics, screen, data } = await validate(spec, { registry: reg, limits, sandbox: options.sandbox });
+  const locale = data?.data?.locale !== undefined ? data.locale : null;
   const host = typeof target === 'string' ? document.querySelector(target) : target;
   if (!(host instanceof Element)) throw new TypeError('Syntari IR render() needs a matching selector or Element.');
   const mounted = [];
@@ -1576,7 +1582,7 @@ export async function render(spec, target, options = {}) {
     if (node.id) slot.dataset.irId = node.id;
     const instance = await mount(slug, slot, {
       configure: element => {
-        const painted = applyContract(element, manifest, props, diagnostics, path, { assets: options.assets });
+        const painted = applyContract(element, manifest, props, diagnostics, path, { assets: options.assets, locale });
         if (node.provenance) painted.dataset.irProvenance = JSON.stringify(node.provenance);
         bindActions(element, manifest, { id: node.id, path, props, onAction: options.onActionRequest });
       }

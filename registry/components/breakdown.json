@@ -103,7 +103,7 @@
         "total": 100,
         "tolerance": 1
       },
-      "description": "Parts in display order. Shares add up to 100.",
+      "description": "Parts in display order. Shares add up to 100. A value is the part's amount, such as '$600B'; leave it out rather than repeat the share.",
       "items": {
         "type": "object",
         "fields": {

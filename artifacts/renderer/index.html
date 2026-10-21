@@ -3897,7 +3897,7 @@ function changeCard(screen, change) {
       ['ok', `All ${plural(r.records ?? 0, 'record')} kept`, ', each still on the screen by name'],
       r.dataKept ? ['ok', 'Screen data unchanged', `: every row as it was${r.groups ? `; ${plural(r.groups, 'group')} and ${plural(r.measures, 'measure')} computed from it` : ''}`] : ['ok', 'The rows now live in screen data', ': every figure in them was already on the screen'],
       ['ok', 'No new figures', ': each one comes from the data or was already shown'],
-      conflicts.length ? ['ok', `${plural(conflicts.length, 'problem')} of v${change.from} resolved`, `: ${conflicts.slice(0, 3).map(d => d.message.replace(/ Bind it.*$| Put the rows.*$| Show the .*$/, '')).join(' · ')}`] : null,
+      conflicts.length ? ['ok', `${plural(conflicts.length, 'problem')} of v${change.from} resolved`, `: ${conflicts.slice(0, 3).map(d => d.message.replace(/ Bind it.*$| Put the rows.*$| Show the .*$/, '')).join(' · ')}${conflicts.length > 3 ? ` · and ${conflicts.length - 3} more` : ''}`] : null,
       ['ok', 'Whole screen validated', still ? `: ${plural(still, 'error')}` : ': no errors']
     ].filter(Boolean);
     card.append(el('ul', { class: 'proof', 'aria-label': 'What Syntari checked' }, ...proof.map(([tone, strong, rest]) => el('li', {}, markFor(tone), el('span', {}, el('b', { text: strong }), rest)))));

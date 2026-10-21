@@ -221,6 +221,9 @@ test('F. a small scoped edit leaves every other part, figure, and id exactly as 
   const errors = await openRenderer(p);
   await openExample(p, 'wealth');
   const before = await screenIR(p), shownBefore = await shown(p);
+  /* Figures follow the screen data's locale everywhere, charts included: 14,5 %, never 14.5% beside a table that says 14,5 %. */
+  await expect(p.locator('.canvas [data-ir-id=risk-vs-weight]')).toContainText('27 % · 52 %');
+  await expect(p.locator('.canvas [data-ir-id=performance]')).not.toContainText('3.6');
   await script(p, addPerfTable);
   await ask(p, 'Añade una tabla de rentabilidad mensual debajo del gráfico');
   await settled(p);
