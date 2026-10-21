@@ -1,0 +1,542 @@
+{
+  "$id": "https://syntariui.giovanitier.com/registry/composition-policy.json",
+  "version": "0.4.0",
+  "description": "When each visualization is the right choice, and how screens are organised. Validation reads it to tell a valid screen from a good one: a misleading choice is an error, everything else is advice.",
+  "patterns": {
+    "report": {
+      "label": "Report",
+      "for": "A finding someone reads and acts on: the conclusion, the evidence, then the detail.",
+      "zones": [
+        "summary",
+        "primary",
+        "supporting",
+        "context",
+        "details"
+      ],
+      "archetypes": [
+        "analytics-overview",
+        "investigation"
+      ],
+      "registry": "release-review"
+    },
+    "dashboard": {
+      "label": "Dashboard",
+      "for": "A recurring view of how something is doing: headline measures, one principal analysis, supporting comparisons, then positions or records.",
+      "zones": [
+        "summary",
+        "primary",
+        "supporting",
+        "context",
+        "details"
+      ],
+      "archetypes": [
+        "analytics-overview",
+        "monitoring"
+      ],
+      "registry": "analytics-overview"
+    },
+    "transaction": {
+      "label": "Transaction workflow",
+      "for": "A consequential change a person reviews and authorizes: what will happen, the evidence, then one decision.",
+      "zones": [
+        "context",
+        "evidence",
+        "decision"
+      ],
+      "archetypes": [
+        "decision-and-approval",
+        "form-and-configuration"
+      ],
+      "registry": "approval-review"
+    },
+    "workspace": {
+      "label": "Workspace",
+      "for": "Records a person scans, filters, and works through.",
+      "zones": [
+        "scope",
+        "records",
+        "detail"
+      ],
+      "archetypes": [
+        "data-exploration",
+        "workflow-management"
+      ]
+    },
+    "monitoring": {
+      "label": "Monitoring",
+      "for": "The current state of a live system and what changed recently.",
+      "zones": [
+        "state",
+        "recent",
+        "history"
+      ],
+      "archetypes": [
+        "monitoring",
+        "investigation"
+      ]
+    },
+    "comparison": {
+      "label": "Comparison",
+      "for": "Options side by side, to choose one.",
+      "zones": [
+        "options",
+        "differences",
+        "choice"
+      ],
+      "archetypes": [
+        "review-and-comparison"
+      ]
+    }
+  },
+  "zones": {
+    "summary": [
+      "kpi",
+      "text"
+    ],
+    "primary": [
+      "time-series",
+      "time-series-comparison",
+      "composition",
+      "ordered-distribution",
+      "category-comparison",
+      "ranking"
+    ],
+    "supporting": [
+      "composition",
+      "ordered-distribution",
+      "category-comparison",
+      "ranking",
+      "time-series",
+      "time-series-comparison"
+    ],
+    "context": [
+      "text",
+      "status"
+    ],
+    "details": [
+      "records"
+    ]
+  },
+  "roles": {
+    "kpi": {
+      "label": "Headline measures",
+      "recommended": [
+        "stat-row",
+        "headline-metric",
+        "metric-strip"
+      ],
+      "acceptable": [
+        "metric-and-sparkline",
+        "live-readout"
+      ],
+      "rule": "Two to four measures in one block, each with its unit and what it is measured against."
+    },
+    "time-series": {
+      "label": "One measure over time",
+      "recommended": [
+        "line-chart",
+        "area-chart"
+      ],
+      "acceptable": [
+        "metric-and-sparkline"
+      ],
+      "avoid": {
+        "chart-bars": "Columns compare a few periods; past a handful they hide the shape of the trend."
+      },
+      "misleading": {
+        "breakdown": "A single bar of parts cannot show change over time.",
+        "table": "A table of periods hides the trend it is meant to show."
+      },
+      "rule": "Oldest first, on a labelled time axis."
+    },
+    "time-series-comparison": {
+      "label": "Actual against a benchmark over time",
+      "recommended": [
+        "line-chart"
+      ],
+      "avoid": {
+        "chart-bars": "Paired columns over many periods are hard to compare; two lines on one scale are not."
+      },
+      "misleading": {
+        "area-chart": "An area chart plots one measure; a benchmark needs a second series on the same scale.",
+        "breakdown": "A single bar of parts cannot show change over time."
+      },
+      "rule": "Both series on one scale, in one plot, with the benchmark named."
+    },
+    "composition": {
+      "label": "Parts of one whole",
+      "recommended": [
+        "breakdown"
+      ],
+      "acceptable": [
+        "table",
+        "chart-bars"
+      ],
+      "misleading": {
+        "line-chart": "A line implies an order between parts that have none.",
+        "area-chart": "A line implies an order between parts that have none."
+      },
+      "rule": "Shares of the same total, adding up to 100."
+    },
+    "ordered-distribution": {
+      "label": "Ordered buckets, such as maturity or liquidity ladders",
+      "recommended": [
+        "chart-bars"
+      ],
+      "acceptable": [
+        "table"
+      ],
+      "avoid": {
+        "breakdown": "One stacked bar loses the order of the buckets and the gaps between them."
+      },
+      "misleading": {
+        "line-chart": "A line between buckets implies values between them.",
+        "area-chart": "A line between buckets implies values between them."
+      },
+      "rule": "Buckets in their natural order, with inclusive bounds stated in the labels."
+    },
+    "category-comparison": {
+      "label": "Two measures per category, such as weight against risk contribution",
+      "recommended": [
+        "chart-bars"
+      ],
+      "acceptable": [
+        "comparison-table",
+        "table"
+      ],
+      "misleading": {
+        "breakdown": "A breakdown shows one measure; the second one disappears."
+      },
+      "rule": "Both measures share a scale and a unit."
+    },
+    "ranking": {
+      "label": "Categories ranked by one measure",
+      "recommended": [
+        "chart-bars"
+      ],
+      "acceptable": [
+        "table",
+        "breakdown"
+      ],
+      "rule": "Largest first, unless the categories have their own order."
+    },
+    "records": {
+      "label": "Individual records",
+      "recommended": [
+        "table"
+      ],
+      "acceptable": [
+        "metadata-list",
+        "activity-list",
+        "comparison-table",
+        "source-list",
+        "checklist",
+        "process-ledger"
+      ],
+      "rule": "Readable columns, sortable when there are more than a few rows."
+    },
+    "text": {
+      "label": "Explanation",
+      "recommended": [
+        "text-block",
+        "banner",
+        "citations"
+      ],
+      "rule": "Says what the numbers mean; never restates them."
+    },
+    "decision": {
+      "label": "A decision or an action",
+      "recommended": [
+        "tool-approval",
+        "approval-card",
+        "button",
+        "selectable-cards"
+      ],
+      "rule": "One primary decision, last, naming exactly what will happen."
+    },
+    "correlation": {
+      "label": "How two measures relate, such as risk against return",
+      "recommended": [],
+      "missing": "scatter-plot",
+      "closest": [
+        "table",
+        "chart-bars"
+      ]
+    },
+    "hierarchy": {
+      "label": "Nested parts of a whole",
+      "recommended": [],
+      "missing": "treemap",
+      "closest": [
+        "breakdown",
+        "table"
+      ]
+    },
+    "geography": {
+      "label": "Values by place",
+      "recommended": [],
+      "missing": "map",
+      "closest": [
+        "table",
+        "chart-bars"
+      ]
+    },
+    "flow": {
+      "label": "Flows between stages or accounts",
+      "recommended": [],
+      "missing": "sankey",
+      "closest": [
+        "process-ledger",
+        "table"
+      ]
+    },
+    "matrix": {
+      "label": "A value for every pair of two categories",
+      "recommended": [],
+      "missing": "heatmap",
+      "closest": [
+        "table",
+        "comparison-table"
+      ]
+    }
+  },
+  "components": {
+    "stat-row": [
+      "kpi"
+    ],
+    "headline-metric": [
+      "kpi"
+    ],
+    "metric-strip": [
+      "kpi"
+    ],
+    "live-readout": [
+      "kpi",
+      "status"
+    ],
+    "metric-and-sparkline": [
+      "kpi",
+      "time-series"
+    ],
+    "area-chart": [
+      "time-series"
+    ],
+    "line-chart": [
+      "time-series",
+      "time-series-comparison"
+    ],
+    "chart-bars": [
+      "category-comparison",
+      "ordered-distribution",
+      "ranking",
+      "time-series"
+    ],
+    "breakdown": [
+      "composition"
+    ],
+    "table": [
+      "records"
+    ],
+    "comparison-table": [
+      "category-comparison",
+      "records"
+    ],
+    "metadata-list": [
+      "records"
+    ],
+    "activity-list": [
+      "records"
+    ],
+    "source-list": [
+      "records"
+    ],
+    "text-block": [
+      "text"
+    ],
+    "banner": [
+      "text",
+      "status"
+    ],
+    "tool-approval": [
+      "decision"
+    ],
+    "approval-card": [
+      "decision"
+    ],
+    "button": [
+      "decision"
+    ],
+    "selectable-cards": [
+      "decision"
+    ]
+  },
+  "concepts": [
+    {
+      "id": "risk-contribution",
+      "label": "risk contribution",
+      "words": [
+        "risk contribution",
+        "contribution to risk",
+        "contribucion al riesgo",
+        "contribucion de riesgo",
+        "aporte al riesgo"
+      ]
+    },
+    {
+      "id": "risk",
+      "label": "risk",
+      "words": [
+        "risk",
+        "riesgo",
+        "volatil",
+        "var ",
+        "drawdown",
+        "exposicion al riesgo"
+      ]
+    },
+    {
+      "id": "liquidity",
+      "label": "liquidity",
+      "words": [
+        "liquidity",
+        "liquidez",
+        "maturity",
+        "vencimiento",
+        "redemption",
+        "reembolso"
+      ]
+    },
+    {
+      "id": "benchmark",
+      "label": "benchmark",
+      "words": [
+        "benchmark",
+        "indice de referencia",
+        "index",
+        "vs. indice",
+        "frente al indice"
+      ]
+    },
+    {
+      "id": "performance",
+      "label": "performance",
+      "words": [
+        "return",
+        "rentabilidad",
+        "rendimiento",
+        "performance",
+        "evolucion",
+        "growth",
+        "crecimiento",
+        "trend",
+        "tendencia"
+      ]
+    },
+    {
+      "id": "allocation",
+      "label": "allocation",
+      "words": [
+        "allocation",
+        "asignacion",
+        "distribucion",
+        "composicion",
+        "composition",
+        "mix",
+        "weight",
+        "peso",
+        "breakdown",
+        "desglose"
+      ]
+    },
+    {
+      "id": "exposure",
+      "label": "exposure",
+      "words": [
+        "exposure",
+        "exposicion"
+      ]
+    }
+  ],
+  "conceptRoles": {
+    "risk-contribution": [
+      "risk-contribution"
+    ],
+    "risk": [
+      "risk-contribution",
+      "volatility"
+    ],
+    "allocation": [
+      "allocation"
+    ],
+    "exposure": [
+      "exposure"
+    ],
+    "liquidity": [
+      "liquidity",
+      "allocation"
+    ],
+    "performance": [
+      "return"
+    ],
+    "benchmark": [
+      "return",
+      "benchmark"
+    ]
+  },
+  "requests": [
+    {
+      "role": "correlation",
+      "words": [
+        "scatter",
+        "dispersion",
+        "nube de puntos",
+        "riesgo frente a rentabilidad",
+        "riesgo vs rentabilidad",
+        "risk vs return",
+        "risk versus return",
+        "risk against return",
+        "correlation",
+        "correlacion"
+      ]
+    },
+    {
+      "role": "matrix",
+      "words": [
+        "heatmap",
+        "heat map",
+        "mapa de calor",
+        "matriz de correlacion"
+      ]
+    },
+    {
+      "role": "hierarchy",
+      "words": [
+        "treemap",
+        "tree map",
+        "mapa de arbol",
+        "sunburst"
+      ]
+    },
+    {
+      "role": "geography",
+      "words": [
+        "on a map",
+        "en un mapa",
+        "mapa geografico",
+        "map of countries",
+        "mapa por paises",
+        "mapa por pais",
+        "choropleth",
+        "coropletico"
+      ]
+    },
+    {
+      "role": "flow",
+      "words": [
+        "sankey",
+        "flow diagram",
+        "diagrama de flujos"
+      ]
+    }
+  ]
+}

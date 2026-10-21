@@ -103,6 +103,7 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
           if (value.currency !== undefined && !(value.currency in manifest.props)) problems.push(`compute.currency for ${entry.id} must name a prop`);
           continue;
         }
+        if (binding === 'sort') { if (manifest.props[value?.prop]?.type !== 'boolean') problems.push(`sort.prop for ${entry.id} must name a boolean prop`); continue; }
         for (const prop of Object.keys(value ?? {})) if (!(prop in manifest.props)) problems.push(`Unknown render binding ${entry.id}.${prop}`);
       }
     }

@@ -149,6 +149,9 @@
         },
         "meta": {
           "type": "object"
+        },
+        "data": {
+          "$ref": "#/definitions/data"
         }
       },
       "additionalProperties": false
@@ -242,6 +245,165 @@
         },
         "provenance": {
           "$ref": "#/definitions/provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "data": {
+      "type": "object",
+      "description": "The screen's canonical data. Components bind props to it with { \"$data\": \"measures.<name>\" | \"groups.<name>\" | \"tables.<name>\" }, and the runtime computes every bound figure from the rows, so text, charts, and tables cannot disagree.",
+      "properties": {
+        "mode": {
+          "enum": [
+            "demo",
+            "provided"
+          ],
+          "description": "demo figures are labelled on the screen as demonstration data."
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "asOf": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tables": {
+          "type": "object",
+          "maxProperties": 8,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "fields",
+              "rows"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "period": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "object",
+                "maxProperties": 16,
+                "additionalProperties": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "text",
+                        "category",
+                        "period",
+                        "date",
+                        "number",
+                        "percent",
+                        "currency",
+                        "days"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "role": {
+                      "enum": [
+                        "allocation",
+                        "exposure",
+                        "risk-contribution",
+                        "volatility",
+                        "return",
+                        "benchmark",
+                        "value",
+                        "liquidity",
+                        "count",
+                        "other"
+                      ]
+                    },
+                    "order": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "rows": {
+                "type": "array",
+                "maxItems": 200,
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "measures": {
+          "type": "object",
+          "maxProperties": 40,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "label"
+            ]
+          }
+        },
+        "groups": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "table",
+              "by"
+            ]
+          }
         }
       },
       "additionalProperties": false

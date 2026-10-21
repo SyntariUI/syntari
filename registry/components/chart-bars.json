@@ -23,17 +23,24 @@
   "name": "Chart bars",
   "category": "Data display",
   "purpose": "Compare two series across the same checkpoints.",
-  "description": "Grouped columns with a legend and a summary a screen reader can read.",
+  "description": "Columns or bars for one or two series on a shared scale, with a legend and a summary a screen reader can read.",
   "intents": [
     "compare",
+    "rank",
+    "show-ordered-buckets",
     "report-trend"
   ],
   "variants": {
     "series": [
-      "2"
+      "one",
+      "two"
     ],
     "points": [
       "up to 12"
+    ],
+    "orientation": [
+      "horizontal",
+      "vertical"
     ]
   },
   "states": [
@@ -54,7 +61,8 @@
   "rules": [
     "both-series-share-a-scale",
     "the-summary-states-the-numbers",
-    "never-rely-on-colour-alone"
+    "never-rely-on-colour-alone",
+    "buckets-keep-their-order"
   ],
   "tokens": [
     "color.action.primary",
@@ -69,7 +77,9 @@
     "comparison-table"
   ],
   "avoidWhen": [
-    "the-series-need-different-scales"
+    "the-series-need-different-scales",
+    "a-trend-over-many-periods",
+    "parts-of-one-whole-that-sum-to-100"
   ],
   "props": {
     "title": {
@@ -81,13 +91,33 @@
       "type": "string",
       "maxLength": 60
     },
+    "orientation": {
+      "type": "enum",
+      "values": [
+        "horizontal",
+        "vertical"
+      ],
+      "default": "horizontal",
+      "description": "vertical draws columns, for ordered buckets such as a liquidity or maturity ladder; horizontal draws bars, for ranked or compared categories."
+    },
+    "unit": {
+      "type": "enum",
+      "values": [
+        "",
+        "%",
+        "pp"
+      ],
+      "default": "",
+      "description": "Written after each value."
+    },
     "seriesA": {
       "type": "string",
       "maxLength": 24
     },
     "seriesB": {
       "type": "string",
-      "maxLength": 24
+      "maxLength": 24,
+      "description": "Name of the second series. Leave it and every b out for one series."
     },
     "chartLabel": {
       "type": "string",
@@ -104,23 +134,26 @@
         "fields": {
           "label": {
             "type": "string",
-            "maxLength": 6,
-            "required": true
+            "maxLength": 16,
+            "required": true,
+            "description": "Up to 6 characters reads best in vertical columns; horizontal bars fit up to 16, such as an asset class."
           },
           "a": {
             "type": "number",
             "minimum": 0,
             "maximum": 100,
-            "required": true
+            "required": true,
+            "description": "The first series, 0 to 100: a share or an index."
           },
           "b": {
             "type": "number",
             "minimum": 0,
             "maximum": 100,
-            "required": true
+            "description": "The second series on the same scale. Leave it out for one series."
           }
         }
-      }
+      },
+      "description": "Categories in display order: buckets in their natural order, ranked categories largest first."
     }
   },
   "ir": {
@@ -145,7 +178,10 @@
         "item": ".chart-column",
         "text": {
           "label": ".column-label",
-          "a": ".column-value"
+          "a": {
+            "selector": ".column-value",
+            "suffixFrom": "unit"
+          }
         },
         "style": {
           "a": {
@@ -156,8 +192,18 @@
           "b": {
             "selector": ".column-fill.series-b",
             "name": "--fill",
-            "suffix": "%"
+            "suffix": "%",
+            "removeWhenEmpty": true
           }
+        }
+      }
+    },
+    "variant": {
+      "orientation": {
+        "selector": "",
+        "values": {
+          "horizontal": "chart-bars-modern",
+          "vertical": "chart-bars-vertical"
         }
       }
     }

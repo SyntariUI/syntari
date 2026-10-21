@@ -105,13 +105,16 @@
   display:grid;
   grid-auto-flow:row;
   grid-auto-columns:unset;
+  /* Every row shares one label column as wide as the longest label, so the bars start at one edge. */
+  grid-template-columns:minmax(42px,max-content) minmax(30px,max-content) minmax(0,1fr);
   gap:7px;
   height:auto;
   align-items:stretch;
 }
 .chart-bars-modern .chart-column{
   display:grid;
-  grid-template-columns:42px 30px minmax(0,1fr);
+  grid-column:1/-1;
+  grid-template-columns:subgrid;
   grid-template-rows:1fr;
   gap:10px;
   align-items:center;
@@ -302,6 +305,25 @@
 .plot-labels{display:flex;justify-content:space-between;font-size:var(--type-caption);color:var(--muted);margin-top:6px}
 .area-figure .plot-labels[data-placed]{display:block;position:relative;height:1.5em;margin-left:42px}
 .area-figure .plot-labels[data-placed] span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+/* Line chart: one or two series on one scale. The benchmark is dashed, so the two never rely on colour alone. */
+.line-figure .plot{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:stretch}
+.line-figure .plot-axis span{white-space:nowrap}
+.line-figure .plot-labels{margin-left:48px}
+.line-figure .plot-labels[data-placed]{display:block;position:relative;height:1.5em}
+.line-figure .plot-labels[data-placed] span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.chart-zero{stroke:var(--fg-3);stroke-width:1;stroke-dasharray:2 3}
+.line-value{stroke-width:2.25}
+.line-compare{stroke-width:1.75;stroke-dasharray:5 4}
+.legend-swatch.legend-line{width:14px;height:2px;border-radius:2px}
+.legend-swatch.legend-dash{width:14px;height:2px;border-radius:0;background:repeating-linear-gradient(90deg,var(--series) 0 4px,transparent 4px 7px)}
+/* Vertical columns: ordered buckets read left to right on a baseline. */
+.chart-bars-vertical .chart-columns{border-bottom:1px solid var(--border);gap:10px;height:200px}
+.chart-bars-vertical .chart-column .column-value{color:var(--text);font-weight:500}
+.chart-bars-vertical .column-fill:only-child{width:min(30px,62%)}
+.chart-bars-vertical .chart-column .column-label{text-align:center;overflow-wrap:anywhere;line-height:1.2}
+.chart-bars-vertical .chart-column{grid-template-rows:16px 1fr auto}
+.chart-bars-modern .column-pair:has(> .column-fill:only-child){grid-template-rows:8px}
+.chart-bars-modern .column-fill:only-child{height:8px}
 .area-fill{fill:var(--accent-soft);stroke:none}
 .area-line{fill:none}
 .chart-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:var(--type-caption);color:var(--muted)}

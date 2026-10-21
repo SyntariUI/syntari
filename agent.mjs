@@ -55,7 +55,8 @@ export async function searchRegistry(query) {
 async function nodeRegistry() {
   const index = await readJson('index.json');
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
-  return { index, entries, manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null };
+  const policy = await readJson('composition-policy.json').catch(() => null);
+  return { index, entries, policy, manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null };
 }
 
 /** Validate a screen as the host would. Pass { sandbox: true } only for a host that allows unverified blocks. */

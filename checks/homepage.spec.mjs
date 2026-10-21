@@ -10,7 +10,7 @@ test('homepage previews components and keeps the primary CTA visible',async({pag
  await expect(page.getByRole('link',{name:'Renderer'})).toHaveCount(0);
  await expect(page.getByRole('link',{name:'Open Renderer'})).toHaveCount(0);
  await expect.poll(()=>page.evaluate(()=>document.fonts.check('16px Geist'))).toBe(true);
- await expect(page.locator('[data-home-count]')).toHaveText('136 components');
+ await expect(page.locator('[data-home-count]')).toHaveText('137 components');
  await expect(page.locator('[data-intent-form]')).toHaveCount(0);
  await expect(page.locator('.home-faq')).toHaveCount(0);
  await expect(page.locator('.home-footer')).toBeVisible();

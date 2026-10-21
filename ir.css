@@ -128,3 +128,13 @@
 .ir-catalog-name{min-width:0}
 .ir-catalog-arrow{margin-left:auto;color:var(--fg-2)}
 @media(max-width:760px){.ir-page-main{padding:0 18px 56px}.ir-page-header{padding:16px 18px}.ir-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ir-catalog-name{font-size:var(--type-caption)}}
+
+/* A sortable table: the heading is a button, the arrow says which way, and figures align on the right. */
+.table th[data-numeric],.table td[data-numeric]{text-align:right;font-variant-numeric:tabular-nums}
+.table .table-sort{display:inline-flex;align-items:center;gap:4px;padding:2px 0;font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:4px}
+.table .table-sort:hover{color:var(--text)}
+.table .table-sort-mark{display:inline-block;width:8px;font-size:9px;line-height:1;color:var(--fg-2)}
+.table .table-sort-mark::before{content:"↕"}
+.table th[aria-sort=ascending] .table-sort-mark::before{content:"↑";color:var(--text)}
+.table th[aria-sort=descending] .table-sort-mark::before{content:"↓";color:var(--text)}
+.table th[aria-sort=ascending],.table th[aria-sort=descending]{color:var(--text)}

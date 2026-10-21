@@ -1,11 +1,13 @@
 /** Syntari UI IR: validate an agent-authored screen spec, then render it with Syntari components. */
 import { mount } from './syntari.js';
+import { buildDataModel, resolveProps as resolveDataProps, hasBindings, checkConsistency, dataFigures, inferTables, normalLabel } from './ir-data.js';
+export { buildDataModel, formatData, parseFigure, bucketOf, dayRange, inferTables, isBinding, hasBindings, DATA_LIMITS, FIELD_TYPES, FIELD_ROLES, DATA_FORMATS } from './ir-data.js';
 const base = new URL('.', import.meta.url);
 export const IR_LAYOUTS = ['stack', 'row', 'grid', 'two-column'];
 export const IR_LIMITS = { maxDepth: 8, maxNodes: 120, maxChildren: 40, maxListItems: 40 };
 const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 /** The keys Screen IR defines. Anything else is reported, as the published schema reports it. */
-const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta'];
+const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta', 'data'];
 const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
 const REGION_KEYS = ['id', 'type', 'label', 'open', 'children', 'provenance'];
 const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'children', 'provenance'];
@@ -37,7 +39,10 @@ export function registry() {
       }
       return manifests.get(slug);
     }
-    return { index, entries, manifest };
+    /* How data maps to visualizations and screens to patterns: the policy composition checks read. Optional for a host. */
+    let policy = null;
+    try { const file = await fetch(new URL('registry/composition-policy.json', base)); if (file.ok) policy = await file.json(); } catch {}
+    return { index, entries, manifest, policy };
   })();
   return registryPromise;
 }
@@ -274,6 +279,8 @@ async function checkNode(node, context, path) {
   if (!isRenderable(manifest)) { report('error', 'unsupported-component', `${path}.component`, `"${component}" is documented but has no prop contract yet, so it cannot be rendered from IR.`); return null; }
   checkId(node, context, path);
   if (Object.keys(manifest.actions ?? {}).length && node.id === undefined) report('warning', 'missing-node-id', `${path}.id`, `${component} sends action requests. Give it an id so the host can match each request to its own state.`);
+  /* A prop bound to screen data is resolved first, so the contract checks the figure the runtime computed. */
+  if (context.model || hasBindings(node.props)) node.props = resolveDataProps(node.props ?? {}, manifest, context.model, `${path}.props`, report, binding => context.bindings.push({ ...binding, id: node.id ?? null, node: path }));
   checkProps(manifest, node.props ?? {}, `${path}.props`, report, reg.index?.icons);
   return { slug, manifest };
 }
@@ -382,12 +389,16 @@ export async function validate(spec, options = {}) {
   const limits = { ...IR_LIMITS, ...options.limits };
   const diagnostics = [];
   const report = (severity, code, path, message) => diagnostics.push({ severity, code, path, message });
-  const context = { reg, report, limits, count: 0, ids: new Set(), sandbox: options.sandbox === true };
+  const context = { reg, report, limits, count: 0, ids: new Set(), sandbox: options.sandbox === true, model: null, bindings: [] };
   if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
     report('error', 'invalid-spec', '', 'The spec must be an object describing a screen or a node.');
-    return { ok: false, diagnostics, screen: null };
+    return { ok: false, diagnostics, screen: null, data: null, bindings: [] };
   }
-  const screen = spec.type === 'screen' ? spec : { type: 'screen', layout: 'stack', children: [spec] };
+  /* The data block is checked and computed once; bound props then read from it. The screen returned is the resolved one,
+     so what renders is exactly what was validated. The spec itself keeps its bindings. */
+  context.model = spec.type === 'screen' ? buildDataModel(spec.data, report) : null;
+  const bound = context.model !== null || hasBindings(spec.type === 'screen' ? spec.children : spec);
+  const screen = spec.type === 'screen' ? (bound ? structuredClone(spec) : spec) : { type: 'screen', layout: 'stack', children: [bound ? structuredClone(spec) : spec] };
   if (spec.type === 'screen' && spec.version !== undefined && spec.version !== 'syntari-ir-1') report('error', 'unsupported-version', 'version', 'Screen version must be "syntari-ir-1".');
   if (spec.type === 'screen') for (const key of Object.keys(spec)) if (!SCREEN_KEYS.includes(key)) report('error', 'unknown-key', key, `Screens take ${SCREEN_KEYS.join(', ')}.`);
   if (spec.type === 'screen' && spec.title !== undefined && typeof spec.title !== 'string') report('error', 'wrong-type', 'title', 'A screen title is text.');
@@ -412,16 +423,26 @@ export async function validate(spec, options = {}) {
     for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1);
   }
   for (const [i, child] of children.entries()) await walk(child, `children[${i}]`, 1);
-  return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, screen };
+  /* A structurally valid screen can still contradict its own data: a written figure that names data must agree with it. */
+  /* Past the budgets the walk stopped early, so the screen-wide checks would read an unbounded tree: they wait for a valid one. */
+  const bounded = !diagnostics.some(d => d.code === 'over-depth-budget' || d.code === 'over-node-budget');
+  if (spec.type === 'screen' && bounded) checkConsistency(spec, context.model, report);
+  if (spec.type === 'screen' && bounded && options.semantics !== false && reg.policy) {
+    const { checkSemantics } = await import('./ir-compose.js');
+    checkSemantics(spec, screen, { model: context.model, bindings: context.bindings, policy: reg.policy, report });
+  }
+  return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, screen, data: context.model, bindings: context.bindings };
 }
 
 /* ---------- Iteration: a model proposes operations against one version of a screen; the runtime applies them ---------- */
 export const OPS_VERSION = 'syntari-ops-1';
 export const OPS_LIMITS = { maxOperations: 20 };
-const CHANGE_KEYS = ['version', 'base', 'summary', 'operations', 'clarify', 'needs'];
-const OP_KEYS = { insert: ['op', 'parent', 'after', 'before', 'node', 'reason'], replace: ['op', 'target', 'set', 'node', 'reason'], remove: ['op', 'target', 'reason'] };
+const CHANGE_KEYS = ['version', 'base', 'summary', 'operations', 'clarify', 'needs', 'unsupported'];
+const OP_KEYS = { insert: ['op', 'parent', 'after', 'before', 'node', 'reason'], replace: ['op', 'target', 'set', 'node', 'reason'], remove: ['op', 'target', 'reason'], move: ['op', 'target', 'parent', 'after', 'before', 'reason'], recompose: ['op', 'screen', 'reason'] };
 /** What `set` may change on each kind of node. A component's fields are its props, plus the reason it is on the screen. */
-const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'] };
+const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'], data: ['measures', 'groups', 'tables', 'sources', 'mode', 'label', 'currency', 'locale', 'asOf'] };
+/* Definitions computed from the rows may be added or changed freely; the rows and where they come from are protected data. */
+const DATA_DEFINITIONS = ['measures', 'groups'];
 const kindOfNode = node => ['section', 'region', 'sandbox'].includes(node?.type) ? node.type : 'component';
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
@@ -533,9 +554,49 @@ const ownFields = node => { if (!isObject(node)) return {}; const { children, ..
 function ownLeaves(node) { return leaves(ownFields(node)); }
 const subtreeIds = node => { const ids = []; const go = n => { if (!isObject(n)) return; if (typeof n.id === 'string') ids.push(n.id); (Array.isArray(n.children) ? n.children : []).forEach(go); }; go(node); return ids; };
 
+/** Which parts of a data block differ: one field per measure, group, table row, or setting. */
+function dataDiff(before, after) {
+  const x = isObject(before) ? before : {}, y = isObject(after) ? after : {};
+  const fields = [];
+  for (const key of new Set([...Object.keys(x), ...Object.keys(y)])) {
+    if (canonical(x[key]) === canonical(y[key])) continue;
+    if (DATA_DEFINITIONS.includes(key) && (isObject(x[key]) || isObject(y[key]))) {
+      for (const name of new Set([...Object.keys(x[key] ?? {}), ...Object.keys(y[key] ?? {})])) if (canonical(x[key]?.[name]) !== canonical(y[key]?.[name])) fields.push(`${key}.${name}`);
+    } else if (key === 'tables' && isObject(x.tables) && isObject(y.tables)) {
+      for (const name of new Set([...Object.keys(x.tables), ...Object.keys(y.tables)])) {
+        const a = x.tables[name], b = y.tables[name];
+        if (canonical(a) === canonical(b)) continue;
+        if (!isObject(a) || !isObject(b)) { fields.push(`tables.${name}`); continue; }
+        for (const part of new Set([...Object.keys(a), ...Object.keys(b)])) {
+          if (canonical(a[part]) === canonical(b[part])) continue;
+          if (part === 'rows' && Array.isArray(a.rows) && Array.isArray(b.rows)) { for (let i = 0; i < Math.max(a.rows.length, b.rows.length); i++) if (canonical(a.rows[i]) !== canonical(b.rows[i])) fields.push(`tables.${name}.rows[${i}]`); }
+          else fields.push(`tables.${name}.${part}`);
+        }
+      }
+    } else fields.push(key);
+  }
+  return fields;
+}
+/** The ids that changed place among siblings that stayed: the ones outside the longest run still in their old order. */
+function reordered(beforeIds, afterIds) {
+  const common = afterIds.filter(id => beforeIds.includes(id));
+  const ranks = common.map(id => beforeIds.indexOf(id));
+  const tails = [], prev = new Array(ranks.length).fill(-1), at = [];
+  ranks.forEach((rank, i) => {
+    let lo = 0, hi = tails.length;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (ranks[tails[mid]] < rank) lo = mid + 1; else hi = mid; }
+    prev[i] = lo ? tails[lo - 1] : -1;
+    tails[lo] = i;
+    at[i] = lo;
+  });
+  const keep = new Set();
+  for (let i = tails.length ? tails[tails.length - 1] : -1; i >= 0; i = prev[i]) keep.add(common[i]);
+  return common.filter(id => !keep.has(id));
+}
 /**
  * Compare two versions of a screen node by node, by id. Each change names the node and the fields that differ,
- * so a host can show exactly what an edit touched and prove that everything else is identical.
+ * so a host can show exactly what an edit touched and prove that everything else is identical. The screen's data
+ * is compared too, as one entry with the measures, groups, rows, and settings that differ.
  */
 export function diffScreens(before, after) {
   const index = spec => { const map = new Map(); eachNode(spec, (node, at) => map.set(typeof node?.id === 'string' ? node.id : `@${at.path}`, { node, ...at })); return map; };
@@ -547,14 +608,20 @@ export function diffScreens(before, after) {
   const changes = [];
   const screenFields = ['title', 'layout'].filter(key => JSON.stringify(before?.[key]) !== JSON.stringify(after?.[key]));
   if (screenFields.length) changes.push({ change: 'changed', id: 'screen', kind: 'screen', path: '', fields: screenFields });
+  const dataFields = dataDiff(before?.data, after?.data);
+  if (dataFields.length) changes.push({ change: 'changed', id: 'data', kind: 'data', path: 'data', fields: dataFields });
   const a = index(before), b = index(after);
   for (const [id, x] of a) if (!b.has(id)) changes.push({ change: 'removed', id, kind: kindOfNode(x.node), path: x.path, parent: x.parentId });
+  const siblings = map => { const out = new Map(); for (const [id, item] of map) { if (!out.has(item.parentId)) out.set(item.parentId, []); out.get(item.parentId).push(id); } return out; };
+  const was = siblings(a), now = siblings(b);
+  const shifted = new Set();
+  for (const [parent, ids] of now) for (const id of reordered(was.get(parent) ?? [], ids)) shifted.add(id);
   for (const [id, y] of b) {
     const x = a.get(id);
     if (!x) { changes.push({ change: 'added', id, kind: kindOfNode(y.node), path: y.path, parent: y.parentId }); continue; }
     const fields = differing(x.node, y.node);
     if (fields.length) changes.push({ change: 'changed', id, kind: kindOfNode(y.node), path: y.path, fields });
-    if (x.parentId !== y.parentId) changes.push({ change: 'moved', id, kind: kindOfNode(y.node), path: y.path, parent: y.parentId, from: x.parentId });
+    if (x.parentId !== y.parentId || shifted.has(id)) changes.push({ change: 'moved', id, kind: kindOfNode(y.node), path: y.path, parent: y.parentId, from: x.parentId });
   }
   return changes;
 }
@@ -569,23 +636,42 @@ function diagnosticKeys(spec, diagnostics) {
     return { diagnostic: d, id: owner?.[1] ?? 'screen', key: `${d.code}|${owner?.[1] ?? 'screen'}|${owner ? d.path.slice(owner[0].length) : d.path}` };
   });
 }
+/** The literal text of every table row on a screen, by its first text cell: the records a recomposition must keep. */
+function recordKeys(spec) {
+  const keys = [];
+  for (const table of inferTables(spec)) {
+    const column = table.kinds.indexOf('text');
+    if (column < 0) continue;
+    for (const row of table.rows) if (typeof row[column] === 'string' && row[column].trim()) keys.push({ key: row[column].trim(), table: table.id ?? table.path });
+  }
+  if (isObject(spec?.data?.tables)) for (const [name, table] of Object.entries(spec.data.tables)) {
+    const keyField = table?.key ?? Object.entries(table?.fields ?? {}).find(([, field]) => ['text', 'category'].includes(field?.type))?.[0];
+    if (keyField) for (const row of Array.isArray(table.rows) ? table.rows : []) if (typeof row?.[keyField] === 'string') keys.push({ key: row[keyField], table: `data.tables.${name}` });
+  }
+  return keys;
+}
+const textsIn = spec => { const out = new Set(); for (const leaf of leaves({ data: spec?.data, children: spec?.children })) if (typeof leaf.value === 'string') out.add(normalLabel(leaf.value)); return out; };
 
 /**
  * Apply a model's proposed change to one version of a screen. The model proposes; the runtime applies.
  *
  * A change is { version: "syntari-ops-1", base, summary?, operations: [...] }, where base is versionOf() of the screen it
  * was written against. Each operation names its scope by node id:
- *   insert  { op, parent?, after? | before?, node }  adds one node (and what it holds) at that place;
- *   replace { op, target, set: { field: value } }     changes only those fields of one node ("screen" for the title);
- *   replace { op, target, node }                      replaces one node, keeping its id and kind;
- *   remove  { op, target }                            removes one node and what it holds.
+ *   insert    { op, parent?, after? | before?, node }  adds one node (and what it holds) at that place;
+ *   replace   { op, target, set: { field: value } }     changes only those fields of one node ("screen" for the title,
+ *                                                      "data" for the screen's measures, groups, or protected rows);
+ *   replace   { op, target, node }                      replaces one node, keeping its id and kind;
+ *   move      { op, target, parent?, after? | before? } moves one node, unchanged, to another place;
+ *   remove    { op, target }                            removes one node and what it holds;
+ *   recompose { op, screen }                            alone: a new composition of the same screen and the same data.
  * Nothing outside those scopes can change: the result is compared with the base node by node, and any difference no
  * operation declared is refused. Existing data (values that are not copy, such as a metric, a row, or a chart point)
  * cannot change unless the host passes allowDataChanges after a person confirmed it. With data: "strict" (the default),
  * a number that appears neither on the screen nor in options.sources is refused; with data: "demo" it is reported.
+ * A recomposition keeps every row of the screen's data and every record its tables show, and quotes no new figure.
  * The whole result is validated before it is returned. On any error, ok is false and spec is null: keep the last valid screen.
- * A change may instead carry clarify ({ kind, message }) or needs ([{ data, reason }]) and no operations: nothing applies,
- * and the host asks the person.
+ * A change may instead carry clarify ({ kind, message }), needs ([{ data, reason }]), or unsupported
+ * ([{ visualization, reason, closest? }]) and no operations: nothing applies, and the host tells the person.
  */
 export async function applyOperations(spec, change, options = {}) {
   const reg = options.registry ?? await registry();
@@ -595,7 +681,7 @@ export async function applyOperations(spec, change, options = {}) {
   const base = versionOf(spec);
   const result = (fields = {}) => {
     const ok = !diagnostics.some(d => d.severity === 'error') && Boolean(fields.spec);
-    return { ok, spec: ok ? fields.spec : null, base, version: ok ? versionOf(fields.spec) : null, diagnostics, effects: fields.effects ?? [], changes: fields.changes ?? [], authorization: fields.authorization ?? [], validation: fields.validation ?? null, summary: typeof change?.summary === 'string' ? change.summary : '', clarify: fields.clarify ?? null, needs: fields.needs ?? null };
+    return { ok, spec: ok ? fields.spec : null, base, version: ok ? versionOf(fields.spec) : null, diagnostics, effects: fields.effects ?? [], changes: fields.changes ?? [], authorization: fields.authorization ?? [], validation: fields.validation ?? null, summary: typeof change?.summary === 'string' ? change.summary : '', clarify: fields.clarify ?? null, needs: fields.needs ?? null, unsupported: fields.unsupported ?? null, recomposed: fields.recomposed ?? null };
   };
   if (!isObject(spec) || spec.type !== 'screen') { report('error', 'invalid-spec', '', 'Operations apply to a screen.'); return result(); }
   if (!isObject(change)) { report('error', 'invalid-change', '', 'A change is an object with version, base, and operations.'); return result(); }
@@ -609,53 +695,76 @@ export async function applyOperations(spec, change, options = {}) {
   const operations = change.operations ?? [];
   if (!Array.isArray(operations)) { report('error', 'wrong-type', 'operations', 'Operations are a list.'); return result(); }
   if (!operations.length) {
-    if (isObject(change.clarify) || Array.isArray(change.needs)) return result({ clarify: isObject(change.clarify) ? change.clarify : null, needs: Array.isArray(change.needs) ? change.needs : null });
+    const unsupported = Array.isArray(change.unsupported) && change.unsupported.length ? change.unsupported.filter(isObject) : null;
+    if (isObject(change.clarify) || Array.isArray(change.needs) || unsupported) return result({ clarify: isObject(change.clarify) ? change.clarify : null, needs: Array.isArray(change.needs) ? change.needs : null, unsupported });
     report('error', 'empty-change', 'operations', 'The change holds no operations.');
     return result();
   }
   if (operations.length > OPS_LIMITS.maxOperations) { report('error', 'over-operation-budget', 'operations', `${operations.length} operations were proposed; the limit is ${OPS_LIMITS.maxOperations}.`); return result(); }
+  if (operations.some(op => op?.op === 'recompose')) {
+    if (operations.length > 1) { report('error', 'invalid-operation', 'operations', 'A recomposition is the only operation in its change.'); return result(); }
+    return recompose(spec, operations[0], { validation, report, result, options });
+  }
 
   const working = structuredClone(spec);
   const used = new Set();
   eachNode(working, node => { if (typeof node?.id === 'string') used.add(node.id); });
   const effects = [];
+  /* Where a node goes: after or before a sibling, or at the end of a parent. Shared by insert and move. */
+  const placeOf = (op, at, fail) => {
+    if (op.after !== undefined && op.before !== undefined) { fail('invalid-operation', 'Name one place: after or before, not both.'); return null; }
+    const anchorId = op.after ?? op.before;
+    const anchor = anchorId === undefined ? null : findNode(working, anchorId);
+    if (anchorId !== undefined && !anchor) { fail('unknown-anchor', `No node has the id "${anchorId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); return null; }
+    const parentId = op.parent ?? anchor?.parentId ?? 'screen';
+    const parent = parentId === 'screen' ? null : findNode(working, parentId);
+    if (parentId !== 'screen' && (!parent || !['section', 'region'].includes(kindOfNode(parent.node)))) { fail(parent ? 'invalid-parent' : 'unknown-parent', parent ? `"${parentId}" is not a section or a region, so it holds no nodes.` : `No node has the id "${parentId}".`, `${at}.parent`); return null; }
+    const list = parentId === 'screen' ? (working.children ??= []) : (parent.node.children ??= []);
+    if (anchor && anchor.parentId !== parentId) { fail('unknown-anchor', `"${anchorId}" is not inside "${parentId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); return null; }
+    return { parentId, parent, list, index: anchor ? anchor.index + (op.after !== undefined ? 1 : 0) : list.length };
+  };
   for (const [i, op] of operations.entries()) {
     const at = `operations[${i}]`;
     const fail = (code, message, path = at) => { report('error', code, path, message, { operation: i }); };
-    if (!isObject(op) || !OP_KEYS[op.op]) { fail('invalid-operation', `Each operation is insert, replace, or remove.`, `${at}.op`); break; }
+    if (!isObject(op) || !OP_KEYS[op.op]) { fail('invalid-operation', `Each operation is insert, replace, move, remove, or recompose.`, `${at}.op`); break; }
     const unknown = Object.keys(op).filter(key => !OP_KEYS[op.op].includes(key));
     if (unknown.length) { fail('unknown-key', `${op.op} takes ${OP_KEYS[op.op].join(', ')}; "${unknown[0]}" is not one of them.`, `${at}.${unknown[0]}`); break; }
     const reason = typeof op.reason === 'string' ? op.reason : '';
     if (op.op === 'insert') {
       if (!isObject(op.node) || op.node.type === 'screen') { fail('invalid-node', 'insert needs one node to add.', `${at}.node`); break; }
-      if (op.after !== undefined && op.before !== undefined) { fail('invalid-operation', 'Name one place: after or before, not both.'); break; }
-      const anchorId = op.after ?? op.before;
-      const anchor = anchorId === undefined ? null : findNode(working, anchorId);
-      if (anchorId !== undefined && !anchor) { fail('unknown-anchor', `No node has the id "${anchorId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); break; }
-      const parentId = op.parent ?? anchor?.parentId ?? 'screen';
-      const parent = parentId === 'screen' ? null : findNode(working, parentId);
-      if (parentId !== 'screen' && (!parent || !['section', 'region'].includes(kindOfNode(parent.node)))) { fail(parent ? 'invalid-parent' : 'unknown-parent', parent ? `"${parentId}" is not a section or a region, so it holds no nodes.` : `No node has the id "${parentId}".`, `${at}.parent`); break; }
-      const list = parentId === 'screen' ? (working.children ??= []) : (parent.node.children ??= []);
-      if (anchor && anchor.parentId !== parentId) { fail('unknown-anchor', `"${anchorId}" is not inside "${parentId}".`, `${at}.${op.after !== undefined ? 'after' : 'before'}`); break; }
+      const place = placeOf(op, at, fail);
+      if (!place) break;
       const node = structuredClone(op.node);
       const collision = subtreeIds(node).find(id => used.has(id));
       if (collision) { fail('duplicate-node-id', `"${collision}" is already used by another node. New nodes need new ids.`, `${at}.node`); break; }
       subtreeIds(node).forEach(id => used.add(id));
       nameNodes([node], used);
-      const index = anchor ? anchor.index + (op.after !== undefined ? 1 : 0) : list.length;
-      list.splice(index, 0, node);
-      effects.push({ index: i, op: 'insert', id: node.id, parent: parentId, after: op.after ?? null, before: op.before ?? null, ids: subtreeIds(node), reason });
+      place.list.splice(place.index, 0, node);
+      effects.push({ index: i, op: 'insert', id: node.id, parent: place.parentId, after: op.after ?? null, before: op.before ?? null, ids: subtreeIds(node), reason });
+    } else if (op.op === 'move') {
+      if (op.target === 'screen' || op.target === 'data') { fail('invalid-operation', 'Only a node can move.', `${at}.target`); break; }
+      if (op.parent === undefined && op.after === undefined && op.before === undefined) { fail('invalid-operation', 'move names where the node goes: parent, after, or before.'); break; }
+      const target = findNode(working, op.target);
+      if (!target) { fail('unknown-target', typeof op.target === 'string' ? `No node has the id "${op.target}".` : 'move names its target by id.', `${at}.target`); break; }
+      if (op.after === op.target || op.before === op.target || op.parent === op.target || subtreeIds(target.node).slice(1).some(id => [op.after, op.before, op.parent].includes(id))) { fail('invalid-operation', 'A node cannot move inside or next to itself.'); break; }
+      const from = target.parentId;
+      target.list.splice(target.index, 1);
+      const place = placeOf(op, at, fail);
+      if (!place) break;
+      place.list.splice(place.index, 0, target.node);
+      effects.push({ index: i, op: 'move', id: op.target, kind: kindOfNode(target.node), from, parent: place.parentId, after: op.after ?? null, before: op.before ?? null, ids: [op.target], reason });
     } else if (op.op === 'replace') {
       if ((op.set === undefined) === (op.node === undefined)) { fail('invalid-operation', 'replace takes either set (the fields to change) or node (the whole node), not both.'); break; }
-      const target = op.target === 'screen' ? { node: working, parentId: null } : findNode(working, op.target);
+      if (op.target === 'data' && op.set === undefined) { fail('invalid-operation', 'Screen data is changed with set, one measure, group, or row at a time.', `${at}.node`); break; }
+      const target = op.target === 'screen' ? { node: working, parentId: null } : op.target === 'data' ? { node: (working.data ??= {}), parentId: null } : findNode(working, op.target);
       if (!target) { fail('unknown-target', typeof op.target === 'string' ? `No node has the id "${op.target}".` : 'replace names its target by id.', `${at}.target`); break; }
-      const kind = op.target === 'screen' ? 'screen' : kindOfNode(target.node);
+      const kind = op.target === 'screen' ? 'screen' : op.target === 'data' ? 'data' : kindOfNode(target.node);
       if (op.set !== undefined) {
         if (!isObject(op.set) || !Object.keys(op.set).length) { fail('invalid-operation', 'set lists at least one field and its new value.', `${at}.set`); break; }
         const bad = Object.keys(op.set).find(path => !FIELD_PATH.test(path) || stepsOf(path).some(step => FORBIDDEN_STEPS.has(step)) || !SETTABLE[kind].some(root => path === root || path.startsWith(`${root}.`) || path.startsWith(`${root}[`)) || (kind === 'component' && path === 'props'));
-        if (bad !== undefined) { fail('invalid-field', `"${bad}" is not a field replace can set on a ${kind}. Settable: ${SETTABLE[kind].map(root => root === 'props' ? 'props.<prop>' : root).join(', ')}.`, `${at}.set`); break; }
+        if (bad !== undefined) { fail('invalid-field', `"${bad}" is not a field replace can set on ${kind === 'data' ? 'the screen data' : `a ${kind}`}. Settable: ${SETTABLE[kind].map(root => root === 'props' ? 'props.<prop>' : root).join(', ')}.`, `${at}.set`); break; }
         for (const [path, value] of Object.entries(op.set)) writeAt(target.node, path, structuredClone(value));
-        effects.push({ index: i, op: 'replace', id: op.target, kind, fields: Object.keys(op.set), ids: op.target === 'screen' ? [] : [op.target], reason });
+        effects.push({ index: i, op: 'replace', id: op.target, kind, fields: Object.keys(op.set), ids: ['screen', 'data'].includes(op.target) ? [] : [op.target], reason });
       } else {
         if (op.target === 'screen') { fail('invalid-operation', 'The screen itself is changed with set, one field at a time.', `${at}.node`); break; }
         const node = structuredClone(op.node);
@@ -672,7 +781,7 @@ export async function applyOperations(spec, change, options = {}) {
         effects.push({ index: i, op: 'replace', id: op.target, kind, fields: null, ids: [...new Set([...old, ...subtreeIds(node)])], reason });
       }
     } else {
-      if (op.target === 'screen') { fail('invalid-operation', 'The screen itself cannot be removed.', `${at}.target`); break; }
+      if (op.target === 'screen' || op.target === 'data') { fail('invalid-operation', op.target === 'screen' ? 'The screen itself cannot be removed.' : 'Screen data is changed with replace and set.', `${at}.target`); break; }
       const target = findNode(working, op.target);
       if (!target) { fail('unknown-target', typeof op.target === 'string' ? `No node has the id "${op.target}".` : 'remove names its target by id.', `${at}.target`); break; }
       const ids = subtreeIds(target.node);
@@ -685,29 +794,32 @@ export async function applyOperations(spec, change, options = {}) {
 
   /* Scope: compare the result with the base, node by node. Every difference must belong to an operation that declared it. */
   const changes = diffScreens(spec, working);
-  const added = new Set(), removed = new Set(), whole = new Set(), fieldsOf = new Map(), screenFields = new Set();
+  const added = new Set(), removed = new Set(), whole = new Set(), moved = new Set(), fieldsOf = new Map(), screenFields = new Set();
   for (const effect of effects) {
     if (effect.op === 'insert') effect.ids.forEach(id => added.add(id));
     if (effect.op === 'remove') effect.ids.forEach(id => removed.add(id));
+    if (effect.op === 'move') moved.add(effect.id);
     if (effect.op === 'replace' && effect.fields === null) effect.ids.forEach(id => whole.add(id));
     if (effect.op === 'replace' && effect.fields && effect.id === 'screen') effect.fields.forEach(field => screenFields.add(field));
     else if (effect.op === 'replace' && effect.fields) fieldsOf.set(effect.id, [...(fieldsOf.get(effect.id) ?? []), ...effect.fields]);
   }
-  const within = (field, declared) => declared.some(path => field === path || field.startsWith(`${path}.`) || field.startsWith(`${path}[`));
+  const within = (field, declared) => declared.some(path => field === path || field.startsWith(`${path}.`) || field.startsWith(`${path}[`) || path.startsWith(`${field}.`) || path.startsWith(`${field}[`));
   for (const item of changes) {
     const allowed = item.change === 'added' ? added.has(item.id) || whole.has(item.id)
       : item.change === 'removed' ? removed.has(item.id) || whole.has(item.id)
-      : item.change === 'moved' ? false
+      /* A sibling that shifted because another node moved, arrived, or left kept its order: only declared moves count. */
+      : item.change === 'moved' ? moved.has(item.id) || whole.has(item.id) || added.has(item.id) || (item.parent === item.from && [...moved].some(id => findNode(working, id)?.parentId === item.parent))
       : item.id === 'screen' ? item.fields.every(field => screenFields.has(field))
       : whole.has(item.id) || added.has(item.id) || (fieldsOf.has(item.id) && item.fields.every(field => within(field, fieldsOf.get(item.id))));
-    if (!allowed) report('error', 'scope-violation', item.path, `${item.id === 'screen' ? 'The screen' : `"${item.id}"`} would be ${item.change}${item.fields ? ` (${item.fields.join(', ')})` : ''}, but no operation declared that.`, { id: item.id });
+    if (!allowed) report('error', 'scope-violation', item.path, `${item.id === 'screen' ? 'The screen' : item.id === 'data' ? 'The screen data' : `"${item.id}"`} would be ${item.change}${item.fields ? ` (${item.fields.join(', ')})` : ''}, but no operation declared that.`, { id: item.id });
   }
 
   /* Data: existing values stay as they are unless a person allowed the change; new figures need a source. */
   const before = new Map(), after = new Map();
   eachNode(spec, node => { if (typeof node?.id === 'string') before.set(node.id, node); });
   eachNode(working, node => { if (typeof node?.id === 'string') after.set(node.id, node); });
-  const sources = numberSet([...leaves({ title: spec.title, children: spec.children }).filter(leaf => !['id', 'component', 'type', 'layout'].includes(leaf.key)), ...leaves(options.sources ?? [])].map(leaf => leaf.value));
+  const computed = [...dataFigures(buildDataModel(spec.data)), ...dataFigures(buildDataModel(working.data))];
+  const sources = numberSet([...leaves({ title: spec.title, children: spec.children, data: spec.data }).filter(leaf => !['id', 'component', 'type', 'layout'].includes(leaf.key)), ...leaves(options.sources ?? [])].map(leaf => leaf.value).concat(computed));
   const strict = (options.data ?? 'strict') !== 'demo';
   const authorization = [];
   const checkFigures = (effect, list, id) => {
@@ -721,6 +833,18 @@ export async function applyOperations(spec, change, options = {}) {
     if (effect.op === 'insert') { const node = after.get(effect.id); const list = []; eachNode({ children: [node] }, n => list.push(...ownLeaves(n).filter(leaf => leaf.path.startsWith('props') || ['heading', 'label'].includes(leaf.path)))); checkFigures(effect, list, effect.id); continue; }
     if (effect.op !== 'replace') continue;
     if (effect.id === 'screen') { checkFigures(effect, effect.fields.includes('title') ? [{ key: 'title', value: working.title }] : [], 'screen'); continue; }
+    if (effect.id === 'data') {
+      /* Measures and groups are computed from the rows, so defining one adds no figure; the rows themselves are protected. */
+      const protectedFields = effect.fields.filter(field => !DATA_DEFINITIONS.some(root => field === root || field.startsWith(`${root}.`)));
+      if (protectedFields.length) {
+        const item = { operation: effect.index, id: 'data', fields: protectedFields, before: protectedFields.map(field => readAt(spec.data, field)), after: protectedFields.map(field => readAt(working.data, field)) };
+        authorization.push(item);
+        if (!options.allowDataChanges) report('error', 'protected-data', `operations[${effect.index}]`, `This would change the screen's data (${protectedFields.slice(0, 3).join(', ')}${protectedFields.length > 3 ? ` and ${protectedFields.length - 3} more` : ''}). Data changes need a person's confirmation.`, item);
+      }
+      const values = effect.fields.filter(field => DATA_DEFINITIONS.some(root => field.startsWith(`${root}.`))).flatMap(field => leaves(readAt(working.data, field))).filter(leaf => leaf.key === 'value');
+      checkFigures(effect, values.map(leaf => ({ key: 'value', value: leaf.value, path: leaf.path })), 'data');
+      continue;
+    }
     for (const id of effect.fields ? [effect.id] : effect.ids) {
       const x = before.get(id), y = after.get(id);
       if (!x || !y) { if (y) checkFigures(effect, propLeaves(y), id); continue; }
@@ -740,13 +864,62 @@ export async function applyOperations(spec, change, options = {}) {
   const checkedBase = options.baseDiagnostics ?? (await validate(spec, validation)).diagnostics;
   const checked = await validate(working, validation);
   const known = new Set(diagnosticKeys(spec, checkedBase.filter(d => d.severity === 'error')).map(item => item.key));
-  const touched = new Set([...added, ...whole, ...fieldsOf.keys()]);
+  const touched = new Set([...added, ...whole, ...moved, ...fieldsOf.keys()]);
   for (const item of diagnosticKeys(working, checked.diagnostics)) {
     const d = item.diagnostic;
     if (d.severity === 'error' && !known.has(item.key)) report('error', d.code, d.path, d.message, { id: item.id, validation: true });
     else if (d.severity !== 'error' && touched.has(item.id)) report(d.severity, d.code, d.path, d.message, { id: item.id, validation: true });
   }
   return result({ spec: working, effects, changes, authorization, validation: checked });
+}
+const readAt = (target, path) => { let at = target; for (const step of stepsOf(path)) { if (at === null || at === undefined) return undefined; at = at[step]; } return at; };
+
+/**
+ * A recomposition: a new arrangement of the same screen. The model proposes the whole composition; the runtime keeps what
+ * makes it the same screen. Screen data is carried over unchanged (the model may add measures and groups computed from it);
+ * a screen without data must state its rows in data, and every figure there must already be on the screen. Every record the
+ * screen's tables show is still there, no part quotes a figure the data does not hold, and the result validates whole.
+ */
+async function recompose(spec, op, { validation, report, result, options }) {
+  const at = 'operations[0]';
+  const unknown = Object.keys(op).filter(key => !OP_KEYS.recompose.includes(key));
+  if (unknown.length) { report('error', 'unknown-key', `${at}.${unknown[0]}`, `recompose takes ${OP_KEYS.recompose.join(', ')}.`); return result(); }
+  const next = op.screen;
+  if (!isObject(next) || !Array.isArray(next.children) || !next.children.length) { report('error', 'invalid-node', `${at}.screen`, 'recompose takes the whole new screen: { title, layout, meta, data?, children }.'); return result(); }
+  for (const key of Object.keys(next)) if (!SCREEN_KEYS.includes(key)) report('error', 'unknown-key', `${at}.screen.${key}`, `Screens take ${SCREEN_KEYS.join(', ')}.`);
+  let data = next.data;
+  if (spec.data !== undefined) {
+    const own = isObject(next.data) ? next.data : {};
+    const changed = Object.keys(own).filter(key => !DATA_DEFINITIONS.includes(key) && canonical(own[key]) !== canonical(spec.data[key]));
+    if (changed.length) report('error', 'data-changed', `${at}.screen.data`, `A recomposition keeps the screen's data as it is; it may add measures and groups. ${changed.join(', ')} would change.`);
+    data = { ...spec.data, ...Object.fromEntries(DATA_DEFINITIONS.filter(key => own[key] !== undefined || spec.data[key] !== undefined).map(key => [key, { ...(isObject(spec.data[key]) ? spec.data[key] : {}), ...(isObject(own[key]) ? own[key] : {}) }])) };
+  } else if (isObject(next.data)) {
+    /* The screen had no data block, so the rows come from what it showed: no figure may be new. */
+    const shownFigures = numberSet(leaves({ title: spec.title, children: spec.children }).filter(leaf => !['id', 'component', 'type', 'layout'].includes(leaf.key)).map(leaf => leaf.value));
+    const stated = [...leaves(next.data.tables ?? {}).filter(leaf => typeof leaf.value === 'number' && leaf.path.includes('rows')), ...leaves(next.data.measures ?? {}).filter(leaf => leaf.key === 'value')];
+    const invented = [...new Set(stated.flatMap(leaf => numbersIn(leaf.value)).filter(token => !sourced(token, shownFigures)))];
+    if (invented.length) report('error', 'unsourced-data', `${at}.screen.data`, `${invented.slice(0, 6).join(', ')}${invented.length > 6 ? ` and ${invented.length - 6} more` : ''} ${invented.length === 1 ? 'is' : 'are'} not on the screen. A recomposition shows the same data; it never adds figures.`, { values: invented });
+  }
+  const working = assignIds({ ...(spec.version ? { version: spec.version } : {}), type: 'screen', title: typeof next.title === 'string' ? next.title : spec.title, layout: next.layout ?? spec.layout, ...(isObject(next.meta) || isObject(spec.meta) ? { meta: { ...(isObject(next.meta) ? next.meta : {}), ...(isObject(spec.meta?.data) ? { data: spec.meta.data } : {}) } } : {}), ...(data !== undefined ? { data } : {}), children: structuredClone(next.children) });
+  /* Every record the screen showed is still shown: by its name, in a data row or in a table cell. */
+  const texts = textsIn(working);
+  const dropped = recordKeys(spec).filter(record => !texts.has(normalLabel(record.key)));
+  if (dropped.length) report('error', 'dropped-records', `${at}.screen`, `${dropped.slice(0, 4).map(record => `“${record.key}”`).join(', ')}${dropped.length > 4 ? ` and ${dropped.length - 4} more` : ''} ${dropped.length === 1 ? 'is' : 'are'} no longer on the screen. A recomposition keeps every record.`, { values: dropped.map(record => record.key) });
+  /* Written figures must come from the screen or from what its data computes: a recomposition reorganizes, it never invents. */
+  const model = buildDataModel(working.data);
+  const sources = numberSet([...leaves({ title: spec.title, children: spec.children, data: spec.data }).filter(leaf => !['id', 'component', 'type', 'layout'].includes(leaf.key)).map(leaf => leaf.value), ...dataFigures(model), ...leaves(options.sources ?? []).map(leaf => leaf.value)]);
+  const written = [];
+  eachNode(working, node => { if (isObject(node)) written.push(...ownLeaves(node).filter(leaf => leaf.path.startsWith('props') || ['heading', 'label'].includes(leaf.path))); });
+  written.push({ key: 'title', value: working.title });
+  const unsourced = [...new Set(written.flatMap(figuresIn).filter(token => !sourced(token, sources)))];
+  if (unsourced.length) report('error', 'unsourced-data', `${at}.screen`, `${unsourced.slice(0, 6).join(', ')}${unsourced.length > 6 ? ` and ${unsourced.length - 6} more` : ''} ${unsourced.length === 1 ? 'appears' : 'appear'} neither on the screen nor in its data. A recomposition never adds figures.`, { values: unsourced });
+  /* The whole result validates: a recomposition is new throughout, so every error is its own. */
+  const checked = await validate(working, validation);
+  for (const d of checked.diagnostics) if (d.severity === 'error') report('error', d.code, d.path, d.message, { validation: true });
+  const ids = []; eachNode(working, node => { if (typeof node?.id === 'string') ids.push(node.id); });
+  const effects = [{ index: 0, op: 'recompose', id: 'screen', ids, reason: typeof op.reason === 'string' ? op.reason : '' }];
+  const kept = recordKeys(spec).length;
+  return result({ spec: working, effects, changes: diffScreens(spec, working), validation: checked, recomposed: { records: kept, dataKept: spec.data !== undefined, measures: model ? model.measures.size : 0, groups: model ? model.groups.size : 0 } });
 }
 
 function setText(target, value) {
@@ -904,6 +1077,65 @@ function bindCompute(root, binding, props) {
   update();
 }
 
+/** A number as a table cell writes it: "12,5 %", "€1.2M", "-3.4", "D30". Text that is not one figure reads as null. */
+function cellNumber(text) {
+  const raw = String(text ?? '').replace(/[\u00a0\u202f]/g, ' ').trim();
+  const m = raw.match(/^[^\d\-−+(]*([-−+(]?)\s*(\d[\d.,\s]*)/);
+  if (!m || (raw.match(/\d[\d.,]*/g) ?? []).length > 1 && !/^\D*\d[\d.,\s]*\D*$/.test(raw)) return null;
+  let digits = m[2].replace(/\s+/g, '');
+  const dots = (digits.match(/\./g) ?? []).length, commas = (digits.match(/,/g) ?? []).length;
+  if (dots && commas) digits = digits.lastIndexOf(',') > digits.lastIndexOf('.') ? digits.replace(/\./g, '').replace(',', '.') : digits.replace(/,/g, '');
+  else if (commas) digits = commas === 1 && !/,\d{3}$/.test(digits) ? digits.replace(',', '.') : digits.replace(/,/g, '');
+  else if (dots > 1 || /\.\d{3}$/.test(digits) && digits.length > 5) digits = digits.replace(/\./g, '');
+  let number = Number(digits);
+  if (!Number.isFinite(number)) return null;
+  const rest = raw.slice((m.index ?? 0) + m[0].length).trim().toLowerCase();
+  number *= /^(k\b|mil\b)/.test(rest) ? 1e3 : /^(m\b|mm\b|mill)/.test(rest) ? 1e6 : /^(b\b|bn\b)/.test(rest) ? 1e9 : 1;
+  return m[1] && m[1] !== '+' ? -number : number;
+}
+/**
+ * A sortable table: each heading becomes a button that sorts the rows by that column, numbers as numbers and text as
+ * text, and says which way in aria-sort. Columns of figures align on the right whether or not the table sorts.
+ */
+function bindSort(root, binding, props) {
+  const table = root.matches('table') ? root : root.querySelector('table');
+  const body = table?.querySelector(binding.body ?? 'tbody');
+  const headings = table ? [...table.querySelectorAll(binding.header ?? 'thead th')] : [];
+  if (!body || !headings.length) return;
+  const rows = () => [...body.querySelectorAll(':scope > tr')];
+  const cell = (row, i) => row.children[i]?.textContent ?? '';
+  const numeric = headings.map((_, i) => { const cells = rows().map(row => cell(row, i)).filter(text => text.trim()); return cells.length > 0 && cells.every(text => cellNumber(text) !== null); });
+  headings.forEach((th, i) => { if (numeric[i]) { th.dataset.numeric = ''; rows().forEach(row => { if (row.children[i]) row.children[i].dataset.numeric = ''; }); } });
+  if (!props[binding.prop]) return;
+  const original = rows();
+  headings.forEach((th, i) => {
+    const label = th.textContent.trim();
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'table-sort';
+    button.textContent = label;
+    const mark = document.createElement('span');
+    mark.className = 'table-sort-mark';
+    mark.setAttribute('aria-hidden', 'true');
+    button.append(mark);
+    th.replaceChildren(button);
+    th.setAttribute('aria-sort', 'none');
+    button.addEventListener('click', () => {
+      /* Figures sort largest first, text A to Z; a third press puts the rows back in their own order. */
+      const current = th.getAttribute('aria-sort'), first = numeric[i] ? 'descending' : 'ascending', second = numeric[i] ? 'ascending' : 'descending';
+      const next = current === 'none' ? first : current === first ? second : 'none';
+      headings.forEach(other => other.setAttribute('aria-sort', 'none'));
+      th.setAttribute('aria-sort', next);
+      const sorted = next === 'none' ? original : [...original].sort((a, b) => {
+        const x = numeric[i] ? cellNumber(cell(a, i)) : cell(a, i), y = numeric[i] ? cellNumber(cell(b, i)) : cell(b, i);
+        const order = numeric[i] ? (x ?? -Infinity) - (y ?? -Infinity) : String(x).localeCompare(String(y), undefined, { numeric: true, sensitivity: 'base' });
+        return next === 'ascending' ? order : -order;
+      });
+      body.append(...sorted);
+    });
+  });
+}
+
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
 export function applyContract(element, manifest, props, diagnostics, path, context = {}) {
   const ir = manifest.ir;
@@ -940,47 +1172,77 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
     }
   }
   for (const [key, className] of Object.entries(ir.class ?? {})) bound(key, current => toggleClass(root, className, current));
-  /** Chart geometry stays data: the series arrives as numbers and the renderer draws the path. */
+  /**
+   * Chart geometry stays data: the series arrives as numbers and the renderer draws the path. A contract may draw several
+   * lines from one list ("lines": one field each), and they always share one scale, so two series are comparable by eye.
+   */
   for (const [key, declared] of Object.entries(ir.series ?? {})) {
     const points = Array.isArray(value(key)) ? value(key) : [];
     const svg = pick(root, declared.selector);
-    const line = svg && pick(svg, declared.line);
-    if (!line) { report('warning', 'series-slot-missing', path, `The contract expects "${declared.line}" inside "${declared.selector}" for ${key}.`); continue; }
+    const drawn = (declared.lines ?? [{ field: declared.value ?? 'value', line: declared.line, fill: declared.fill }]).map(one => ({ ...one, element: svg && pick(svg, one.line), fillElement: one.fill && svg ? pick(svg, one.fill) : null }));
+    if (!drawn[0]?.element) { report('warning', 'series-slot-missing', path, `The contract expects "${drawn[0]?.line}" inside "${declared.selector}" for ${key}.`); continue; }
     const [width, height] = String(declared.viewBox ?? svg.getAttribute('viewBox') ?? '0 0 360 160').split(/\s+/).slice(2).map(Number);
     const inset = declared.inset ?? (svg.dataset.inset ? Object.fromEntries(['top', 'bottom', 'left', 'right'].map((side, index) => [side, Number(svg.dataset.inset.split(/\s+/)[index])])) : {});
     const top = inset.top ?? 18, bottom = inset.bottom ?? 24, left = inset.left ?? 12, right = inset.right ?? 12;
-    const field = declared.value ?? 'value', labelField = declared.label ?? 'label', unit = declared.unit ?? '';
-    const numbers = points.map(point => Number(point[field]));
+    const labelField = declared.label ?? 'label';
+    const unit = declared.unitFrom !== undefined && value(declared.unitFrom) !== undefined ? String(value(declared.unitFrom)) : declared.unit ?? '';
+    /* A line whose field no point carries is not drawn: one series is a complete chart. */
+    for (const one of drawn) {
+      one.numbers = points.map(point => point?.[one.field] === undefined ? NaN : Number(point[one.field]));
+      one.present = one.numbers.some(Number.isFinite);
+      if (!one.present && one.optional) { one.element?.setAttribute('d', ''); one.element?.setAttribute('data-syntari-empty', ''); }
+    }
+    const shown = drawn.filter(one => one.present || !one.optional);
+    const numbers = shown[0].numbers;
+    const all = shown.flatMap(one => one.numbers).filter(Number.isFinite);
     const axis = declared.axis ? [...root.querySelectorAll(declared.axis)] : [];
     const preset = typeof declared.scale === 'object' ? declared.scale : (svg.dataset.scale ? { min: Number(svg.dataset.scale.split(/\s+/)[0]), max: Number(svg.dataset.scale.split(/\s+/)[1]) } : {});
     /* An automatic scale fits the agent's data, so the axis, the grid, and the line always agree. */
-    const limits = manifest.props?.[key]?.items?.fields?.[field] ?? {};
-    const { min, max } = declared.scale === 'auto' ? niceScale(numbers, Math.max(1, (axis.length || 4) - 1), { min: limits.minimum, max: limits.maximum }) : { min: preset.min ?? 0, max: preset.max ?? 100 };
+    const limits = manifest.props?.[key]?.items?.fields?.[shown[0].field] ?? {};
+    const { min, max } = declared.scale === 'auto' ? niceScale(declared.includeZero ? [...all, 0] : all, Math.max(1, (axis.length || 4) - 1), { min: limits.minimum, max: limits.maximum }) : { min: preset.min ?? 0, max: preset.max ?? 100 };
     const x = index => left + index * ((width - left - right) / Math.max(1, points.length - 1));
     const y = number => height - bottom - ((Number(number) - min) / ((max - min) || 1)) * (height - top - bottom);
-    const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(numbers[index]).toFixed(1)}`).join(' ');
-    line.setAttribute('d', path);
-    const fill = declared.fill && pick(svg, declared.fill);
-    if (fill) fill.setAttribute('d', `${path} L${x(points.length - 1).toFixed(1)},${height - bottom} L${x(0).toFixed(1)},${height - bottom} Z`);
+    for (const one of shown) {
+      const pathOf = values => values.map((number, index) => Number.isFinite(number) ? `${index && Number.isFinite(values[index - 1]) ? 'L' : 'M'}${x(index).toFixed(1)},${y(number).toFixed(1)}` : '').filter(Boolean).join(' ');
+      const path = pathOf(one.numbers);
+      one.element.setAttribute('d', path);
+      one.element.removeAttribute('data-syntari-empty');
+      if (one.fillElement) one.fillElement.setAttribute('d', `${path} L${x(points.length - 1).toFixed(1)},${height - bottom} L${x(0).toFixed(1)},${height - bottom} Z`);
+    }
+    /* Values on both sides of zero get a zero line, so a loss reads as a loss. */
+    const zero = declared.zero && pick(svg, declared.zero);
+    if (zero) { if (min < 0 && max > 0) { const at = y(0).toFixed(1); zero.setAttribute('y1', at); zero.setAttribute('y2', at); zero.removeAttribute('data-syntari-empty'); } else zero.setAttribute('data-syntari-empty', ''); }
     const tick = (index, count) => tidy(max - index * ((max - min) / Math.max(1, count - 1)));
     const step = (max - min) / Math.max(1, axis.length - 1) || 1;
-    const readable = number => String(Number(number.toFixed(Math.max(0, 1 - Math.floor(Math.log10(step))))));
+    const compact = number => { const size = Math.abs(number); return size >= 1e9 ? [number / 1e9, 'B'] : size >= 1e6 ? [number / 1e6, 'M'] : size >= 1e4 ? [number / 1e3, 'k'] : [number, '']; };
+    const readable = number => { const [n, suffix] = compact(number); const scaled = suffix ? step / (Math.abs(number) / Math.abs(n || 1)) : step; return `${String(Number(n.toFixed(Math.max(0, 1 - Math.floor(Math.log10(scaled || 1))))))}${suffix}`; };
+    const reading = number => { const [n, suffix] = compact(number); return `${tidy(Number(n.toFixed(suffix ? 2 : 4)))}${suffix}${unit}`; };
     if (declared.scale === 'auto') {
-      axis.forEach((label, index) => { label.textContent = `${readable(tick(index, axis.length))}${unit}`; });
+      axis.forEach((label, index) => {
+        label.textContent = `${readable(tick(index, axis.length))}${unit}`;
+        /* Each label sits level with its gridline, however many the template draws. */
+        if (declared.placeAxis) label.style.top = `${(y(tick(index, axis.length)) / height) * 100}%`;
+      });
       const grid = declared.grid ? [...svg.querySelectorAll(declared.grid)] : [];
       grid.forEach((rule, index) => { const at = y(tick(index, grid.length)).toFixed(1); rule.setAttribute('y1', at); rule.setAttribute('y2', at); });
     }
     if (declared.markers) {
       const markers = [...svg.querySelectorAll(declared.markers)];
       markers.forEach(marker => marker.remove());
+      const names = drawn.map(one => one.nameFrom ? value(one.nameFrom) : null);
       if (markers[0]) points.forEach((point, index) => {
+        if (!Number.isFinite(numbers[index])) return;
         const marker = markers[0].cloneNode(true);
-        const reading = `${tidy(numbers[index])}${unit}`;
+        const others = shown.slice(1).filter(one => Number.isFinite(one.numbers[index])).map(one => `${names[drawn.indexOf(one)] ? `${names[drawn.indexOf(one)]} ` : ''}${reading(one.numbers[index])}`);
+        const text = `${reading(numbers[index])}${others.length ? ` · ${others.join(' · ')}` : ''}`;
         marker.setAttribute('transform', `translate(${x(index).toFixed(1)} ${y(numbers[index]).toFixed(1)})`);
-        marker.setAttribute('aria-label', `${point[labelField]}: ${reading}`);
+        marker.setAttribute('aria-label', `${point[labelField]}: ${names[0] ? `${names[0]} ` : ''}${text}`);
         marker.style.setProperty('--point-order', String(index));
-        const text = declared.markerText && marker.querySelector(declared.markerText);
-        if (text) text.textContent = `${point[labelField]} · ${reading}`;
+        const label = declared.markerText && marker.querySelector(declared.markerText);
+        if (label) label.textContent = `${point[labelField]} · ${text}`;
+        /* A tooltip as wide as its words: two series need more room than one. */
+        const box = declared.markerBox && marker.querySelector(declared.markerBox);
+        if (box) { const wide = Math.max(60, Math.round(label?.textContent.length * 5.6 + 16)); box.setAttribute('width', String(wide)); box.setAttribute('x', String(-wide / 2)); }
         svg.append(marker);
       });
       /* The template's description named its own data; the points now describe themselves. */
@@ -1034,11 +1296,17 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
           cells.forEach((cell, index) => setText(cell, cellValues[index] ?? ''));
         }
         const filled = (name, apply, clear) => { const current = field(name); if (current !== undefined) apply(current); else clear?.(); };
-        for (const [name, selector] of Object.entries(part.text ?? {})) filled(name, current => fillText(pick(item, selector), current), () => fillText(pick(item, selector), ''));
+        /* A text slot may carry the unit a prop names, such as "%" after every column value. */
+        for (const [name, selector] of Object.entries(part.text ?? {})) {
+          const at = typeof selector === 'object' && selector ? selector.selector : selector;
+          const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : '';
+          filled(name, current => fillText(pick(item, at), `${current}${suffix}`), () => fillText(pick(item, at), ''));
+        }
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
         for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current));
         for (const [name, style] of Object.entries(part.style ?? {})) {
-          filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${current}${style.suffix ?? ''}`); });
+          /* A field left out removes what it would have drawn, such as the second bar of a single-series chart. */
+          filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${current}${style.suffix ?? ''}`); }, () => { if (style.removeWhenEmpty) pick(item, style.selector)?.remove(); });
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
@@ -1071,6 +1339,7 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
     container?.querySelectorAll('[data-syntari-index]').forEach(item => item.setAttribute(binding.attribute, String(data[Number(item.dataset.syntariIndex)]?.[binding.field] === value(key))));
   }
   if (ir.compute) bindCompute(root, ir.compute, props);
+  if (ir.sort) bindSort(root, ir.sort, props);
   for (const [name, action] of Object.entries(manifest.actions ?? {})) {
     const targets = [...root.querySelectorAll(action.selector)];
     if (root.matches(action.selector)) targets.unshift(root);
@@ -1202,11 +1471,11 @@ function sandboxFrame(node, host) {
   return figure;
 }
 /**
- * A screen says where its figures come from in meta.data: { mode: "demo" | "provided", label? }.
+ * A screen says where its figures come from in data.mode (or, before screen data, meta.data): "demo" or "provided".
  * Demonstration data is always labelled on the screen, so illustrative numbers are never mistaken for real ones.
  */
-export function dataNote(meta) {
-  const data = isObject(meta?.data) ? meta.data : null;
+export function dataNote(meta, screenData) {
+  const data = isObject(screenData) && screenData.mode ? screenData : isObject(meta?.data) ? meta.data : null;
   if (data?.mode !== 'demo' || typeof document === 'undefined') return null;
   const note = document.createElement('p');
   note.className = 'ir-data-note';
@@ -1240,7 +1509,7 @@ export async function render(spec, target, options = {}) {
     heading.textContent = String(screen.title);
     root.append(heading);
   }
-  const note = dataNote(screen?.meta);
+  const note = dataNote(screen?.meta, screen?.data);
   if (note) root.append(note);
 
   async function paint(node, parent, path) {

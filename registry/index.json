@@ -4149,6 +4149,46 @@
       "preview": "https://syntariui.giovanitier.com/components/area-chart/"
     },
     {
+      "id": "line-chart",
+      "name": "Line chart",
+      "category": "Data display",
+      "version": "0.4.0",
+      "description": "Performance against a benchmark on one scale, with a zero line and exact values on focus.",
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/line-chart/",
+      "manifest": "components/line-chart.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [
+          "Portfolio return by month against its benchmark, both cumulative from January.",
+          "Error rate over the last hour, one line."
+        ],
+        "bad": [
+          "Asset classes on the x axis: they have no order, so use a breakdown or bars.",
+          "Three or more series in one plot."
+        ],
+        "boundary": [
+          "Values that cross zero draw a zero line; a benchmark without a name is not a benchmark."
+        ]
+      },
+      "files": [
+        "kit/components/line-chart.js",
+        "kit/components/line-chart.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/line-chart/"
+    },
+    {
       "id": "chart-toolbar",
       "name": "Chart toolbar",
       "category": "Data display",
