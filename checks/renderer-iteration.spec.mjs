@@ -189,6 +189,8 @@ test('2. adding a table streams into place under the chart; everything else stay
   const shownAfter = await shown(p);
   for (const [id, text] of Object.entries(shownBefore)) expect(shownAfter[id], id).toBe(text);
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
+  /* The composer is empty for the next request. */
+  await expect(p.locator('[data-prompt]')).toHaveValue('');
   await expect(p.locator('[data-changes] .change-card')).toContainText('Applied · v1 → v2');
   await expect(p.locator('[data-changes] .proof')).toContainText('Everything else identical: 7 of 7 parts unchanged');
   await expect(p.locator('[data-changes] .proof')).toContainText('No existing value changed');
@@ -313,6 +315,8 @@ test('a change that fails validation is refused whole: the last valid screen sta
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v1 /);
   await expect(p.locator('[data-alert]')).toContainText('Nothing was changed: the screen is still v1');
   await expect(p.locator('[data-alert]')).toContainText('Ask Claude to fix the change');
+  /* A refused request stays in the composer, ready to retry or reword. */
+  await expect(p.locator('[data-prompt]')).toHaveValue('Añade una tabla con todos los empleados debajo del gráfico');
   await expect(p.locator('[data-changes] .change-card')).toContainText('Refused · the screen stays at v1');
   await expect(p.locator('[data-changes] .change-card')).toContainText('over-item-budget');
   /* Asking Claude to fix it sends the refused change and the reasons, against the same version. */
@@ -381,6 +385,7 @@ test('an ambiguous request asks first; the model can only ask, never switch scre
   await expect(p.locator('[data-confirm]')).toBeVisible();
   await expect(p.locator('[data-confirm-text]')).toContainText('This asks for a turnover report');
   expect(await screenIR(p)).toEqual(before);
+  await expect(p.locator('[data-status-label]')).toHaveText(/Ready/);
   await expect(p.locator('[data-context-title]')).toHaveText(absenteeism.title);
   /* Choosing to stay keeps editing this screen, with the person's confirmation in the prompt. */
   await script(p, addEmployees);

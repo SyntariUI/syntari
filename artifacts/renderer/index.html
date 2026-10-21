@@ -2575,7 +2575,8 @@ function liveCounts(b) {
 }
 function scheduleLive(b) {
   if (b.frame) return;
-  b.frame = requestAnimationFrame(() => { b.frame = 0; if (state.run === b.run && b.run.state !== 'completed') renderLive(b); });
+  /* Only while the run is live: a finished, failed, or stopped run never repaints the status it left. */
+  b.frame = requestAnimationFrame(() => { b.frame = 0; if (state.run === b.run && ['starting', 'streaming', 'finalizing'].includes(b.run.state)) renderLive(b); });
 }
 function renderLive(b) {
   if (b.kind === 'edit') { renderLiveEdit(b); return; }
@@ -2772,7 +2773,7 @@ async function finishRun(run, result) {
   const c = counts();
   logActivity(run, `Screen ready: ${c.rendered} rendered, ${c.rejected} rejected${c.authorization ? `, ${c.authorization} need${c.authorization === 1 ? 's' : ''} host authorization` : ''}`, { tone: c.rejected ? 'bad' : null });
   renderTimings(run);
-  if (incomplete || result.truncated) showAlert('Claude’s answer reached the length limit and was cut off. Only the nodes that arrived whole are on screen.', state.sample ? [['Ask Claude to fix it', () => generate('fix')]] : [], 'warn');
+  if (incomplete || result.truncated) showAlert(result.truncated ? 'Claude’s answer reached the length limit and was cut off. Only the parts that arrived whole are on screen.' : 'Claude’s answer is not valid JSON after its last complete part. Only the parts that arrived whole and valid are on screen.', state.sample ? [['Ask Claude to fix it', () => generate('fix')]] : [], 'warn');
   selectTab(state.result?.diagnostics.some(d => d.severity === 'error') ? 'validation' : currentTab() === 'ir' ? 'structure' : currentTab());
 }
 /* What a finished generation becomes: a new screen in the session, or a new version of the screen it revised. */
@@ -2785,6 +2786,7 @@ function adoptRun(run, { partial = false } = {}) {
     commitVersion(screen, { spec: state.spec, source: state.source, request: run.request ?? '' });
     screen.conversation.push({ role: 'user', mode: 'create', text: run.request ?? '', at: Date.now() });
     screen.conversation.push({ role: 'assistant', status: 'created', text: partial ? `Stopped early: v1 keeps the ${plural(componentsIn(state.spec), 'part')} that validated` : `Created v1 with ${plural(componentsIn(state.spec), 'part')}`, version: 1, at: Date.now() });
+    if (!partial) clearDraft();
     activate(screen);
   } else {
     const screen = activeScreen();
@@ -2866,12 +2868,13 @@ DATA
 ${data}
 
 MODE
-8. You are editing this screen and cannot start another one. If the request asks for a different screen (another subject, report, period, or audience) rather than a change to this one, change nothing and reply {"version":"syntari-ops-1","base":<version>,"clarify":{"kind":"new-screen","message":<one sentence in the request's language naming the screen it seems to ask for>}}. If you cannot tell what to change, reply with "clarify" and "kind":"question", and ask.
+8. You are editing this screen and cannot start another one. If the request asks for a different screen (another subject, report, period, or audience) rather than a change to this one, change nothing and reply {"version":"syntari-ops-1","base":<version>,"clarify":{"kind":"new-screen","message":<one sentence in the request's language naming the screen it seems to ask for>}}.
+9. When a reference fits more than one part, such as "the chart" on a screen with two charts, act on the most likely one: the one the conversation last discussed, otherwise the first or most prominent that fits. Say which one in the summary, so the person sees your choice and can undo it. When the request leaves a value open, such as "change the title" without a new title, write a better one yourself. Reply with "clarify" and "kind":"question" only when no reasonable reading exists, such as a part that is not on the screen; never only to confirm.
 
 RULES
-9. Use only the components below and only their props. * marks a required prop. Respect enum values, character limits, number ranges, and item limits exactly: count characters before you write a string. Components take no children.
-10. Give every table a caption and every chart a chartLabel. Icon props take only these names: ${reg.index.icons.join(', ')}.
-11. Write copy in the language of the request. Give each new node provenance.reason.
+10. Use only the components below and only their props. * marks a required prop. Respect enum values, character limits, number ranges, and item limits exactly: count characters before you write a string. Components take no children.
+11. Give every table a caption and every chart a chartLabel. Icon props take only these names: ${reg.index.icons.join(', ')}.
+12. Write copy in the language of the request. Give each new node provenance.reason. Write valid JSON: count your braces and brackets.
 
 COMPONENTS (syntari.<name> — purpose; use for; avoid when; pairs with; rules; then each prop as name: type = default — note)
 ${contracts}
@@ -2909,6 +2912,8 @@ const NEW_SCREEN = [
 ];
 const looksLikeNewScreen = text => NEW_SCREEN.some(pattern => pattern.test(text));
 function hideConfirm() { $('[data-confirm]').hidden = true; }
+/* A request that worked leaves the composer empty for the next one; one that failed stays, ready to try again. */
+function clearDraft() { promptField.value = ''; store.set('draft', ''); renderComposer(); }
 /* Ambiguity is the person's call. Syntari never replaces a screen on its own. */
 function askNewOrEdit(request, message) {
   const screen = activeScreen();
@@ -3336,6 +3341,7 @@ async function commitChange({ run = null, screen, request, change, final, notes 
   screen.conversation.push({ role: 'assistant', status: 'applied', text: `Applied as v${version.n}: ${final.effects.map(effect => describeEffect(effect, base.spec, final.spec)).join('; ')}`, version: version.n, at: Date.now() });
   state.request = request;
   state.recent = recentFrom(final.changes);
+  clearDraft();
   if (consistent && b) {
     const previous = state.mounted;
     const composite = { element: screenRoot(), destroy() { previous?.destroy?.(); b.results.forEach(result => result.destroy()); } };
@@ -3425,7 +3431,9 @@ function describeEffect(effect, before, after) {
 /* After a change, its parts light up once, so the eye finds what moved. */
 function flashChanges(changes = []) {
   const ids = changes.filter(item => item.change === 'added' || item.change === 'changed').map(item => item.id);
-  const nodes = ids.map(elementFor).filter(Boolean);
+  const found = ids.map(elementFor).filter(Boolean);
+  /* One outline per change: a new section lights up, not also the table inside it. */
+  const nodes = found.filter(node => !found.some(other => other !== node && other.contains(node)));
   for (const node of nodes) { node.dataset.flash = ''; setTimeout(() => delete node.dataset.flash, 1900); }
   if (nodes[0]) requestAnimationFrame(() => scrollWithin(stage, nodes[0], 48));
 }
