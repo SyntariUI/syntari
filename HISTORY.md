@@ -1,3 +1,15 @@
+# Syntari — next release
+
+October 21, 2026. Change a screen without regenerating it.
+
+- Added Screen IR operations. A model proposes a change against one version of a screen, as `insert`, `replace`, and `remove` operations that name nodes by id; the runtime applies them with `applyOperations()` in the browser, `applyScreenOperations()` in Node, or the MCP tool `apply_operations`. A change written for another version is refused, every difference from the base must belong to an operation that declared it, existing data changes only with `allowDataChanges` after a person confirmed it, new figures need a source unless the screen holds demonstration data, and the whole result is validated before it replaces the last valid screen.
+- `assignIds()` gives every node a stable id, `versionOf()` fingerprints a screen, `findNode()` looks a node up by id, and `diffScreens()` reports what changed node by node. The MCP tool `prepare_screen` does the first two for agents.
+- Sections, regions, and unverified blocks may carry an `id`, and the renderer marks every node it paints with `data-ir-id`.
+- A screen says where its figures come from in `meta.data`: `{ "mode": "demo" }` renders a Demonstration data label under the title.
+- The Renderer artifact iterates on screens instead of regenerating them. Each screen keeps its own Screen IR, versions, validation state, and conversation; with a screen open the composer edits it, a new screen is always an explicit choice, and a request that reads like another screen asks first. A change streams into place with a skeleton where the new part goes, is validated whole, and becomes a new version, or the screen is put back exactly. Undo returns to the previous version, a screen menu returns to other screens, and a Changes view shows what each change touched and that everything else is identical. Its source now lives in `artifacts/renderer/` with browser checks.
+
+---
+
 # Syntari — version 0.4.0
 
 October 20, 2026. Screens that explain, not only show.

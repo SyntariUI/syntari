@@ -9,6 +9,24 @@ Use Syntari as a bounded interface renderer. Retrieve its current contracts befo
 4. Run `syntari validate --spec screen.json --json`, call `validateScreen(spec)` from `syntari-ui`, or use the MCP tool `validate_screen`. Repair every error before presenting the screen. Preserve warnings in the decision trace.
 5. Render with `render(spec, target, { onActionRequest, assets })` from the installed browser runtime. Show the intent, selected pattern, candidate components, decision, Screen IR, validation results, and rendered interface so a person can inspect why the screen looks as it does.
 
+## Changing a screen
+
+Change a screen that exists with operations; never regenerate it to add one part. Give every node an id with `assignIds(spec)` (or the MCP tool `prepare_screen`), show the model the screen with its `versionOf(spec)`, and ask it for a change:
+
+```json
+{ "version": "syntari-ops-1", "base": "sv-5884dcb6", "summary": "Add a table of employees under the chart",
+  "operations": [{ "op": "insert", "parent": "section-trend", "after": "area-chart", "node": { "id": "employee-table", "component": "syntari.table", "props": { } } }] }
+```
+
+`applyScreenOperations(spec, change, options)` in Node, `applyOperations(spec, change, options)` from the browser runtime, or the MCP tool `apply_operations` applies it. The model proposes; the runtime applies:
+
+- Each operation names its scope by id. `insert { parent?, after? | before?, node }` adds one node at that place. `replace { target, set: { "props.caption": … } }` changes only the listed fields; `replace { target, node }` replaces one node and keeps its id and kind; the screen title is `replace { target: "screen", set: { "title": … } }`. `remove { target }` removes one node and what it holds.
+- A change written for another version is refused (`stale-base`). The result is compared with the base node by node, and any difference no operation declared is refused (`scope-violation`). `diffScreens(before, after)` returns the same comparison, for showing exactly what a change touched.
+- Existing data is protected: a figure or a record already on the screen cannot change unless the host passes `allowDataChanges` after a person confirmed it (`protected-data`; the refused result lists what would change in `authorization`). Titles, captions, labels, and notes are copy and may be reworded.
+- New figures need a source. With `data: "strict"`, the default, a number that appears neither on the screen nor in `options.sources` is refused (`unsourced-data`). With `data: "demo"` it is reported (`demo-data`), and the screen must say so: `meta.data = { "mode": "demo" }` renders a Demonstration data label under the title.
+- The whole result is validated. Errors the base already had do not block the change; new ones do. On any error, `ok` is false and `spec` is null: keep the last valid screen.
+- Instead of operations, a model may answer `clarify` (`{ "kind": "new-screen" | "question", "message" }`) or `needs` (`[{ "data", "reason" }]`). The host asks the person. The model never switches to a new screen on its own: the interface decides whether a request edits this screen or starts another.
+
 ## Unverified blocks
 
 Some explanations need a visual no contract covers, such as a diagram. A host may allow unverified blocks: `{ "type": "sandbox", "label", "html", "height"? }`. They are rejected by default (`sandbox-not-allowed`). A host that passes `{ sandbox: true }` to `render()`, `validateScreen()`, or the MCP tool `validate_screen` gets them in a sandboxed frame with no scripts, no network, no forms, and no navigation, labelled as unverified, with a warning in the diagnostics. They can never request actions. Prefer registry components; use a block only for what no contract can show.

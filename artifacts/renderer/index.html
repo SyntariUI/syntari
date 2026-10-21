@@ -522,6 +522,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
   .seg,.tool-wide{display:none}
   .status-detail,.chip-long,.bar-mode{display:none}
   .context-btn b{max-width:16ch}
+  .pop.pop-start{position:fixed;top:50px;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));width:auto;min-width:0;max-width:none}
   .inspector{width:100%;border-left:0}
   .frame{padding:18px 14px 84px}
   .example-list{grid-template-columns:minmax(0,1fr)}
@@ -2788,6 +2789,7 @@ function adoptRun(run, { partial = false } = {}) {
     screen.conversation.push({ role: 'assistant', status: 'created', text: partial ? `Stopped early: v1 keeps the ${plural(componentsIn(state.spec), 'part')} that validated` : `Created v1 with ${plural(componentsIn(state.spec), 'part')}`, version: 1, at: Date.now() });
     if (!partial) clearDraft();
     activate(screen);
+    finalStatus();
   } else {
     const screen = activeScreen();
     if (!screen) return;
@@ -3737,7 +3739,7 @@ function renderComposer() {
   chip.hidden = !state.sample || (!editing && !workspace.screens.size);
   chip.dataset.mode = editing ? 'edit' : 'create';
   chip.textContent = editing ? `Editing · ${shortTitle(screen.title, 32)}` : 'New screen';
-  $('[data-bar-new]').hidden = !state.sample || !editing || state.busy;
+  $('[data-bar-new]').hidden = !state.sample || !editing || state.busy || composer.dataset.state === 'editing';
   /* While a request runs, the live line names that request. */
   $('[data-live-request]').textContent = state.pending ? state.pending.request : draft;
   const context = $('[data-composer-context]');

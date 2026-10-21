@@ -1,11 +1,11 @@
 /**
  * Syntari MCP server over stdio. Read-only: agents discover components and patterns, read contracts,
- * and validate Screen IR. Nothing here writes files, renders, or performs an action.
+ * validate Screen IR, and check a proposed change to a screen. Nothing here writes files, renders, or performs an action.
  * Messages are newline-delimited JSON-RPC 2.0, as the MCP stdio transport specifies. No dependencies.
  */
 import { createInterface } from 'node:readline';
 import { readFile } from 'node:fs/promises';
-import { listComponents, listPatterns, getPattern, getAgentPolicy, getComponent, searchRegistry, validateScreen } from './agent.mjs';
+import { listComponents, listPatterns, getPattern, getAgentPolicy, getComponent, searchRegistry, validateScreen, applyScreenOperations, assignIds, versionOf } from './agent.mjs';
 
 const SUPPORTED_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
 const pkg = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'));
@@ -15,6 +15,7 @@ const INSTRUCTIONS = `Syntari is a design system for people and agents. To build
 2. Read get_component for the contract: props, actions, rules, a valid sample, and the icon names icon props accept.
 3. Compose Screen IR (see get_pattern for complete examples) and give interactive nodes an id.
 4. Call validate_screen and repair every error before showing the screen.
+To change a screen that already exists, never regenerate it: call prepare_screen once for its ids and version, propose insert, replace, and remove operations by node id, and call apply_operations. Keep the last valid screen when it refuses the change.
 Actions in a rendered screen are requests from a person. The host application decides whether anything runs; read get_agent_policy.`;
 
 const readOnly = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
@@ -86,6 +87,30 @@ const tools = {
       sandbox: { type: 'boolean', description: 'True only when the host has said it allows unverified blocks. Otherwise a sandbox node is an error.' }
     }, ['screen']),
     async run({ screen, sandbox }) { return validateScreen(screen, { sandbox: sandbox === true }); }
+  },
+  prepare_screen: {
+    title: 'Prepare a screen for changes',
+    description: 'Give every node of a Screen IR spec a stable id (ids already written stay) and return its version. A change names that version as its base and its nodes by these ids.',
+    inputSchema: object({ screen: { type: 'object', description: 'A Screen IR object: { "type": "screen", "children": [...] }.' } }, ['screen']),
+    async run({ screen }) { const prepared = assignIds(screen); return { screen: prepared, version: versionOf(prepared) }; }
+  },
+  apply_operations: {
+    title: 'Apply operations to a screen',
+    description: 'Apply a proposed change { "version": "syntari-ops-1", "base", "summary"?, "operations": [...] } to one version of a screen. insert { op, parent?, after? | before?, node }, replace { op, target, set: { "props.<prop>": value } } or { op, target, node }, remove { op, target }. Refuses a stale base, anything outside the declared scopes, changes to existing data without allowDataChanges, figures without a source in strict mode, and any new validation error. Returns the new screen, or ok: false and spec: null with the reasons. Nothing is stored or rendered.',
+    inputSchema: object({
+      screen: { type: 'object', description: 'The screen the change was written against, with ids from prepare_screen.' },
+      change: { type: 'object', description: 'The proposed change.' },
+      data: { type: 'string', description: '"strict" (default): a figure that is neither on the screen nor in sources is refused. "demo": it is reported, for screens labelled as demonstration data.' },
+      sources: { type: 'array', description: 'Data the host provides. Its figures count as sourced.' },
+      allowDataChanges: { type: 'boolean', description: 'True only after a person confirmed the data changes a previous result listed in authorization.' },
+      sandbox: { type: 'boolean', description: 'True only when the host allows unverified blocks.' }
+    }, ['screen', 'change']),
+    async run({ screen, change, data, sources, allowDataChanges, sandbox }) {
+      if (data !== undefined && !['strict', 'demo'].includes(data)) throw new ToolError('data is "strict" or "demo".');
+      const result = await applyScreenOperations(screen, change, { data, sources, allowDataChanges: allowDataChanges === true, sandbox: sandbox === true });
+      /* The full validation is summarised: its diagnostics already appear in result.diagnostics where the change caused them. */
+      return { ...result, validation: result.validation ? { ok: result.validation.ok } : null };
+    }
   }
 };
 
