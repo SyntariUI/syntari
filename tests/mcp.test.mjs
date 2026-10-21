@@ -17,7 +17,7 @@ test('MCP server negotiates with the official client and lists read-only tools',
     assert.equal(client.getServerVersion().name, 'syntari');
     assert.match(client.getInstructions(), /validate_screen/);
     const { tools } = await client.listTools();
-    assert.deepEqual(tools.map(tool => tool.name).sort(), ['apply_operations', 'get_agent_policy', 'get_component', 'get_pattern', 'list_components', 'list_patterns', 'prepare_screen', 'search_components', 'validate_screen']);
+    assert.deepEqual(tools.map(tool => tool.name).sort(), ['apply_operations', 'assess_composition', 'get_agent_policy', 'get_component', 'get_composition_policy', 'get_pattern', 'list_components', 'list_patterns', 'prepare_screen', 'search_components', 'validate_screen']);
     for (const tool of tools) assert.equal(tool.annotations.readOnlyHint, true, `${tool.name} must be read-only`);
   } finally { await client.close(); }
 });
@@ -72,6 +72,19 @@ test('an agent can discover a contract, compose from its sample, and validate th
 
     const policy = (await client.callTool({ name: 'get_agent_policy', arguments: {} })).structuredContent;
     assert.equal(policy.actions.default, 'deny');
+
+    /* Beyond validity: the policy says which visualization fits which data, and the assessment reads a screen with it. */
+    const composition = (await client.callTool({ name: 'get_composition_policy', arguments: {} })).structuredContent;
+    assert.deepEqual(composition.roles['time-series-comparison'].recommended, ['line-chart']);
+    assert.equal(composition.roles.correlation.missing, 'scatter-plot');
+    const { FLAWED, CANONICAL } = await import('./fixtures/portfolio.mjs');
+    const flawed = (await client.callTool({ name: 'assess_composition', arguments: { screen: FLAWED } })).structuredContent;
+    assert.ok(flawed.assessment.signals.some(item => item.code === 'relabeled-data'));
+    assert.ok(flawed.diagnostics.some(item => item.code === 'data-conflict'));
+    const bound = (await client.callTool({ name: 'assess_composition', arguments: { screen: CANONICAL } })).structuredContent;
+    assert.equal(bound.ok, true);
+    assert.deepEqual(bound.assessment.signals, []);
+    assert.ok(bound.data.some(item => item.ref === 'groups.liquidity' && item.role === 'ordered-distribution'));
   } finally { await client.close(); }
 });
 

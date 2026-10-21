@@ -162,7 +162,8 @@ export function unsupportedRequest(text, policy) {
  * visualizations that fit it in this registry. A model reads it before composing; a host shows it in an inspector.
  */
 export function profileData(data, policy, renderable = null) {
-  const model = data?.tables ? buildDataModel(data) : data instanceof Object && data.tables instanceof Map ? data : null;
+  /* A computed model, or a data block to compute one from. */
+  const model = data?.tables instanceof Map ? data : isObject(data?.tables) ? buildDataModel(data) : null;
   if (!model) return [];
   const available = slug => !renderable || renderable.has(slug);
   const advice = role => {
