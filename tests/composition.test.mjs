@@ -214,4 +214,11 @@ test('recomposing a screen without data states its rows in data, using only figu
   made.tables.holdings.rows[1].weight = 8.5;
   const madeUp = await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data: made, children } }]));
   assert.ok(codes(madeUp).includes('unsourced-data'), 'a recomposition never adds figures');
+  /* The screen wrote "10 M€": stating it as 10000000 in the data is the same figure, not a new one. 12000000 is new. */
+  const total = clone(data);
+  total.measures.totalValue = { label: 'Patrimonio', value: 10000000, format: 'compact-currency' };
+  const scaled = await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data: total, children } }]));
+  assert.equal(scaled.ok, true, JSON.stringify(scaled.diagnostics.filter(d => d.severity === 'error')));
+  total.measures.totalValue.value = 12000000;
+  assert.ok(codes(await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data: total, children } }]))).includes('unsourced-data'));
 });

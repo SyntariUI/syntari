@@ -4006,6 +4006,7 @@ async function generateRecompose(request, { retry = null, attempt = 1 } = {}) {
   /* The new composition streams in like a new screen; the current one stays on the canvas until a first part validates. */
   const run = startRun('recompose', tier, { keepLog: attempt > 1 });
   Object.assign(run, { request, screenId: screen.id, base: version, attempt });
+  say(run);
   run.build.baseData = isRecord(version.spec.data) ? version.spec.data : null;
   if (run.build.baseData) run.build.draft.data = structuredClone(run.build.baseData);
   if (attempt > 1) logActivity(run, 'Correcting the recomposition once: the first one could not be applied', { tone: 'warn' });

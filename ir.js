@@ -541,9 +541,13 @@ function numberForms(token) {
   return forms;
 }
 const numbersIn = value => typeof value === 'number' ? [String(value)] : typeof value === 'string' ? value.match(NUMBER) ?? [] : [];
+/* "10 M€" on a screen is the figure 10000000 in its data: a written scale counts as the whole number it stands for. */
+const SCALED = /(\d+(?:[.,]\d+)*)\s?(mil millones|millones|million|billion|mil|mm|bn|k|m|b)(?![a-z])/gi;
+const SCALES = { k: 1e3, mil: 1e3, m: 1e6, mm: 1e6, millones: 1e6, million: 1e6, b: 1e9, bn: 1e9, billion: 1e9, 'mil millones': 1e9 };
+const scaledIn = value => typeof value !== 'string' ? [] : [...value.matchAll(SCALED)].flatMap(([, token, scale]) => [...numberForms(token)].map(Number).filter(Number.isFinite).map(n => String(Number((n * SCALES[scale.toLowerCase()]).toPrecision(12)))));
 function numberSet(values) {
   const set = new Set();
-  for (const value of values) for (const token of numbersIn(value)) for (const form of numberForms(token)) set.add(form);
+  for (const value of values) for (const token of [...numbersIn(value), ...scaledIn(value)]) for (const form of numberForms(token)) set.add(form);
   return set;
 }
 const sourced = (token, set) => [...numberForms(token)].some(form => set.has(form));
