@@ -230,6 +230,24 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 .snapshot{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:6px 16px;border-bottom:1px solid var(--w-line);background:var(--w-well);font-size:12px;color:var(--w-muted)}
 .snapshot span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .snapshot b{font-weight:500;color:var(--w-text)}
+.mode-chip[data-mode=recompose]{background:var(--w-warn-soft);color:var(--w-warn)}
+.compare-strip{justify-content:space-between;background:var(--w-accent-soft);color:var(--w-text)}
+.stage[data-comparing] .canvas{outline:2px dashed var(--w-accent);outline-offset:6px;border-radius:8px}
+.plan-head{display:flex;flex-direction:column;gap:2px;padding:12px 12px 4px}
+.plan-head b{font-size:15px;font-weight:600}
+.plan-head span,.plan-why{font-size:12px;color:var(--w-muted)}
+.plan-list{list-style:none;margin:0;padding:0 12px 8px;display:grid;gap:6px}
+.plan-list li{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:start;padding:8px 10px;border:1px solid var(--w-line);border-radius:8px;font-size:12.5px}
+.plan-list li .mark{margin-top:3px;grid-row:span 3}
+.plan-list li small{color:var(--w-muted)}
+.plan-q{margin:0;padding:0 12px 6px 30px;font-size:12.5px;display:grid;gap:3px}
+.plan-data{width:calc(100% - 24px);margin:0 12px 10px;border-collapse:collapse;font-size:12px}
+.plan-data th,.plan-data td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--w-line);vertical-align:top}
+.plan-data th{font-weight:500;color:var(--w-muted)}
+.plan-data td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.raw-log{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.raw-log li{padding:8px;border:1px solid var(--w-line);border-radius:8px;font-size:12px;display:grid;gap:4px}
+.raw-log pre{max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:11px}
 .snapshot::before{content:"";width:7px;height:7px;border-radius:2px;box-shadow:inset 0 0 0 1.2px var(--w-faint)}
 .app:not([data-focused]) .canvas .ir-node:not([data-ir-status=fallback]):hover{outline:1px solid var(--w-line-strong);outline-offset:6px;border-radius:12px}
 .stage[data-empty] .frame{display:none}
@@ -603,6 +621,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
       <div class="stage" data-stage data-mode="fit">
         <div class="progress" aria-hidden="true"></div>
         <div class="snapshot" data-snapshot hidden><span>Showing the previous screen, <b data-snapshot-title></b>, until the new one has its first validated part.</span></div>
+        <div class="snapshot compare-strip" data-compare hidden><span data-compare-text></span><button type="button" class="btn small" data-compare-back>Back to the current version</button></div>
         <div class="frame" data-frame>
           <span class="frame-label" data-frame-label></span>
           <div class="canvas" data-canvas></div>
@@ -674,6 +693,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
       <div class="tabs" role="tablist" aria-label="Inspector views">
         <button class="tab" role="tab" id="tab-structure" aria-controls="panel-structure" aria-selected="true" data-tab="structure">Structure</button>
         <button class="tab" role="tab" id="tab-changes" aria-controls="panel-changes" aria-selected="false" tabindex="-1" data-tab="changes">Changes <span class="count" data-count="changes"></span></button>
+        <button class="tab" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false" tabindex="-1" data-tab="plan">Plan</button>
         <button class="tab" role="tab" id="tab-validation" aria-controls="panel-validation" aria-selected="false" tabindex="-1" data-tab="validation">Validation <span class="count" data-count="validation"></span></button>
         <button class="tab" role="tab" id="tab-actions" aria-controls="panel-actions" aria-selected="false" tabindex="-1" data-tab="actions">Actions <span class="count" data-count="actions"></span></button>
         <button class="tab" role="tab" id="tab-activity" aria-controls="panel-activity" aria-selected="false" tabindex="-1" data-tab="activity">Activity</button>
@@ -689,12 +709,19 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
         <div data-changes></div>
       </div>
 
+      <div class="panel" role="tabpanel" id="panel-plan" aria-labelledby="tab-plan" data-panel="plan" hidden>
+        <div data-plan></div>
+      </div>
+
       <div class="panel" role="tabpanel" id="panel-validation" aria-labelledby="tab-validation" data-panel="validation" hidden>
         <p class="headline" data-verdict>Nothing validated yet.</p>
         <div class="fixbar" data-fix hidden></div>
         <div data-issues></div>
         <section class="comp" data-composition hidden aria-label="Composition checks">
           <div class="comp-head"><h3 class="label">Composition</h3><span class="tag">Advisory</span></div>
+          <p class="muted pad" data-criteria-note>Judgments under the registry’s composition policy, not measurements. Only the checks above decide what renders.</p>
+          <ul class="checks" data-criteria></ul>
+          <h3 class="label">Layout, measured</h3>
           <p class="muted pad" data-comp-note></p>
           <ul class="checks" data-checks></ul>
           <div data-review></div>
@@ -719,6 +746,12 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
         <dl class="timings" data-timings hidden></dl>
         <ol class="activity" data-activity></ol>
         <p class="muted pad" data-activity-empty>Each generation is logged here as it happens: when Claude starts writing, each part it receives, validates, renders, or rejects, and the final check of the whole screen.</p>
+        <details class="more raw-panel" data-raw-panel hidden>
+          <summary>Raw answers <span class="count" data-raw-count></span></summary>
+          <p class="muted">For diagnosis. Kept in this tab only, for the last 8 answers, with email addresses and keys masked. Never saved or sent anywhere.</p>
+          <ol class="raw-log" data-raw-log></ol>
+          <button type="button" class="btn small" data-raw-clear>Clear</button>
+        </details>
       </div>
 
       <div class="panel panel-ir" role="tabpanel" id="panel-ir" aria-labelledby="tab-ir" data-panel="ir" hidden>
@@ -787,6 +820,9 @@ const RENEWAL = {"version":"syntari-ir-1","type":"screen","meta":{"job":"Decide 
 /* B2B screens that each pass the validator; the diagram needs the host to allow unverified blocks. */
 const BUNDLED = {
   access: { label: 'Access review', note: 'SOC 2 benchmark', illustrative: true, spec: ACCESS_REVIEW },
+  /* The portfolio regression case, as it failed review: figures written by hand that disagree with the holdings. */
+  portfolio: { label: 'Portfolio review', note: 'Regression: figures that disagree', illustrative: true, spec: {"version":"syntari-ir-1","type":"screen","layout":"stack","title":"Resumen de la cartera de Familia Ortega","meta":{"job":"Revisar la cartera del trimestre","audience":"Gestor patrimonial","decision":"none","data":{"mode":"demo","label":"Cartera de demostración: valores ilustrativos."}},"children":[{"id":"kpis","component":"syntari.stat-row","props":{"stats":[{"label":"Patrimonio","value":"10 M€","note":"A 30 de septiembre"},{"label":"Rentabilidad YTD","value":"+3,6 %","badge":"+0,9 pp","note":"Frente al benchmark"},{"label":"Liquidez D0–D30","value":"38 %","note":"Disponible en 30 días","tone":"warning"}]},"provenance":{"reason":"Las cifras principales."}},{"id":"total-headline","component":"syntari.headline-metric","props":{"metrics":[{"label":"Patrimonio","value":"10 M€","total":"EUR"}]},"provenance":{"reason":"El patrimonio total."}},{"id":"section-asignacion","type":"section","heading":"Asignación","children":[{"id":"allocation","component":"syntari.breakdown","props":{"title":"Asignación por clase de activo","total":"10 M€","segments":[{"label":"Liquidez","value":"15 %","share":15},{"label":"Renta fija","value":"29 %","share":29},{"label":"Renta variable","value":"27 %","share":27},{"label":"Alternativos","value":"29 %","share":29}]},"provenance":{"reason":"Cómo se reparte la cartera."}}]},{"id":"section-liquidez","type":"section","heading":"Liquidez","children":[{"id":"liquidity","component":"syntari.breakdown","props":{"title":"Liquidez por plazo","total":"100 %","segments":[{"label":"D0","value":"6 %","share":6},{"label":"D1–7","value":"30 %","share":30},{"label":"D8–30","value":"2 %","share":2},{"label":"D31–90","value":"41 %","share":41},{"label":">D90","value":"21 %","share":21}]},"provenance":{"reason":"Cuánto se puede vender y cuándo."}}]},{"id":"section-riesgo","type":"section","heading":"Riesgo","children":[{"id":"risk","component":"syntari.breakdown","props":{"title":"Contribución al riesgo","total":"100 %","segments":[{"label":"Liquidez","value":"15 %","share":15},{"label":"Renta fija","value":"29 %","share":29},{"label":"Renta variable","value":"27 %","share":27},{"label":"Alternativos","value":"29 %","share":29}]},"provenance":{"reason":"De dónde viene el riesgo."}}]},{"id":"section-posiciones","type":"section","heading":"Posiciones","children":[{"id":"holdings","component":"syntari.table","props":{"caption":"Posiciones de la cartera","columns":[{"label":"Activo"},{"label":"Clase"},{"label":"Peso"},{"label":"Liquidez"},{"label":"Riesgo"}],"rows":[["Cuenta remunerada","Liquidez","6 %","0 d","0,1 %"],["Fondo monetario EUR","Liquidez","9 %","1 d","0,4 %"],["Letras del Tesoro 6M","Renta fija","7 %","2 d","0,5 %"],["ETF MSCI World","Renta variable","14 %","3 d","28 %"],["Bono corporativo IG 2029","Renta fija","12 %","30 d","6 %"],["Fondo RV Europa","Renta variable","13 %","35 d","24 %"],["Fondo high yield","Renta fija","10 %","60 d","8 %"],["Hedge fund multiestrategia","Alternativos","8 %","90 d","7 %"],["Inmobiliario directo","Alternativos","10 %","180 d","9 %"],["Private equity Fund III","Alternativos","11 %","365 d","17 %"]]},"provenance":{"reason":"El detalle de cada posición."}}]},{"id":"summary","component":"syntari.text-block","props":{"body":"La cartera tiene una liquidez del 38 % a 30 días y un riesgo repartido entre las cuatro clases de activo."},"provenance":{"reason":"Resume lo anterior."}}]} },
+  wealth: { label: 'Portfolio dashboard', note: 'Every figure bound to its data', illustrative: true, spec: {"version":"syntari-ir-1","type":"screen","layout":"stack","title":"La cartera Ortega gana un 3,6 % este año, 0,9 puntos por encima de su benchmark","meta":{"job":"Revisar la cartera del trimestre","audience":"Gestor patrimonial","decision":"none","plan":{"pattern":"dashboard","purpose":"Saber cómo va la cartera, cuánto se puede mover y de dónde viene el riesgo.","questions":["¿Cómo va frente al benchmark?","¿Cuánto es líquido a 30 días?","¿De dónde viene el riesgo?"]}},"data":{"mode":"demo","label":"Cartera de demostración: valores ilustrativos, no posiciones reales.","currency":"EUR","locale":"es-ES","asOf":"2026-09-30","tables":{"holdings":{"label":"Posiciones","key":"asset","fields":{"asset":{"type":"text","label":"Activo"},"assetClass":{"type":"category","label":"Clase de activo","order":["Liquidez","Renta fija","Renta variable","Alternativos"]},"weight":{"type":"percent","label":"Peso","total":100,"role":"allocation"},"value":{"type":"currency","label":"Valor"},"liquidityDays":{"type":"days","label":"Liquidez","role":"liquidity"},"risk":{"type":"percent","label":"Contribución al riesgo","total":100,"role":"risk-contribution"}},"rows":[{"asset":"Cuenta remunerada","assetClass":"Liquidez","weight":6,"value":600000,"liquidityDays":0,"risk":0.1},{"asset":"Fondo monetario EUR","assetClass":"Liquidez","weight":9,"value":900000,"liquidityDays":1,"risk":0.4},{"asset":"Letras del Tesoro 6M","assetClass":"Renta fija","weight":7,"value":700000,"liquidityDays":2,"risk":0.5},{"asset":"ETF MSCI World","assetClass":"Renta variable","weight":14,"value":1400000,"liquidityDays":3,"risk":28},{"asset":"Bono corporativo IG 2029","assetClass":"Renta fija","weight":12,"value":1200000,"liquidityDays":30,"risk":6},{"asset":"Fondo RV Europa","assetClass":"Renta variable","weight":13,"value":1300000,"liquidityDays":35,"risk":24},{"asset":"Fondo high yield","assetClass":"Renta fija","weight":10,"value":1000000,"liquidityDays":60,"risk":8},{"asset":"Hedge fund multiestrategia","assetClass":"Alternativos","weight":8,"value":800000,"liquidityDays":90,"risk":7},{"asset":"Inmobiliario directo","assetClass":"Alternativos","weight":10,"value":1000000,"liquidityDays":180,"risk":9},{"asset":"Private equity Fund III","assetClass":"Alternativos","weight":11,"value":1100000,"liquidityDays":365,"risk":17}]},"performance":{"label":"Rentabilidad acumulada 2026","fields":{"month":{"type":"period","label":"Mes"},"portfolio":{"type":"percent","label":"Cartera","role":"return"},"benchmark":{"type":"percent","label":"Benchmark","role":"benchmark"}},"rows":[{"month":"Ene","portfolio":0.8,"benchmark":0.6},{"month":"Feb","portfolio":1.5,"benchmark":1.2},{"month":"Mar","portfolio":0.9,"benchmark":1},{"month":"Abr","portfolio":-0.6,"benchmark":-0.2},{"month":"May","portfolio":0.7,"benchmark":0.5},{"month":"Jun","portfolio":2.1,"benchmark":1.4},{"month":"Jul","portfolio":2.9,"benchmark":2},{"month":"Ago","portfolio":2.4,"benchmark":1.8},{"month":"Sep","portfolio":3.6,"benchmark":2.7}]}},"measures":{"totalValue":{"label":"Patrimonio","sum":"holdings.value","format":"compact-currency","digits":0},"liquid30":{"label":"Liquidez D0–D30","sum":"holdings.weight","where":{"liquidityDays":{"max":30}},"format":"percent","digits":0},"ytd":{"label":"Rentabilidad YTD","last":"performance.portfolio","format":"signed-percent"},"ytdBenchmark":{"label":"Benchmark YTD","last":"performance.benchmark","format":"signed-percent"},"excess":{"label":"Frente al benchmark","formula":"ytd - ytdBenchmark","format":"points"}},"groups":{"allocation":{"label":"Asignación por clase","table":"holdings","by":"assetClass","values":["weight","value"]},"liquidity":{"label":"Escalera de liquidez","table":"holdings","by":"liquidityDays","value":"weight","buckets":[{"label":"D0","max":0},{"label":"D1–7","max":7},{"label":"D8–30","max":30},{"label":"D31–90","max":90},{"label":">D90"}]},"riskVsWeight":{"label":"Peso frente a riesgo","table":"holdings","by":"assetClass","values":["weight","risk"]}}},"children":[{"id":"summary-kpis","component":"syntari.stat-row","props":{"stats":[{"label":"Patrimonio","value":{"$data":"measures.totalValue"},"note":"A 30 de septiembre","tone":"neutral"},{"label":"Rentabilidad YTD","value":{"$data":"measures.ytd"},"badge":{"$data":"measures.excess"},"note":"Frente al benchmark"},{"label":"Liquidez D0–D30","value":{"$data":"measures.liquid30"},"note":"Disponible en 30 días","tone":"neutral"}]},"provenance":{"reason":"Las tres medidas que abren la revisión."}},{"id":"performance","component":"syntari.line-chart","props":{"title":"Rentabilidad acumulada frente al benchmark","note":"Enero a septiembre","unit":"%","seriesA":"Cartera","seriesB":"Benchmark","chartLabel":"La cartera acumula un 3,6 % frente al 2,7 % del benchmark; solo abril quedó por debajo de cero.","points":{"$data":"tables.performance","map":{"label":"month","value":"portfolio","compare":"benchmark"}}},"provenance":{"reason":"La historia principal: cómo va frente a su referencia."}},{"id":"section-structure","type":"section","heading":"Dónde está el dinero y cuándo se puede mover","layout":"two-column","children":[{"id":"allocation","component":"syntari.breakdown","props":{"title":"Asignación por clase de activo","total":{"$data":"measures.totalValue"},"segments":{"$data":"groups.allocation","map":{"label":"label","share":"share","value":{"field":"value","format":"compact-currency"}}}},"provenance":{"reason":"Partes de un todo."}},{"id":"liquidity-ladder","component":"syntari.chart-bars","props":{"title":"Escalera de liquidez","note":"Peso por plazo de venta","orientation":"vertical","unit":"%","seriesA":"Peso","chartLabel":"Peso por plazo de liquidez: D0 6 %, D1–7 30 %, D8–30 12 %, D31–90 31 %, más de 90 días 21 %.","columns":{"$data":"groups.liquidity","map":{"label":"label","a":"value"}}},"provenance":{"reason":"Buckets ordenados por plazo."}}]},{"id":"risk-vs-weight","component":"syntari.chart-bars","props":{"title":"Peso frente a contribución al riesgo","note":"Por clase de activo","unit":"%","seriesA":"Peso","seriesB":"Riesgo","chartLabel":"La renta variable pesa un 27 % y aporta el 52 % del riesgo; la liquidez pesa un 15 % y apenas aporta riesgo.","columns":{"$data":"groups.riskVsWeight","map":{"label":"label","a":"weight","b":"risk"}}},"provenance":{"reason":"El riesgo comparado con el peso, no el peso con otro nombre."}},{"id":"section-positions","type":"section","heading":"Posiciones","children":[{"id":"holdings","component":"syntari.table","props":{"caption":"Posiciones de la cartera","sortable":true,"columns":[{"label":"Activo"},{"label":"Clase"},{"label":"Peso"},{"label":"Valor"},{"label":"Liquidez"},{"label":"Riesgo"}],"rows":{"$data":"tables.holdings","sort":{"by":"weight","dir":"desc"},"cells":["asset","assetClass",{"field":"weight","format":"percent"},{"field":"value","format":"compact-currency"},{"field":"liquidityDays","format":"days"},{"field":"risk","format":"percent"}]}},"provenance":{"reason":"El detalle, al final y ordenable."}}]}]} },
   renewal: { label: 'Renewal at risk', note: 'Decision with evidence', spec: RENEWAL },
   invoice: { label: 'Invoice explained', note: 'Explain and choose', spec: {"version":"syntari-ir-1","type":"screen","layout":"stack","title":"Your $48,200 invoice is $17,200 higher because of API overage","meta":{"job":"Explain a bill and choose how to pay for API usage","audience":"Finance lead","decision":"Stay on pay as you go or move to annual API pricing"},"children":[{"type":"section","heading":"Where the money goes","children":[{"component":"syntari.text-block","props":{"body":"Seats did not change this month. Two integrations ran a data backfill on Oct 12, and API calls above the plan allowance are billed per thousand.","items":["Seats: 62 people at $500 a month.","API: 9.2 million calls, 7.2 million above the 2 million included.","Storage: 1.4 TB."],"listStyle":"bulleted"},"provenance":{"reason":"Says why the number moved before showing the parts."}},{"component":"syntari.breakdown","props":{"title":"October invoice","total":"$48,200","segments":[{"label":"Seats","value":"$31,000","share":64},{"label":"API overage","value":"$14,400","share":30},{"label":"Storage","value":"$2,800","share":6}],"note":"Shares of the total; they add up to 100%."},"provenance":{"reason":"Shows which part of the bill grew."}}]},{"type":"section","heading":"What annual API pricing would cost you","layout":"two-column","children":[{"id":"api-cost","component":"syntari.calculator","props":{"title":"Illustrative monthly API cost","inputs":[{"name":"calls","label":"API calls a month","min":1,"max":20,"step":0.5,"value":9,"unit":"M"},{"name":"price","label":"Overage price per thousand","min":1,"max":3,"step":0.1,"value":2,"format":"currency"}],"outputs":[{"name":"payg","label":"Pay as you go, per month","formula":"max(0, calls - 2) * 1000 * price","format":"currency"},{"name":"annual","label":"Annual plan, per month","formula":"9000 + max(0, calls - 12) * 1000 * price","format":"currency"}],"note":"Illustrative. Annual pricing includes 12M calls a month for $9,000. Your contract may differ."},"provenance":{"reason":"Lets the lead test usage levels instead of trusting one number."}},{"id":"api-billing","component":"syntari.selectable-cards","props":{"question":"How should we bill API usage?","options":[{"title":"Stay on pay as you go","description":"No commitment; overage billed each month.","icon":"clock","selected":true},{"title":"Move to annual API pricing","description":"12M calls a month included for $9,000.","icon":"calendar"}]},"provenance":{"reason":"The decision the calculator informs."}}]},{"type":"section","heading":"Before you pay","children":[{"id":"pay-steps","component":"syntari.checklist","props":{"title":"Finance checklist","items":[{"title":"Match the invoice to the usage report","time":"Today","done":true},{"title":"Confirm the backfill with engineering","detail":"Two integrations, Oct 12.","time":"Today"},{"title":"Approve payment in the billing portal","time":"By Nov 5"}]},"provenance":{"reason":"Turns the decision into steps the lead can track."}}]}]} },
   seats: { label: 'Seat expansion', note: 'Estimate, then confirm', spec: {"version":"syntari-ir-1","type":"screen","layout":"stack","title":"Add seats to the Business plan: see the prorated charge before you confirm","meta":{"job":"Confirm a mid-term seat expansion","audience":"Billing admin","decision":"Charge the prorated amount now"},"children":[{"type":"section","heading":"Choose how many seats","layout":"two-column","children":[{"id":"seat-cost","component":"syntari.calculator","props":{"title":"Prorated cost of new seats","inputs":[{"name":"seats","label":"Seats to add","min":5,"max":100,"step":5,"value":25,"format":"integer","unit":"seats"},{"name":"months","label":"Months left in the term","min":1,"max":12,"step":1,"value":7,"unit":"months"}],"outputs":[{"name":"due","label":"Due today","formula":"seats * 40 * months","format":"currency"},{"name":"annual","label":"New annual total","formula":"(40 + seats) * 40 * 12","format":"currency"}],"parts":[{"label":"Current plan","formula":"40 * 40 * 12"},{"label":"New seats","formula":"seats * 40 * 12"}],"note":"$40 per seat a month. The term ends May 31, 2027."},"provenance":{"reason":"The admin sets the number and sees the charge."}},{"component":"syntari.text-block","props":{"body":"New seats are billed for the months left in your annual term, then renew with the rest of the plan.","items":["Seats are available as soon as you confirm.","Unused seats are not refunded mid-term.","The invoice goes to finance@acme.com."],"listStyle":"bulleted"},"provenance":{"reason":"Answers the questions admins ask before paying."}}]},{"id":"confirm-seats","component":"syntari.tool-approval","props":{"title":"Charge the prorated amount to the card on file?","question":"Adds the seats chosen above, billed for the months left in the annual term.","scope":"Acme Inc · Visa ending 4242 · billing admin","approveLabel":"Confirm purchase","rejectLabel":"Cancel","icon":"lock"},"provenance":{"reason":"The charge is external, so the host confirms it."}}]} },
@@ -818,9 +854,10 @@ function bootDone() {
   box.dataset.done = '';
   setTimeout(() => box.remove(), 400);
 }
-let ir, reg, contracts, policy, renderable;
+let ir, compose, reg, contracts, policy, renderable;
 try {
   ir = await import('./runtime/ir.js');
+  compose = await import('./runtime/ir-compose.js');
   boot('Reading the registry');
   reg = await ir.registry();
   const slugs = await ir.renderableSlugs();
@@ -876,59 +913,105 @@ const outlineOf = spec => spec.children.map(child => {
   return { node: ir.componentSlug(child.component) };
 });
 const withOutline = spec => ({ ...spec, meta: { ...spec.meta, outline: outlineOf(spec) } });
+/* The prompt's worked example: a dashboard over its own data, in another domain than any bundled screen, so it teaches the
+   format without becoming a template. Every figure in it is bound to the data and computed by the runtime. */
+const DATA_EXAMPLE = {"version":"syntari-ir-1","type":"screen","layout":"stack","title":"Recurring revenue reached $482k in September, 3% above plan",
+  "meta":{"job":"Review recurring revenue against plan","audience":"Head of finance","decision":"none","plan":{"pattern":"dashboard","purpose":"See whether revenue is on plan, which plans carry it, and which accounts matter most.","questions":["Are we on plan?","Which plans carry the revenue?","Which accounts matter most?"],
+    "groups":[{"zone":"summary","answers":[0],"data":"measures.mrrNow, measures.vsPlan","role":"kpi","component":"stat-row","why":"Two peer measures with what they are measured against."},{"zone":"primary","answers":[0],"data":"tables.mrr","role":"time-series-comparison","component":"line-chart","why":"Actual against plan over nine months, on one scale."},{"zone":"supporting","answers":[1],"data":"groups.byPlan","role":"composition","component":"breakdown","why":"Shares of one total."},{"zone":"details","answers":[2],"data":"tables.accounts","role":"records","component":"table","why":"The rows behind the split, sortable."}],
+    "alternatives":[{"option":"report","rejected":"A recurring review reads as a dashboard: measures, one analysis, then the records."},{"option":"chart-bars for the trend","rejected":"Nine periods against a plan read better as two lines on one scale."}],
+    "rationale":"Headline measures, the trend against plan, the mix by plan, then the accounts behind it."}},
+  "data":{"mode":"demo","label":"Illustrative figures.","currency":"USD","locale":"en-US",
+    "tables":{"mrr":{"label":"Monthly recurring revenue","fields":{"month":{"type":"period","label":"Month"},"actual":{"type":"currency","label":"Actual","role":"value"},"plan":{"type":"currency","label":"Plan","role":"benchmark"}},
+      "rows":[{"month":"Jan","actual":410000,"plan":415000},{"month":"Feb","actual":418000,"plan":422000},{"month":"Mar","actual":425000,"plan":429000},{"month":"Apr","actual":431000,"plan":436000},{"month":"May","actual":440000,"plan":443000},{"month":"Jun","actual":452000,"plan":450000},{"month":"Jul","actual":461000,"plan":457000},{"month":"Aug","actual":470000,"plan":464000},{"month":"Sep","actual":482000,"plan":468000}]},
+      "accounts":{"label":"Largest accounts","key":"account","fields":{"account":{"type":"text","label":"Account"},"plan":{"type":"category","label":"Plan","order":["Enterprise","Business","Pro"]},"mrr":{"type":"currency","label":"MRR","role":"value"},"seats":{"type":"number","label":"Seats"}},
+      "rows":[{"account":"Northwind","plan":"Enterprise","mrr":42000,"seats":420},{"account":"Contoso","plan":"Enterprise","mrr":38000,"seats":380},{"account":"Fabrikam","plan":"Business","mrr":21000,"seats":300},{"account":"Litware","plan":"Business","mrr":18000,"seats":240},{"account":"Tailspin","plan":"Pro","mrr":9000,"seats":150},{"account":"Adatum","plan":"Pro","mrr":6000,"seats":100}]}},
+    "measures":{"mrrNow":{"label":"MRR, September","last":"mrr.actual","format":"compact-currency"},"planNow":{"label":"Plan, September","last":"mrr.plan","format":"compact-currency"},"vsPlan":{"label":"Against plan","formula":"(mrrNow - planNow) / planNow * 100","format":"signed-percent","digits":0}},
+    "groups":{"byPlan":{"label":"MRR by plan","table":"accounts","by":"plan","value":"mrr"}}},
+  "children":[
+    {"id":"revenue-kpis","component":"syntari.stat-row","props":{"stats":[{"label":"MRR, September","value":{"$data":"measures.mrrNow"},"badge":{"$data":"measures.vsPlan"},"note":"Against plan"},{"label":"Plan, September","value":{"$data":"measures.planNow"},"note":"Set in January","tone":"neutral"}]},"provenance":{"reason":"The measures the review opens with."}},
+    {"id":"mrr-trend","component":"syntari.line-chart","props":{"title":"Recurring revenue against plan","note":"January to September","unit":"$","seriesA":"Actual","seriesB":"Plan","chartLabel":"Recurring revenue rose from $410k in January to $482k in September, above plan since June.","points":{"$data":"tables.mrr","map":{"label":"month","value":"actual","compare":"plan"}}},"provenance":{"reason":"Actual against plan over time."}},
+    {"id":"section-mix","type":"section","heading":"Where the revenue comes from","layout":"two-column","children":[{"id":"plan-mix","component":"syntari.breakdown","props":{"title":"Largest accounts by plan","segments":{"$data":"groups.byPlan","map":{"label":"label","share":"share","value":{"field":"value","format":"compact-currency"}}}},"provenance":{"reason":"Parts of one total."}},{"id":"mix-note","component":"syntari.text-block","props":{"body":"Enterprise accounts carry most of this revenue, so their renewals matter most this quarter."},"provenance":{"reason":"What the split means."}}]},
+    {"id":"section-accounts","type":"section","heading":"Largest accounts","children":[{"id":"accounts-table","component":"syntari.table","props":{"caption":"Largest accounts by recurring revenue","sortable":true,"columns":[{"label":"Account"},{"label":"Plan"},{"label":"MRR"},{"label":"Seats"}],"rows":{"$data":"tables.accounts","sort":{"by":"mrr","dir":"desc"},"cells":["account","plan",{"field":"mrr","format":"currency"},{"field":"seats","format":"integer"}]}},"provenance":{"reason":"The records behind the split."}}]}]};
+/* What each kind of data is shown with, read from the registry's composition policy and limited to what renders here. */
+function policyText() {
+  const p = reg.policy;
+  if (!p) return '';
+  const available = list => (list ?? []).filter(slug => renderable.has(slug));
+  const roles = Object.entries(p.roles).map(([id, rule]) => {
+    const use = available(rule.recommended), also = available(rule.acceptable), never = Object.keys(rule.misleading ?? {}), weak = Object.keys(rule.avoid ?? {});
+    const how = use.length ? `use ${use.join(' or ')}` : `Syntari has no ${rule.missing}: never imitate one with another component; name it in meta.plan.limits, and show the data with ${available(rule.closest).join(' or ')} only if that still answers the question`;
+    return `- ${id} (${rule.label}): ${how}${also.length ? `; acceptable: ${also.join(', ')}` : ''}${never.length ? `; never: ${never.join(', ')}` : ''}${weak.length ? `; avoid: ${weak.join(', ')}` : ''}.${rule.rule ? ` ${rule.rule}` : ''}`;
+  }).join('\n');
+  const patterns = Object.entries(p.patterns).map(([id, pattern]) => `- ${id}: ${pattern.for} Order: ${pattern.zones.join(' → ')}.`).join('\n');
+  return `PATTERNS (pick the one that fits the job; meta.plan.pattern names it)\n${patterns}\n\nVISUALIZATION POLICY (the kind of data decides the component, not the other way round)\n${roles}`;
+}
+const DATA_RULES = `DATA
+Put every figure the screen shows in "data", once, and bind parts to it. The runtime computes totals, shares, bucket sums, and series from the rows, so a headline, a chart, and a table can never disagree.
+"data": {"mode":"demo","label":<what the figures are>,"currency":<ISO code, when money appears>,"locale":<the request's language, such as "es-ES">,
+ "tables":{<name>:{"label":<string>,"key":<the field that names a row>,"fields":{<field>:{"type":"text"|"category"|"period"|"date"|"number"|"percent"|"currency"|"days","label":<string>,"total":<100 when the values are shares of one whole>,"role":"allocation"|"exposure"|"risk-contribution"|"volatility"|"return"|"benchmark"|"value"|"liquidity"|"count"}},"rows":[{<field>:<value>}, ...]}},
+ "measures":{<name>:{"label":<the words shown beside it>,"sum"|"avg"|"min"|"max"|"count"|"first"|"last":"<table>.<field>","where":{<field>:{"min"|"max"|"gt"|"lt"|"eq":<value>}},"format":"percent"|"signed-percent"|"points"|"currency"|"compact-currency"|"number"|"integer"|"days","digits":<0-6>}, or {"label","formula":"<measure> - <measure>","format"}},
+ "groups":{<name>:{"label":<string>,"table":<table>,"by":<field>,"value":<numeric field>}; "values":[<field>,<field>] instead of "value" for two measures per category; "buckets":[{"label":"D0","max":0},{"label":"D1–7","max":7},{"label":">D90"}] to split a numeric field into ordered buckets whose upper bounds are inclusive}}}
+Bind a text or number prop with {"$data":"measures.<name>"}. Bind a list prop with {"$data":"groups.<name>","map":{<item field>:"label"|"value"|"share"|"count"|<value field>}} or {"$data":"tables.<name>","map":{<item field>:<field>}}; a table's rows with {"$data":"tables.<name>","cells":[<field or {"field","format"}>, ...],"sort":{"by":<field>,"dir":"desc"}}. A mapped field may be {"field":<field>,"format":<format>,"digits":<n>}.
+- Never write a figure the data can compute: a headline is a measure, a chart is a group or a table, a table's rows are a table. Words may quote a computed figure, such as "up 3.6% this year", only when the data produces exactly that figure.
+- Allocation, exposure, volatility, and risk contribution are different measures. A part about risk shows a risk field, never the allocation weights under another title.
+- Unless the request supplies them, figures are illustrative: "mode":"demo" labels them on the screen. Keep them plausible for the request's domain and consistent with each other.`;
 function rules() {
   const blocks = state.allowBlocks ? `
 Unverified block, only for a visual that no component can show, such as a flow diagram: {"type":"sandbox","label":<string, at most 60 chars>,"height":<80 to 1200>,"html":<static HTML and CSS, at most 20000 chars>,"provenance":{"reason":<string>}}. Scripts, links, forms, and web images are removed. Style with the CSS variables --text, --muted, --surface, --subtle, --border, and --accent. This host shows it labelled as unverified; it can never request an action. Use at most one, and explain it in a text-block beside it.` : '';
-  return `You compose one screen for Syntari, a design system whose renderer paints only what its registry allows. Reply with a single JSON object in Syntari Screen IR. No prose, no Markdown, no code fences.
+  return `You compose one screen for Syntari, a design system whose renderer paints only what its registry allows. Reply with a single JSON object in Syntari Screen IR. No prose, no Markdown, no code fences, and never a second object.
 
 FORMAT
-Screen: {"version":"syntari-ir-1","type":"screen","meta":<plan>,"title":<string>,"layout":"stack","children":[<node>, ...]}
-Write "meta" first. It is your composition plan; build the screen from it. Keep each value under 120 characters:
-{"job":<what the person gets done>,"audience":<a role>,"decision":<the one decision or interaction, or "none">,"outline":[<one entry per top-level child, in the order you will write them>],"plan":{"archetype":<one archetype below>,"primary":<what the person must see first>,"evidence":<what supports it>,"interaction":<what the person does, and what needs host authorization>,"hierarchy":<the order of the screen, in one line>,"components":[<registry names you will use>],"responsive":<how it reflows on a phone>,"limits":<only when the registry cannot show part of the request: what is missing>}}
-meta.outline entries: {"node":<registry name>} for a component, {"section":<its heading>,"layout":<layout>,"nodes":[<registry names>]} for a section, {"region":<its label>,"nodes":[<registry names>]} for a region. The page reserves space from the outline and shows each node as soon as it is complete and valid, so write "title" and "layout" next, then "children" in the outline's order, and finish one node before starting the next.
-Section, a heading over a group with its own layout; it never collapses: {"type":"section","heading":<string, at most 80 chars>,"layout":<layout>,"children":[<node>, ...]}
+Screen: {"version":"syntari-ir-1","type":"screen","meta":<plan>,"data":<the screen data>,"title":<string>,"layout":"stack","children":[<node>, ...]}
+Write "meta" first: it is your composition plan, and you build the screen from it. Then "data", then "title" and "layout", then "children" in the outline's order. Keep each plan value under 140 characters:
+{"job":<what the person gets done>,"audience":<a role>,"decision":<the one decision or interaction, or "none">,"outline":[<one entry per top-level child, in order>],"plan":{"pattern":<one pattern below>,"purpose":<what the person must understand or do>,"questions":[<the 2 to 4 questions the screen answers, most important first>],"groups":[{"zone":<a zone of the pattern>,"answers":[<question indexes>],"data":<what it shows, such as "groups.liquidity">,"role":<the kind of data, from the policy>,"component":<registry name>,"why":<why this component fits that data>}],"alternatives":[{"option":<another pattern or component you considered>,"rejected":<why not>}],"rationale":<the composition in one sentence>,"limits":<only when the registry cannot show part of the request: what is missing>}}
+meta.outline entries: {"node":<registry name>} for a component, {"section":<its heading>,"layout":<layout>,"nodes":[<registry names>]} for a section, {"region":<its label>,"nodes":[<registry names>]} for a region. The page reserves space from the outline and shows each node as soon as it is complete and valid, so finish one node before starting the next.
+Section, a heading over a group with its own layout; it never collapses: {"id":<string>,"type":"section","heading":<string, at most 80 chars>,"layout":<layout>,"children":[<node>, ...]}
 layout: "stack" (one column), "row", "grid", or "two-column" (two columns, filled left, right, left…).
-Component node: {"id":<string, only when needed>,"component":"syntari.<name>","props":{...},"provenance":{"reason":<string>}}
-Region, closed detail the person may skip: {"type":"region","label":<string, at most 60 chars>,"open":false,"children":[<node>, ...]}${blocks}
+Component node: {"id":<string>,"component":"syntari.<name>","props":{...},"provenance":{"reason":<string>}}
+Region, closed detail the person may skip: {"id":<string>,"type":"region","label":<string, at most 60 chars>,"open":false,"children":[<node>, ...]}${blocks}
 
-ARCHETYPES (composition strategies, not templates; pick the one that fits the job)
+${DATA_RULES}
+
+${policyText()}
+
+ARCHETYPES (composition strategies inside a pattern, not templates)
 - decision-and-approval: what needs deciding and why, the affected records with their evidence beside them, then one tool-approval or approval-card that names exactly what will happen.
-- analytics-overview: the change that matters first (headline-metric or metric-strip), the trend that explains it (area-chart or chart-bars), a text-block on why. No wall of stat cards.
+- analytics-overview: the change that matters first (stat-row, headline-metric, or metric-strip), the trend or split that explains it, a text-block on why.
 - data-exploration: filter-bar for scope, a table of records, breakdown or source-list for what a total is made of, secondary cuts in regions.
 - form-and-configuration: the choices (selectable-cards, calculator), their consequences in a text-block, one commit control.
-- monitoring: live-readout for the current state, area-chart for the recent window, activity-list or process-ledger for what happened.
-- investigation: the symptom first (banner or live-readout), the timeline (area-chart, process-ledger, activity-list), raw evidence such as file-diff in a region, then the decision.
+- monitoring: live-readout for the current state, a line or area chart for the recent window, activity-list or process-ledger for what happened.
+- investigation: the symptom first (banner or live-readout), the timeline, raw evidence such as file-diff in a region, then the decision.
 - review-and-comparison: comparison-table for two options, media-cards to introduce kinds, a calculator for "what if", selectable-cards for the choice.
 - workflow-management: checklist or process-ledger for the stages, a table of items, approval-card for a hand-off.
 
 HIERARCHY
 1. One purpose and at most one primary decision per screen. The title names it: the finding or the decision, with the number that matters when there is one. Never a topic such as "Sales dashboard".
-2. Order: what needs attention, why it matters, the evidence, then exactly what will happen and what needs authorization. Never put the decision under unrelated metrics or metadata.
-3. Group related nodes in one section. A heading names its group in plain words. It never repeats the screen title or a component's own title, and it is numbered only when the order is a sequence the person follows.
+2. Follow the pattern's order: a concise summary first, then one principal analysis that tells the central story, then supporting comparisons that each answer a different question, then context, then the detailed records.
+3. Group related nodes in one section. A heading names its group in plain words. It never repeats the screen title or a component's own title.
 4. Do not wrap a single component in a region, and give it a section only when the heading says something the component does not. Never nest a region in a region.
-5. Numbers: the one number a screen is about goes in headline-metric; a share takes a total, such as "/ 12". Two to four peer measures go in one stat-row or metric-strip, and 2, 3 or 4 measures fill their row best. Use at most one block of numbers per screen, and let a text-block beside it say what they mean.
-6. "two-column" pairs two compact components, such as a text-block beside a headline-metric, or a calculator beside selectable-cards. Tables, charts and approvals take the full width.
-7. Put secondary evidence in a closed region. When a decision affects records, show every affected record in view, or name each one in the decision, before asking for approval. Never hide them only in a region.
-8. A consequential action is a tool-approval, an approval-card, or a button with "consequential": true. Never a ghost or link-like button.
-9. Never repeat a fact in two components; a text-block explains the number next to it instead of restating it.
-10. Numbers agree everywhere: totals add up, percentages match their counts, and a calculator's starting values reproduce the figures quoted elsewhere. Use plausible figures for a B2B SaaS company.
-11. If no component fits part of the request, compose the closest supported pattern and name what is missing in meta.plan.limits. Never invent a component, a prop, or CSS.
+5. Numbers: one block of headline measures, two to four of them, each with its unit and what it is measured against. Never show the same measure in two blocks.
+6. "two-column" pairs two compact components, such as a breakdown beside vertical bars, or a text-block beside a headline-metric. Avoid full-width parts that hold little, and half-empty rows.
+7. Repeating a component is fine when each copy answers a different question with different data. Showing the same data twice is not, and neither is using one visualization for every kind of data.
+8. Put secondary evidence in a closed region. When a decision affects records, show every affected record in view, or name each one in the decision, before asking for approval.
+9. A consequential action is a tool-approval, an approval-card, or a button with "consequential": true. Never a ghost or link-like button.
+10. A text-block explains what the numbers mean; it never restates them.
+11. If no component fits part of the request, say what is missing in meta.plan.limits. Never invent a component, a prop, or CSS, and never let a different chart stand in for one that does not exist.
 
 RULES
 1. Use only the components below and only their props. * marks a required prop. Respect enum values, character limits, number ranges, and item limits exactly: count characters before you write a string.
 2. Components take no children. Group them in sections; put skippable detail in a region.
-3. Give every component that lists actions an "id": lowercase letters, digits, and dashes, unique on the screen, such as "approve-refund".
+3. Give every node an "id": lowercase words joined by dashes that say what it is, unique on the screen, such as "liquidity-ladder".
 4. A syntari.button that changes something outside the screen (send, pay, delete, deploy) sets "consequential": true.
 5. Icon props take only these names: ${reg.index.icons.join(', ')}.
 6. Use 4 to 12 component nodes.
 7. Write specific, realistic copy in the language of the request. Never say an action already ran: an approval on screen is a request, and the host app decides.
 8. Give each component node provenance.reason: one short sentence on why it is on this screen.
-9. Give every table a caption and every chart a chartLabel, so each has an accessible name.
+9. Give every table a caption and every chart a chartLabel, so each has an accessible name. Tables with more than six rows set "sortable": true.
 
 COMPONENTS (syntari.<name> — purpose; use for; avoid when; pairs with; rules; then each prop as name: type = default — note)
 ${contracts}
-EXAMPLE (shows the format and the decision archetype; do not copy its structure for other jobs)
-${JSON.stringify(withOutline(RENEWAL))}
+EXAMPLE (shows the format, the plan, and data binding for a dashboard; do not copy its structure or domain for other jobs)
+${JSON.stringify(withOutline(DATA_EXAMPLE))}
 `;
 }
 const buildPrompt = request => `${rules()}
@@ -1132,15 +1215,39 @@ function applyViewport(name, save = false) {
 $$('[data-viewport]').forEach(button => button.addEventListener('click', () => applyViewport(button.dataset.viewport, true)));
 
 /* ---------- Reading the proposal ---------- */
-function extract(text) {
+/**
+ * Read an answer as exactly one JSON value. The incremental reader the stream uses finds where the first value ends, and
+ * what follows it is classified, never guessed at: nothing, a closing fence, prose (ignored and noted), or a second JSON
+ * value, which makes the answer ambiguous. No text is cut by searching for braces.
+ * Returns { value, notes, issue }: issue is null or { code, message }, with code no-json, truncated-json, invalid-json, or
+ * multiple-values (the first value is still returned, for a caller that can use it).
+ */
+function readAnswer(text) {
+  const raw = String(text ?? '');
   const notes = [];
-  let body = String(text).trim();
-  const fence = body.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fence) { body = fence[1].trim(); notes.push('The answer was wrapped in a code fence. The page removed it before validation.'); }
-  const start = body.indexOf('{'), end = body.lastIndexOf('}');
-  if (start < 0 || end < start) throw new SyntaxError('The proposal holds no JSON object.');
-  if (start > 0 || end < body.length - 1) notes.push('The answer had text around the JSON. The page kept only the object.');
-  return { spec: JSON.parse(body.slice(start, end + 1)), notes };
+  const fence = /^\s*```[a-z]*[ \t]*\n/i.exec(raw);
+  const from = fence ? fence[0].length : 0;
+  if (fence) notes.push('Claude wrapped the answer in a code fence; Syntari read the JSON inside it.');
+  const start = raw.indexOf('{', from);
+  if (start < 0) return { value: null, notes, issue: { code: 'no-json', message: 'The answer holds no JSON object.' } };
+  if (raw.slice(from, start).trim()) notes.push('Claude wrote text before the JSON; Syntari ignored it.');
+  let end = -1;
+  createJsonStream({ end: source => { end = start + source.length; } }).feed(raw.slice(start));
+  if (end < 0) return { value: null, notes, issue: { code: 'truncated-json', message: 'The answer stops before its JSON object is complete.' } };
+  let value;
+  try { value = JSON.parse(raw.slice(start, end)); }
+  catch (error) { return { value: null, notes, issue: { code: 'invalid-json', message: `The JSON object is malformed: ${error.message}` } }; }
+  let rest = raw.slice(end).trim();
+  if (fence) rest = rest.replace(/^```/, '').trim();
+  if (/^[{[]/.test(rest)) return { value, notes, issue: { code: 'multiple-values', message: `The answer holds a second JSON value after the first, at character ${raw.indexOf(rest, end)}.` } };
+  if (rest) notes.push('Claude wrote text after the JSON; Syntari ignored it.');
+  return { value, notes, issue: null };
+}
+/* A whole screen: one value. When a second value follows a complete screen, the screen is used and the extra one noted. */
+function extract(text) {
+  const read = readAnswer(text);
+  if (read.value === null) throw Object.assign(new SyntaxError(read.issue.message), { issue: read.issue });
+  return { spec: read.value, notes: read.issue ? [...read.notes, `${read.issue.message} Syntari used the first, complete one.`] : read.notes, issue: read.issue };
 }
 /* Pretty-print the spec and remember the line where each path starts, so a diagnostic can point into the code. */
 function pretty(value) {
@@ -1315,7 +1422,19 @@ const REMEDY = {
   'wrong-sum': 'Make the shares add up to 100.',
   'row-length': 'Give each row one cell per column.',
   'no-matching-item': 'Match the selected value to an item.',
-  'invalid-json': 'Ask Claude to fix it, or correct the JSON in Screen IR.'
+  'invalid-json': 'Nothing to do by hand: Syntari asks Claude once for a readable answer, and the screen stays as it was.',
+  'data-conflict': 'Bind the figure to the screen data, so it is computed from the rows.',
+  'data-total': 'Make the shares add up to their total, or drop the total from the field.',
+  'bucket-mismatch': 'Bucket upper bounds are inclusive: put the row where its value falls.',
+  'bucket-gap': 'Add a bucket that holds this value, or leave the last bucket open-ended.',
+  'unknown-data-ref': 'Name a table, measure, or group the screen data defines.',
+  'unknown-data-field': 'Use a field the table declares.',
+  'data-shape': 'Bind a text prop to one measure, and a list prop to a group or a table.',
+  'data-binding': 'Say how each item reads: "map" for objects, "cells" for table rows.',
+  'data-unavailable': 'Add the data block, or write the value.',
+  'misleading-visualization': 'Use a visualization the policy recommends for this kind of data.',
+  'role-mismatch': 'Bind the part to the measure its title names, or retitle it.',
+  'relabeled-data': 'Show the data the title names, or remove the duplicate.'
 };
 function resetInspector(message) {
   state.nodes = []; state.screen = null; state.actions = [];
@@ -1331,6 +1450,71 @@ function renderInspector() {
   renderTree();
   renderValidation();
   renderJumps();
+  renderPlan();
+}
+/* ---------- Plan: the composition decisions, how the policy reads the screen, and the data it is built on ---------- */
+let planToken = 0;
+const FIT_TEXT = { recommended: ['Fits its data', 'ok'], acceptable: ['Acceptable for its data', 'ok'], avoid: ['Weak fit for its data', 'warn'], misleading: ['Misrepresents its data', 'bad'], unrated: ['Shows no data', 'group'] };
+const VERDICT_TEXT = { meets: ['Meets', 'ok'], review: ['Review', 'warn'], concern: ['Concern', 'bad'] };
+const markFor = tone => tone === 'ok' ? el('span', { class: 'mark ok', 'aria-hidden': 'true' }, el('span', { class: 'check-ok' })) : el('span', { class: 'mark', 'data-s': tone === 'bad' ? 'bad' : tone === 'warn' ? 'warn' : 'group', 'aria-hidden': 'true' });
+async function assess(spec) {
+  const checked = await ir.validate(spec, { registry: reg, sandbox: state.allowBlocks });
+  return { checked, assessment: compose.assessComposition(spec, { policy: reg.policy, resolved: checked.screen, model: checked.data, diagnostics: checked.diagnostics }) };
+}
+async function renderPlan() {
+  const box = $('[data-plan]');
+  if (!state.spec || state.spec.type !== 'screen' || !compose) { box.replaceChildren(el('p', { class: 'muted pad', text: 'The composition plan of the screen on the canvas appears here: its pattern, the questions it answers, each decision with the alternatives rejected, and how the registry’s policy reads it.' })); return; }
+  const token = ++planToken, spec = state.spec;
+  const { checked, assessment } = await assess(spec);
+  if (token !== planToken || state.spec !== spec) return;
+  const plan = assessment.plan ?? {};
+  const label = id => reg.policy?.patterns?.[id]?.label ?? id;
+  const text = value => typeof value === 'string' && value.trim() ? value.trim() : null;
+  const parts = [el('div', { class: 'plan-head' }, el('b', { text: label(assessment.pattern) }), el('span', { text: assessment.declared ? assessment.declared === assessment.inferred ? 'Chosen in the plan, and the screen reads that way.' : `Chosen in the plan; the parts read as a ${label(assessment.inferred).toLowerCase()}.` : 'Read from the parts: the plan names no pattern.' }))];
+  if (text(plan.purpose)) parts.push(el('p', { class: 'pad', text: plan.purpose }));
+  const questions = Array.isArray(plan.questions) ? plan.questions.filter(text) : [];
+  if (questions.length) parts.push(el('h3', { class: 'label', text: 'Questions it answers' }), el('ol', { class: 'plan-q' }, ...questions.map(q => el('li', { text: q }))));
+  /* Each part beside the decision behind it: the plan's reason, and how the policy reads the data it shows. */
+  const groups = Array.isArray(plan.groups) ? plan.groups.filter(isRecord) : [];
+  const used = new Set();
+  const why = part => { const match = groups.find((group, i) => !used.has(i) && ir.componentSlug(String(group.component ?? '')) === part.slug && (used.add(i), true)); return match ? { why: text(match.why), zone: text(match.zone) } : {}; };
+  const decisions = assessment.parts.filter(part => part.role && part.role !== 'text').map(part => {
+    const [fitText, tone] = FIT_TEXT[part.fit] ?? FIT_TEXT.unrated;
+    const reason = why(part);
+    const roleLabel = reg.policy?.roles?.[part.role]?.label ?? part.role;
+    return el('li', {}, markFor(tone), el('b', { text: `${nameOfSlug(part.slug)}${part.title ? ` · “${shortTitle(part.title, 40)}”` : ''}` }),
+      el('span', { text: `${roleLabel}${part.concept ? ` · ${part.concept.replace(/-/g, ' ')}` : ''}${part.ref ? ` · ${part.ref}` : part.certain ? '' : ' · read from its labels'}${reason.zone ? ` · ${reason.zone}` : ''}` }),
+      el('small', { text: `${fitText}${part.reason && part.fit !== 'recommended' ? `: ${part.reason}` : ''}${reason.why ? ` · ${reason.why}` : ''}` }));
+  });
+  if (decisions.length) parts.push(el('h3', { class: 'label', text: 'Decisions' }), el('ul', { class: 'plan-list' }, ...decisions));
+  const alternatives = Array.isArray(plan.alternatives) ? plan.alternatives.filter(isRecord) : [];
+  if (alternatives.length) parts.push(el('h3', { class: 'label', text: 'Considered and rejected' }), el('ul', { class: 'plan-list' }, ...alternatives.map(item => el('li', {}, markFor('group'), el('b', { text: String(item.option ?? 'Alternative') }), el('small', { text: String(item.rejected ?? item.because ?? '') })))));
+  if (text(plan.rationale)) parts.push(el('h3', { class: 'label', text: 'Rationale' }), el('p', { class: 'pad', text: plan.rationale }));
+  if (text(plan.limits)) parts.push(el('p', { class: 'pad plan-why', text: `Limits: ${plan.limits}` }));
+  parts.push(el('h3', { class: 'label', text: 'How the policy reads it' }), el('p', { class: 'muted pad', text: 'Judgments under the registry’s composition policy, not measurements.' }), criteriaList(assessment));
+  /* The data the screen is built on, with what the runtime computed from it. */
+  const model = checked.data;
+  if (model) {
+    const rows = [];
+    for (const table of model.tables.values()) rows.push([`tables.${table.name}`, table.label, plural(table.rows.length, 'row')]);
+    for (const measure of model.measures.values()) rows.push([`measures.${measure.name}`, measure.label, measure.text ?? ir.formatData(measure.value, measure.format ?? 'number', { locale: model.locale, currency: measure.currency, digits: measure.spec.digits })]);
+    for (const group of model.groups.values()) rows.push([`groups.${group.name}`, group.label, `${plural(group.items.length, group.bucketed ? 'bucket' : 'item')}`]);
+    parts.push(el('h3', { class: 'label', text: `Screen data · ${model.mode === 'provided' ? 'provided' : 'demonstration'}` }), el('table', { class: 'plan-data' }, el('thead', {}, el('tr', {}, el('th', { text: 'Name' }), el('th', { text: 'What' }), el('th', { text: 'Computed' }))), el('tbody', {}, ...rows.map(row => el('tr', {}, ...row.map(cell => el('td', { text: cell })))))));
+  } else parts.push(el('p', { class: 'muted pad', text: 'This screen has no screen data: its figures are written in each part, so Syntari can compare them only with tables on the same screen.' }));
+  box.replaceChildren(...parts);
+}
+function criteriaList(assessment) {
+  return el('ul', { class: 'checks' }, ...assessment.criteria.map(criterion => {
+    const [word, tone] = VERDICT_TEXT[criterion.verdict];
+    const item = el('li', { class: 'check' }, markFor(tone), el('span', { text: `${criterion.label}: ${word.toLowerCase()}` }), criterion.signals.length ? el('small', { text: plural(criterion.signals.length, 'signal') }) : el('span'));
+    if (criterion.signals.length) item.append(el('ul', { class: 'issues' }, ...criterion.signals.map(signal => {
+      const entry = signal.ids.length ? state.nodes.find(node => node.node?.id === signal.ids[0]) : null;
+      const b = el('button', { type: 'button', class: 'issue', 'data-path': entry?.path ?? '' }, markFor(signal.severity === 'error' ? 'bad' : signal.severity === 'warning' ? 'warn' : 'group'), el('span', { class: 'issue-title', text: entry ? `${nameOf(entry)} #${entry.node.id}` : 'Screen' }), el('span', { class: 'issue-msg', text: signal.message }), el('span', { class: 'issue-meta', text: `${signal.severity === 'advice' ? 'advice' : signal.severity} · ${signal.code}` }));
+      b.addEventListener('click', () => { if (entry) select(entry.path, { from: 'issue' }); });
+      return el('li', {}, b);
+    })));
+    return item;
+  }));
 }
 function counts() {
   const components = state.nodes.filter(entry => !entry.region);
@@ -1557,8 +1741,15 @@ function renderValidation() {
   fix.replaceChildren();
   if (fixable && state.sample) fix.append(button(`Ask Claude to fix ${plural(fixable, 'issue')}`, () => generate('fix')), el('span', { text: 'Sends the screen and this report back once.' }));
   if (state.failure?.kind === 'json') issues.append(el('h3', { class: 'label', text: 'Errors' }), issueList([{ severity: 'error', code: 'invalid-json', message: state.failure.message }], { select: false }));
-  if (errors.length) issues.append(el('h3', { class: 'label', text: 'Errors' }), issueList(errors));
-  if (warnings.length) issues.append(el('h3', { class: 'label', text: 'Warnings' }), issueList(warnings));
+  /* Hard errors stop a part from painting; warnings flag a value. Each is grouped by what it is about. */
+  const CATEGORIES = [['structure', 'Structure and contracts'], ['data', 'Data integrity'], ['visualization', 'Visualization semantics']];
+  const categoryOf = d => /^(data-|bucket-|unknown-data|duplicate-data-key|invalid-measure|invalid-currency|invalid-locale)/.test(d.code) ? 'data' : /^(misleading-visualization|role-mismatch|relabeled-data)$/.test(d.code) ? 'visualization' : 'structure';
+  for (const [id, label] of CATEGORIES) {
+    const own = diagnostics.filter(d => categoryOf(d) === id);
+    if (!own.length) continue;
+    const hard = own.filter(d => d.severity === 'error');
+    issues.append(el('h3', { class: 'label', text: `${label}${hard.length ? ` · ${plural(hard.length, 'error')}` : ''}${own.length > hard.length ? ` · ${plural(own.length - hard.length, 'warning')}` : ''}` }), issueList([...hard, ...own.filter(d => d.severity !== 'error')]));
+  }
   if (notes.length) issues.append(el('h3', { class: 'label', text: 'Notes' }), issueList(notes, { select: false }));
   const passed = state.nodes.filter(entry => !entry.region && (entry.status === 'ok' || entry.status === 'sandbox'));
   if (passed.length) {
@@ -1806,10 +1997,21 @@ async function runAudit(spec) {
   state.audit = { findings: [...merged.values()], targets };
   renderComposition();
 }
+let criteriaToken = 0;
+async function renderCriteria() {
+  const token = ++criteriaToken, spec = state.spec;
+  if (!spec || spec.type !== 'screen' || !compose) { $('[data-criteria]').replaceChildren(); return; }
+  const { assessment } = await assess(spec);
+  if (token !== criteriaToken || state.spec !== spec) return;
+  const list = criteriaList(assessment);
+  list.setAttribute('data-criteria', '');
+  $('[data-criteria]').replaceWith(list);
+}
 function renderComposition() {
   const section = $('[data-composition]');
   section.hidden = !state.screen;
   if (!state.screen) return;
+  renderCriteria();
   const note = $('[data-comp-note]');
   const list = $('[data-checks]');
   const audit = state.audit;
@@ -1870,6 +2072,8 @@ function prepareSpec(spec, data) {
   if (!isRecord(spec) || spec.type !== 'screen') return spec;
   const prepared = ir.assignIds(spec);
   prepared.meta = { ...(isRecord(prepared.meta) ? prepared.meta : {}), data: { mode: data.mode, ...(data.label ? { label: data.label } : {}) } };
+  /* Figures Claude wrote are a demonstration however its data block describes them: the host knows where they came from. */
+  if (isRecord(prepared.data)) prepared.data = { ...prepared.data, mode: data.mode, label: typeof prepared.data.label === 'string' && prepared.data.label.trim() ? prepared.data.label : data.label };
   return prepared;
 }
 function preparedText(text, data) {
@@ -1910,6 +2114,7 @@ function renderUndo() {
 async function undo() {
   const screen = activeScreen();
   if (state.busy || !screen || screen.versions.length < 2) return;
+  if (state.comparing) { state.comparing = null; $('[data-compare]').hidden = true; delete stage.dataset.comparing; }
   const dropped = screen.versions.pop();
   const back = currentVersion(screen);
   const changes = ir.diffScreens(dropped.spec, back.spec);
@@ -2002,6 +2207,7 @@ function clearView() {
 /* A new screen is always an explicit choice: this button, the screen menu, or a confirmed question. */
 function startNewScreen({ open = true } = {}) {
   if (state.busy) return;
+  if (state.comparing) { state.comparing = null; $('[data-compare]').hidden = true; delete stage.dataset.comparing; }
   if (workspace.activeId) workspace.returnTo = workspace.activeId;
   workspace.activeId = null;
   workspace.mode = 'create';
@@ -2015,6 +2221,7 @@ function startNewScreen({ open = true } = {}) {
 async function switchScreen(id) {
   const screen = workspace.screens.get(id);
   if (!screen || state.busy) return;
+  if (state.comparing) { state.comparing = null; $('[data-compare]').hidden = true; delete stage.dataset.comparing; }
   closePops();
   hideConfirm();
   activate(screen);
@@ -2247,6 +2454,30 @@ function logActivity(run, text, { detail = '', tone } = {}) {
   $('[data-activity-empty]').hidden = true;
   if (stick) list.parentElement.scrollTop = list.parentElement.scrollHeight;
 }
+/* ---------- Raw answers: what Claude wrote, kept for diagnosis in this tab only, redacted and bounded ---------- */
+const RAW_LIMIT = { entries: 8, chars: 24000 };
+const rawAnswers = [];
+const redact = text => String(text ?? '')
+  .replace(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g, '[email]')
+  .replace(/\b(?:sk|pk|rk|key)-[A-Za-z0-9_-]{16,}\b/g, '[key]')
+  .replace(/\b(?=[A-Za-z0-9+/]*\d)(?=[A-Za-z0-9+/]*[A-Z])(?=[A-Za-z0-9+/]*[a-z])[A-Za-z0-9+/]{40,}={0,2}/g, '[secret]');
+function keepRaw({ kind, request = '', text = '', outcome = '' }) {
+  const whole = String(text ?? '');
+  rawAnswers.unshift({ at: Date.now(), kind, request: redact(request).slice(0, 200), outcome, text: redact(whole).slice(0, RAW_LIMIT.chars), cut: whole.length > RAW_LIMIT.chars, length: whole.length });
+  rawAnswers.splice(RAW_LIMIT.entries);
+  renderRaw();
+}
+function renderRaw() {
+  const panel = $('[data-raw-panel]');
+  panel.hidden = !rawAnswers.length;
+  $('[data-raw-count]').textContent = rawAnswers.length ? String(rawAnswers.length) : '';
+  $('[data-raw-log]').replaceChildren(...rawAnswers.map(entry => el('li', {},
+    el('div', { class: 'log-head' }, el('b', { text: entry.kind }), el('span', { class: 'pill', 'data-tone': /refused|unreadable|failed|second/i.test(entry.outcome) ? 'warn' : null, text: entry.outcome || 'kept' })),
+    el('span', { class: 'log-src' }, `${new Date(entry.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · ${entry.length.toLocaleString()} characters${entry.cut ? `, first ${RAW_LIMIT.chars.toLocaleString()} kept` : ''}${entry.request ? ` · “${entry.request}”` : ''}`),
+    el('details', {}, el('summary', { text: 'Show the answer' }), el('pre', { text: entry.text })))));
+}
+$('[data-raw-clear]').addEventListener('click', () => { rawAnswers.splice(0); renderRaw(); });
+
 /* Every number here is measured in this page during the run; none is estimated. */
 const session = { completed: 0, canceled: 0, failed: 0, parts: 0, rejected: 0, renderFailed: 0 };
 function renderTimings(run) {
@@ -2483,6 +2714,8 @@ function onField(b, frame, key, value) {
 function onClose(b, frame, source) {
   if (!live(b) || frame.kind !== 'object') return;
   if (frame.path === 'meta') { let meta; try { meta = JSON.parse(source); } catch { return; } applyPlan(b, meta); return; }
+  /* The data block arrives before the parts that bind to it. A recomposition keeps the screen's rows and adds only definitions. */
+  if (frame.path === 'data') { let data; try { data = JSON.parse(source); } catch { return; } b.draft.data = mergeData(b.baseData, data); logActivity(b.run, b.baseData ? 'Data definitions received; the rows stay as they were' : `Data received: ${plural(Object.keys(isRecord(data?.tables) ? data.tables : {}).length, 'table')}`, { detail: Object.keys(data ?? {}).join(', ') }); return; }
   if (!isNodePath(frame.path)) return;
   const record = b.records.get(frame.path);
   if (!record || !b.groups.get(record.parent)?.actual) return;
@@ -2531,7 +2764,8 @@ async function commit(b, record, source) {
     ensureMounted(b, 'rendered');
     let result = null;
     try {
-      result = await ir.render({ type: 'screen', children: [node] }, content, { registry: reg, sandbox: state.allowBlocks, onActionRequest: request => logRequest(withPath(request, record.path), b.run.id) });
+      /* One node renders with the screen's data, so its bound figures resolve exactly as they did when it validated. */
+      result = await ir.render({ type: 'screen', ...(b.draft.data !== undefined ? { data: b.draft.data } : {}), children: [node] }, content, { registry: reg, sandbox: state.allowBlocks, dataNote: false, onActionRequest: request => logRequest(withPath(request, record.path), b.run.id) });
     } catch (failure) {
       content.replaceChildren(fallbackNode(record.slug, { code: 'render-failed', path: record.path, message: String(failure?.message ?? failure) }, record.path, node));
       record.diagnostics = [...own, { severity: 'error', code: 'render-failed', path: record.path, message: String(failure?.message ?? failure) }];
@@ -2614,7 +2848,7 @@ const whatIs = record => record.kind === 'section' ? `section “${nameOfRecord(
 function say(run) {
   if (run.mode === 'edit') { sayEdit(run); return; }
   const secs = Math.max(0, Math.round(now(run) / 1000));
-  const verb = run.mode === 'fix' ? 'Fixing the screen' : run.mode === 'improve' ? 'Revising the composition' : run.mode === 'repair' ? 'Fixing one part' : 'Preparing your interface';
+  const verb = run.mode === 'fix' ? 'Fixing the screen' : run.mode === 'improve' ? 'Revising the composition' : run.mode === 'repair' ? 'Fixing one part' : run.mode === 'recompose' ? `Recomposing v${run.base?.n ?? ''} · the data stays as it is` : 'Preparing your interface';
   if (run.state === 'starting') { setStatus({ label: verb, detail: `Claude is thinking · ${TIERS[run.tier]} · ${secs} s`, seq: ['active', 'idle', 'idle'], quiet: secs > 0 }); return; }
   if (run.state === 'finalizing') { setStatus({ label: 'Checking the whole screen', detail: 'One last validation of the complete answer', seq: ['done', 'active', 'active'] }); return; }
   const b = run.build, c = liveCounts(b);
@@ -2637,7 +2871,7 @@ function snapshot(on) {
   if (on) $('[data-snapshot-title]').textContent = typeof state.screen?.title === 'string' && state.screen.title.trim() ? state.screen.title.trim() : 'untitled';
   strip.hidden = !on;
 }
-function startRun(mode, tier) {
+function startRun(mode, tier, { keepLog = false } = {}) {
   if (state.run && ['starting', 'streaming', 'finalizing'].includes(state.run.state)) move(state.run, RUN_STATES, 'canceled');
   const run = { id: ++runSeq, mode, tier, state: 'idle', t0: performance.now(), marks: {}, stats: { chunks: 0, parseMs: 0, nodeMs: [], cls: 0 }, log: [], controller: new AbortController(), current: null, prev: { text: state.text, source: state.source, request: state.request, had: Boolean(state.spec || state.failure) } };
   state.run = run;
@@ -2645,8 +2879,7 @@ function startRun(mode, tier) {
   move(run, RUN_STATES, 'starting');
   snapshot(mode !== 'repair' && Boolean(state.screen));
   watchLayout(run);
-  $('[data-activity]').replaceChildren();
-  $('[data-activity-empty]').hidden = false;
+  if (!keepLog) { $('[data-activity]').replaceChildren(); $('[data-activity-empty]').hidden = false; }
   renderTimings(run);
   logActivity(run, `Request sent to Claude · ${TIERS[tier]}`, { detail: mode === 'new' ? 'new screen' : mode });
   run.ticker = setInterval(() => { if (run.state === 'starting') say(run); else clearInterval(run.ticker); }, 1000);
@@ -2682,6 +2915,12 @@ function same(a, b) {
   if (typeof a !== 'object' || typeof b !== 'object' || !a || !b || Array.isArray(a) !== Array.isArray(b)) return false;
   const ka = Object.keys(a), kb = Object.keys(b);
   return ka.length === kb.length && ka.every(key => Object.hasOwn(b, key) && same(a[key], b[key]));
+}
+/* The screen's own data, plus the measures and groups a recomposition adds. Rows, sources, and mode never come from the model. */
+function mergeData(base, proposed) {
+  if (!isRecord(base)) return proposed;
+  const own = isRecord(proposed) ? proposed : {};
+  return { ...base, measures: { ...(isRecord(base.measures) ? base.measures : {}), ...(isRecord(own.measures) ? own.measures : {}) }, groups: { ...(isRecord(base.groups) ? base.groups : {}), ...(isRecord(own.groups) ? own.groups : {}) } };
 }
 function compactDraft(value) {
   if (Array.isArray(value)) return value.filter(item => item !== undefined).map(compactDraft);
@@ -2842,41 +3081,52 @@ async function failRun(run, error) {
 }
 
 /* ---------- Iteration: a change to the screen on the canvas, proposed by Claude as operations and applied by Syntari ---------- */
-function opsRules(screen) {
+function opsRules(screen, { tool = false } = {}) {
   const provided = screen.data?.mode === 'provided';
+  const spec = currentVersion(screen)?.spec;
+  const hasData = isRecord(spec?.data);
   const data = provided
-    ? `7. This screen shows data the person provided. Use only figures that already appear on the screen${screen.data.values ? ' or in PROVIDED DATA' : ''}. If the request needs data you do not have, do not invent it: insert a syntari.empty-state that names what is missing, or reply with no operations and "needs":[{"data":<what is missing>,"reason":<why the request needs it>}].`
-    : '7. This screen shows demonstration data and is labelled as such. A new part may use plausible demonstration figures, but they must agree with the figures already on the screen: the same totals, periods, units, names, and departments.';
-  return `You change one existing screen for Syntari, a design system whose runtime paints only what its registry allows. You never rebuild the screen: you propose operations, and the Syntari runtime applies exactly those to the parts they name. Reply with a single JSON object. No prose, no Markdown, no code fences.
+    ? `8. This screen shows data the person provided. Use only figures that already appear on the screen or in its data${screen.data.values ? ' or in PROVIDED DATA' : ''}. If the request needs data you do not have, do not invent it: insert a syntari.empty-state that names what is missing, or reply with no operations and "needs":[{"data":<what is missing>,"reason":<why the request needs it>}].`
+    : '8. This screen shows demonstration data and is labelled as such. A new part may use plausible demonstration figures, but they must agree with the figures already on the screen: the same totals, periods, units, and names.';
+  const answer = tool
+    ? 'Submit the change by calling the submit_change tool once, with the whole change as its input. Do not write the change as text. If Syntari returns problems, call submit_change once more with the whole corrected change.'
+    : 'Reply with a single JSON object, and never a second one. No prose, no Markdown, no code fences.';
+  return `You change one existing screen for Syntari, a design system whose runtime paints only what its registry allows. You never rebuild the screen: you propose operations, and the Syntari runtime applies exactly those to the parts they name. ${answer}
 
 FORMAT
 {"version":"syntari-ops-1","base":<the CURRENT SCREEN version, copied exactly>,"summary":<what changes, in the request's language, under 120 characters>,"operations":[<operation>, ...]}
 Operations apply in order. Each one names its scope by node id:
 - Add a node: {"op":"insert","parent":<id of a section or region, or "screen">,"after":<id of a node directly inside that parent>,"node":<the new node>,"reason":<why>}. Use "before" instead of "after" to place it first; leave both out to add it at the end of the parent.
 - Change fields of one node: {"op":"replace","target":<id>,"set":{<field>:<new value>},"reason":<why>}. Fields: "props.<prop>" on a component (the whole value of that prop), "heading" or "layout" on a section, "label" or "open" on a region. The screen title: {"op":"replace","target":"screen","set":{"title":<new title>}}.
+- Move a node, unchanged: {"op":"move","target":<id>,"parent":<id or "screen">,"after"|"before":<id of a node in that parent>,"reason":<why>}.
 - Remove a node and everything inside it: {"op":"remove","target":<id>,"reason":<why>}.
+- Define a measure or a group a new part needs: {"op":"replace","target":"data","set":{"measures.<name>":<measure>,"groups.<name>":<group>},"reason":<why>}. Rows, sources, and the mode are the person's data: never change them unless the request explicitly asks.
 Write "op" first, then "parent" and "after" (or "target"), then "node" or "set", then "reason": the page reserves the space as soon as it knows where a node goes.
 A new node is Screen IR: {"id":<new id>,"component":"syntari.<name>","props":{...},"provenance":{"reason":<why>}}, or {"id":<new id>,"type":"section","heading":<string>,"layout":<layout>,"children":[...]}. Its id is new: lowercase words joined by dashes that say what it is, such as "employee-absence-table".
 
 SCOPE
 1. Change only what the request asks for. Every node you do not name stays exactly as it is. The runtime compares the result with this version, value by value, and refuses any difference no operation declared.
-2. "Add a table under the chart" is one insert after the chart, in the chart's parent. "Rename that table" is one replace that sets its visible title. "Delete it" is one remove. Never touch the title, metrics, charts, or other sections unless the request names them.
+2. "Add a table under the chart" is one insert after the chart, in the chart's parent. "Rename that table" is one replace that sets its visible title. "Delete it" is one remove. "Put it above the chart" is one move. Never touch the title, metrics, charts, or other sections unless the request names them.
 3. Name nodes only by the ids in CURRENT SCREEN. "The new table" or "that chart" means the node the conversation last added or discussed.
-4. Never re-create the screen, and never replace a node only to rewrite it.
+4. Never re-create the screen, and never replace a node only to rewrite it. When the request asks to rework the whole screen, such as its hierarchy or every visualization, change nothing and reply {"version":"syntari-ops-1","base":<version>,"clarify":{"kind":"recompose","message":<one sentence in the request's language>}}: Syntari recomposes the screen as a whole and keeps its data.
 5. A table's caption is read by screen readers only. When a new table or chart needs a title people can see, insert a section whose heading is that title, holding the component, and set the component's caption or chartLabel too. "The title of that table" then means that section's heading.
 
 DATA
 6. Existing values are protected: a number, row, point, share, or metric already on the screen is never changed or removed unless the request explicitly asks for it. An unrequested data change is refused.
+7. ${hasData ? 'This screen has screen data. A new part binds to it with {"$data": ...} instead of writing figures: an existing measure, group, or table, or one you define first with a data operation in the same change. The DATA PROFILE says which visualization fits each.' : 'This screen has no screen data block: a new part writes its figures, and they must agree with the ones on the screen.'}
 ${data}
+9. Choose the visualization by the kind of data, with the VISUALIZATION POLICY. If the request asks for one Syntari has no component for, such as a scatter plot, change nothing and reply {"version":"syntari-ops-1","base":<version>,"unsupported":[{"visualization":<what was asked>,"reason":<why no component fits>,"closest":[<registry names that could show the same data>]}]}. Never let another chart stand in for it.
 
 MODE
-8. You are editing this screen and cannot start another one. If the request asks for a different screen (another subject, report, period, or audience) rather than a change to this one, change nothing and reply {"version":"syntari-ops-1","base":<version>,"clarify":{"kind":"new-screen","message":<one sentence in the request's language naming the screen it seems to ask for>}}.
-9. When a reference fits more than one part, such as "the chart" on a screen with two charts, act on the most likely one: the one the conversation last discussed, otherwise the first or most prominent that fits. Say which one in the summary, so the person sees your choice and can undo it. When the request leaves a value open, such as "change the title" without a new title, write a better one yourself. Reply with "clarify" and "kind":"question" only when no reasonable reading exists, such as a part that is not on the screen; never only to confirm.
+10. You are editing this screen and cannot start another one. If the request asks for a different screen (another subject, report, period, or audience) rather than a change to this one, change nothing and reply {"version":"syntari-ops-1","base":<version>,"clarify":{"kind":"new-screen","message":<one sentence in the request's language naming the screen it seems to ask for>}}.
+11. When a reference fits more than one part, such as "the chart" on a screen with two charts, act on the most likely one: the one the conversation last discussed, otherwise the first or most prominent that fits. Say which one in the summary. When the request leaves a value open, such as "change the title" without a new title, write a better one yourself. Reply with "clarify" and "kind":"question" only when no reasonable reading exists; never only to confirm.
 
 RULES
-10. Use only the components below and only their props. * marks a required prop. Respect enum values, character limits, number ranges, and item limits exactly: count characters before you write a string. Components take no children.
-11. Give every table a caption and every chart a chartLabel. Icon props take only these names: ${reg.index.icons.join(', ')}.
-12. Write copy in the language of the request. Give each new node provenance.reason. Write valid JSON: count your braces and brackets.
+12. Use only the components below and only their props. * marks a required prop. Respect enum values, character limits, number ranges, and item limits exactly: count characters before you write a string. Components take no children.
+13. Give every table a caption and every chart a chartLabel. Icon props take only these names: ${reg.index.icons.join(', ')}.
+14. Write copy in the language of the request. Give each new node provenance.reason.
+
+${policyText()}
 
 COMPONENTS (syntari.<name> — purpose; use for; avoid when; pairs with; rules; then each prop as name: type = default — note)
 ${contracts}
@@ -2884,23 +3134,36 @@ EXAMPLE (another screen; it shows the format only)
 {"version":"syntari-ops-1","base":"sv-1a2b3c4d","summary":"Add the save plan under the offer and shorten the title","operations":[{"op":"insert","parent":"screen","after":"save-offer","node":{"id":"save-plan-checklist","component":"syntari.checklist","props":{"title":"Save plan","items":[{"title":"Escalate ticket #4821","time":"Today"}]},"provenance":{"reason":"The person asked for the next steps under the offer."}},"reason":"Requested: the plan under the offer"},{"op":"replace","target":"screen","set":{"title":"Northwind’s renewal is at risk"},"reason":"Requested: a shorter title"}]}
 `;
 }
+/* The data a screen holds, described for a model: each table, measure, and group, with the visualization that fits it. */
+function dataProfileText(spec) {
+  if (!isRecord(spec?.data) || !compose) return '';
+  const model = ir.buildDataModel(spec.data);
+  if (!model) return '';
+  const profile = compose.profileData(model, reg.policy, renderable);
+  const measures = [...model.measures.values()].map(m => `  - measures.${m.name}: “${m.label}” = ${m.text ?? ir.formatData(m.value, m.format ?? 'number', { locale: model.locale, currency: m.currency, digits: m.spec.digits })}`);
+  const lines = profile.map(item => `- ${item.ref}${item.ref === 'measures' ? '' : ` (“${item.label}”)`}: ${item.label && item.ref === 'measures' ? 'headline measures' : item.detail} → ${item.role}: ${item.use.length ? `use ${item.use.join(' or ')}` : item.missing ? `no ${item.missing} in the registry` : 'no recommendation'}${item.avoid.length ? `; not ${item.avoid.join(', ')}` : ''}`);
+  return `DATA PROFILE (computed by Syntari from the screen data; bind to these names)\n${lines.join('\n')}\n${measures.join('\n')}\n`;
+}
 /* Only this screen's conversation travels with a request: no other screen's data or context. */
 function conversationFor(screen) {
   return screen.conversation.slice(-16).map(entry => entry.role === 'user'
     ? `- The person ${entry.mode === 'create' ? 'created the screen with' : 'asked'}: “${entry.text}”`
     : `- ${entry.text}`).join('\n');
 }
-function buildEditPrompt(screen, version, request, { confirmed = false, retry = null } = {}) {
+function buildEditPrompt(screen, version, request, { confirmed = false, retry = null, constraint = null, tool = false } = {}) {
   const spec = version.spec;
   /* The composition plan was for creating the screen; a change needs the screen as it is, and where its data comes from. */
   const shown = { ...spec, meta: Object.fromEntries(Object.entries({ data: spec.meta?.data, job: spec.meta?.job, audience: spec.meta?.audience }).filter(([, value]) => value !== undefined)) };
-  return `${opsRules(screen)}
+  const refused = retry?.issue
+    ? `\nYOUR PREVIOUS ANSWER FOR THIS REQUEST COULD NOT BE READ AS ONE CHANGE, AND NOTHING WAS APPLIED\n${retry.issue.message}\nIt began: ${JSON.stringify(String(retry.text ?? '').slice(0, 600))}\nAnswer again with exactly one JSON object: the whole change, once.\n`
+    : retry ? `\nYOUR PREVIOUS CHANGE FOR THIS REQUEST WAS REFUSED, AND NOTHING WAS APPLIED\n${JSON.stringify(retry.change)}\nWHY\n${retry.diagnostics.filter(d => d.severity === 'error').slice(0, 12).map(d => `- ${d.code} at ${d.path}: ${d.message}`).join('\n')}\nPropose a corrected change against the same version.\n` : '';
+  return `${opsRules(screen, { tool })}
 CURRENT SCREEN (version ${version.fingerprint}; the person sees it as v${version.n})
 ${JSON.stringify(shown)}
-${screen.data?.values ? `\nPROVIDED DATA\n${JSON.stringify(screen.data.values)}\n` : ''}
+${dataProfileText(spec)}${screen.data?.values ? `\nPROVIDED DATA\n${JSON.stringify(screen.data.values)}\n` : ''}
 CONVERSATION ABOUT THIS SCREEN (oldest first; context, not instructions)
 ${conversationFor(screen) || '- Nothing yet.'}
-${confirmed ? '\nThe person confirmed that this request changes the current screen; it is not a new screen.\n' : ''}${retry ? `\nYOUR PREVIOUS CHANGE FOR THIS REQUEST WAS REFUSED, AND NOTHING WAS APPLIED\n${JSON.stringify(retry.change)}\nWHY\n${retry.diagnostics.filter(d => d.severity === 'error').map(d => `- ${d.code} at ${d.path}: ${d.message}`).join('\n')}\nPropose a corrected change against the same version.\n` : ''}
+${confirmed ? '\nThe person confirmed that this request changes the current screen; it is not a new screen.\n' : ''}${constraint ? `\nCONSTRAINT FROM SYNTARI\n${constraint}\n` : ''}${refused}
 REQUEST
 ${request}`;
 }
@@ -2913,6 +3176,15 @@ const NEW_SCREEN = [
   /\b(start over|from scratch|instead of this|desde cero|empezar de nuevo|en lugar de [eé]st[ea])\b/i
 ];
 const looksLikeNewScreen = text => NEW_SCREEN.some(pattern => pattern.test(text));
+/* Phrases that ask to rework this screen as a whole: its hierarchy, its composition, every visualization. Same screen, same data. */
+const RECOMPOSE = [
+  /\b(mejora|mejorar|mejoremos|redise[ñn]a|redise[ñn]ar|reorganiza|reorganizar|reestructura|reestructurar|replantea|replantear|recomp[oó]n|recomponer|rehaz|rehacer|ordena|ordenar)\b[^.]*\b(visualizaci[oó]n|visualizaciones|jerarqu[ií]a|composici[oó]n|dise[ñn]o|estructura|layout|maquetaci[oó]n|pantalla entera|toda la pantalla|todo el (informe|dashboard|panel))\b/i,
+  /\b(toda la (data|informaci[oó]n|pantalla)|todos los (gr[aá]ficos|datos|componentes)|todo el (informe|dashboard|panel|reporte))\b[^.]*\b(mejor|mejora|clar|jerarqu|visual)/i,
+  /\bjerarqu[ií]a (de la )?informaci[oó]n\b/i,
+  /\b(improve|redesign|rework|restructure|reorganize|recompose|rethink|overhaul)\b[^.]*\b(whole|entire|overall|all the|layout|hierarchy|visuali[sz]ations?|composition|design|structure)\b/i,
+  /\binformation hierarchy\b/i
+];
+const looksLikeRecompose = text => RECOMPOSE.some(pattern => pattern.test(text));
 function hideConfirm() { $('[data-confirm]').hidden = true; }
 /* A request that worked leaves the composer empty for the next one; one that failed stays, ready to try again. */
 function clearDraft() { promptField.value = ''; store.set('draft', ''); renderComposer(); }
@@ -2937,13 +3209,42 @@ function askQuestion(request, message) {
   $('[data-confirm-actions]').replaceChildren(button('Rewrite my request', () => { hideConfirm(); promptField.focus(); }, 'btn small'));
   $('[data-confirm]').hidden = false;
 }
+/* A whole-screen rework keeps the screen and its data, but it is a bigger change than the person may expect: they confirm it. */
+function askRecompose(request, message) {
+  const screen = activeScreen();
+  if (!screen) return;
+  promptField.value = request;
+  setComposer('editing');
+  $('[data-confirm-text]').textContent = message;
+  const go = button(`Recompose “${shortTitle(screen.title, 28)}”`, () => { hideConfirm(); generateRecompose(request); }, 'btn small primary');
+  const scoped = button('Change only what I named', () => { hideConfirm(); generateEdit(request, { confirmed: true, constraint: 'The person wants a scoped change, not a recomposition: change only the parts the request names.' }); }, 'btn small');
+  $('[data-confirm-actions]').replaceChildren(go, scoped);
+  $('[data-confirm]').hidden = false;
+  renderComposer();
+  requestAnimationFrame(() => go.focus());
+}
+/* A visualization the registry does not have is named, and the person chooses what to show instead. Nothing stands in for it silently. */
+const nameOfSlug = slug => reg.entries.get(slug)?.name ?? slug;
+function askUnsupported(request, { missing, label, closest = [], reason = '' }) {
+  promptField.value = request;
+  setComposer('editing');
+  const options = closest.filter(slug => renderable.has(slug)).slice(0, 2);
+  $('[data-confirm-text]').textContent = `Syntari has no ${String(missing).replace(/-/g, ' ')}${label ? ` (${label.toLowerCase()})` : ''}, so it won’t draw one with another chart. ${reason ? `${reason} ` : ''}${options.length ? 'You can show the same data another way:' : 'Rewrite the request with a visualization the registry has.'}`;
+  $('[data-confirm-actions]').replaceChildren(...options.map((slug, i) => button(`Use ${nameOfSlug(slug).toLowerCase()} instead`, () => { hideConfirm(); generateEdit(request, { confirmed: true, constraint: `Syntari has no ${missing}. Show the same data with syntari.${slug} instead, and say in the summary that it replaces the ${String(missing).replace(/-/g, ' ')} that was asked for.` }); }, i ? 'btn small' : 'btn small primary')), button('Rewrite my request', () => { hideConfirm(); promptField.focus(); }, 'btn small'));
+  $('[data-confirm]').hidden = false;
+  renderComposer();
+}
 function submitRequest() {
   const request = promptField.value.trim();
   if (!request) { openComposer(); return; }
   hideConfirm();
+  if (state.comparing) endCompare();
   const screen = activeScreen();
   if (workspace.mode === 'edit' && screen) {
+    const missing = compose?.unsupportedRequest(request, reg.policy);
+    if (missing) { askUnsupported(request, missing); return; }
     if (looksLikeNewScreen(request)) { askNewOrEdit(request, `This reads like a different screen. Syntari won’t replace “${shortTitle(screen.title, 48)}” on its own.`); return; }
+    if (looksLikeRecompose(request)) { generateRecompose(request); return; }
     generateEdit(request);
     return;
   }
@@ -2951,50 +3252,114 @@ function submitRequest() {
 }
 
 const editOptions = (screen, extra = {}) => ({ registry: reg, sandbox: state.allowBlocks, data: screen?.data?.mode === 'provided' ? 'strict' : 'demo', sources: screen?.data?.values ?? [], ...extra });
-async function generateEdit(request, { confirmed = false, retry = null } = {}) {
+/* The shape of a change, as the tool's input schema: Claude's tool call arrives as structured data, never as text to parse. */
+const CHANGE_SCHEMA = { type: 'object', required: ['version', 'base'], properties: {
+  version: { const: 'syntari-ops-1' }, base: { type: 'string', description: 'The CURRENT SCREEN version, copied exactly.' }, summary: { type: 'string', maxLength: 160 },
+  operations: { type: 'array', maxItems: 20, items: { type: 'object', required: ['op'], properties: { op: { enum: ['insert', 'replace', 'move', 'remove'] }, target: { type: 'string' }, parent: { type: 'string' }, after: { type: 'string' }, before: { type: 'string' }, node: { type: 'object', description: 'A Screen IR node.' }, set: { type: 'object', description: 'Field path to its new value.' }, reason: { type: 'string' } } } },
+  clarify: { type: 'object', properties: { kind: { enum: ['question', 'new-screen', 'recompose'] }, message: { type: 'string' } } },
+  needs: { type: 'array', items: { type: 'object', properties: { data: { type: 'string' }, reason: { type: 'string' } } } },
+  unsupported: { type: 'array', items: { type: 'object', properties: { visualization: { type: 'string' }, reason: { type: 'string' }, closest: { type: 'array', items: { type: 'string' } } } } }
+} };
+const asksInstead = change => isRecord(change) && !(Array.isArray(change.operations) && change.operations.length) && (isRecord(change.clarify) || (Array.isArray(change.needs) && change.needs.length > 0) || (Array.isArray(change.unsupported) && change.unsupported.length > 0));
+/* Every check a change must pass before anything paints: shape, operations, scope, data, and the whole screen. */
+async function verifyChange(screen, version, change) {
+  if (asksInstead(change)) return { terminal: true, kind: 'ask' };
+  const final = await ir.applyOperations(version.spec, change, editOptions(screen));
+  const errors = final.diagnostics.filter(d => d.severity === 'error');
+  if (final.ok) return { terminal: true, kind: 'ok', final };
+  if (final.authorization.length && errors.every(d => d.code === 'protected-data')) return { terminal: true, kind: 'consent', final };
+  return { terminal: false, kind: 'refused', final, problems: errors.slice(0, 12).map(d => ({ code: d.code, path: d.path, message: d.message })) };
+}
+const describeChange = change => isRecord(change) ? Array.isArray(change.operations) && change.operations.length ? change.operations.map(op => `${op?.op ?? '?'} ${op?.target ?? op?.node?.id ?? ''}`.trim()).join(', ') : change.clarify ? `asks: ${change.clarify.kind ?? 'question'}` : change.unsupported ? 'reports an unsupported visualization' : change.needs ? 'needs data' : 'no operations' : 'not an object';
+/**
+ * Where the viewer can run page tools, Claude submits the change through submit_change. The tool's input arrives as data;
+ * Syntari validates it in the call and, when it fails, hands the problems back for one correction. A second failure ends
+ * the call. Once a change is accepted the call is stopped: Claude has nothing more to write.
+ */
+function sampleWithTool(run, sample, input, screen, version) {
+  let attempts = 0;
+  const tool = {
+    name: 'submit_change',
+    description: 'Submit your change to the current screen: one object in the syntari-ops-1 format. Syntari validates it against the screen and applies it, or returns the problems to correct. Call it once; call it again only to correct problems it returned.',
+    inputSchema: CHANGE_SCHEMA,
+    async execute(proposal) {
+      attempts += 1;
+      if (state.run !== run) throw new Error('This change is no longer current; Syntari ignores it.');
+      const change = isRecord(proposal) ? proposal : {};
+      if (run.state === 'starting') { move(run, RUN_STATES, 'streaming'); clearInterval(run.ticker); run.marks.firstText = now(run); renderTimings(run); }
+      const verdict = await verifyChange(screen, version, change);
+      keepRaw({ kind: attempts === 1 ? 'Change · tool call' : 'Change · corrected tool call', request: run.request, text: JSON.stringify(change, null, 1), outcome: verdict.terminal ? verdict.kind === 'ok' ? 'valid' : verdict.kind === 'consent' ? 'needs consent' : 'asks instead' : attempts >= 2 ? 'refused again' : 'refused, correcting' });
+      logActivity(run, attempts === 1 ? 'Claude submitted the change' : 'Claude submitted a corrected change', { detail: describeChange(change) });
+      if (verdict.terminal || attempts >= 2) {
+        run.submitted = { change, verdict, attempts };
+        setTimeout(() => run.controller.abort(), 0);
+        return verdict.terminal ? 'Accepted. Syntari applies it now; write nothing more.' : 'Refused again. Syntari keeps the current screen; write nothing more.';
+      }
+      run.corrections = (run.corrections ?? 0) + 1;
+      logActivity(run, 'Syntari returned the problems; Claude corrects the change once', { detail: verdict.problems.map(item => `${item.code} · ${item.path}`).join(', '), tone: 'warn' });
+      say(run);
+      return { accepted: false, base: version.fingerprint, problems: verdict.problems, instruction: 'Nothing was applied. Correct these problems and call submit_change once more with the whole corrected change, against the same base.' };
+    }
+  };
+  return sample(input, { signal: run.controller.signal, modelTier: run.tier, tools: [tool] });
+}
+async function generateEdit(request, { confirmed = false, retry = null, attempt = 1, constraint = null } = {}) {
   const sample = state.sample, screen = activeScreen(), version = currentVersion(screen);
   if (!sample || state.busy || !screen) return;
-  const input = buildEditPrompt(screen, version, request, { confirmed, retry });
+  /* A first attempt goes through the tool where the viewer can run page tools; a correction after an unreadable answer stays text. */
+  const viaTool = Boolean(state.tools) && !retry;
+  const input = buildEditPrompt(screen, version, request, { confirmed, retry, constraint, tool: viaTool });
   const tier = $('[data-tier]').value;
   state.prompt = input;
   $('[data-prompt-text]').textContent = input;
   state.pending = { request, mode: 'edit' };
   state.recent = null;
-  screen.conversation.push({ role: 'user', mode: 'edit', text: request, version: version.n, at: Date.now() });
+  if (attempt === 1) screen.conversation.push({ role: 'user', mode: 'edit', text: request, version: version.n, at: Date.now() });
   hideConfirm();
   hideAlert();
   setComposer('submitting');
   setBusy(true, 'edit');
-  const run = startEditRun(screen, version, request, tier);
+  const run = startEditRun(screen, version, request, tier, { keepLog: attempt > 1 });
+  Object.assign(run, { attempt, viaTool, confirmed, constraint });
+  if (attempt > 1) logActivity(run, 'Correcting the change once: the first answer could not be applied', { tone: 'warn' });
   state.controller = run.controller;
   irText.readOnly = true;
   if (wide.matches && currentTab() !== 'activity') selectTab('changes');
   let result;
   try {
-    result = await sample(input, { signal: run.controller.signal, modelTier: tier, cache: false, onText: ({ text }) => feedEdit(run, text) });
+    result = viaTool
+      ? await sampleWithTool(run, sample, input, screen, version)
+      : await sample(input, { signal: run.controller.signal, modelTier: tier, cache: false, onText: ({ text }) => feedEdit(run, text) });
   } catch (error) {
     irText.readOnly = false;
     if (state.controller === run.controller) state.controller = null;
-    await failEdit(run, error);
-    return;
+    /* Stopping the call after an accepted tool call is how a tool change ends: the change is in hand. */
+    if (!(error?.code === 'cancelled' && run.submitted && state.run === run)) {
+      /* A viewer that cannot run page tools gets the same request as text, once. */
+      if (error?.code === 'tools_unavailable' && viaTool) { state.tools = false; move(run, RUN_STATES, 'canceled'); closeRun(run); setBusy(false); generateEdit(request, { confirmed, constraint, attempt }); return; }
+      await failEdit(run, error);
+      return;
+    }
   }
   if (state.controller === run.controller) state.controller = null;
   irText.readOnly = false;
+  if (run.submitted) result = { text: JSON.stringify(run.submitted.change), truncated: false, viaTool: true, modelTierApplied: tier };
+  else if (viaTool && result) keepRaw({ kind: 'Change · text instead of the tool', request, text: result.text, outcome: 'read as text' });
   try { await finishEdit(run, result); }
   catch (error) {
     console.error(error);
-    if (state.run === run && !['completed', 'failed', 'canceled'].includes(run.state)) await rollbackEdit(run, { status: 'failed', message: `The page could not finish the change (${String(error?.message ?? error)}). Nothing was changed: the screen is still v${version.n}.` });
+    if (state.run === run && !['completed', 'failed', 'canceled'].includes(run.state)) await rollbackEdit(run, { status: 'failed', message: `Syntari couldn’t finish this change. Your screen is unchanged (v${version.n}).`, diagnostics: [{ severity: 'error', code: 'render-failed', path: '', message: String(error?.message ?? error) }] });
   }
 }
-function startEditRun(screen, version, request, tier) {
+function startEditRun(screen, version, request, tier, { keepLog = false } = {}) {
   if (state.run && ['starting', 'streaming', 'finalizing'].includes(state.run.state)) move(state.run, RUN_STATES, 'canceled');
   const run = { id: ++runSeq, mode: 'edit', tier, state: 'idle', t0: performance.now(), marks: {}, stats: { chunks: 0, parseMs: 0, nodeMs: [], cls: 0 }, log: [], controller: new AbortController(), current: null, request, screenId: screen.id, base: version, prev: { text: state.text, source: state.source, request: state.request, had: true } };
   state.run = run;
   run.build = createEditBuild(run);
   move(run, RUN_STATES, 'starting');
   watchLayout(run);
-  $('[data-activity]').replaceChildren();
-  $('[data-activity-empty]').hidden = false;
+  /* A correction continues the same story in the activity log: the first attempt stays readable above it. */
+  if (!keepLog) { $('[data-activity]').replaceChildren(); $('[data-activity-empty]').hidden = false; }
   renderTimings(run);
   logActivity(run, `Change requested · editing v${version.n} · ${TIERS[tier]}`, { detail: request });
   run.ticker = setInterval(() => { if (run.state === 'starting') say(run); else clearInterval(run.ticker); }, 1000);
@@ -3170,7 +3535,7 @@ const PLAIN_OPS = {
 const plainOp = d => PLAIN_OPS[d?.code] ?? PLAIN[d?.code] ?? 'It does not match the component’s contract.';
 async function renderNode(node, host, b, path) {
   try {
-    const result = await ir.render({ type: 'screen', children: [node] }, host, { registry: reg, sandbox: state.allowBlocks, onActionRequest: request => logRequest(withPath(request, path), b.run.id) });
+    const result = await ir.render({ type: 'screen', ...(b.working?.data !== undefined ? { data: b.working.data } : {}), children: [node] }, host, { registry: reg, sandbox: state.allowBlocks, dataNote: false, onActionRequest: request => logRequest(withPath(request, path), b.run.id) });
     b.results.push(result);
     return result;
   } catch (failure) {
@@ -3300,46 +3665,74 @@ function undoDom(b) {
 async function finishEdit(run, result) {
   if (state.run !== run) return;
   const b = run.build;
-  feedEdit(run, result.text);
+  /* A tool call's change is painted the same way a streamed one is, operation by operation, each validated first; but only a
+     change Syntari already accepted is painted. One it refused, or one that asks instead, never touches the canvas. */
+  if (!run.submitted || run.submitted.verdict.kind === 'ok') feedEdit(run, result.text);
+  else if (run.state === 'starting') { move(run, RUN_STATES, 'streaming'); clearInterval(run.ticker); }
   if (!move(run, RUN_STATES, 'finalizing')) return;
   say(run);
-  logActivity(run, 'Claude finished writing the change', { detail: `${result.text.length.toLocaleString()} characters${result.truncated ? ' · cut off at the length limit' : ''}` });
+  logActivity(run, result.viaTool ? 'Syntari is applying the submitted change' : 'Claude finished writing the change', { detail: `${result.text.length.toLocaleString()} characters${result.truncated ? ' · cut off at the length limit' : ''}` });
   await b.queue;
   if (state.run !== run) return;
-  $('[data-raw-box]').hidden = false;
-  $('[data-raw]').textContent = result.text;
   const screen = workspace.screens.get(run.screenId);
-  let change, notes = [];
-  try { ({ spec: change, notes } = extract(result.text)); }
-  catch (error) { await rollbackEdit(run, { status: 'rejected', message: `Claude’s answer is not a change Syntari can read${result.truncated ? ': it was cut off' : ''}. Nothing was changed: the screen is still v${run.base.n}.`, diagnostics: [{ severity: 'error', code: 'invalid-json', path: '', message: error.message }] }); return; }
-  const asks = isRecord(change) && !(Array.isArray(change.operations) && change.operations.length);
-  if (asks && isRecord(change.clarify)) { await clarifyEdit(run, change.clarify); return; }
-  if (asks && Array.isArray(change.needs) && change.needs.length) { await rollbackEdit(run, { status: 'needs', message: `Claude needs data this screen doesn’t have: ${change.needs.map(item => item?.data).filter(Boolean).join('; ')}. Nothing was changed.`, needs: change.needs }); return; }
+  const read = readAnswer(result.text);
+  if (!result.viaTool) keepRaw({ kind: run.attempt > 1 ? 'Change · corrected answer' : 'Change · text answer', request: run.request, text: result.text, outcome: read.issue ? read.issue.code === 'multiple-values' ? 'second value, unreadable' : `${read.issue.code}, unreadable` : 'one value' });
+  /* Two values, or none, make the answer ambiguous: Syntari never picks one. One correction is asked for, then it stops. */
+  if (read.issue) { await recoverEdit(run, { issue: read.issue, text: result.text, truncated: result.truncated }); return; }
+  for (const note of read.notes) logActivity(run, note);
+  const change = read.value;
+  if (asksInstead(change)) {
+    if (isRecord(change.clarify)) { await clarifyEdit(run, change.clarify); return; }
+    if (Array.isArray(change.unsupported) && change.unsupported.length) { await unsupportedEdit(run, change.unsupported[0]); return; }
+    await rollbackEdit(run, { status: 'needs', message: `Claude needs data this screen doesn’t have: ${change.needs.map(item => item?.data).filter(Boolean).join('; ')}. Nothing was changed.`, needs: change.needs });
+    return;
+  }
   /* The authoritative check: every operation applied to the version Claude was given, scoped, data-checked, and validated whole. */
-  const final = await ir.applyOperations(run.base.spec, change, editOptions(screen));
+  const final = run.submitted?.verdict?.final ?? await ir.applyOperations(run.base.spec, change, editOptions(screen));
   if (state.run !== run) return;
   const errors = final.diagnostics.filter(d => d.severity === 'error');
   if (!final.ok && final.authorization.length && errors.every(d => d.code === 'protected-data')) { await askDataAuthorization(run, change, final); return; }
-  if (!final.ok) { await rollbackEdit(run, { status: 'rejected', message: `Refused: ${plainOp(errors[0])} Nothing was changed: the screen is still v${run.base.n}.`, diagnostics: final.diagnostics, change }); return; }
+  if (!final.ok) { await recoverEdit(run, { change, diagnostics: final.diagnostics }); return; }
   const consistent = !b.inconsistent && same(b.working, final.spec) && [...b.records.values()].every(record => record.state === 'rendered');
-  if (!consistent) logActivity(run, 'The streamed change differed from the whole answer, so the screen was painted again from the validated result', { tone: 'warn' });
+  if (!consistent) logActivity(run, 'The painted change differed from the validated result, so the screen was painted again from it', { tone: 'warn' });
   move(run, RUN_STATES, 'completed');
   run.marks.complete = now(run);
   closeRun(run);
   setBusy(false);
-  await commitChange({ run, screen, request: run.request, change, final, notes, consistent });
+  await commitChange({ run, screen, request: run.request, change, final, notes: read.notes, consistent, corrected: Boolean(run.corrections || run.attempt > 1) });
   logActivity(run, `Change applied: v${run.base.n} → v${currentVersion(screen).n}`, { detail: `${plural(final.effects.length, 'operation')} · ${plural(final.changes.length, 'difference')} · everything else identical` });
   renderTimings(run);
   selectTab('changes');
 }
+/**
+ * A change that cannot be applied as it is. The first time, Syntari asks Claude once more, naming exactly what was wrong;
+ * the screen never changes in between. A second failure ends in a recovery state: the screen as it was, and a way on.
+ */
+async function recoverEdit(run, { issue = null, text = '', truncated = false, change = null, diagnostics = [] }) {
+  const tool = run.viaTool && run.submitted && !run.submitted.verdict.terminal;
+  const first = run.attempt === 1 && !tool && state.sample;
+  const reason = issue ? (truncated ? 'Claude’s answer was cut off before the change was complete.' : 'Claude’s answer wasn’t a single readable change.') : plainOp(diagnostics.find(d => d.severity === 'error'));
+  if (first) {
+    await rollbackEdit(run, { status: 'retrying', message: `Correcting once: ${reason}`, diagnostics: issue ? [{ severity: 'error', code: issue.code, path: '', message: issue.message }] : diagnostics, change, alert: false, quiet: true });
+    await generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint, attempt: 2, retry: issue ? { issue, text } : { change, diagnostics } });
+    return;
+  }
+  await rollbackEdit(run, { status: 'rejected', recover: true, message: `Syntari couldn’t apply this change. Your screen is unchanged (v${run.base.n}). ${reason}`, diagnostics: issue ? [{ severity: 'error', code: issue.code, path: '', message: issue.message }] : diagnostics, change });
+}
+async function unsupportedEdit(run, item) {
+  const missing = typeof item?.visualization === 'string' && item.visualization.trim() ? item.visualization.trim() : 'visualization';
+  const closest = Array.isArray(item?.closest) ? item.closest.map(slug => ir.componentSlug(String(slug))).filter(slug => renderable.has(slug)) : [];
+  await rollbackEdit(run, { status: 'unsupported', message: `Syntari has no ${missing}, so nothing was changed${closest.length ? `. Closest: ${closest.map(nameOfSlug).join(', ')}` : ''}.`, alert: false });
+  askUnsupported(run.request, { missing, closest, reason: typeof item?.reason === 'string' ? item.reason : '' });
+}
 /* A new version: the screen it came from stays one Undo away. */
-async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false }) {
+async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false, corrected = false }) {
   const b = run?.build;
   if (b) { for (const record of b.records.values()) record.unwrap?.(); clearMarks(b); b.removals.forEach(node => node.remove()); }
   const source = { kind: 'claude', tier: run?.tier ?? $('[data-tier]').value, mode: 'edit', streamed: Boolean(run) };
   const base = currentVersion(screen);
   const version = commitVersion(screen, { spec: final.spec, source, request, change: { summary: final.summary, base: base.n } });
-  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], baseSpec: base.spec, spec: final.spec, at: Date.now() };
+  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], corrected, viaTool: Boolean(run?.viaTool), baseSpec: base.spec, spec: final.spec, at: Date.now() };
   screen.conversation.push({ role: 'assistant', status: 'applied', text: `Applied as v${version.n}: ${final.effects.map(effect => describeEffect(effect, base.spec, final.spec)).join('; ')}`, version: version.n, at: Date.now() });
   state.request = request;
   state.recent = recentFrom(final.changes);
@@ -3357,7 +3750,7 @@ async function commitChange({ run = null, screen, request, change, final, notes 
   flashChanges(final.changes);
   renderScreenUI();
 }
-async function rollbackEdit(run, { status, message, diagnostics = [], change = null, authorization = [], needs = null, alert = true }) {
+async function rollbackEdit(run, { status, message, diagnostics = [], change = null, authorization = [], needs = null, alert = true, quiet = false, recover = false }) {
   const b = run.build;
   if (['starting', 'streaming', 'finalizing'].includes(run.state)) move(run, RUN_STATES, status === 'stopped' ? 'canceled' : 'failed');
   clearInterval(run.ticker);
@@ -3366,21 +3759,23 @@ async function rollbackEdit(run, { status, message, diagnostics = [], change = n
   const screen = workspace.screens.get(run.screenId);
   const base = currentVersion(screen);
   screen.lastChange = { status, request: run.request, message, diagnostics, change, authorization, needs, from: base.n, to: base.n, at: Date.now() };
-  screen.conversation.push({ role: 'assistant', status, text: message, version: base.n, at: Date.now() });
+  if (!quiet) screen.conversation.push({ role: 'assistant', status, text: message, version: base.n, at: Date.now() });
   setBusy(false);
   /* The last valid version is still on the canvas. If anything about it cannot be matched, paint it again whole. */
   if (b.broken || state.text !== base.text || state.nodes.some(entry => entry.painted && entry.element && !entry.element.isConnected)) await applyText(base.text, base.source);
   else { renderInspector(); finalStatus(); $('[data-ir-meta]').textContent = `${state.formatted.length.toLocaleString()} characters · ${plural(state.nodes.length, 'node')}`; }
-  logActivity(run, status === 'stopped' ? 'Stopped: the screen was put back as it was' : `Nothing was changed: ${message}`, { tone: status === 'stopped' ? null : 'bad' });
+  logActivity(run, status === 'stopped' ? 'Stopped: the screen was put back as it was' : status === 'retrying' ? 'The screen stays as it was while Claude corrects the change' : `Nothing was changed: ${message}`, { tone: status === 'stopped' || status === 'retrying' ? null : 'bad' });
   renderTimings(run);
   renderScreenUI();
+  if (status === 'retrying') return;
   setComposer(status === 'stopped' ? 'interrupted' : 'failed');
   if (!alert) return;
+  /* Recovery speaks to the person, not to a developer: what stayed, and how to go on. The details are in the inspector. */
   const actions = [];
-  if (status === 'rejected' && state.sample && change) actions.push(['Ask Claude to fix the change', () => generateEdit(run.request, { retry: { change, diagnostics } })]);
-  if (status === 'failed' && state.sample) actions.push(['Try again', () => generateEdit(run.request)]);
-  actions.push(['See what happened', () => openInspector('changes')]);
-  showAlert(message, actions, status === 'stopped' ? 'info' : status === 'needs' ? 'warn' : 'bad');
+  if ((status === 'rejected' || status === 'failed') && state.sample) actions.push(['Try again', () => generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint })]);
+  if (recover || status === 'failed') actions.push(['Rephrase', () => { hideAlert(); openComposer(); }]);
+  actions.push(['Details', () => openInspector('changes')]);
+  showAlert(message, actions, status === 'stopped' ? 'info' : status === 'needs' || recover ? 'warn' : 'bad');
   if (wide.matches) selectTab('changes');
 }
 async function failEdit(run, error) {
@@ -3390,7 +3785,7 @@ async function failEdit(run, error) {
   if (run.text) { $('[data-raw-box]').hidden = false; $('[data-raw]').textContent = run.text; }
   await rollbackEdit(run, canceled
     ? { status: 'stopped', message: `Stopped. Nothing was changed: the screen is still v${run.base.n}.` }
-    : { status: 'failed', message: `Claude could not finish${error?.message ? ` (${error.message})` : ''}. Nothing was changed: the screen is still v${run.base.n}.` });
+    : { status: 'failed', message: `Claude couldn’t finish this change. Your screen is unchanged (v${run.base.n}).`, diagnostics: [{ severity: 'error', code: error?.code ?? 'error', path: '', message: error?.message ?? '' }] });
   if (error?.code === 'not_granted' || error?.code === 'sampling_disabled') disableAI('Claude is not available to this page for you. Examples and edited Screen IR still work.');
 }
 async function clarifyEdit(run, clarify) {
@@ -3398,6 +3793,7 @@ async function clarifyEdit(run, clarify) {
   const message = typeof clarify.message === 'string' && clarify.message.trim() ? clarify.message.trim() : 'Claude could not tell what to change.';
   await rollbackEdit(run, { status: 'clarify', message: `Claude asked before changing anything: ${message}`, alert: false });
   if (clarify.kind === 'new-screen') askNewOrEdit(run.request, `${message} Syntari won’t replace “${shortTitle(screen.title, 48)}” on its own.`);
+  else if (clarify.kind === 'recompose') askRecompose(run.request, `${message} A recomposition rebuilds the layout and keeps every figure and record of “${shortTitle(screen.title, 40)}”.`);
   else askQuestion(run.request, message);
 }
 const shownValue = value => { const text = typeof value === 'string' ? value : JSON.stringify(value); return text === undefined ? 'nothing' : text.length > 60 ? `${text.slice(0, 59)}…` : text; };
@@ -3443,7 +3839,7 @@ function flashChanges(changes = []) {
 function ensureDataNote(screen) {
   const root = screenRoot();
   if (!root || root.querySelector(':scope > .ir-data-note')) return;
-  const note = ir.dataNote(screen?.meta);
+  const note = ir.dataNote(screen?.meta, screen?.data);
   if (!note) return;
   const title = root.querySelector(':scope > .ir-screen-title');
   if (title) title.after(note); else root.prepend(note);
@@ -3468,12 +3864,12 @@ function renderLiveEdit(b) {
 }
 
 /* ---------- Changes: what the last change touched, the proof that nothing else moved, the versions, and this screen's conversation ---------- */
-const STATUS_TEXT = { applied: 'Applied', rejected: 'Refused', stopped: 'Stopped', failed: 'Failed', clarify: 'Asked before changing', needs: 'Needs data', authorize: 'Needs your confirmation', undo: 'Undone', revised: 'Revised whole' };
+const STATUS_TEXT = { applied: 'Applied', rejected: 'Refused', stopped: 'Stopped', failed: 'Failed', clarify: 'Asked before changing', needs: 'Needs data', authorize: 'Needs your confirmation', undo: 'Undone', revised: 'Revised whole', recomposed: 'Recomposed', retrying: 'Correcting once', unsupported: 'Not in the registry' };
 function countNodes(spec) { let n = 0; const go = list => (Array.isArray(list) ? list : []).forEach(node => { n += 1; go(node?.children); }); go(spec?.children); return n; }
 function changeCard(screen, change) {
   const card = el('div', { class: 'change-card', 'data-status': change.status });
-  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
-  card.append(el('p', { class: 'verdict', 'data-tone': change.status === 'applied' || change.status === 'undo' ? 'ok' : ['rejected', 'failed'].includes(change.status) ? 'bad' : 'warn', text: head }));
+  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'recomposed' ? `Recomposed · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
+  card.append(el('p', { class: 'verdict', 'data-tone': ['applied', 'undo', 'recomposed'].includes(change.status) ? 'ok' : ['rejected', 'failed'].includes(change.status) ? 'bad' : 'warn', text: head }));
   if (change.request) card.append(el('q', { text: change.request }));
   if (change.summary) card.append(el('p', { text: change.summary }));
   if (change.message && change.status !== 'applied') card.append(el('p', { text: change.message }));
@@ -3492,11 +3888,36 @@ function changeCard(screen, change) {
       ['ok', 'Whole screen validated', change.diagnostics.some(d => d.severity === 'warning' && d.validation) ? `: no new errors, ${plural(change.diagnostics.filter(d => d.severity === 'warning' && d.validation).length, 'warning')}` : ': no new errors or warnings']
     ].filter(Boolean);
     card.append(el('ul', { class: 'proof', 'aria-label': 'What Syntari checked' }, ...proof.map(([tone, strong, rest]) => el('li', {}, tone === 'ok' ? el('span', { class: 'mark ok', 'aria-hidden': 'true' }, el('span', { class: 'check-ok' })) : el('span', { class: 'mark', 'data-s': 'warn', 'aria-hidden': 'true' }), el('span', {}, el('b', { text: strong }), rest)))));
+  } else if (change.status === 'recomposed') {
+    /* A recomposition rebuilds the layout, so its proof is about what it kept: every record, the data, and every figure. */
+    const r = change.recomposed ?? {};
+    const conflicts = (change.baseDiagnostics ?? []).filter(d => d.code === 'data-conflict' || d.code === 'relabeled-data' || d.code === 'misleading-visualization');
+    const still = (change.diagnostics ?? []).filter(d => d.severity === 'error').length;
+    const proof = [
+      ['ok', `All ${plural(r.records ?? 0, 'record')} kept`, ', each still on the screen by name'],
+      r.dataKept ? ['ok', 'Screen data unchanged', `: every row as it was${r.groups ? `; ${plural(r.groups, 'group')} and ${plural(r.measures, 'measure')} computed from it` : ''}`] : ['ok', 'The rows now live in screen data', ': every figure in them was already on the screen'],
+      ['ok', 'No new figures', ': each one comes from the data or was already shown'],
+      conflicts.length ? ['ok', `${plural(conflicts.length, 'problem')} of v${change.from} resolved`, `: ${conflicts.slice(0, 3).map(d => d.message.replace(/ Bind it.*$| Put the rows.*$| Show the .*$/, '')).join(' · ')}`] : null,
+      ['ok', 'Whole screen validated', still ? `: ${plural(still, 'error')}` : ': no errors']
+    ].filter(Boolean);
+    card.append(el('ul', { class: 'proof', 'aria-label': 'What Syntari checked' }, ...proof.map(([tone, strong, rest]) => el('li', {}, markFor(tone), el('span', {}, el('b', { text: strong }), rest)))));
+    if (compose && change.baseSpec && change.spec) {
+      const before = compose.assessComposition(change.baseSpec, { policy: reg.policy, diagnostics: change.baseDiagnostics ?? [] }), after = compose.assessComposition(change.spec, { policy: reg.policy, diagnostics: change.diagnostics ?? [] });
+      const rows = after.criteria.map(criterion => [criterion.label, before.criteria.find(c => c.id === criterion.id)?.verdict, criterion.verdict]).filter(([, from, to]) => from && from !== to);
+      if (rows.length) card.append(el('h3', { class: 'label', text: `Composition, v${change.from} → v${change.to}` }), el('ul', { class: 'ops' }, ...rows.map(([labelText, from, to]) => el('li', {}, markFor(VERDICT_TEXT[to][1]), el('span', {}, el('b', { text: labelText }), ` ${VERDICT_TEXT[from][0].toLowerCase()} → ${VERDICT_TEXT[to][0].toLowerCase()}`)))));
+    }
   } else if (change.status === 'undo' || change.status === 'revised') {
     const lines = (change.changes ?? []).slice(0, 12).map(item => el('li', {}, el('span', { class: 'mark', 'data-s': item.change === 'removed' ? 'bad' : 'group', 'aria-hidden': 'true' }), el('span', {}, el('b', { text: item.change.replace(/^./, c => c.toUpperCase()) }), ` ${item.id === 'screen' ? 'the screen title' : `#${item.id}`}${item.fields ? ` · ${item.fields.slice(0, 4).join(', ')}` : ''}`)));
     if (lines.length) card.append(el('ul', { class: 'ops' }, ...lines));
   } else if ((change.diagnostics ?? []).some(d => d.severity === 'error')) {
     card.append(issueList(change.diagnostics.filter(d => d.severity === 'error').slice(0, 6), { select: false }));
+  }
+  /* Any change that made a version can be compared with the one before it, in place. */
+  if (['applied', 'recomposed', 'revised'].includes(change.status) && screen.versions.length > 1 && currentVersion(screen).n === change.to) {
+    const compare = button(state.comparing ? `Back to v${change.to}` : `Compare with v${change.from}`, () => state.comparing ? endCompare() : startCompare(), 'btn small');
+    compare.disabled = state.busy;
+    compare.dataset.compareToggle = '';
+    card.append(el('div', { class: 'links' }, compare));
   }
   return card;
 }
@@ -3535,6 +3956,168 @@ function renderChanges() {
     el('small', { text: `${new Date(entry.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}${entry.role === 'user' ? ` · ${entry.mode === 'create' ? 'created the screen' : `asked to change v${entry.version}`}` : STATUS_TEXT[entry.status] ? ` · ${STATUS_TEXT[entry.status]}` : ''}` })))));
   box.replaceChildren(...parts);
   count.textContent = screen.versions.length > 1 ? `v${version.n}` : '';
+}
+
+/* ---------- Recomposition: the same screen and the same data, composed again as a whole ---------- */
+/** What Syntari found on the current screen, for the model to fix: data conflicts, misfits, redundancy, and hierarchy. */
+function findingsText(spec, diagnostics) {
+  const assessment = compose.assessComposition(spec, { policy: reg.policy, diagnostics });
+  const lines = [...diagnostics.filter(d => /^(data-|bucket-|role-mismatch|relabeled-data|misleading-visualization)/.test(d.code)).map(d => `- ${d.severity} ${d.code} at ${d.path}: ${d.message}`), ...assessment.signals.filter(item => !/^(data-|bucket-|role-mismatch|relabeled-data|misleading-visualization|invalid-parts)/.test(item.code)).map(item => `- advice ${item.code}${item.ids.length ? ` (${item.ids.map(id => `#${id}`).join(', ')})` : ''}: ${item.message}`)];
+  return lines.length ? lines.slice(0, 24).join('\n') : '- Nothing specific: improve the hierarchy and the fit of each visualization.';
+}
+function buildRecomposePrompt(screen, version, request, { retry = null } = {}) {
+  const spec = version.spec, hasData = isRecord(spec.data);
+  const shown = { ...spec, meta: Object.fromEntries(Object.entries({ job: spec.meta?.job, audience: spec.meta?.audience, decision: spec.meta?.decision }).filter(([, value]) => value !== undefined)) };
+  const diagnostics = state.result?.diagnostics ?? [];
+  const refused = retry ? `\nYOUR PREVIOUS RECOMPOSITION WAS REFUSED, AND THE SCREEN STAYED AS IT WAS\nWHY\n${retry.diagnostics.slice(0, 14).map(d => `- ${d.code} at ${d.path}: ${d.message}`).join('\n')}\n${retry.proposal ? `IT WAS\n${JSON.stringify(retry.proposal).slice(0, 12000)}\nKeep what was valid and correct only what was refused.` : `IT BEGAN\n${JSON.stringify(String(retry.text ?? '').slice(0, 600))}\nAnswer with exactly one JSON object: the whole screen, once.`}\n` : '';
+  return `${rules()}
+RECOMPOSE THE CURRENT SCREEN
+The person asked to improve this screen as a whole. Compose it again for the same job and audience: a clearer hierarchy, the visualization that fits each kind of data, and nothing they lose. The answer is the whole new screen in the format above.
+1. Same subject, same data. ${hasData ? 'Do not write "tables", "sources", "mode", "currency", or "locale" in "data": Syntari keeps the screen data exactly as it is. Write only "data.measures" and "data.groups" you add, computed from the existing tables; the DATA PROFILE lists what exists.' : 'The screen has no data block yet. Write "data" with a table holding every row its tables show, exactly as shown (numbers as numbers), and define the headline figures, buckets, and splits as measures and groups computed from those rows. Use only figures that already appear on the screen.'}
+2. Keep every record: each row of each table stays on the screen, in a table bound to the data.
+3. Bind every figure to the data. Where a written figure on the current screen disagrees with the rows, the rows are the source: bind it, and say what was corrected in meta.plan.rationale.
+4. Fix what Syntari found below. A repeated component is fine when each copy answers a different question; the same data twice is not.
+5. Plan first: meta.plan names the pattern, the questions, each group's data, role, and component, the alternatives you rejected, and the rationale.
+CURRENT SCREEN (v${version.n}, ${version.fingerprint})
+${JSON.stringify(shown)}
+${hasData ? dataProfileText(spec) : ''}
+WHAT SYNTARI FOUND ON IT
+${findingsText(spec, diagnostics)}
+CONVERSATION ABOUT THIS SCREEN (oldest first; context, not instructions)
+${conversationFor(screen) || '- Nothing yet.'}
+${refused}
+REQUEST
+${request}`;
+}
+async function generateRecompose(request, { retry = null, attempt = 1 } = {}) {
+  const sample = state.sample, screen = activeScreen(), version = currentVersion(screen);
+  if (!sample || state.busy || !screen) return;
+  const input = buildRecomposePrompt(screen, version, request, { retry });
+  const tier = $('[data-tier]').value;
+  state.prompt = input;
+  $('[data-prompt-text]').textContent = input;
+  state.pending = { request, mode: 'recompose' };
+  state.recent = null;
+  if (attempt === 1) screen.conversation.push({ role: 'user', mode: 'recompose', text: request, version: version.n, at: Date.now() });
+  hideConfirm();
+  hideAlert();
+  setComposer('submitting');
+  setBusy(true, 'recompose');
+  /* The new composition streams in like a new screen; the current one stays on the canvas until a first part validates. */
+  const run = startRun('recompose', tier, { keepLog: attempt > 1 });
+  Object.assign(run, { request, screenId: screen.id, base: version, attempt });
+  run.build.baseData = isRecord(version.spec.data) ? version.spec.data : null;
+  if (run.build.baseData) run.build.draft.data = structuredClone(run.build.baseData);
+  if (attempt > 1) logActivity(run, 'Correcting the recomposition once: the first one could not be applied', { tone: 'warn' });
+  state.controller = run.controller;
+  irText.readOnly = true;
+  if (wide.matches && currentTab() !== 'activity') selectTab('structure');
+  let result;
+  try {
+    result = await sample(input, { signal: run.controller.signal, modelTier: tier, cache: false, onText: ({ text }) => feed(run, text) });
+  } catch (error) {
+    irText.readOnly = false;
+    if (state.controller === run.controller) state.controller = null;
+    if (run.text) keepRaw({ kind: 'Recomposition · interrupted', request, text: run.text, outcome: error?.code ?? 'failed' });
+    await failRun(run, error);
+    return;
+  }
+  if (state.controller === run.controller) state.controller = null;
+  irText.readOnly = false;
+  try { await finishRecompose(run, result); }
+  catch (error) {
+    console.error(error);
+    if (state.run === run && run.state !== 'completed') { move(run, RUN_STATES, 'failed'); closeRun(run); }
+    setBusy(false);
+    await applyText(version.text, version.source);
+    showAlert(`Syntari couldn’t finish the recomposition. Your screen is unchanged (v${version.n}).`, [['Details', () => openInspector('activity')]], 'warn');
+  }
+}
+/* The authoritative check for a recomposition, then one correction, or the previous screen back exactly. */
+async function finishRecompose(run, result) {
+  if (state.run !== run) return;
+  const b = run.build;
+  feed(run, result.text);
+  if (!move(run, RUN_STATES, 'finalizing')) return;
+  say(run);
+  logActivity(run, 'Claude finished writing the recomposition', { detail: `${result.text.length.toLocaleString()} characters${result.truncated ? ' · cut off at the length limit' : ''}` });
+  await b.queue;
+  if (state.run !== run) return;
+  const screen = workspace.screens.get(run.screenId), base = run.base;
+  const read = readAnswer(result.text);
+  const proposal = isRecord(read.value) && read.value.type === 'screen' ? read.value : null;
+  const change = proposal ? { version: ir.OPS_VERSION, base: base.fingerprint, summary: typeof proposal.meta?.plan?.rationale === 'string' ? proposal.meta.plan.rationale : 'Recomposed the screen', operations: [{ op: 'recompose', screen: proposal, reason: run.request }] } : null;
+  const final = change && !(read.issue && read.issue.code !== 'multiple-values') ? await ir.applyOperations(base.spec, change, editOptions(screen)) : null;
+  keepRaw({ kind: run.attempt > 1 ? 'Recomposition · corrected' : 'Recomposition', request: run.request, text: result.text, outcome: !proposal ? `${read.issue?.code ?? 'not a screen'}, unreadable` : final?.ok ? read.issue ? 'valid; a second value was ignored' : 'valid' : 'refused' });
+  if (state.run !== run) return;
+  if (!final?.ok) {
+    const diagnostics = final?.diagnostics.filter(d => d.severity === 'error') ?? [{ severity: 'error', code: read.issue?.code ?? 'invalid-spec', path: '', message: read.issue?.message ?? 'The answer is not a screen.' }];
+    /* Nothing of a refused recomposition stays: the previous version comes back exactly as it was. */
+    sealBuild(b).destroy();
+    move(run, RUN_STATES, 'failed');
+    closeRun(run);
+    snapshot(false);
+    setBusy(false);
+    await applyText(base.text, base.source);
+    logActivity(run, `Recomposition refused: ${plainOp(diagnostics[0])}`, { detail: diagnostics.slice(0, 4).map(d => `${d.code} · ${d.path}`).join(', '), tone: 'bad' });
+    if (run.attempt === 1 && state.sample) { await generateRecompose(run.request, { attempt: 2, retry: { proposal, text: result.text, diagnostics } }); return; }
+    screen.lastChange = { status: 'rejected', request: run.request, message: `The recomposition was refused: ${plainOp(diagnostics[0])}`, diagnostics, from: base.n, to: base.n, at: Date.now() };
+    screen.conversation.push({ role: 'assistant', status: 'rejected', text: `Recomposition refused twice; the screen stays at v${base.n}.`, version: base.n, at: Date.now() });
+    setComposer('failed');
+    showAlert(`Syntari couldn’t apply the recomposition. Your screen is unchanged (v${base.n}). ${plainOp(diagnostics[0])}`, [['Try again', () => generateRecompose(run.request)], ['Rephrase', () => { hideAlert(); openComposer(); }], ['Details', () => openInspector('changes')]], 'warn');
+    renderScreenUI();
+    return;
+  }
+  /* Accepted: the streamed canvas is kept when it is the validated screen, so nothing repaints; otherwise it is painted whole. */
+  const source = { kind: 'claude', tier: result.modelTierApplied ?? run.tier, mode: 'recompose', streamed: true };
+  const mounted = sealBuild(b);
+  const consistent = b.mounted && same(compactDraft(b.draft).children, proposal.children) && ![...b.records.values()].some(record => record.kind === 'slot' && !['rendered'].includes(record.state) && record.state !== 'removed');
+  const version = commitVersion(screen, { spec: final.spec, source, request: run.request, change: { summary: final.summary, base: base.n } });
+  screen.lastChange = { status: 'recomposed', request: run.request, summary: final.summary, from: base.n, to: version.n, changes: final.changes, recomposed: final.recomposed, diagnostics: final.diagnostics, baseSpec: base.spec, spec: final.spec, baseDiagnostics: (await ir.validate(base.spec, { registry: reg, sandbox: state.allowBlocks })).diagnostics, corrected: run.attempt > 1, at: Date.now() };
+  screen.conversation.push({ role: 'assistant', status: 'recomposed', text: `Recomposed as v${version.n}: ${final.summary}`, version: version.n, at: Date.now() });
+  state.request = run.request;
+  state.recent = null;
+  state.text = version.text;
+  state.failure = null;
+  snapshot(false);
+  setBusy(false);
+  clearDraft();
+  if (consistent) {
+    if (typeof final.spec.title === 'string') { if (!b.title) { b.title = el('h2', { class: 'ir-screen-title' }); b.root.prepend(b.title); } b.title.textContent = final.spec.title; }
+    b.root.dataset.irLayout = ir.layoutName(final.spec.layout);
+    delete b.root.dataset.streamRoot;
+    await explain(final.spec, source, read.notes, final.validation.diagnostics, mounted, run.id);
+    if (state.nodes.some(entry => entry.painted && !entry.element)) await applyText(version.text, source);
+  } else { mounted.destroy(); await applyText(version.text, source); }
+  move(run, RUN_STATES, 'completed');
+  run.marks.complete = now(run);
+  closeRun(run);
+  recordValidation();
+  logActivity(run, `Recomposed: v${base.n} → v${version.n}`, { detail: `${final.recomposed.records} records kept · ${final.recomposed.dataKept ? 'screen data unchanged' : 'rows moved into screen data'} · validated whole` });
+  renderTimings(run);
+  renderScreenUI();
+  selectTab('changes');
+}
+
+/* ---------- Compare: show the version before the last change in place, then go back ---------- */
+async function startCompare() {
+  const screen = activeScreen();
+  if (!screen || state.busy || screen.versions.length < 2 || state.comparing) return;
+  const current = currentVersion(screen), previous = screen.versions.at(-2);
+  state.comparing = { screenId: screen.id, current: current.n, previous: previous.n };
+  await applyText(previous.text, previous.source);
+  $('[data-compare-text]').textContent = `Showing v${previous.n}, before “${shortTitle(current.request || 'the last change', 48)}”`;
+  $('[data-compare]').hidden = false;
+  stage.dataset.comparing = '';
+  renderChanges();
+}
+async function endCompare() {
+  const screen = state.comparing && workspace.screens.get(state.comparing.screenId);
+  state.comparing = null;
+  $('[data-compare]').hidden = true;
+  delete stage.dataset.comparing;
+  if (screen) { const version = currentVersion(screen); await applyText(version.text, version.source); recordValidation(); }
+  renderChanges();
 }
 
 /* ---------- One part, fixed on request: a single call to Claude for that node alone, validated inside the whole screen before anything changes ---------- */
@@ -3675,7 +4258,9 @@ function failed(error, controller, { kept = 0, restored = false, partial = false
   if (!state.screen && !restored && !partial) { irText.value = text; $('[data-ir-meta]').textContent = text ? `${text.length.toLocaleString()} characters · ${controller.signal.aborted ? 'stopped' : 'incomplete'}` : 'Screen IR'; }
   const detail = restored ? `Kept the previous screen · ${sourceText(state.source)}` : partial ? `Incomplete draft · ${plural(kept, 'part')} kept` : state.screen ? `Kept the previous screen · ${sourceText(state.source)}` : 'Nothing rendered';
   setStatus({ label, detail, seq: ['bad', partial ? 'warn' : 'idle', partial ? 'warn' : 'idle'], tone: code === 'cancelled' ? 'warn' : 'bad' });
-  const retry = state.sample && code !== 'prompt_too_large' ? [['Try again', () => generate(state.mode ?? 'new')]] : [];
+  const failedRun = state.run;
+  const again = failedRun?.mode === 'recompose' ? () => generateRecompose(failedRun.request) : () => generate(state.mode ?? 'new');
+  const retry = state.sample && code !== 'prompt_too_large' ? [['Try again', again]] : [];
   showAlert(message.trim(), code === 'cancelled' ? [] : retry, code === 'cancelled' ? 'info' : 'bad');
   setComposer(code === 'cancelled' ? 'interrupted' : 'failed');
 }
@@ -3684,7 +4269,7 @@ function setBusy(busy, mode) {
   state.mode = busy ? mode : state.mode;
   $('[data-generate]').disabled = busy;
   $('[data-apply]').disabled = busy;
-  $$('[data-examples] button, [data-fix] button, [data-improve] button, [data-undo], [data-regenerate], [data-new-screen], [data-bar-new], [data-pop-new], [data-screens] button, [data-confirm-actions] button, [data-note-actions] button').forEach(b => { b.disabled = busy; });
+  $$('[data-examples] button, [data-fix] button, [data-improve] button, [data-undo], [data-regenerate], [data-new-screen], [data-bar-new], [data-pop-new], [data-screens] button, [data-confirm-actions] button, [data-note-actions] button, [data-compare-toggle], [data-compare-back]').forEach(b => { b.disabled = busy; });
   if (!busy) state.pending = null;
   if (busy) setComposer('generating'); else if (['submitting', 'generating'].includes(composer.dataset.state)) setComposer(state.request && state.source?.kind === 'claude' ? 'complete' : 'idle');
   if (busy) stage.dataset.busy = ''; else delete stage.dataset.busy;
@@ -3745,7 +4330,9 @@ function renderComposer() {
   const context = $('[data-composer-context]');
   const parts = [];
   if (editing) {
-    parts.push(el('span', { class: 'mode-chip', 'data-mode': 'edit', title: screen.title }, `Editing · ${shortTitle(screen.title)} · v${currentVersion(screen).n}`));
+    /* A request to rework the whole screen is named before it is sent: same screen, same data, a new composition. */
+    const whole = looksLikeRecompose(draft);
+    parts.push(el('span', { class: 'mode-chip', 'data-mode': whole ? 'recompose' : 'edit', title: screen.title }, whole ? `Recompose · ${shortTitle(screen.title)} · data kept` : `Editing · ${shortTitle(screen.title)} · v${currentVersion(screen).n}`));
     const fresh = button('New screen', () => startNewScreen(), 'btn ghost small');
     fresh.disabled = state.busy;
     parts.push(fresh);
@@ -3859,6 +4446,7 @@ $('[data-prompt-text]').textContent = buildPrompt('<your description>');
 
 /* ---------- Canvas tools ---------- */
 $('[data-undo]').addEventListener('click', undo);
+$('[data-compare-back]').addEventListener('click', () => endCompare());
 $('[data-regenerate]').addEventListener('click', () => { if (!state.request) return; promptField.value = state.request; renderComposer(); generate('new'); });
 $('[data-new-screen]').addEventListener('click', () => startNewScreen());
 $('[data-awaiting]').addEventListener('click', () => openInspector('actions'));
@@ -3909,6 +4497,8 @@ bootDone();
 const sample = await (window.claude?.use?.('sample') ?? Promise.resolve(null)).catch(() => null);
 if (sample) {
   state.sample = sample;
+  /* Page tools let Claude hand over a change as data. Where this view cannot run them, the same request goes as text. */
+  state.tools = Boolean((await sample.limits?.().catch(() => null))?.tools);
   $$('[data-ai]').forEach(node => { node.hidden = false; });
   $('[data-notice]').hidden = true;
   app.dataset.aiReady = '';

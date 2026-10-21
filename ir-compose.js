@@ -74,7 +74,10 @@ export function roleOf(entry, resolved, model, policy) {
       if (!group) return { ...out, role: roles[0] };
       out.valueRoles = valueFields.map(field => model.tables.get(group.table)?.fields[field === 'value' || field === 'share' ? group.values[0] : field]?.role).filter(Boolean);
       const total = model.tables.get(group.table)?.fields[group.values[0]]?.total;
-      const role = group.bucketed ? 'ordered-distribution' : valueFields.filter(field => !['share', 'count'].includes(field)).length >= 2 ? 'category-comparison' : total !== undefined || valueFields.includes('share') ? 'composition' : 'ranking';
+      const fieldsOf = valueFields.filter(field => !['share', 'count', 'label'].includes(field)).map(field => field === 'value' ? group.values[0] : field);
+      const firstType = model.tables.get(group.table)?.fields[group.values[0]]?.type;
+      const peers = fieldsOf.filter(field => model.tables.get(group.table)?.fields[field]?.type === firstType).length;
+      const role = group.bucketed ? 'ordered-distribution' : peers >= 2 && !valueFields.includes('share') ? 'category-comparison' : total !== undefined || valueFields.includes('share') ? 'composition' : 'ranking';
       return { ...out, role };
     }
     if (ref?.kind === 'tables') {
@@ -175,7 +178,10 @@ export function profileData(data, policy, renderable = null) {
     out.push({ ref: `tables.${table.name}`, label: table.label, rows: table.rows.length, ...advice('records'), detail: `${table.rows.length} rows: ${fields.map(([name]) => name).join(', ')}` });
   }
   for (const group of model.groups.values()) {
-    const role = group.bucketed ? 'ordered-distribution' : group.values.length >= 2 ? 'category-comparison' : model.tables.get(group.table)?.fields[group.values[0]]?.total !== undefined ? 'composition' : 'ranking';
+    /* Shares of a whole stay a composition even when the group also carries their amounts. */
+    const whole = model.tables.get(group.table)?.fields[group.values[0]]?.total !== undefined;
+    const peers = group.values.filter(field => model.tables.get(group.table)?.fields[field]?.type === model.tables.get(group.table)?.fields[group.values[0]]?.type).length;
+    const role = group.bucketed ? 'ordered-distribution' : peers >= 2 ? 'category-comparison' : whole ? 'composition' : 'ranking';
     out.push({ ref: `groups.${group.name}`, label: group.label, items: group.items.length, ...advice(role), detail: `${group.values.join(' and ') || 'count'} by ${group.by}${group.bucketed ? ' in ordered buckets' : ''}`, concept: conceptOf(`${group.label} ${group.values.join(' ')}`, policy) });
   }
   const kpis = [...model.measures.values()];

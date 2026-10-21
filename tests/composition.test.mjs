@@ -193,7 +193,7 @@ test('a recomposition keeps the data, every record, and every figure, and valida
 
 test('recomposing a screen without data states its rows in data, using only figures it already showed', async () => {
   const screen = assignIds(FLAWED);
-  const data = { mode: 'demo', tables: { holdings: clone(DATA.tables.holdings) }, measures: { liquid30: clone(DATA.measures.liquid30) }, groups: { liquidity: clone(DATA.groups.liquidity), allocation: clone(DATA.groups.allocation) } };
+  const data = { mode: 'demo', tables: { holdings: clone(DATA.tables.holdings) }, measures: { liquid30: clone(DATA.measures.liquid30) }, groups: { liquidity: clone(DATA.groups.liquidity), allocation: { label: 'Asignación', table: 'holdings', by: 'assetClass', value: 'weight' } } };
   data.tables.holdings.rows = data.tables.holdings.rows.map(({ value, ...row }) => row);
   delete data.tables.holdings.fields.value;
   const children = [

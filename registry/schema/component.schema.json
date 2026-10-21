@@ -619,6 +619,10 @@
               "suffixFrom": {
                 "type": "string",
                 "description": "Prop whose value is written after the text, such as a unit."
+              },
+              "joinField": {
+                "type": "string",
+                "description": "A second field of the same item written after the first, such as the other series of a bar."
               }
             },
             "additionalProperties": false
@@ -662,6 +666,10 @@
         "removeWhenEmpty": {
           "type": "boolean",
           "description": "Remove the element when the item leaves the field out, such as the second bar of a single-series chart."
+        },
+        "scaleGroup": {
+          "type": "string",
+          "description": "Fields that share a group are drawn against the largest value among them."
         }
       },
       "additionalProperties": false

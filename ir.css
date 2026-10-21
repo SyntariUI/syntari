@@ -138,3 +138,7 @@
 .table th[aria-sort=ascending] .table-sort-mark::before{content:"↑";color:var(--text)}
 .table th[aria-sort=descending] .table-sort-mark::before{content:"↓";color:var(--text)}
 .table th[aria-sort=ascending],.table th[aria-sort=descending]{color:var(--text)}
+/* A table wider than its column scrolls inside itself instead of pushing the screen sideways. */
+[data-syntari-component="table"]{overflow-x:auto;overscroll-behavior-x:contain}
+[data-syntari-component="table"] .table{min-width:max-content}
+[data-syntari-component="table"] .table td,[data-syntari-component="table"] .table th{white-space:nowrap}

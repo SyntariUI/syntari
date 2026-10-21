@@ -95,7 +95,7 @@ export const DATA = {
     excess: { label: 'Frente al benchmark', formula: 'ytd - ytdBenchmark', format: 'points' }
   },
   groups: {
-    allocation: { label: 'Asignación por clase', table: 'holdings', by: 'assetClass', value: 'weight' },
+    allocation: { label: 'Asignación por clase', table: 'holdings', by: 'assetClass', values: ['weight', 'value'] },
     liquidity: { label: 'Escalera de liquidez', table: 'holdings', by: 'liquidityDays', value: 'weight', buckets: [{ label: 'D0', max: 0 }, { label: 'D1–7', max: 7 }, { label: 'D8–30', max: 30 }, { label: 'D31–90', max: 90 }, { label: '>D90' }] },
     riskVsWeight: { label: 'Peso frente a riesgo', table: 'holdings', by: 'assetClass', values: ['weight', 'risk'] }
   }
@@ -119,7 +119,7 @@ export const CANONICAL = {
       chartLabel: 'La cartera acumula un 3,6 % frente al 2,7 % del benchmark; solo abril quedó por debajo de cero.',
       points: { $data: 'tables.performance', map: { label: 'month', value: 'portfolio', compare: 'benchmark' } } }, provenance: { reason: 'La historia principal: cómo va frente a su referencia.' } },
     { id: 'section-structure', type: 'section', heading: 'Dónde está el dinero y cuándo se puede mover', layout: 'two-column', children: [
-      { id: 'allocation', component: 'syntari.breakdown', props: { title: 'Asignación por clase de activo', total: { $data: 'measures.totalValue' }, segments: { $data: 'groups.allocation', map: { label: 'label', share: 'share', value: { field: 'value', format: 'percent', digits: 0 } } } }, provenance: { reason: 'Partes de un todo.' } },
+      { id: 'allocation', component: 'syntari.breakdown', props: { title: 'Asignación por clase de activo', total: { $data: 'measures.totalValue' }, segments: { $data: 'groups.allocation', map: { label: 'label', share: 'share', value: { field: 'value', format: 'compact-currency' } } } }, provenance: { reason: 'Partes de un todo.' } },
       { id: 'liquidity-ladder', component: 'syntari.chart-bars', props: { title: 'Escalera de liquidez', note: 'Peso por plazo de venta', orientation: 'vertical', unit: '%', seriesA: 'Peso',
         chartLabel: 'Peso por plazo de liquidez: D0 6 %, D1–7 30 %, D8–30 12 %, D31–90 31 %, más de 90 días 21 %.',
         columns: { $data: 'groups.liquidity', map: { label: 'label', a: 'value' } } }, provenance: { reason: 'Buckets ordenados por plazo.' } }

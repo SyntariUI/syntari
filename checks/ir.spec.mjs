@@ -145,7 +145,7 @@ test('validation refuses invented components, missing props, and values outside 
       missing: await codesFor(screen({ component: 'syntari.tool-approval', props: { title: 'Run it?' } })),
       wrongType: await codesFor(screen({ component: 'syntari.banner', props: { message: 42 } })),
       outside: await codesFor(screen({ component: 'syntari.banner', props: { message: 'ok', tone: 'danger' } })),
-      overBudget: await codesFor(screen({ component: 'syntari.table', props: { columns: [{ label: 'A' }], rows: Array.from({ length: 20 }, () => ['x']) } })),
+      overBudget: await codesFor(screen({ component: 'syntari.table', props: { columns: [{ label: 'A' }], rows: Array.from({ length: 21 }, () => ['x']) } })),
       repaired: await codesFor(screen({ component: 'syntari.banner', props: { message: 'ok', dismissible: true } })),
       layout: await codesFor({ type: 'screen', layout: 'carousel', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] }),
       regionNoLabel: await codesFor(screen({ type: 'region', children: [{ component: 'syntari.banner', props: { message: 'ok' } }] })),
@@ -457,7 +457,7 @@ test('every render contract sample paints without errors, fallbacks, or demo cop
     }
     return out;
   });
-  expect(rows).toHaveLength(74);
+  expect(rows).toHaveLength(76);
   for (const row of rows) expect(row, row.slug).toEqual({ slug: row.slug, errors: [], fallback: 0, undefinedText: false, demoCopy: false });
 });
 

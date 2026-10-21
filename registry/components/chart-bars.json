@@ -153,7 +153,7 @@
           }
         }
       },
-      "description": "Categories in display order: buckets in their natural order, ranked categories largest first."
+      "description": "Categories in display order: buckets in their natural order, ranked categories largest first. Bars are drawn against the largest value, and each label shows its values."
     }
   },
   "ir": {
@@ -180,20 +180,23 @@
           "label": ".column-label",
           "a": {
             "selector": ".column-value",
-            "suffixFrom": "unit"
+            "suffixFrom": "unit",
+            "joinField": "b"
           }
         },
         "style": {
           "a": {
             "selector": ".column-fill.series-a",
             "name": "--fill",
-            "suffix": "%"
+            "suffix": "%",
+            "scaleGroup": "bars"
           },
           "b": {
             "selector": ".column-fill.series-b",
             "name": "--fill",
             "suffix": "%",
-            "removeWhenEmpty": true
+            "removeWhenEmpty": true,
+            "scaleGroup": "bars"
           }
         }
       }

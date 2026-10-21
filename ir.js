@@ -1216,10 +1216,12 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
     const step = (max - min) / Math.max(1, axis.length - 1) || 1;
     const compact = number => { const size = Math.abs(number); return size >= 1e9 ? [number / 1e9, 'B'] : size >= 1e6 ? [number / 1e6, 'M'] : size >= 1e4 ? [number / 1e3, 'k'] : [number, '']; };
     const readable = number => { const [n, suffix] = compact(number); const scaled = suffix ? step / (Math.abs(number) / Math.abs(n || 1)) : step; return `${String(Number(n.toFixed(Math.max(0, 1 - Math.floor(Math.log10(scaled || 1))))))}${suffix}`; };
-    const reading = number => { const [n, suffix] = compact(number); return `${tidy(Number(n.toFixed(suffix ? 2 : 4)))}${suffix}${unit}`; };
+    /* Dollars and pounds lead the figure, everything else follows it: $482k, 482k€, 3.4%. */
+    const withUnit = text => ['$', '£'].includes(unit) ? (text.startsWith('-') ? `-${unit}${text.slice(1)}` : `${unit}${text}`) : `${text}${unit}`;
+    const reading = number => { const [n, suffix] = compact(number); return withUnit(`${tidy(Number(n.toFixed(suffix ? 2 : 4)))}${suffix}`); };
     if (declared.scale === 'auto') {
       axis.forEach((label, index) => {
-        label.textContent = `${readable(tick(index, axis.length))}${unit}`;
+        label.textContent = withUnit(readable(tick(index, axis.length)));
         /* Each label sits level with its gridline, however many the template draws. */
         if (declared.placeAxis) label.style.top = `${(y(tick(index, axis.length)) / height) * 100}%`;
       });
@@ -1255,8 +1257,9 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
         if (index >= count) { label.remove(); return; }
         const at = count === 1 ? 0 : Math.round(index * (points.length - 1) / (count - 1));
         label.textContent = String(points[at][labelField]);
-        /* Under its point, not spread across the figure. */
+        /* Under its point, not spread across the figure; the first and last align to the edges so they never spill out. */
         label.style.left = `${(x(at) / width) * 100}%`;
+        if (count > 1) label.style.transform = index === 0 ? 'translateX(0)' : index === count - 1 ? 'translateX(-100%)' : '';
         label.parentElement.dataset.placed = '';
       });
     }
@@ -1272,6 +1275,8 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
       const clone = template.cloneNode(true);
       existing.forEach(node => node.remove());
       const limit = Math.min(items.length, IR_LIMITS.maxListItems);
+      const scales = {};
+      for (const [name, style] of Object.entries(part.style ?? {})) if (style.scaleGroup) scales[style.scaleGroup] = Math.max(scales[style.scaleGroup] ?? 0, ...items.map(item => Number(item?.[name])).filter(Number.isFinite));
       for (let i = 0; i < limit; i += 1) {
         const item = clone.cloneNode(true);
         const data = items[i];
@@ -1296,17 +1301,21 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
           cells.forEach((cell, index) => setText(cell, cellValues[index] ?? ''));
         }
         const filled = (name, apply, clear) => { const current = field(name); if (current !== undefined) apply(current); else clear?.(); };
-        /* A text slot may carry the unit a prop names, such as "%" after every column value. */
+        /* A text slot may carry the unit a prop names, such as "%" after every column value, and a second field beside the
+           first, such as both series of a bar, so neither number hides behind the bar. */
         for (const [name, selector] of Object.entries(part.text ?? {})) {
           const at = typeof selector === 'object' && selector ? selector.selector : selector;
           const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : '';
-          filled(name, current => fillText(pick(item, at), `${current}${suffix}`), () => fillText(pick(item, at), ''));
+          const joined = typeof selector === 'object' && selector?.joinField ? given(selector.joinField) : undefined;
+          filled(name, current => fillText(pick(item, at), `${current}${suffix}${joined !== undefined ? ` · ${joined}${suffix}` : ''}`), () => fillText(pick(item, at), ''));
         }
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
         for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current));
         for (const [name, style] of Object.entries(part.style ?? {})) {
           /* A field left out removes what it would have drawn, such as the second bar of a single-series chart. */
-          filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${current}${style.suffix ?? ''}`); }, () => { if (style.removeWhenEmpty) pick(item, style.selector)?.remove(); });
+          /* A scale group draws every field in it against the largest value, so the longest bar fills its track. */
+          const scaled = current => style.scaleGroup && scales[style.scaleGroup] > 0 ? tidy(Number(current) / scales[style.scaleGroup] * 100) : current;
+          filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${scaled(current)}${style.suffix ?? ''}`); }, () => { if (style.removeWhenEmpty) pick(item, style.selector)?.remove(); });
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
         for (const [name, binding] of Object.entries(part.attributes ?? {})) {
@@ -1509,7 +1518,8 @@ export async function render(spec, target, options = {}) {
     heading.textContent = String(screen.title);
     root.append(heading);
   }
-  const note = dataNote(screen?.meta, screen?.data);
+  /* A part rendered on its own, such as one streamed node, leaves the note to the screen it belongs to. */
+  const note = options.dataNote === false ? null : dataNote(screen?.meta, screen?.data);
   if (note) root.append(note);
 
   async function paint(node, parent, path) {

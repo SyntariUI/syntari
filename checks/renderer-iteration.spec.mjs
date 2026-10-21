@@ -1,66 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
-import { resolve, extname, sep } from 'node:path';
+import { serveRenderer, openRenderer, script, prompts, ask, settled, screenIR, nodesById, shown } from './renderer-harness.mjs';
 
-/*
- * The Syntari Renderer artifact, iterating on screens. Claude is replaced by a scripted stream that writes each answer in
- * small pieces, as the real one does, so every check sees the same progressive states a person sees.
- */
-const page = resolve('artifacts/renderer/index.html');
-const runtime = resolve('kit/runtime');
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.txt': 'text/plain' };
-let server, origin;
-test.beforeAll(async () => {
-  server = createServer(async (req, res) => {
-    const path = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
-    try {
-      if (path === '/') {
-        const body = await readFile(page, 'utf8');
-        res.writeHead(200, { 'Content-Type': types['.html'] }).end(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>\n${body}\n</body></html>`);
-        return;
-      }
-      if (path.startsWith('/runtime/')) {
-        const file = resolve(runtime, `.${path.slice('/runtime'.length)}`);
-        if (!file.startsWith(runtime + sep)) throw new Error('Outside the runtime');
-        res.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' }).end(await readFile(file));
-        return;
-      }
-      res.writeHead(404).end();
-    } catch { res.writeHead(404).end(); }
-  });
-  await new Promise(done => server.listen(0, '127.0.0.1', done));
-  origin = `http://127.0.0.1:${server.address().port}`;
-});
-test.afterAll(() => server?.close());
-
-/* A scripted Claude: each answer streams in pieces; {{BASE}} becomes the version the prompt names. */
-function installClaude() {
-  const sleep = ms => new Promise(done => setTimeout(done, ms));
-  const mock = window.__claude = { queue: [], prompts: [], released: false, paused: false };
-  window.claude = { use: async name => name !== 'sample' ? null : async (input, { signal, onText, modelTier } = {}) => {
-    mock.prompts.push(input);
-    const next = mock.queue.shift();
-    if (!next) throw Object.assign(new Error('No scripted answer'), { code: 'empty_completion' });
-    const base = (input.match(/CURRENT SCREEN \(version (sv-[0-9a-f]{8})/) ?? [])[1] ?? 'sv-none';
-    const text = next.text.replaceAll('{{BASE}}', next.base ?? base);
-    const pauseAt = next.pauseAfter ? text.indexOf(next.pauseAfter) + next.pauseAfter.length : -1;
-    mock.released = false;
-    for (let at = Math.min(next.chunk ?? 48, text.length); ; at = Math.min(at + (next.chunk ?? 48), text.length)) {
-      if (signal?.aborted) throw Object.assign(new Error('Stopped'), { code: 'cancelled' });
-      if (pauseAt > 0 && at >= pauseAt && !mock.released) {
-        onText?.({ text: text.slice(0, pauseAt) });
-        mock.paused = true;
-        while (!mock.released) { if (signal?.aborted) throw Object.assign(new Error('Stopped'), { code: 'cancelled' }); await sleep(20); }
-        mock.paused = false;
-      }
-      onText?.({ text: text.slice(0, at) });
-      if (at >= text.length) break;
-      await sleep(next.delay ?? 8);
-    }
-    return { text, truncated: false, modelTierApplied: modelTier ?? 'default' };
-  } };
-}
+serveRenderer(test);
 
 /* ---------- Scripted answers ---------- */
 const absenteeism = {
@@ -93,37 +34,6 @@ const addEmployees = ops([{ op: 'insert', parent: 'section-how-absence-moved-mon
 const renameEmployees = ops([{ op: 'replace', target: 'employee-absence', set: { heading: 'Employees with the most absence' }, reason: 'Requested: a new title for the new table' }], { summary: 'Rename the employee table' });
 const removeEmployees = ops([{ op: 'remove', target: 'employee-absence', reason: 'Requested: delete the employee table' }], { summary: 'Remove the employee table' });
 
-/* ---------- Helpers ---------- */
-async function openRenderer(browserPage) {
-  const errors = [];
-  browserPage.on('pageerror', error => errors.push(error.message));
-  await browserPage.addInitScript(installClaude);
-  await browserPage.goto(origin);
-  await expect(browserPage.locator('[data-app][data-ai-ready]')).toBeAttached({ timeout: 30000 });
-  await expect(browserPage.locator('[data-status-label]')).toHaveText(/Ready/);
-  return errors;
-}
-const script = (p, ...answers) => p.evaluate(list => window.__claude.queue.push(...list), answers.map(answer => typeof answer === 'string' ? { text: answer } : answer));
-const prompts = p => p.evaluate(() => window.__claude.prompts);
-async function ask(p, request) {
-  await p.locator('[data-trigger]').click();
-  await p.locator('[data-prompt]').fill(request);
-  await p.locator('[data-generate]').click();
-}
-async function settled(p) {
-  await expect(p.locator('[data-composer]')).not.toHaveAttribute('data-state', /submitting|generating/, { timeout: 30000 });
-  await expect(p.locator('.canvas .stream-slot')).toHaveCount(0);
-}
-const screenIR = async p => JSON.parse(await p.locator('[data-ir-text]').inputValue());
-/* Every node by id, as data, so "unchanged" means unchanged value for value. */
-function nodesById(spec) {
-  const map = {};
-  const go = list => (list ?? []).forEach(node => { const { children, ...own } = node; map[node.id] = own; go(children); });
-  go(spec.children);
-  return map;
-}
-/* What each part shows, by id: components only, so a group's text does not count its children twice. */
-const shown = p => p.$$eval('.canvas .ir-node[data-ir-id]', nodes => Object.fromEntries(nodes.map(node => [node.dataset.irId, node.innerText])));
 async function createAbsenteeism(p) {
   await p.locator('[data-bar-new]').click();
   await expect(p.locator('[data-composer-context] .mode-chip')).toHaveText('New screen');
@@ -302,29 +212,34 @@ test('5. a new report is a new screen; the first one comes back with its content
   expect(errors).toEqual([]);
 });
 
-test('a change that fails validation is refused whole: the last valid screen stays, with the reason', async ({ page: p }) => {
+test('a change that fails validation is refused whole, corrected once, and the last valid screen stays until then', async ({ page: p }) => {
   const errors = await openRenderer(p);
   await createAbsenteeism(p);
   const before = await screenIR(p), shownBefore = await shown(p);
-  const tooMany = { ...employeeSection, children: [{ ...employeeSection.children[0], props: { ...employeeSection.children[0].props, rows: Array.from({ length: 12 }, (_, i) => [`Employee ${i + 1}`, 'Sales', String(i)]) } }] };
-  await script(p, ops([{ op: 'insert', parent: 'section-how-absence-moved-month', after: 'area-chart', node: tooMany }]));
+  const tooMany = { ...employeeSection, children: [{ ...employeeSection.children[0], props: { ...employeeSection.children[0].props, rows: Array.from({ length: 25 }, (_, i) => [`Employee ${i + 1}`, 'Sales', String(i)]) } }] };
+  const refused = ops([{ op: 'insert', parent: 'section-how-absence-moved-month', after: 'area-chart', node: tooMany }]);
+  /* Refused twice: Syntari asks once more, then stops in a recovery state, with the screen exactly as it was. */
+  await script(p, refused, refused);
   await ask(p, 'Añade una tabla con todos los empleados debajo del gráfico');
   await settled(p);
   expect(await screenIR(p)).toEqual(before);
   expect(await shown(p)).toEqual(shownBefore);
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v1 /);
-  await expect(p.locator('[data-alert]')).toContainText('Nothing was changed: the screen is still v1');
-  await expect(p.locator('[data-alert]')).toContainText('Ask Claude to fix the change');
+  expect((await prompts(p)).at(-1)).toContain('YOUR PREVIOUS CHANGE FOR THIS REQUEST WAS REFUSED');
+  await expect(p.locator('[data-alert]')).toContainText('Syntari couldn’t apply this change. Your screen is unchanged (v1).');
+  await expect(p.locator('[data-alert]')).not.toContainText(/JSON|Screen IR/);
+  await expect(p.locator('[data-alert] button', { hasText: 'Try again' })).toBeVisible();
+  await expect(p.locator('[data-alert] button', { hasText: 'Rephrase' })).toBeVisible();
   /* A refused request stays in the composer, ready to retry or reword. */
   await expect(p.locator('[data-prompt]')).toHaveValue('Añade una tabla con todos los empleados debajo del gráfico');
   await expect(p.locator('[data-changes] .change-card')).toContainText('Refused · the screen stays at v1');
   await expect(p.locator('[data-changes] .change-card')).toContainText('over-item-budget');
-  /* Asking Claude to fix it sends the refused change and the reasons, against the same version. */
-  await script(p, addEmployees);
-  await p.locator('[data-alert] button', { hasText: 'Ask Claude to fix the change' }).click();
+  /* Refused once, then corrected: the correction applies, and the change says it took one correction. */
+  await script(p, refused, addEmployees);
+  await p.locator('[data-alert] button', { hasText: 'Try again' }).click();
   await settled(p);
-  expect((await prompts(p)).at(-1)).toContain('YOUR PREVIOUS CHANGE FOR THIS REQUEST WAS REFUSED');
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
+  await expect(p.locator('[data-changes] .change-card').first()).toContainText('Applied · v1 → v2 · after one correction');
   expect(errors).toEqual([]);
 });
 
@@ -359,18 +274,20 @@ test('stopping a change mid-stream puts the screen back exactly', async ({ page:
   expect(errors).toEqual([]);
 });
 
-test('a change written for an older version is refused', async ({ page: p }) => {
+test('a change written for an older version is refused, and never paints', async ({ page: p }) => {
   const errors = await openRenderer(p);
   await createAbsenteeism(p);
   const before = await screenIR(p);
-  await script(p, { text: addEmployees, base: 'sv-00000000' });
+  await script(p, { text: addEmployees, base: 'sv-00000000' }, { text: addEmployees, base: 'sv-00000000' });
   await ask(p, 'Añade una tabla de empleados debajo del gráfico');
   await settled(p);
   expect(await screenIR(p)).toEqual(before);
   await expect(p.locator('[data-alert]')).toContainText('older version');
+  await expect(p.locator('[data-alert]')).toContainText('Your screen is unchanged (v1)');
   await expect(p.locator('[data-changes] .change-card')).toContainText('stale-base');
   await p.locator('[data-tab=activity]').click();
   await expect(p.locator('[data-activity]')).toContainText('Claude wrote this change for sv-00000000');
+  await expect(p.locator('[data-activity]')).toContainText('Correcting the change once');
   expect(errors).toEqual([]);
 });
 
