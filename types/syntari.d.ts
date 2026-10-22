@@ -12,7 +12,7 @@ export interface CatalogComponent {
 export interface MountOptions {
   /** Configure one instance through the component's contract. Invalid props reject with a TypeError that carries `diagnostics`. */
   props?: Record<string, unknown>;
-  /** Called when a person acts on a declared action. A request is never permission. */
+  /** Called when a person acts on a declared action, with or without props. A request is never permission. */
   onActionRequest?(request: ActionRequest): void;
   configure?(element: HTMLElement): void;
   onInput?(event: Event, element: HTMLElement): void;

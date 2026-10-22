@@ -5,15 +5,13 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const $=selector=>document.querySelector(selector);
 const files=new Map();
 let component, version, manager='npm', currentState='default', revision=0, activeGuide='getting-started';
-export function command(slug,pm=manager){
- const pkg=`https://syntariui.giovanitier.com/downloads/syntari-ui-${version}.tgz`;
- return {npm:`npm exec --yes --package=${pkg} -- syntari add ${slug}`,pnpm:`pnpm dlx --package=${pkg} syntari add ${slug}`,yarn:`yarn dlx -p ${pkg} syntari add ${slug}`,bun:`bunx -p ${pkg} syntari add ${slug}`}[pm];
-}
+const runners={npm:'npx syntari-ui',pnpm:'pnpm dlx syntari-ui',yarn:'yarn dlx syntari-ui',bun:'bunx syntari-ui'};
+export function command(slug,pm=manager){return `${runners[pm]} add ${slug}`;}
 function snippet(text,title){return `<div class="sys-snippet"><header><span>${esc(title)}</span><button data-reference-copy aria-label="Copy ${esc(title)}">Copy</button></header><pre tabindex="0"><code>${esc(text)}</code></pre><p role="status" class="workspace-message"></p></div>`;}
 function apiTable(rows){return `<div class="sys-api-table"><table><thead><tr><th>Name</th><th>Type / default</th><th>Description</th></tr></thead><tbody>${rows.map(([name,type,value,description])=>`<tr><td><code>${esc(name)}</code></td><td><code>${esc(type)}</code><small>${esc(value)}</small></td><td>${esc(description)}</td></tr>`).join('')}</tbody></table></div>`;}
 export function usage(){
  const state=statesFor(component).find(s=>s.id===currentState);
- return `<div id="example"></div>\n\n<script type="module">\n  import { mount } from './components/syntari/${component.slug}.js';\n\n  const instance = await mount('#example'${state?.code?`, {\n    configure(root) {\n${state.code.split('\n').map(line=>'      '+line).join('\n')}\n    }\n  }`:''});\n\n  // Connect your application data and actions here.\n  // Call instance.destroy() when removing this screen.\n</script>`;
+ return `<div id="example"></div>\n\n<script type="module">\n  import { mount } from './components/syntari/${component.slug}.js';\n\n  const instance = await mount('#example'${state?.code?`, {\n    configure(root) {\n${state.code.split('\n').map(line=>'      '+line).join('\n')}\n    }\n  }`:''});\n\n  // Pass { props, onActionRequest } to configure it and receive its requests.\n  // Call instance.destroy() when removing this screen.\n</script>`;
 }
 export function renderReference(c,release,state){
  component=c;version=release;currentState=state;revision++;
@@ -38,10 +36,11 @@ export function manifestReference(manifest){
 }
 function updateInstall(){
  $('[data-install-command]').textContent=command(component.slug);
+ const hint=$('[data-install-hint]');hint.textContent=manager==='yarn'?'Needs Yarn 2 or later. With Yarn 1, use the npm command.':'';hint.hidden=!hint.textContent;
  document.querySelectorAll('[data-package-manager]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.packageManager===manager)));
  $('[data-download-source]').href=`/downloads/syntari-ui-${version}.tgz`;
  $('[data-download-source]').textContent=`Download Syntari ${version} source`;
- $('[data-install-details]').innerHTML=`<h2>What gets installed</h2>${snippet(`components/syntari/\n  ${component.slug}.js\n  ${component.slug}.html\n  syntari.json\n  runtime/   # shared styles, interactions, fonts, and registry`,'Installed files')}<p>The runtime is shared across components. Existing customized files are preserved; choose a new directory when upgrading.</p><h2>Manual setup</h2><p>Extract the archive. Copy package/kit/runtime to components/syntari/runtime and package/kit/components/${esc(component.slug)}.js and .html next to it. Serve your project over HTTP, then use the Usage example.</p><h2>Verify the installation</h2>${snippet(`npm exec --yes --package=https://syntariui.giovanitier.com/downloads/syntari-ui-${version}.tgz -- syntari doctor --dir ./components/syntari`,'Doctor command')}<p>Use the CLI diagnostics to check your local setup. The versioned archive is the available distribution path while npm publication is pending.</p>`;
+ $('[data-install-details]').innerHTML=`<h2>What gets installed</h2>${snippet(`components/syntari/\n  ${component.slug}.js\n  ${component.slug}.html\n  syntari.json\n  runtime/   # shared styles, interactions, fonts, and registry`,'Installed files')}<p>The runtime is shared across components. Existing customized files are preserved; choose a new directory when upgrading.</p><h2>Use it</h2><p>Serve your project over HTTP, then mount the component. Pass <code>props</code> to configure one instance and <code>onActionRequest</code> to receive what a person asks for; nothing runs until your code decides.</p>${snippet(usage(),'Usage example')}<h2>Manual setup</h2><p>Download the source archive above and extract it. Copy <code>package/kit/runtime</code> to <code>components/syntari/runtime</code>, and <code>package/kit/components/${esc(component.slug)}.js</code> and <code>.html</code> into <code>components/syntari</code>.</p><h2>Verify the installation</h2>${snippet(`${runners[manager]} doctor --dir ./components/syntari`,'Doctor command')}<p>Checks Node.js, the runtime files, and the version the CLI recorded. A manual setup has no version record; doctor notes it without failing.</p>`;
 }
 export function renderGuide(id){
  activeGuide=guideLinks.some(([key])=>key===id)?id:'getting-started';

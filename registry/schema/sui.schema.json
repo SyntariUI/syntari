@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://syntariui.giovanitier.com/registry/schema/sui.schema.json",
   "title": "SyntariUI",
-  "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements.",
+  "description": "Syntari UI IR: a constrained, renderer-agnostic description of a screen. Component ids must resolve against the published registry; layout is limited to the set the reference renderer implements. Sections group nodes under a heading, regions group them in a disclosure, and unverified blocks hold static HTML only when the host allows them.",
   "definitions": {
     "node": {
       "type": "object",
@@ -44,6 +44,11 @@
         "children"
       ],
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
         "type": {
           "const": "region"
         },
@@ -82,7 +87,39 @@
           "$ref": "#/definitions/region"
         },
         "else": {
-          "$ref": "#/definitions/node"
+          "if": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "section"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/section"
+          },
+          "else": {
+            "if": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "sandbox"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/sandbox"
+            },
+            "else": {
+              "$ref": "#/definitions/node"
+            }
+          }
         }
       }
     },
@@ -112,6 +149,9 @@
         },
         "meta": {
           "type": "object"
+        },
+        "data": {
+          "$ref": "#/definitions/data"
         }
       },
       "additionalProperties": false
@@ -132,6 +172,237 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "description": "A heading over a group of nodes that keeps its own layout. Unlike a region it never collapses; use it for the numbered parts of an answer.",
+      "required": [
+        "type",
+        "heading",
+        "children"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
+        "type": {
+          "const": "section"
+        },
+        "heading": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "layout": {
+          "type": "string",
+          "default": "stack",
+          "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+        },
+        "children": {
+          "$ref": "#/definitions/children"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sandbox": {
+      "type": "object",
+      "description": "Unverified, model-written static HTML. The renderer rejects it unless the host allows unverified blocks; when allowed it renders in an isolated frame with no scripts, no network, no forms, and no actions, and is always labelled as unverified.",
+      "required": [
+        "type",
+        "label",
+        "html"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "description": "Unique within the screen. Operations name nodes by id."
+        },
+        "type": {
+          "const": "sandbox"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "html": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "height": {
+          "type": "number",
+          "minimum": 80,
+          "maximum": 1200,
+          "default": 320
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "data": {
+      "type": "object",
+      "description": "The screen's canonical data. Components bind props to it with { \"$data\": \"measures.<name>\" | \"groups.<name>\" | \"tables.<name>\" }, and the runtime computes every bound figure from the rows, so text, charts, and tables cannot disagree.",
+      "properties": {
+        "mode": {
+          "enum": [
+            "demo",
+            "provided"
+          ],
+          "description": "demo figures are labelled on the screen as demonstration data."
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "asOf": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tables": {
+          "type": "object",
+          "maxProperties": 8,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "fields",
+              "rows"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "period": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "object",
+                "maxProperties": 16,
+                "additionalProperties": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "text",
+                        "category",
+                        "period",
+                        "date",
+                        "number",
+                        "percent",
+                        "currency",
+                        "days"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "role": {
+                      "enum": [
+                        "allocation",
+                        "exposure",
+                        "risk-contribution",
+                        "volatility",
+                        "return",
+                        "benchmark",
+                        "value",
+                        "liquidity",
+                        "count",
+                        "other"
+                      ]
+                    },
+                    "order": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "rows": {
+                "type": "array",
+                "maxItems": 200,
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "measures": {
+          "type": "object",
+          "maxProperties": 40,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "label"
+            ]
+          }
+        },
+        "groups": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "table",
+              "by"
+            ]
           }
         }
       },
@@ -168,7 +439,39 @@
       "$ref": "#/definitions/region"
     },
     "else": {
-      "$ref": "#/definitions/node"
+      "if": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "const": "section"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/section"
+      },
+      "else": {
+        "if": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "sandbox"
+            }
+          }
+        },
+        "then": {
+          "$ref": "#/definitions/sandbox"
+        },
+        "else": {
+          "$ref": "#/definitions/node"
+        }
+      }
     }
   }
 }

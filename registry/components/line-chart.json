@@ -1,0 +1,257 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "line-chart",
+  "name": "Line chart",
+  "version": "1.0.0",
+  "category": "Data display",
+  "status": "authored",
+  "purpose": "Show how one measure moves over time, optionally against a benchmark on the same scale.",
+  "description": "One or two lines on one labelled scale, with a zero line when values go negative and exact values on focus.",
+  "intents": [
+    "report-trend",
+    "compare-to-benchmark",
+    "monitor"
+  ],
+  "variants": {
+    "points": [
+      "2 to 40"
+    ],
+    "series": [
+      "one",
+      "two: value and benchmark"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "axis",
+    "grid",
+    "zero line",
+    "series line",
+    "benchmark line",
+    "points",
+    "time labels",
+    "legend"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab moves from point to point; each names its period and its values."
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "oldest-first-on-a-time-axis",
+    "both-series-share-one-scale",
+    "name-the-benchmark",
+    "state-the-unit"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.border.default",
+    "color.text.secondary",
+    "motion.duration.data"
+  ],
+  "dependencies": [],
+  "examples": {
+    "good": [
+      "Portfolio return by month against its benchmark, both cumulative from January.",
+      "Error rate over the last hour, one line."
+    ],
+    "bad": [
+      "Asset classes on the x axis: they have no order, so use a breakdown or bars.",
+      "Three or more series in one plot."
+    ],
+    "boundary": [
+      "Values that cross zero draw a zero line; a benchmark without a name is not a benchmark."
+    ]
+  },
+  "compatibleWith": [
+    "stat-row",
+    "metric-strip",
+    "chart-toolbar",
+    "text-block",
+    "card"
+  ],
+  "avoidWhen": [
+    "parts-of-one-whole",
+    "categories-without-an-order",
+    "more-than-two-series"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The basis or the period, such as \"Cumulative, this year\"."
+    },
+    "chartLabel": {
+      "type": "string",
+      "maxLength": 200,
+      "required": true,
+      "description": "What a screen reader hears instead of the lines: the range and where each series ends."
+    },
+    "unit": {
+      "type": "enum",
+      "values": [
+        "%",
+        "pp",
+        "x",
+        "€",
+        "$",
+        "£",
+        ""
+      ],
+      "default": "%",
+      "description": "Written after every value on the axis and on each point."
+    },
+    "seriesA": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Actual",
+      "description": "Name of the main series."
+    },
+    "seriesB": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Name of the benchmark. Give it whenever points carry compare."
+    },
+    "points": {
+      "type": "array",
+      "required": true,
+      "maxItems": 40,
+      "description": "Periods, oldest first. Values may be negative; both series share one scale.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 8,
+            "required": true,
+            "description": "The period, such as \"Mar\" or \"Q2\"."
+          },
+          "value": {
+            "type": "number",
+            "required": true
+          },
+          "compare": {
+            "type": "number",
+            "description": "The benchmark for the same period."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".line-figure",
+    "text": {
+      "title": "figcaption strong",
+      "note": "figcaption .hint"
+    },
+    "lead": {
+      "seriesA": ".chart-legend li:nth-child(1)",
+      "seriesB": ".chart-legend li:nth-child(2)"
+    },
+    "attributes": {
+      "chartLabel": {
+        "selector": ".plot",
+        "attribute": "aria-label",
+        "fallback": "title"
+      }
+    },
+    "series": {
+      "points": {
+        "selector": ".chart-svg",
+        "lines": [
+          {
+            "field": "value",
+            "line": ".line-value",
+            "nameFrom": "seriesA"
+          },
+          {
+            "field": "compare",
+            "line": ".line-compare",
+            "optional": true,
+            "nameFrom": "seriesB"
+          }
+        ],
+        "label": "label",
+        "unitFrom": "unit",
+        "scale": "auto",
+        "includeZero": true,
+        "zero": ".chart-zero",
+        "placeAxis": true,
+        "markers": ".line-point",
+        "markerText": ".chart-tooltip text",
+        "markerBox": ".chart-tooltip rect",
+        "grid": ".chart-grid line",
+        "axis": ".plot-axis span",
+        "ticks": ".plot-labels span"
+      }
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Return against benchmark",
+      "note": "Cumulative, this year",
+      "unit": "%",
+      "seriesA": "Portfolio",
+      "seriesB": "Benchmark",
+      "chartLabel": "Portfolio return this year, up to 3.4% in September against 2.5% for the benchmark, below zero in April.",
+      "points": [
+        {
+          "label": "Jan",
+          "value": 0,
+          "compare": 0
+        },
+        {
+          "label": "Feb",
+          "value": 1.2,
+          "compare": 0.9
+        },
+        {
+          "label": "Mar",
+          "value": 0.6,
+          "compare": 0.8
+        },
+        {
+          "label": "Apr",
+          "value": -0.8,
+          "compare": -0.3
+        },
+        {
+          "label": "May",
+          "value": 0.4,
+          "compare": 0.2
+        },
+        {
+          "label": "Jun",
+          "value": 1.9,
+          "compare": 1.1
+        },
+        {
+          "label": "Jul",
+          "value": 2.6,
+          "compare": 1.8
+        },
+        {
+          "label": "Aug",
+          "value": 2.1,
+          "compare": 1.6
+        },
+        {
+          "label": "Sep",
+          "value": 3.4,
+          "compare": 2.5
+        }
+      ]
+    }
+  }
+}

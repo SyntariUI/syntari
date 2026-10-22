@@ -87,7 +87,8 @@ async function select(slug, push = false, preserveState = false) {
     stage.dataset.loading = 'false'; stage.dataset.error = 'false';
     $('[data-system-status]').textContent = '';
     if (push) history.pushState(null,'',`/system/#${slug}`);
-    else if (!location.hash && location.pathname.startsWith('/system')) history.replaceState(null,'',`#${slug}`);
+    /* The page sets <base href>, so a bare "#slug" would resolve against it and drop ?guide= or ?panel=. */
+    else if (!location.hash && location.pathname.startsWith('/system')) history.replaceState(null,'',`${location.pathname}${location.search}#${slug}`);
   } catch(error) {
     if (token === swapToken) { host.classList.remove('is-swapping'); stage.dataset.loading = 'false'; stage.dataset.error = 'true'; previewError.hidden = false; previewError.textContent = 'Preview unavailable.'; $('[data-system-status]').textContent = `${previewError.textContent} ${error.message}`; }
   } finally { if (token === swapToken) host.setAttribute('aria-busy','false'); }
@@ -103,9 +104,9 @@ async function boot() {
   const ids = new Set(registry.components.map(c => c.id));
   catalog = (await getComponents()).filter(c => ids.has(c.slug)).sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
   $('[data-component-count]').textContent = catalog.length;
+  const params=new URLSearchParams(location.search);
+  const guide=params.get('guide'), panel=params.get('panel');
   await select(routeSlug());
-  const guide=new URLSearchParams(location.search).get('guide');
-  const panel=new URLSearchParams(location.search).get('panel');
   if(guide){renderGuide(guide);workspace.openPanel('guide');}
   else if(['info','usage','api','install','code'].includes(panel))workspace.openPanel(panel);
   for(const selector of ['[data-runtime-file]','[data-style-file]'])$(selector).addEventListener('change',()=>renderCode(manifests.get(selected.slug)));

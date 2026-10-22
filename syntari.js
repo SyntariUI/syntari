@@ -1,4 +1,4 @@
-/** Syntari 0.3.0 · HTML, CSS and DOM interactions. No framework runtime required. */
+/** Syntari 0.4.0 · HTML, CSS and DOM interactions. No framework runtime required. */
 const base = new URL('.', import.meta.url);
 let ready;
 const scripts = ['motion.js', 'numbers.js', 'app.js', 'controls.js', 'navigation.js', 'starter.js', 'agents.js', 'extras.js'];
@@ -70,6 +70,7 @@ export async function prepare(root) {
  * Mount a component by slug.
  * Without props it mounts the documented example. With props it mounts one instance configured through the
  * component's contract, the same contract agents use in Screen IR; declared actions then fire `syntari:action`.
+ * An example mounted with `onActionRequest` reports its declared actions the same way instead of running the demo.
  */
 export async function mount(slug, target, options = {}) {
   const catalog = await getComponents();
@@ -89,6 +90,13 @@ export async function mount(slug, target, options = {}) {
     }
     contract = { ...checked, validation: checked.diagnostics, apply: ir.applyContract, bind: ir.bindActions };
   }
+  let example = null;
+  if (!contract && options.onActionRequest) {
+    const ir = await import('./ir.js');
+    const reg = await ir.registry();
+    const manifest = reg.entries.has(slug) ? await reg.manifest(slug) : null;
+    if (Object.keys(manifest?.actions ?? {}).length) example = { manifest, bind: ir.bindActions };
+  }
   let element, controller, destroyed = false;
   async function render() {
     controller?.abort();
@@ -98,8 +106,15 @@ export async function mount(slug, target, options = {}) {
     if (destroyed) { element.remove(); return; }
     if (contract) {
       contract.diagnostics = [...contract.validation];
-      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props');
+      contract.apply(element, contract.manifest, contract.props, contract.diagnostics, 'props', { assets: options.assets });
       contract.bind(element, contract.manifest, { props: contract.props, onAction: options.onActionRequest });
+    } else if (example) {
+      /* Marked actions are the host's: the demo handlers skip them, as they do in contract mode. */
+      for (const [name, action] of Object.entries(example.manifest.actions)) element.querySelectorAll(action.selector).forEach(target => {
+        target.dataset.syntariAction = name;
+        if (action.local) target.dataset.syntariLocal = '';
+      });
+      example.bind(element, example.manifest, { onAction: options.onActionRequest });
     }
     options.configure?.(element);
     controller = new AbortController();

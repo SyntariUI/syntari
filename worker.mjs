@@ -25,7 +25,9 @@ async function claude(request, env, ctx, url) {
   /* Only this site's pages may call it from a browser. */
   const origin = request.headers.get('Origin');
   if (origin && new URL(origin).host !== url.host) return json(403, { error: 'Not from this site.' });
-  if (!env.ANTHROPIC_API_KEY) return json(503, { error: 'The model is not connected on this deployment: the ANTHROPIC_API_KEY secret is missing.' });
+  /* The secret may carry the name the key has elsewhere; either one connects the model. */
+  const apiKey = env.ANTHROPIC_API_KEY ?? env.MENTIONLOOM_ANTHROPIC_API_KEY;
+  if (!apiKey) return json(503, { error: 'The model is not connected on this deployment: add the ANTHROPIC_API_KEY secret to the Worker and deploy.' });
   if (env.DEMO_CODE && request.headers.get('X-Demo-Code') !== env.DEMO_CODE) return json(401, { error: 'This demo needs its access code.' });
   const text = await request.text();
   if (text.length > LIMITS.body) return json(413, { error: 'The request is too large.' });
@@ -45,7 +47,7 @@ async function claude(request, env, ctx, url) {
     messages = [{ role: 'user', content: body.input }];
   }
 
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  const client = new Anthropic({ apiKey });
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
   const encoder = new TextEncoder();

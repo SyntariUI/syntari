@@ -2,8 +2,9 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validate as validateRuntime } from './kit/runtime/ir.js';
+import { validate as validateRuntime, applyOperations as applyRuntime, assignIds, versionOf, diffScreens, findNode, OPS_VERSION } from './kit/runtime/ir.js';
 import { validateScreenSchema } from './registry-validator.mjs';
+import { assessComposition, profileData } from './kit/runtime/ir-compose.js';
 
 const registryDir = fileURLToPath(new URL('./kit/runtime/registry/', import.meta.url));
 const readJson = async path => JSON.parse(await readFile(join(registryDir, path), 'utf8'));
@@ -52,14 +53,16 @@ export async function searchRegistry(query) {
   return [...components, ...patterns];
 }
 
-export async function validateScreen(spec) {
+async function nodeRegistry() {
   const index = await readJson('index.json');
   const entries = new Map(index.components.map(entry => [entry.id, entry]));
-  const runtime = await validateRuntime(spec, { registry: {
-    index,
-    entries,
-    manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null
-  } });
+  const policy = await readJson('composition-policy.json').catch(() => null);
+  return { index, entries, policy, manifest: async slug => entries.has(slug) ? readJson(`components/${slug}.json`) : null };
+}
+
+/** Validate a screen as the host would. Pass { sandbox: true } only for a host that allows unverified blocks. */
+export async function validateScreen(spec, options = {}) {
+  const runtime = await validateRuntime(spec, { sandbox: options.sandbox === true, registry: await nodeRegistry() });
   /* The runtime checks the budget first; a spec over it is rejected without walking the whole schema. */
   const overBudget = runtime.diagnostics.some(item => item.code === 'over-depth-budget' || item.code === 'over-node-budget');
   const schema = overBudget ? { valid: false, details: [] } : await validateScreenSchema(spec, registryDir);
@@ -70,4 +73,38 @@ export async function validateScreen(spec) {
     ...runtime.diagnostics
   ];
   return { ok: schema.valid && runtime.ok, diagnostics };
+}
+
+export { assignIds, versionOf, diffScreens, findNode, OPS_VERSION };
+export { buildDataModel, formatData, parseFigure } from './kit/runtime/ir.js';
+export { unsupportedRequest } from './kit/runtime/ir-compose.js';
+
+/** The registry's composition policy: which visualization fits which kind of data, and how each kind of screen is ordered. */
+export async function getCompositionPolicy() {
+  return readJson('composition-policy.json');
+}
+/**
+ * How well a screen is composed, beyond validity: the pattern it reads as, each part's kind of data and how its component
+ * fits it, and advice on hierarchy, redundancy, density, and readability. For a screen with data, also what each table,
+ * measure, and group holds and which visualization fits it. Advice is a judgment under the policy; validation decides.
+ */
+export async function assessScreen(spec, options = {}) {
+  const registry = await nodeRegistry();
+  const checked = await validateRuntime(spec, { sandbox: options.sandbox === true, registry });
+  const renderable = new Set((await listComponents()).filter(item => item.renderable).map(item => item.id));
+  return {
+    ok: checked.ok,
+    diagnostics: checked.diagnostics,
+    assessment: assessComposition(spec, { policy: registry.policy, resolved: checked.screen, model: checked.data, diagnostics: checked.diagnostics }),
+    data: checked.data ? profileData(checked.data, registry.policy, renderable) : []
+  };
+}
+/**
+ * Apply a model's proposed change to one version of a screen, as a host would. The model proposes operations by node id
+ * (insert, replace, move, remove, or one recompose); the runtime applies only those, refuses anything outside their scope,
+ * protects existing data, and validates the whole result. On any error the result has ok: false and spec: null, so the
+ * host keeps the last valid screen.
+ */
+export async function applyScreenOperations(spec, change, options = {}) {
+  return applyRuntime(spec, change, { ...options, sandbox: options.sandbox === true, registry: await nodeRegistry() });
 }

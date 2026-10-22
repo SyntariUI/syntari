@@ -37,7 +37,8 @@
   "description": "Compact rows with subtle filled backgrounds. Injected cells render as text.",
   "intents": [
     "compare",
-    "scan-records"
+    "scan-records",
+    "sort-records"
   ],
   "variants": {
     "columns": [
@@ -64,7 +65,8 @@
   "rules": [
     "caption-states-the-subject",
     "columns-are-nouns",
-    "cells-stay-short"
+    "cells-stay-short",
+    "sortable-past-six-rows"
   ],
   "tokens": [
     "color.surface.subtle",
@@ -108,8 +110,8 @@
     "rows": {
       "type": "array",
       "required": true,
-      "maxItems": 10,
-      "description": "One array of cell strings per row, one cell for each column.",
+      "maxItems": 20,
+      "description": "One array of cell strings per row, one cell for each column. Columns of figures align on the right.",
       "items": {
         "type": "array",
         "maxItems": 6,
@@ -118,6 +120,11 @@
           "maxLength": 40
         }
       }
+    },
+    "sortable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Let people sort by any column: figures largest first, text A to Z."
     }
   },
   "ir": {
@@ -139,6 +146,11 @@
         "cells": "td",
         "cellCount": "columns"
       }
+    },
+    "sort": {
+      "prop": "sortable",
+      "header": "thead th",
+      "body": "tbody"
     }
   }
 }

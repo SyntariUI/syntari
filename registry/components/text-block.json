@@ -1,0 +1,125 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "text-block",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "body": "Economists usually measure GDP by adding up four kinds of spending in a year.",
+      "items": [
+        "Consumption: what households buy.",
+        "Investment: what businesses spend on equipment and buildings."
+      ]
+    }
+  },
+  "source": "components/text-block/",
+  "name": "Text block",
+  "category": "Content",
+  "purpose": "Explain in words what the components around it show.",
+  "description": "A paragraph that explains, with optional numbered or bulleted steps and small print.",
+  "intents": [
+    "explain",
+    "instruct",
+    "summarise"
+  ],
+  "variants": {
+    "list": [
+      "numbered",
+      "bulleted",
+      "none"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "body",
+    "list",
+    "note"
+  ],
+  "accessibility": {
+    "role": "none",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "one-idea-per-paragraph",
+    "steps-are-in-order-when-numbered",
+    "explain-the-number-next-to-it"
+  ],
+  "tokens": [
+    "color.text.primary",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "breakdown",
+    "calculator",
+    "checklist",
+    "media-cards"
+  ],
+  "avoidWhen": [
+    "the-text-repeats-a-component-beside-it",
+    "the-content-is-a-table-of-records"
+  ],
+  "props": {
+    "body": {
+      "type": "string",
+      "required": true,
+      "maxLength": 600,
+      "description": "The explanation. Plain text."
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "maxLength": 160
+      },
+      "description": "Steps or points under the paragraph, in order."
+    },
+    "listStyle": {
+      "type": "enum",
+      "values": [
+        "numbered",
+        "bulleted"
+      ],
+      "default": "numbered",
+      "description": "Numbered when order matters, such as steps."
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Small print, such as an assumption or a source."
+    }
+  },
+  "ir": {
+    "node": ".text-block",
+    "text": {
+      "body": ".text-block-body",
+      "note": ".text-block-note"
+    },
+    "showWhen": {
+      "items": ".text-block-list",
+      "note": ".text-block-note"
+    },
+    "variant": {
+      "listStyle": {
+        "selector": ".text-block-list",
+        "values": {
+          "numbered": "",
+          "bulleted": "bulleted"
+        }
+      }
+    },
+    "list": {
+      "items": {
+        "container": ".text-block-list",
+        "item": "li",
+        "text": {
+          ".": ""
+        }
+      }
+    }
+  }
+}

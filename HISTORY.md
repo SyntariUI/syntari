@@ -1,3 +1,53 @@
+# Syntari — next release
+
+October 21, 2026. Change a screen without regenerating it.
+
+- Added Screen IR operations. A model proposes a change against one version of a screen, as `insert`, `replace`, and `remove` operations that name nodes by id; the runtime applies them with `applyOperations()` in the browser, `applyScreenOperations()` in Node, or the MCP tool `apply_operations`. A change written for another version is refused, every difference from the base must belong to an operation that declared it, existing data changes only with `allowDataChanges` after a person confirmed it, new figures need a source unless the screen holds demonstration data, and the whole result is validated before it replaces the last valid screen.
+- `assignIds()` gives every node a stable id, `versionOf()` fingerprints a screen, `findNode()` looks a node up by id, and `diffScreens()` reports what changed node by node. The MCP tool `prepare_screen` does the first two for agents.
+- Sections, regions, and unverified blocks may carry an `id`, and the renderer marks every node it paints with `data-ir-id`.
+- A screen says where its figures come from in `meta.data`: `{ "mode": "demo" }` renders a Demonstration data label under the title.
+- Added screen data. A screen states its figures once in `data`: typed tables with totals and roles, measures (`sum`, `avg`, `min`, `max`, `count`, `first`, `last`, formulas, or stated values with a source), and groups with ordered buckets. Props bind to it with `{ "$data": … }`, so a headline, a chart, and a table read the same numbers, computed in code and written in the screen's locale. A structurally valid screen can now fail: a figure that contradicts the data (`data-conflict`), a column that does not reach its total, a bucket label that does not match its rows, or a row no bucket covers is an error, and the part is not painted. Screens without data are checked against their own tables, as warnings.
+- Added a composition policy, `registry/composition-policy.json`: which visualization fits which kind of data, and the order a report, a dashboard, a transaction workflow, and a workspace follow. A visualization that misrepresents its data, such as a risk chart that repeats the allocation under another name, is an error; order, repetition, and density are advice. `assessScreen()` and the MCP tools `assess_composition` and `get_composition_policy` expose the assessment, with seven criteria and a profile of what the screen data supports. A request for a visualization Syntari does not have is answered as `unsupported`, with the closest components that exist.
+- Added `move` and `recompose` operations. `move` relocates one node unchanged. `recompose` rebuilds a whole screen from the same data for broad requests: tables and settings stay, every record stays, and no new figure appears. `replace` on `"data"` defines measures and groups.
+- Added Line chart, with an optional comparison series on the same scale, a zero line, and signed values. Chart bars can stand vertically, show one series, and scale paired bars by the largest value. Table rows can be sortable. 38 components render from Screen IR.
+- The Renderer artifact iterates on screens instead of regenerating them. Each screen keeps its own Screen IR, versions, validation state, and conversation; with a screen open the composer edits it, a new screen is always an explicit choice, and a request that reads like another screen asks first. A change streams into place with a skeleton where the new part goes, is validated whole, and becomes a new version, or the screen is put back exactly. Undo returns to the previous version, a screen menu returns to other screens, and a Changes view shows what each change touched and that everything else is identical. Its source now lives in `artifacts/renderer/` with browser checks.
+- The Renderer receives changes through a tool call where the platform offers one, so a change arrives as data and is validated inside the call. A text answer must be exactly one JSON value: an answer followed by a second value used to fail with “Unexpected non-whitespace character after JSON”, and now gets one automatic correction, then a recovery state that keeps the screen as it was. A broad request recomposes the screen from its data with a before/after comparison, undo, and the criteria that changed. A Plan tab shows the decision trace and the policy's reading of each part, validation is grouped by category, and a development log keeps the last raw answers, redacted, until cleared.
+
+---
+
+# Syntari — version 0.4.0
+
+October 20, 2026. Screens that explain, not only show.
+
+- Added sections to Screen IR: `{ "type": "section", "heading", "layout", "children" }` puts a heading over a group with its own layout and never collapses, so an answer can read as numbered steps. Regions stay the disclosure for detail a person may skip.
+- Added unverified blocks for visuals no contract covers, such as a diagram: `{ "type": "sandbox", "label", "html", "height" }`. They are rejected unless the host passes `{ sandbox: true }` to `render()`, `validateScreen()`, or the MCP tool `validate_screen`. When allowed, each renders in a sandboxed frame with no scripts, no network, no forms, and no navigation, is labelled as unverified on screen, warns in the diagnostics, and can never request an action. The agent policy records the rule as `screenIR.unverifiedBlocks`.
+- Added five components with render contracts: Text block (a paragraph with steps and small print), Breakdown (a whole split into shares, which must add up to 100), Checklist (progress counted from its own boxes, with a `check` action), Media cards (artwork with captions), and Calculator (sliders whose results are recomputed from declared formulas, with the parts of the main result as shares, and an `adjust` action that reports each new input value). Selectable cards now has a contract with a `select` action. 37 components render from Screen IR.
+- Calculator formulas are arithmetic only: numbers, input and earlier result names, `+ - * / ^`, parentheses, and `min`, `max`, `round`, `floor`, `ceil`, `abs`, and `fv`. They are parsed by the renderer and never run as code. Validation reports `invalid-formula`, `unknown-name`, `invalid-range`, and `off-step`.
+- Media cards never load an image URL from a spec. A card names an id, and only images the host passes as `render(spec, target, { assets })` or `mount(slug, target, { props, assets })` are shown; anything else keeps the card's icon and warns `unknown-asset`.
+- A list prop can declare that its parts add up to a total (`sum` in the manifest schema), reported as `wrong-sum`.
+- A Process ledger stage without a `mark` shows the icon of its state: a check when done, a clock when current, a circle when pending. It used to keep the template's check, so a stage that had not happened looked finished; pending stages are now neutral instead of green. An explicit `mark` still wins. A list item field can follow another this way (`defaultFrom` in the manifest schema), and `syntari validate` checks the mapping.
+- A Live readout's status dot follows its `tone`, so a degraded service no longer shows a green dot beside a red badge. A `variant` binding can set classes in several places from one value.
+- `renderableSlugs()` answers from the component index, which records each component's renderable flag at build time. It used to fetch every authored manifest one at a time, so a page took 37 serial requests to start on a slow connection.
+- The runtime exports `parseFormula`, `evaluateFormula`, and `formatValue`.
+- A region whose `children` is not a list no longer stops the renderer.
+- In a rendered screen, rows of equal cards no longer leave one card alone: four stats sit two by two instead of three plus one, and where no even split exists the last card spans the row. This covers Stat row, Headline metric, Media cards, Live readout values, Metric strip, and three Selectable cards.
+
+---
+
+# Syntari — version 0.3.1
+
+October 19, 2026. Fixes from the first audit of the published 0.3.0.
+
+- The install commands use the published npm package: `npx syntari-ui add`, `pnpm dlx syntari-ui add`, `yarn dlx syntari-ui add` (Yarn 2 or later), and `bunx syntari-ui add`. The Yarn command used to fail on every Yarn version. System no longer says npm publication is pending, and the Install panel shows how to mount the component.
+- An example mounted with `onActionRequest` and no props reports its declared actions instead of running the demo, as the documentation says.
+- `syntari doctor` accepts a manual setup: a missing installation marker is a note, and only a marker for another version fails.
+- System guide links such as `/system/?guide=ai-patterns` open the guide. The page's `<base href>` used to drop the query before the guide was read.
+- Code no longer shows Geist Mono ligatures: `var(--surface)` used to render with an arrow.
+- A `two-column` screen keeps its title above both columns. The title used to take the first cell and push every node one cell along.
+- Pattern previews point to the Renderer page, and the guides name the inspector panels and install paths that exist.
+
+---
+
 # Syntari — version 0.3.0
 
 October 16, 2026. Version 0.2.3 was prepared but never published; its changes ship here.

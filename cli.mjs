@@ -121,7 +121,9 @@ async function checkInstallation(dir, packageVersion, registryVersion) {
   let marker;
   try { marker = await readJson(markerPath); } catch {}
   const markerOk = marker?.version === packageVersion && marker?.registryVersion === registryVersion;
-  checks.push({ name: 'installation marker', ok: markerOk, detail: markerOk ? `Syntari ${marker.version}` : `expected Syntari ${packageVersion} and registry ${registryVersion}; installation marker is missing or stale` });
+  /* A manual setup copies files without the marker `syntari add` writes; only a marker for another version is a problem. */
+  if (!marker) checks.push({ name: 'installation marker', ok: true, note: true, detail: 'none; expected for a manual setup. `syntari add` records the installed version here.' });
+  else checks.push({ name: 'installation marker', ok: markerOk, detail: markerOk ? `Syntari ${marker.version}` : `expected Syntari ${packageVersion} and registry ${registryVersion}; found ${marker.version ?? 'no version'} and ${marker.registryVersion ?? 'no registry version'}` });
   const runtime = join(root, 'runtime');
   for (const file of ['syntari.js', 'tokens.css', 'styles.css']) {
     checks.push({ name: `runtime/${file}`, ok: await exists(join(runtime, file)), detail: await exists(join(runtime, file)) ? 'present' : 'missing' });
@@ -195,7 +197,7 @@ async function main() {
     if (dir) checks.push(...(await checkInstallation(dir, pkg.version, registry.version)).checks);
     const ok = checks.every((check) => check.ok);
     if (!ok) process.exitCode = 1;
-    return emit(jsonOutput ? { ok, checks } : checks.map((check) => `${check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`).join('\n'));
+    return emit(jsonOutput ? { ok, checks } : checks.map((check) => `${check.note ? '·' : check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`).join('\n'));
   }
   if (command === 'validate') {
     const { dir, spec } = parseOptions(rest, { allowSpec: true });

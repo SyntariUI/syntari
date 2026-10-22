@@ -17,7 +17,7 @@ test('MCP server negotiates with the official client and lists read-only tools',
     assert.equal(client.getServerVersion().name, 'syntari');
     assert.match(client.getInstructions(), /validate_screen/);
     const { tools } = await client.listTools();
-    assert.deepEqual(tools.map(tool => tool.name).sort(), ['get_agent_policy', 'get_component', 'get_pattern', 'list_components', 'list_patterns', 'search_components', 'validate_screen']);
+    assert.deepEqual(tools.map(tool => tool.name).sort(), ['apply_operations', 'assess_composition', 'get_agent_policy', 'get_component', 'get_composition_policy', 'get_pattern', 'list_components', 'list_patterns', 'prepare_screen', 'search_components', 'validate_screen']);
     for (const tool of tools) assert.equal(tool.annotations.readOnlyHint, true, `${tool.name} must be read-only`);
   } finally { await client.close(); }
 });
@@ -48,11 +48,43 @@ test('an agent can discover a contract, compose from its sample, and validate th
     assert.equal(invalid.ok, false);
     assert.ok(invalid.diagnostics.some(item => item.code === 'unknown-component'));
 
+    const block = { type: 'screen', children: [{ type: 'sandbox', label: 'Doors', html: '<p>Door 1</p>' }] };
+    assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: block } })).structuredContent.ok, false);
+    assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: block, sandbox: true } })).structuredContent.ok, true);
+
     const pattern = (await client.callTool({ name: 'get_pattern', arguments: { id: 'approval-review' } })).structuredContent;
     assert.equal((await client.callTool({ name: 'validate_screen', arguments: { screen: pattern.screen } })).structuredContent.ok, true);
 
+    /* Changing a screen: ids and a version first, then operations by id, checked by the runtime. */
+    const prepared = (await client.callTool({ name: 'prepare_screen', arguments: { screen: { type: 'screen', children: [{ type: 'section', heading: 'Releases', children: [{ component: 'syntari.text-block', props: { body: 'Two releases this week.' } }] }] } } })).structuredContent;
+    assert.match(prepared.version, /^sv-[0-9a-f]{8}$/);
+    assert.equal(prepared.screen.children[0].id, 'section-releases');
+    const insert = { version: 'syntari-ops-1', base: prepared.version, operations: [{ op: 'insert', after: 'text-block', node: { id: 'release-note', component: 'syntari.text-block', props: { body: 'Rollback is ready.' } } }] };
+    const applied = (await client.callTool({ name: 'apply_operations', arguments: { screen: prepared.screen, change: insert } })).structuredContent;
+    assert.equal(applied.ok, true, JSON.stringify(applied.diagnostics));
+    assert.deepEqual(applied.changes.map(item => [item.change, item.id]), [['added', 'release-note']]);
+    const stale = (await client.callTool({ name: 'apply_operations', arguments: { screen: applied.spec, change: insert } })).structuredContent;
+    assert.equal(stale.ok, false);
+    assert.equal(stale.spec, null);
+    assert.equal(stale.diagnostics[0].code, 'stale-base');
+    const badMode = await client.callTool({ name: 'apply_operations', arguments: { screen: prepared.screen, change: insert, data: 'loose' } });
+    assert.equal(badMode.isError, true);
+
     const policy = (await client.callTool({ name: 'get_agent_policy', arguments: {} })).structuredContent;
     assert.equal(policy.actions.default, 'deny');
+
+    /* Beyond validity: the policy says which visualization fits which data, and the assessment reads a screen with it. */
+    const composition = (await client.callTool({ name: 'get_composition_policy', arguments: {} })).structuredContent;
+    assert.deepEqual(composition.roles['time-series-comparison'].recommended, ['line-chart']);
+    assert.equal(composition.roles.correlation.missing, 'scatter-plot');
+    const { FLAWED, CANONICAL } = await import('./fixtures/portfolio.mjs');
+    const flawed = (await client.callTool({ name: 'assess_composition', arguments: { screen: FLAWED } })).structuredContent;
+    assert.ok(flawed.assessment.signals.some(item => item.code === 'relabeled-data'));
+    assert.ok(flawed.diagnostics.some(item => item.code === 'data-conflict'));
+    const bound = (await client.callTool({ name: 'assess_composition', arguments: { screen: CANONICAL } })).structuredContent;
+    assert.equal(bound.ok, true);
+    assert.deepEqual(bound.assessment.signals, []);
+    assert.ok(bound.data.some(item => item.ref === 'groups.liquidity' && item.role === 'ordered-distribution'));
   } finally { await client.close(); }
 });
 

@@ -79,9 +79,31 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
       if (part.cellCount && manifest.props?.[part.cellCount]?.type !== 'array') problems.push(`cellCount for ${entry.id}.${key} must name an array prop`);
     }
+    /* A field that follows another names an enum beside it, maps only that enum's values, and maps an icon field to icons the runtime ships. */
+    for (const [key, prop] of Object.entries(manifest.props ?? {})) {
+      if (prop.defaultFrom) problems.push(`defaultFrom for ${entry.id}.${key} is only read for fields of list items`);
+      const fields = prop.items?.fields ?? {};
+      const icons = new Set([].concat(manifest.ir?.list?.[key] ?? []).flatMap(part => Object.keys(part.icon ?? {})));
+      for (const [name, field] of Object.entries(fields)) {
+        if (!field.defaultFrom) continue;
+        const source = fields[field.defaultFrom.field];
+        if (source?.type !== 'enum' || source.defaultFrom) { problems.push(`defaultFrom for ${entry.id}.${key}.${name} must name an enum field of the same item that follows nothing`); continue; }
+        for (const [from, to] of Object.entries(field.defaultFrom.values)) {
+          if (!source.values.includes(from)) problems.push(`defaultFrom for ${entry.id}.${key}.${name} maps "${from}", which ${field.defaultFrom.field} does not allow`);
+          if (icons.has(name) && !index.icons?.includes(to)) problems.push(`defaultFrom for ${entry.id}.${key}.${name} maps "${from}" to "${to}", which is not a Syntari icon`);
+        }
+      }
+    }
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
         if (binding === 'node' || binding === 'remove') continue;
+        /* A computing contract maps its roles to props and its slots to selectors, so only the roles name props. */
+        if (binding === 'compute') {
+          for (const role of ['inputs', 'outputs', 'parts']) if (value[role] !== undefined && manifest.props[value[role]]?.type !== 'array') problems.push(`compute.${role} for ${entry.id} must name an array prop`);
+          if (value.currency !== undefined && !(value.currency in manifest.props)) problems.push(`compute.currency for ${entry.id} must name a prop`);
+          continue;
+        }
+        if (binding === 'sort') { if (manifest.props[value?.prop]?.type !== 'boolean') problems.push(`sort.prop for ${entry.id} must name a boolean prop`); continue; }
         for (const prop of Object.keys(value ?? {})) if (!(prop in manifest.props)) problems.push(`Unknown render binding ${entry.id}.${prop}`);
       }
     }

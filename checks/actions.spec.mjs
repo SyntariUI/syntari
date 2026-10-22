@@ -190,3 +190,31 @@ test('a reset instance reports its diagnostics once, with their own message', as
   expect(result.first).toEqual([{ code: 'unknown-icon', path: 'props.icon', message: expect.stringContaining('"rocketship" is not a Syntari icon') }]);
   expect(result.after).toBe(1);
 });
+
+test('an example mounted with onActionRequest reports its actions instead of running the demo', async ({ page }) => {
+  await stage(page);
+  const result = await page.evaluate(async () => {
+    const { mount } = await import('/syntari.js');
+    const target = document.createElement('div'); document.body.append(target);
+    const requests = [];
+    const instance = await mount('file-diff', target, { onActionRequest: request => requests.push(request) });
+    instance.element.querySelector('[data-agent-action="approve"]').click();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { requests, decision: instance.element.querySelector('.agent-decision')?.textContent ?? '' };
+  });
+  expect(result.requests).toEqual([{ component: 'file-diff', action: 'approve', consequential: true }]);
+  expect(result.decision).toBe('');
+});
+
+test('an example mounted without onActionRequest keeps its demo behaviour', async ({ page }) => {
+  await stage(page);
+  const decision = await page.evaluate(async () => {
+    const { mount } = await import('/syntari.js');
+    const target = document.createElement('div'); document.body.append(target);
+    const instance = await mount('file-diff', target);
+    instance.element.querySelector('[data-agent-action="approve"]').click();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return instance.element.querySelector('.agent-decision')?.textContent ?? '';
+  });
+  expect(decision).not.toBe('');
+});

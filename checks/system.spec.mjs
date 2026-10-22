@@ -12,7 +12,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await expect(page.locator('[data-preview-skeleton]')).toHaveCount(0);
  const preview=page.locator('[data-component-mount] > [data-syntari-component]');
  await expect(preview).toHaveAttribute('data-syntari-component','button');
- await expect(page.locator('[data-component-count]')).toHaveText('131');
+ await expect(page.locator('[data-component-count]')).toHaveText('137');
  expect(await page.locator('.sys-workspace').evaluate(el=>el.getBoundingClientRect().width/innerWidth)).toBeGreaterThan(.75);
  const initial=await preview.elementHandle();
  await page.getByRole('button',{name:'Inspect component'}).click();
@@ -27,7 +27,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await page.getByRole('button',{name:'Manifest',exact:true}).click();
  await expect(page.locator('[data-source]')).toContainText('"id": "button"');
  await page.getByRole('button',{name:'Install',exact:true}).click();
- await expect(page.locator('[data-install-command]')).toContainText(`syntari-ui-${version}.tgz -- syntari add button`);
+ await expect(page.locator('[data-install-command]')).toHaveText('npx syntari-ui add button');
  await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel','install');
  const drawer=await page.locator('[data-inspector]').boundingBox(),stage=await page.locator('[data-stage]').boundingBox(),workspace=await page.locator('.sys-workspace').boundingBox();
  expect(Math.abs(stage.x+stage.width-drawer.x)).toBeLessThan(3);
@@ -35,7 +35,7 @@ test('System preserves the live component while inspecting contracts, code and i
  expect(Math.abs(stage.y+stage.height-(workspace.y+workspace.height))).toBeLessThan(3);
  await expect(page.locator('[data-inspector] .sys-reference-tabs')).toHaveCount(0);
  await page.getByRole('button',{name:'Copy command'}).click();
- expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('syntari add button');
+ expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('npx syntari-ui add button');
  await expect(page.locator('[data-copy-status]')).toContainText('Copied');
  await page.getByRole('button',{name:'Close panel'}).click();
  await page.getByRole('searchbox',{name:'Find a component'}).fill('app shell');
@@ -99,4 +99,39 @@ test('components with a contract document mounting with props and their actions'
  await page.goto('http://127.0.0.1:4398/system/?panel=api#slider');
  await expect(page.locator('[data-ir-api]')).toContainText('has not been authored');
  await expect(page.locator('[data-ir-api]').getByRole('heading', {name: 'Mount with props'})).toHaveCount(0);
+});
+
+test('a guide link without a component opens the guide and keeps its address', async ({page}) => {
+ await page.goto('http://127.0.0.1:4398/system/?guide=ai-patterns');
+ await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel', 'guide');
+ await expect(page.locator('[data-guide-content]')).toContainText('Clarification');
+ await expect(page).toHaveURL(/\/system\/\?guide=ai-patterns#[a-z-]+$/);
+ await page.goto('http://127.0.0.1:4398/system/?panel=install');
+ await expect(page.locator('[data-workspace]')).toHaveAttribute('data-panel', 'install');
+ await expect(page).toHaveURL(/\/system\/\?panel=install#[a-z-]+$/);
+});
+
+test('every package manager gets a command for the published package, and the panel shows how to use it', async ({page}) => {
+ await page.goto('http://127.0.0.1:4398/system/?panel=install#file-diff');
+ const command = page.locator('[data-install-command]'), hint = page.locator('[data-install-hint]');
+ /* The buttons are wired when System boots; a click before that is lost. The default command means it has. */
+ await expect(command).toHaveText('npx syntari-ui add file-diff');
+ for (const [manager, expected] of [['pnpm', 'pnpm dlx syntari-ui add file-diff'], ['yarn', 'yarn dlx syntari-ui add file-diff'], ['bun', 'bunx syntari-ui add file-diff'], ['npm', 'npx syntari-ui add file-diff']]) {
+  await page.locator(`[data-package-manager="${manager}"]`).click();
+  await expect(command).toHaveText(expected);
+  await expect(hint).toHaveText(manager === 'yarn' ? 'Needs Yarn 2 or later. With Yarn 1, use the npm command.' : '');
+ }
+ const details = page.locator('[data-install-details]');
+ await expect(details).not.toContainText('npm publication is pending');
+ await expect(details.getByRole('heading', {name: 'Use it'})).toBeVisible();
+ await expect(details).toContainText("import { mount } from './components/syntari/file-diff.js';");
+ await expect(details).toContainText('npx syntari-ui doctor --dir ./components/syntari');
+});
+
+test('code shows its own characters: monospace ligatures are off', async ({page}) => {
+ await page.goto('http://127.0.0.1:4398/system/#file-diff');
+ await page.locator('[data-stage] .diff-lines').waitFor();
+ expect(await page.evaluate(() => getComputedStyle(document.querySelector('[data-stage] .diff-lines code')).fontVariantLigatures)).toBe('none');
+ await page.getByRole('button', {name: 'View code'}).click();
+ expect(await page.evaluate(() => getComputedStyle(document.querySelector('[data-source]')).fontVariantLigatures)).toBe('none');
 });

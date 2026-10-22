@@ -83,7 +83,7 @@
 
 /* Charts and data families: one series vocabulary, token colours, no decoration. */
 .chart-figure{margin:0 auto;display:grid;gap:14px;width:100%;max-width:720px;min-width:0}
-.chart-figure figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.chart-figure figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 12px}
 .chart-figure figcaption strong{font-size:var(--type-label);font-weight:500}
 .series-a{--series:var(--accent)}
 .series-b{--series:var(--fg-3)}
@@ -105,13 +105,16 @@
   display:grid;
   grid-auto-flow:row;
   grid-auto-columns:unset;
+  /* Every row shares one label column as wide as the longest label, so the bars start at one edge. */
+  grid-template-columns:minmax(42px,max-content) minmax(30px,max-content) minmax(0,1fr);
   gap:7px;
   height:auto;
   align-items:stretch;
 }
 .chart-bars-modern .chart-column{
   display:grid;
-  grid-template-columns:42px 30px minmax(0,1fr);
+  grid-column:1/-1;
+  grid-template-columns:subgrid;
   grid-template-rows:1fr;
   gap:10px;
   align-items:center;
@@ -122,7 +125,7 @@
 .chart-bars-modern .chart-column .column-label{
   grid-column:1;
   grid-row:1;
-  font:var(--type-caption)/1 var(--font-mono);
+  font:var(--type-caption)/1.2 var(--font-sans);
   color:var(--muted);
   text-align:left;
 }
@@ -233,8 +236,9 @@
 .process-ledger{list-style:none;padding:0;margin:0;display:grid;gap:2px}
 .process-ledger li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
 .process-ledger li:last-child{border-bottom:0}
-.stage-mark{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--green-a1);color:var(--success-text)}
+.stage-mark{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--bg-a2);color:var(--muted)}
 .stage-mark .icon{width:12px;height:12px}
+.process-ledger li.done .stage-mark{background:var(--green-a1);color:var(--success-text)}
 .process-ledger li.current .stage-mark{background:var(--accent-soft);color:var(--accent-text)}
 .stage-body{display:grid;gap:2px;min-width:0}
 .stage-body strong{font-size:var(--type-caption);font-weight:400}
@@ -251,6 +255,9 @@
 .readout-head{display:flex;align-items:center;gap:8px}
 .readout-head strong{font-size:var(--type-label);font-weight:500}
 .readout-head .badge{margin-left:auto}
+.readout-head .status-dot.amber{background:var(--amber-4)}
+.readout-head .status-dot.red{background:var(--red-4)}
+.readout-head .status-dot.neutral{background:var(--gray-4)}
 .readout-values{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:12px;margin:0}
 .readout-values div{display:grid;gap:3px}
 .readout-values dt{font-size:var(--type-caption);color:var(--muted)}
@@ -298,6 +305,25 @@
 .plot-labels{display:flex;justify-content:space-between;font-size:var(--type-caption);color:var(--muted);margin-top:6px}
 .area-figure .plot-labels[data-placed]{display:block;position:relative;height:1.5em;margin-left:42px}
 .area-figure .plot-labels[data-placed] span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+/* Line chart: one or two series on one scale. The benchmark is dashed, so the two never rely on colour alone. */
+.line-figure .plot{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:stretch}
+.line-figure .plot-axis span{white-space:nowrap}
+.line-figure .plot-labels{margin-left:48px}
+.line-figure .plot-labels[data-placed]{display:block;position:relative;height:1.5em}
+.line-figure .plot-labels[data-placed] span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.chart-zero{stroke:var(--fg-3);stroke-width:1;stroke-dasharray:2 3}
+.line-value{stroke-width:2.25}
+.line-compare{stroke-width:1.75;stroke-dasharray:5 4}
+.legend-swatch.legend-line{width:14px;height:2px;border-radius:2px}
+.legend-swatch.legend-dash{width:14px;height:2px;border-radius:0;background:repeating-linear-gradient(90deg,var(--series) 0 4px,transparent 4px 7px)}
+/* Vertical columns: ordered buckets read left to right on a baseline. */
+.chart-bars-vertical .chart-columns{border-bottom:1px solid var(--border);gap:10px;height:200px}
+.chart-bars-vertical .chart-column .column-value{color:var(--text);font-weight:500}
+.chart-bars-vertical .column-fill:only-child{width:min(30px,62%)}
+.chart-bars-vertical .chart-column .column-label{text-align:center;overflow-wrap:anywhere;line-height:1.2}
+.chart-bars-vertical .chart-column{grid-template-rows:16px 1fr auto}
+.chart-bars-modern .column-pair:has(> .column-fill:only-child){grid-template-rows:8px}
+.chart-bars-modern .column-fill:only-child{height:8px}
 .area-fill{fill:var(--accent-soft);stroke:none}
 .area-line{fill:none}
 .chart-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:var(--type-caption);color:var(--muted)}
@@ -685,3 +711,75 @@
 .area-point .chart-tooltip text{font-size:var(--type-caption)}
 @media(max-width:520px){.donut-legend{gap:4px}.donut-legend li{font-size:var(--type-caption)}.graph-svg{max-height:250px}}
 @media(prefers-reduced-motion:reduce){.chart-series[pathLength],.donut-segment,.graph-edges line,.area-fill{animation:none!important;stroke-dashoffset:0!important;stroke-dasharray:var(--donut-array,100 0)!important;opacity:1!important}}
+/* Explain and decide. Text block, breakdown, checklist, media cards, and calculator. */
+.text-block{display:grid;gap:10px;max-width:72ch;font-size:var(--type-reading);line-height:1.6;color:var(--text)}
+.text-block p{margin:0;text-wrap:pretty}
+.text-block-list{display:grid;gap:6px;margin:0;padding-left:1.4em}
+.text-block-list.bulleted{list-style:disc}
+.text-block-list li{padding-left:2px}
+.text-block-list li::marker{color:var(--muted)}
+/* Parts follow one palette in order, in the bar and in the legend, so position ties a colour to its words. */
+.breakdown,.calculator-parts{--part-1:var(--accent);--part-2:var(--green-4);--part-3:var(--amber-4);--part-4:var(--pink-4);--part-5:var(--sky-3);--part-6:var(--fg-2)}
+.breakdown{display:grid;gap:12px;margin:0;min-width:0}
+.breakdown-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:var(--type-caption);color:var(--muted)}
+.breakdown-total{font-size:var(--type-title-sm);font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.breakdown-bar{display:flex;gap:2px;height:12px;overflow:hidden;border-radius:999px;background:var(--bg-3)}
+.breakdown-segment{flex:0 0 var(--share,0%);min-width:2px;background:var(--part-1);transition:flex-basis var(--motion-medium) var(--ease-out)}
+.breakdown-legend{display:grid;gap:0;margin:0;padding:0;list-style:none;font-size:var(--type-label)}
+.breakdown-legend li{display:grid;grid-template-columns:auto minmax(0,1fr) auto 3.5em;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border)}
+.breakdown-legend li:first-child{border-top:0}
+.breakdown-swatch{width:10px;height:10px;border-radius:3px;background:var(--part-1)}
+.breakdown-label{min-width:0;overflow-wrap:anywhere}
+.breakdown-value{font-variant-numeric:tabular-nums}
+.breakdown-share{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.breakdown-share:not(:empty)::after{content:"%"}
+:is(.breakdown-segment,.breakdown-legend li):nth-child(2){--part-1:var(--part-2)}
+:is(.breakdown-segment,.breakdown-legend li):nth-child(3){--part-1:var(--part-3)}
+:is(.breakdown-segment,.breakdown-legend li):nth-child(4){--part-1:var(--part-4)}
+:is(.breakdown-segment,.breakdown-legend li):nth-child(5){--part-1:var(--part-5)}
+:is(.breakdown-segment,.breakdown-legend li):nth-child(6){--part-1:var(--part-6)}
+.breakdown-legend li .breakdown-swatch{background:var(--part-1)}
+/* The count is drawn from the boxes with CSS counters, so it updates the moment a box changes and needs no script. */
+.checklist{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'title count' 'items items';align-items:baseline;gap:10px 12px;counter-reset:done total}
+.checklist-title{grid-area:title;font-size:var(--type-label);font-weight:500}
+.checklist-items{grid-area:items;display:grid;margin:0;padding:0;list-style:none;border:1px solid var(--border);border-radius:var(--radius-card,12px);overflow:hidden}
+.checklist-items li{counter-increment:total;border-top:1px solid var(--border)}
+.checklist-items li:first-child{border-top:0}
+.checklist-items li:has(input:checked){counter-increment:total done}
+.checklist-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:12px 14px;cursor:pointer}
+.checklist-item input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.checklist-text{display:grid;gap:2px;min-width:0}
+.checklist-time{font-size:var(--type-caption);color:var(--muted)}
+.checklist-label{font-weight:500}
+.checklist-detail{font-size:var(--type-caption);color:var(--muted)}
+.checklist-item:has(input:checked) .checklist-label,.checklist-item:has(input:checked) .checklist-detail{text-decoration:line-through;color:var(--muted)}
+.checklist-count{grid-area:count;margin:0}
+.checklist-count::after{content:counter(done) " of " counter(total) " done"}
+.media-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+.media-card{display:grid;align-content:start;gap:6px;min-width:0}
+.media-card-art{position:relative;display:grid;place-items:center;aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius-card,12px);background:linear-gradient(140deg,var(--blue-a2),var(--green-a1) 60%,var(--bg-2));color:var(--accent-text)}
+.media-card-art[data-art="1"]{background:linear-gradient(140deg,var(--amber-a2),var(--pink-a1) 60%,var(--bg-2))}
+.media-card-art[data-art="2"]{background:linear-gradient(140deg,var(--green-a2),var(--sky-a1) 60%,var(--bg-2))}
+.media-card-art[data-art="3"]{background:linear-gradient(140deg,var(--pink-a2),var(--blue-a1) 60%,var(--bg-2))}
+.media-card-icon svg{width:28px;height:28px}
+.media-card-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media-card-art:has(.media-card-image:not([hidden])) .media-card-icon{visibility:hidden}
+.media-card-title{margin-top:4px;font-weight:500}
+.media-card-copy{margin:0;font-size:var(--type-caption);color:var(--muted)}
+.calculator{display:grid;gap:18px;padding:18px;border:1px solid var(--border);border-radius:var(--radius-card,12px);background:var(--surface)}
+.calculator-title{font-size:var(--type-caption);font-weight:400;color:var(--muted)}
+.calculator-results{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:-10px}
+.calculator-result{display:grid;gap:0}
+.calculator-result-label{order:2;font-size:var(--type-caption);color:var(--muted)}
+.calculator-result-value{font-size:var(--type-title-md);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.calculator-result:first-child .calculator-result-value{font-size:var(--type-display-sm);color:var(--success-text)}
+.calculator-parts{display:grid;gap:8px}
+.calculator-parts:not(:has(li)){display:none}
+.calculator-inputs{display:grid;gap:14px;padding-top:14px;border-top:1px solid var(--border)}
+.calculator-input{display:grid;gap:0}
+.calculator-input-head{display:flex;justify-content:space-between;gap:12px;font-size:var(--type-label)}
+.calculator-input-value{font-weight:500;font-variant-numeric:tabular-nums}
+.calculator-input .range{margin:4px 0 2px}
+.calculator-input-scale{display:flex;justify-content:space-between;font-size:var(--type-caption);color:var(--muted)}
+.calculator-note{margin:0}
+@media(prefers-reduced-motion:reduce){.breakdown-segment{transition:none}}

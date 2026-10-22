@@ -96,7 +96,16 @@
           },
           "mark": {
             "type": "string",
-            "maxLength": 24
+            "maxLength": 24,
+            "description": "An icon name. Left out, it follows state: check when done, clock when current, circle when pending.",
+            "defaultFrom": {
+              "field": "state",
+              "values": {
+                "done": "check",
+                "current": "clock",
+                "pending": "circle"
+              }
+            }
           },
           "state": {
             "type": "enum",

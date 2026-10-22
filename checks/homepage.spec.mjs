@@ -10,7 +10,7 @@ test('homepage previews components and keeps the primary CTA visible',async({pag
  await expect(page.getByRole('link',{name:'Renderer'})).toHaveCount(0);
  await expect(page.getByRole('link',{name:'Open Renderer'})).toHaveCount(0);
  await expect.poll(()=>page.evaluate(()=>document.fonts.check('16px Geist'))).toBe(true);
- await expect(page.locator('[data-home-count]')).toHaveText('131 components');
+ await expect(page.locator('[data-home-count]')).toHaveText('137 components');
  await expect(page.locator('[data-intent-form]')).toHaveCount(0);
  await expect(page.locator('.home-faq')).toHaveCount(0);
  await expect(page.locator('.home-footer')).toBeVisible();
@@ -38,7 +38,7 @@ test('homepage previews components and keeps the primary CTA visible',async({pag
  await expect(tabs.getByRole('tab',{name:'Activity'})).toHaveAttribute('aria-selected','true');
  await expect(tabs.getByRole('tabpanel')).toContainText('Jamie published');
  await expect(page.locator('.home-card')).toHaveCount(6);
- await expect(page.locator('[data-home-command]')).toContainText(`syntari-ui-${version}.tgz`);
+ await expect(page.locator('[data-home-command]')).toHaveText('npx syntari-ui add app-shell');
  await page.getByRole('link',{name:'Explore components',exact:false}).click();
  await expect(page).toHaveURL('http://127.0.0.1:4398/system/');
  expect(errors).toEqual([]);

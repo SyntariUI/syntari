@@ -28,18 +28,21 @@ async function injectKobbeTracking(file) {
 }
 
 const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
+/* The public Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
+const kobbeIgnoredPaths = new Set(['dist/renderer/index.html']);
 
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     if (entry.isDirectory() && kobbeIgnoredDirs.has(entry.name)) continue;
     const path = `${dir}/${entry.name}`;
+    if (kobbeIgnoredPaths.has(path)) continue;
     if (entry.isDirectory()) await injectKobbeTrackingTree(path);
     else if (entry.isFile() && entry.name.endsWith('.html')) await injectKobbeTracking(path);
   }
 }
 
 const components=await catalog();
-const runtime=['syntari.js','support.html','ir.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
+const runtime=['syntari.js','support.html','ir.js','ir-data.js','ir-compose.js','jev.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
 const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
@@ -69,8 +72,14 @@ execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{
 });
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
 await copyFile('landing.html','dist/index.html');
+/* The public Renderer at /renderer/: the Renderer artifact, opening on its templates, with window.claude answered by the Worker's /api/claude. */
 await mkdir('dist/renderer',{recursive:true});
-await copyFile('renderer.html','dist/renderer/index.html');
+await writeFile('dist/renderer/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
+await copyFile('artifacts/renderer/live.js','dist/renderer/live.js');
+await cp('kit/runtime','dist/renderer/runtime',{recursive:true});
+/* The intent workspace that /renderer/ used to serve. */
+await mkdir('dist/renderer/workspace',{recursive:true});
+await copyFile('renderer.html','dist/renderer/workspace/index.html');
 await writeFile('dist/library.html',redirect('/system/'));
 await writeFile('dist/gallery.html',redirect('/system/'));
 for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
@@ -101,7 +110,7 @@ function redirect(target, preserveHash=false){
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${target}"><title>Syntari</title></head><body><a href="${target}">Open Syntari</a><script>location.replace(${JSON.stringify(target)}${preserveHash ? '+location.hash' : ''})</script></body></html>`;
 }
 // Prototype workspaces live on the archive/prototypes branch; their public URLs lead to the production surfaces.
-const legacyRoutes={'ai-behavioural-patterns.html':'/system/?guide=ai-patterns#agent-questions','Jev/index.html':'/renderer/','tmp/index.html':'/system/','tmp/components.html':'/system/','art-atlas/index.html':'/',
+const legacyRoutes={'ai-behavioural-patterns.html':'/system/?guide=ai-patterns#agent-questions','Jev/index.html':'/renderer/','renderer/live/index.html':'/renderer/','tmp/index.html':'/system/','tmp/components.html':'/system/','art-atlas/index.html':'/',
   'new/index.html':'/system/','new/components.html':'/system/','new/gallery.html':'/system/'};
 for(const id of ['agentic-playground','command-palette','q2-performance','revenue-card','team-projects-report'])legacyRoutes[`new/${id}/index.html`]='/system/';
 for(const [path,target] of Object.entries(legacyRoutes)){await mkdir(dirname(`dist/${path}`),{recursive:true});await writeFile(`dist/${path}`,redirect(target));}

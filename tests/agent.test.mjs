@@ -126,7 +126,7 @@ test('the CLI validates a screen with the same diagnostics as the Node API', asy
   const cli = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'validate', '--spec', file, '--json'], { encoding: 'utf8' }));
   assert.deepEqual(cli.screen.diagnostics, (await validateScreen(screen)).diagnostics);
   const listed = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'list', '--json'], { encoding: 'utf8' }));
-  assert.equal(listed.components.filter(item => item.renderable).length, 31);
+  assert.equal(listed.components.filter(item => item.renderable).length, 38);
 });
 
 test('pattern screens that agents copy validate without warnings', async () => {
@@ -149,4 +149,35 @@ test('validation covers unresolved subtrees, structure, empty lists, labels, and
   assert.deepEqual(codes(lists), ['error:empty-list:children[0].props.lines']);
   const period = await validateScreen({ type: 'screen', children: [{ id: 'scope', component: 'syntari.filter-bar', props: { period: 'Last year', periods: [{ label: 'Last 7 days', value: '7d' }] } }] });
   assert.deepEqual(codes(period), ['warning:no-matching-item:children[0].props.period']);
+});
+
+test('formulas are arithmetic only and never run as code', async () => {
+  const { parseFormula, evaluateFormula, formatValue } = await import('../kit/runtime/ir.js');
+  const run = (source, scope = {}) => evaluateFormula(parseFormula(source).tree, scope);
+  assert.equal(Math.round(run('fv(rate / 1200, years * 12, monthly)', { rate: 5, years: 30, monthly: 500 })), 416129);
+  assert.equal(run('fv(0, 12, 100)'), 1200);
+  assert.equal(run('-2^2'), -4);
+  assert.equal(run('2^3^2'), 512);
+  assert.equal(run('round(10 / 3, 2)'), 3.33);
+  assert.equal(run('1 / 0'), null);
+  assert.deepEqual(parseFormula('seats * price + seats').names, ['seats', 'price']);
+  for (const source of ['alert(1)', 'a.b', 'x[0]', 'a;b', '`x`', '"x"', '1 +', '(1', 'min()', 'fv(1, 2)', 'x'.repeat(201)]) assert.throws(() => parseFormula(source), SyntaxError, source);
+  assert.equal(run('constructor'), null);
+  assert.equal(formatValue(416129.3, 'currency'), '$416,129');
+  assert.equal(formatValue(40, 'currency'), '$40');
+  assert.equal(formatValue(2.1, 'currency'), '$2.10');
+  assert.equal(formatValue(12.5, 'percent'), '12.5%');
+  assert.equal(formatValue(null), '—');
+});
+
+test('unverified blocks are rejected unless the host allows them', async () => {
+  const screen = { type: 'screen', children: [{ type: 'section', heading: '1. The doors', children: [{ type: 'sandbox', label: 'Three doors', html: '<p>Door 1</p>' }] }] };
+  const refused = await validateScreen(screen);
+  assert.equal(refused.ok, false);
+  assert.deepEqual(refused.diagnostics.map(item => item.code), ['sandbox-not-allowed']);
+  const allowed = await validateScreen(screen, { sandbox: true });
+  assert.equal(allowed.ok, true);
+  assert.deepEqual(allowed.diagnostics.map(item => `${item.severity}:${item.code}`), ['warning:unverified-block']);
+  const extra = await validateScreen({ type: 'screen', children: [{ type: 'sandbox', label: 'Doors', html: '<p>x</p>', script: 'x' }] }, { sandbox: true });
+  assert.ok(extra.diagnostics.some(item => item.code === 'unknown-key'));
 });

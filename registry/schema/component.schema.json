@@ -140,8 +140,20 @@
         },
         "variant": {
           "type": "object",
+          "description": "Prop name to the classes it sets. A list of bindings sets classes in several places from one value, such as a status badge and the dot beside it.",
           "additionalProperties": {
-            "$ref": "#/definitions/variantBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/variantBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/variantBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "class": {
@@ -229,6 +241,86 @@
             },
             "additionalProperties": false
           }
+        },
+        "compute": {
+          "type": "object",
+          "description": "A computing contract. Inputs are range controls; each output and part is a formula over input names and earlier output names, parsed without running code. The renderer recomputes as a person moves an input.",
+          "required": [
+            "inputs",
+            "outputs",
+            "control",
+            "input",
+            "readout",
+            "result",
+            "value"
+          ],
+          "properties": {
+            "inputs": {
+              "type": "string"
+            },
+            "outputs": {
+              "type": "string"
+            },
+            "parts": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "control": {
+              "type": "string"
+            },
+            "input": {
+              "type": "string"
+            },
+            "readout": {
+              "type": "string"
+            },
+            "min": {
+              "type": "string"
+            },
+            "max": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "segment": {
+              "type": "string"
+            },
+            "part": {
+              "type": "string"
+            },
+            "partValue": {
+              "type": "string"
+            },
+            "partShare": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "sort": {
+          "type": "object",
+          "description": "A sortable table: the boolean prop turns each heading into a sort button. Columns of figures align on the right either way.",
+          "required": [
+            "prop"
+          ],
+          "properties": {
+            "prop": {
+              "type": "string"
+            },
+            "header": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -454,6 +546,48 @@
           "additionalProperties": {
             "$ref": "#/definitions/prop"
           }
+        },
+        "sum": {
+          "type": "object",
+          "description": "For a list whose items are parts of one whole: the named number field must add up to total, within tolerance.",
+          "required": [
+            "field",
+            "total"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "total": {
+              "type": "number"
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "defaultFrom": {
+          "type": "object",
+          "description": "For a field of a list item: when the item leaves the field out, its value is taken from another field of the same item, such as a stage's mark from its state. The other field's own default applies first; a value with no mapping falls back to default.",
+          "required": [
+            "field",
+            "values"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -472,6 +606,26 @@
               "type": "string"
             },
             "minItems": 1
+          },
+          {
+            "type": "object",
+            "required": [
+              "selector"
+            ],
+            "properties": {
+              "selector": {
+                "type": "string"
+              },
+              "suffixFrom": {
+                "type": "string",
+                "description": "Prop whose value is written after the text, such as a unit."
+              },
+              "joinField": {
+                "type": "string",
+                "description": "A second field of the same item written after the first, such as the other series of a bar."
+              }
+            },
+            "additionalProperties": false
           }
         ]
       }
@@ -508,6 +662,14 @@
         },
         "selector": {
           "type": "string"
+        },
+        "removeWhenEmpty": {
+          "type": "boolean",
+          "description": "Remove the element when the item leaves the field out, such as the second bar of a single-series chart."
+        },
+        "scaleGroup": {
+          "type": "string",
+          "description": "Fields that share a group are drawn against the largest value among them."
         }
       },
       "additionalProperties": false
@@ -540,8 +702,7 @@
     "seriesBinding": {
       "type": "object",
       "required": [
-        "selector",
-        "line"
+        "selector"
       ],
       "properties": {
         "selector": {
@@ -627,9 +788,73 @@
         "ticks": {
           "type": "string",
           "description": "Labels along the series, written from evenly spaced points."
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Several lines drawn from one list, one field each, on one shared scale.",
+          "items": {
+            "type": "object",
+            "required": [
+              "field",
+              "line"
+            ],
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "line": {
+                "type": "string"
+              },
+              "fill": {
+                "type": "string"
+              },
+              "optional": {
+                "type": "boolean",
+                "description": "Not drawn when no point carries the field."
+              },
+              "nameFrom": {
+                "type": "string",
+                "description": "Prop that names this series in each point’s reading."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "unitFrom": {
+          "type": "string",
+          "description": "Prop whose value is the unit, overriding unit."
+        },
+        "includeZero": {
+          "type": "boolean",
+          "description": "Keep zero inside the automatic scale."
+        },
+        "zero": {
+          "type": "string",
+          "description": "Line placed at zero when the scale crosses it, hidden otherwise."
+        },
+        "placeAxis": {
+          "type": "boolean",
+          "description": "Position each axis label level with its gridline."
+        },
+        "markerBox": {
+          "type": "string",
+          "description": "Shape behind a marker’s text, sized to fit it."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "line"
+          ]
+        },
+        {
+          "required": [
+            "lines"
+          ]
+        }
+      ]
     },
     "listPart": {
       "type": "object",
@@ -702,6 +927,26 @@
         "cellCount": {
           "type": "string",
           "description": "Array prop whose length sets the number of cells in each item, such as table columns."
+        },
+        "image": {
+          "type": "object",
+          "description": "Field name to an img element. The field names an image the host provides through the assets option; any other value leaves the image hidden and reports unknown-asset.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "selector"
+            ],
+            "properties": {
+              "selector": {
+                "type": "string"
+              },
+              "alt": {
+                "type": "string",
+                "description": "Field that holds the image's text alternative."
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

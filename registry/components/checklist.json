@@ -1,0 +1,148 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "checklist",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Security review before launch",
+      "items": [
+        {
+          "title": "Rotate production keys",
+          "time": "Monday",
+          "done": true
+        },
+        {
+          "title": "Review admin access",
+          "detail": "Remove anyone who left this quarter.",
+          "time": "Tuesday"
+        }
+      ]
+    }
+  },
+  "source": "components/checklist/",
+  "name": "Checklist",
+  "category": "Content",
+  "purpose": "Give a person steps to tick off, with progress they can trust.",
+  "description": "Steps a person ticks off. Progress is counted from the boxes themselves, so it can never disagree with them.",
+  "intents": [
+    "plan",
+    "track",
+    "instruct"
+  ],
+  "variants": {
+    "items": [
+      "1 to 12"
+    ]
+  },
+  "states": [
+    "default",
+    "checked"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "count",
+    "item",
+    "checkbox",
+    "time",
+    "label",
+    "detail"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [
+      "Tab",
+      "Space"
+    ],
+    "accessibleNameRequired": true,
+    "liveRegion": "polite"
+  },
+  "rules": [
+    "items-are-in-the-order-they-happen",
+    "a-checked-box-is-the-persons-record-not-an-action",
+    "the-count-comes-from-the-boxes"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "radius.card"
+  ],
+  "compatibleWith": [
+    "text-block",
+    "process-ledger",
+    "tool-approval"
+  ],
+  "avoidWhen": [
+    "the-agent-runs-the-steps",
+    "ticking-a-box-should-change-something-outside-the-screen"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "items": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "fields": {
+          "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 80
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "time": {
+            "type": "string",
+            "maxLength": 24,
+            "description": "When, as written, such as 'Monday' or '12:30'."
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".checklist",
+    "text": {
+      "title": ".checklist-title"
+    },
+    "list": {
+      "items": {
+        "container": ".checklist-items",
+        "item": "li",
+        "text": {
+          "title": ".checklist-label",
+          "detail": ".checklist-detail",
+          "time": ".checklist-time"
+        },
+        "attributes": {
+          "done": {
+            "selector": "input",
+            "attribute": "checked"
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "check": {
+      "selector": ".checklist-item input",
+      "event": "change",
+      "local": true,
+      "description": "The person ticked or cleared a step. index names the step and values.checked its new state; the host may save it."
+    }
+  }
+}

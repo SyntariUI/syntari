@@ -127,15 +127,26 @@
       "note": ".live-readout > .hint"
     },
     "variant": {
-      "tone": {
-        "selector": ".readout-head .badge",
-        "values": {
-          "neutral": "",
-          "success": "green",
-          "warning": "amber",
-          "danger": "red"
+      "tone": [
+        {
+          "selector": ".readout-head .badge",
+          "values": {
+            "neutral": "",
+            "success": "green",
+            "warning": "amber",
+            "danger": "red"
+          }
+        },
+        {
+          "selector": ".readout-head .status-dot",
+          "values": {
+            "neutral": "neutral",
+            "success": "",
+            "warning": "amber",
+            "danger": "red"
+          }
         }
-      }
+      ]
     },
     "list": {
       "values": {

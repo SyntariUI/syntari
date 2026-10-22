@@ -1,6 +1,6 @@
 {
   "$id": "https://syntariui.giovanitier.com/registry/agent-policy.json",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "screenIR": {
     "schema": "schema/sui.schema.json",
     "componentIndex": "index.json",
@@ -8,7 +8,14 @@
     "requiresValidation": true,
     "onError": "reject",
     "onWarning": "show-diagnostic",
-    "allowedComponentStatus": "authored-with-props-and-ir"
+    "allowedComponentStatus": "authored-with-props-and-ir",
+    "unverifiedBlocks": {
+      "default": "reject",
+      "enabledBy": "host-render-option",
+      "isolation": "sandboxed-frame-without-scripts-network-forms-or-navigation",
+      "canRequestActions": false,
+      "label": "always-shown"
+    }
   },
   "actions": {
     "authorizationOwner": "host-application",

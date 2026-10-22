@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtemp, readFile, rm, access } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, access, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -34,5 +34,19 @@ test('component and app-shell install as editable source without overwriting', a
     const validation = JSON.parse(run('validate', '--dir', target, '--json'));
     assert.equal(validation.valid, true);
     assert.throws(() => run('add', 'button', '--dir', target, '--json'));
+  } finally { await rm(base, { recursive: true, force: true }); }
+});
+
+test('doctor accepts a manual setup without a marker and rejects a marker for another version', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'syntari-doctor-'));
+  const target = join(base, 'components', 'syntari');
+  try {
+    await mkdir(join(target, 'runtime'), { recursive: true });
+    for (const file of ['syntari.js', 'tokens.css', 'styles.css']) await writeFile(join(target, 'runtime', file), '');
+    const manual = JSON.parse(run('doctor', '--dir', target, '--json'));
+    assert.equal(manual.ok, true);
+    assert.equal(manual.checks.find(check => check.name === 'installation marker').note, true);
+    await writeFile(join(target, 'syntari.json'), JSON.stringify({ version: '0.0.1', registryVersion: '0.0.1' }));
+    assert.throws(() => run('doctor', '--dir', target, '--json'));
   } finally { await rm(base, { recursive: true, force: true }); }
 });
