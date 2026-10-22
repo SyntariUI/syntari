@@ -28,11 +28,14 @@ async function injectKobbeTracking(file) {
 }
 
 const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
+/* The live Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
+const kobbeIgnoredPaths = new Set(['dist/renderer/live']);
 
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     if (entry.isDirectory() && kobbeIgnoredDirs.has(entry.name)) continue;
     const path = `${dir}/${entry.name}`;
+    if (kobbeIgnoredPaths.has(path)) continue;
     if (entry.isDirectory()) await injectKobbeTrackingTree(path);
     else if (entry.isFile() && entry.name.endsWith('.html')) await injectKobbeTracking(path);
   }
@@ -71,6 +74,11 @@ await rm('dist',{recursive:true,force:true});await mkdir('dist');
 await copyFile('landing.html','dist/index.html');
 await mkdir('dist/renderer',{recursive:true});
 await copyFile('renderer.html','dist/renderer/index.html');
+/* The Renderer artifact, live on the site: the same page, with window.claude answered by the Worker's /api/claude. */
+await mkdir('dist/renderer/live',{recursive:true});
+await writeFile('dist/renderer/live/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
+await copyFile('artifacts/renderer/live.js','dist/renderer/live/live.js');
+await cp('kit/runtime','dist/renderer/live/runtime',{recursive:true});
 await writeFile('dist/library.html',redirect('/system/'));
 await writeFile('dist/gallery.html',redirect('/system/'));
 for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
