@@ -263,6 +263,19 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 .empty h2{margin:0;font-size:14px;font-weight:500}
 .empty p{margin:0;color:var(--w-muted);text-wrap:pretty}
 .empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
+/* The public Renderer opens on its templates: one card each, and nothing builds until one is chosen. */
+.empty:has(.template-grid:not([hidden])){place-items:start center;overflow:auto;padding-top:clamp(24px,8vh,72px)}
+.empty:has(.template-grid:not([hidden])) .empty-inner{max-width:760px;width:100%}
+.template-grid{list-style:none;margin:16px 0 0;padding:0;width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;text-align:left}
+.template-grid[hidden]{display:none}
+.template-card{width:100%;height:100%;display:grid;align-content:start;gap:4px;padding:14px 16px;border:1px solid var(--w-line-strong);border-radius:12px;background:var(--w-surface);color:var(--w-text);font:inherit;text-align:left;cursor:pointer;transition:border-color var(--m-2),background var(--m-2),transform var(--m-1)}
+.template-card:hover{border-color:var(--w-accent);background:var(--w-hover)}
+.template-card:active{transform:scale(.99)}
+.template-card:focus-visible{outline:2px solid var(--w-accent);outline-offset:2px}
+.template-card b{font-weight:500;font-size:13.5px}
+.template-card small{color:var(--w-muted);font-size:12px;line-height:1.45}
+/* Without a model there is nothing to type: the composer only appears while a template builds, to offer Stop. */
+[data-templates] .stage:not([data-busy]) ~ .composer{display:none}
 .stage-note{position:absolute;inset:0;display:grid;place-items:center;padding:24px}
 .stage-note>div{display:grid;gap:8px;max-width:420px}
 .stage-note h2{margin:0;font-size:14px;font-weight:500}
@@ -637,6 +650,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
               <button type="button" class="btn primary" data-empty-describe>Describe a screen</button>
               <button type="button" class="btn" data-empty-example>Open the access review</button>
             </div>
+            <ul class="template-grid" data-template-grid aria-label="Templates" hidden></ul>
           </div>
         </div>
         <div class="stage-note" data-note hidden><div><h2 data-note-title></h2><p data-note-text></p><code data-note-code hidden></code><div class="empty-actions" data-note-actions style="justify-content:flex-start;margin-top:6px"></div></div></div>
@@ -843,10 +857,12 @@ const BUNDLED = {
   } }
 };
 
-const state = { run: null, renderId: 0, allowBlocks: false, sample: null, controller: null, busy: false, mode: null, lastRequest: '', request: '', text: '', formatted: '', pathLines: null, source: null, result: null, mounted: null, spec: null, screen: null, nodes: [], requests: [], prompt: '', actions: [], selected: null, viewport: 'fit', audit: null, auditToken: 0, failure: null, pending: null, recent: null };
+const state = { run: null, building: null, renderId: 0, allowBlocks: false, sample: null, controller: null, busy: false, mode: null, lastRequest: '', request: '', text: '', formatted: '', pathLines: null, source: null, result: null, mounted: null, spec: null, screen: null, nodes: [], requests: [], prompt: '', actions: [], selected: null, viewport: 'fit', audit: null, auditToken: 0, failure: null, pending: null, recent: null };
 const app = $('[data-app]'), work = $('[data-work]'), promptField = $('[data-prompt]'), irText = $('[data-ir-text]'), canvas = $('[data-canvas]'), stage = $('[data-stage]'), frame = $('[data-frame]'), ring = $('[data-ring]');
-/* The public Renderer on the site sets this before the page loads: its examples are templates Jev builds in front of the person. */
+/* The public Renderer on the site sets this before the page loads: its examples are templates Jev builds in front of the person.
+   It offers templates only unless it also sets model: true; then Claude is reached through the site, as in the artifact. */
 const PUBLIC = window.syntariRenderer?.public === true;
+const PUBLIC_MODEL = PUBLIC && window.syntariRenderer?.model === true;
 const wide = matchMedia('(min-width: 1100px)');
 const phone = matchMedia('(max-width: 699px)');
 
@@ -2215,6 +2231,7 @@ async function buildTemplate(id) {
   const body = Math.min(TEMPLATE_PACE.max, Math.max(TEMPLATE_PACE.min, componentsIn(spec) * TEMPLATE_PACE.perPart));
   state.pending = { request: `Template · ${example.label}`, mode: 'new' };
   state.recent = null;
+  state.building = example.label;
   setComposer('submitting');
   setBusy(true, 'new');
   const run = startRun('new', $('[data-tier]').value, { template: { id, label: example.label } });
@@ -2245,11 +2262,13 @@ async function buildTemplate(id) {
   } catch (error) {
     irText.readOnly = false;
     if (state.controller === run.controller) state.controller = null;
+    state.building = null;
     await failRun(run, error?.code ? error : stopped());
     return;
   }
   if (state.controller === run.controller) state.controller = null;
   irText.readOnly = false;
+  state.building = null;
   await finishRun(run, { text, truncated: false });
 }
 const chooseExample = id => PUBLIC ? buildTemplate(id) : openExample(id);
@@ -4375,11 +4394,18 @@ function setBusy(busy, mode) {
   stage.setAttribute('aria-busy', String(busy));
   /* With nothing on the canvas, the empty state says what is happening instead of offering the next step. */
   if (busy && (!state.screen || stage.hasAttribute('data-empty'))) { hideNote(); setEmpty(true); }
-  const others = workspace.screens.size;
-  $('[data-empty-title]').textContent = busy ? 'Claude is thinking' : others ? 'New screen' : 'No screen generated';
-  $('[data-empty-text]').textContent = busy ? 'Nothing arrives until Claude starts writing. Then each part appears here as soon as it is complete and validated.' : others ? `Describe it in the composer below. ${others === 1 ? 'Your other screen stays' : `Your ${others} other screens stay`} in this session; switch from the title at the top.` : 'Describe a task or open an example to preview a validated interface.';
+  renderEmpty();
   renderComposer();
-  $('[data-empty-actions]').hidden = busy;
+}
+/* What the empty canvas says: who is working, or what to do next. The public page offers its templates. */
+function renderEmpty() {
+  const busy = state.busy, others = workspace.screens.size, building = state.building;
+  $('[data-empty-title]').textContent = busy ? (building ? `Jev is planning “${building}”` : 'Claude is thinking') : PUBLIC ? 'Choose a template' : others ? 'New screen' : 'No screen generated';
+  $('[data-empty-text]').textContent = busy ? (building ? 'Each part appears here as soon as it is complete and validated.' : 'Nothing arrives until Claude starts writing. Then each part appears here as soon as it is complete and validated.')
+    : PUBLIC ? 'Jev builds it in front of you, part by part. Each part is validated as it arrives, exactly as an answer from Claude would be.'
+    : others ? `Describe it in the composer below. ${others === 1 ? 'Your other screen stays' : `Your ${others} other screens stay`} in this session; switch from the title at the top.` : 'Describe a task or open an example to preview a validated interface.';
+  $('[data-empty-actions]').hidden = busy || PUBLIC;
+  $('[data-template-grid]').hidden = busy || !PUBLIC;
 }
 function disableAI(message) {
   state.sample = null;
@@ -4520,6 +4546,11 @@ $('[data-examples]').append(...Object.entries(BUNDLED).map(([id, example]) => {
   b.addEventListener('click', () => { closePops(); chooseExample(id); });
   return el('li', {}, b);
 }));
+$('[data-template-grid]').append(...Object.entries(BUNDLED).map(([id, example]) => {
+  const card = el('button', { type: 'button', class: 'template-card', 'data-template': id }, el('b', { text: example.label }), el('small', { text: example.note }));
+  card.addEventListener('click', () => chooseExample(id));
+  return el('li', {}, card);
+}));
 $('[data-run]').addEventListener('click', () => { if (state.busy) state.controller?.abort(); });
 $('[data-compose]').addEventListener('submit', event => { event.preventDefault(); submitRequest(); });
 promptField.addEventListener('input', () => { store.set('draft', promptField.value); hideConfirm(); renderComposer(); });
@@ -4593,7 +4624,7 @@ await frames(2);
 bootDone();
 
 /* Claude is optional: the page works without it and lights the composer up when the viewer can sample. */
-const sample = await (window.claude?.use?.('sample') ?? Promise.resolve(null)).catch(() => null);
+const sample = PUBLIC && !PUBLIC_MODEL ? null : await (window.claude?.use?.('sample') ?? Promise.resolve(null)).catch(() => null);
 if (sample) {
   state.sample = sample;
   /* Page tools let Claude hand over a change as data. Where this view cannot run them, the same request goes as text. */
@@ -4604,8 +4635,15 @@ if (sample) {
   renderComposer();
   renderValidation();
   renderUndo();
+} else if (PUBLIC) {
+  disableAI('This public Renderer builds templates. Choose one in Examples to watch Jev build it part by part, each part validated as it arrives.');
+  app.dataset.templates = '';
 } else {
   disableAI('Generation needs Claude, which this view cannot reach. Open a bundled screen, or edit Screen IR in the inspector to see the validator work.');
 }
-if (PUBLIC) buildTemplate(startWith);
+if (PUBLIC && !state.screen) {
+  setEmpty(true);
+  renderEmpty();
+  setStatus({ label: 'Choose a template', detail: PUBLIC_MODEL ? 'Jev builds it part by part' : 'Templates only · Jev builds them part by part, no model', seq: ['idle', 'idle', 'idle'] });
+}
 </script>

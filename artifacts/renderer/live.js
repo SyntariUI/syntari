@@ -4,8 +4,9 @@
  * key never leaves the server.
  */
 (() => {
-  /* This is the public Renderer: its examples are templates, built in front of the person. */
-  window.syntariRenderer = { ...(window.syntariRenderer ?? {}), public: true };
+  /* This is the public Renderer: its examples are templates, built in front of the person. For now it offers templates only;
+     set model to true to let it reach Claude through the site's /api/claude, which then needs the ANTHROPIC_API_KEY secret. */
+  window.syntariRenderer = { ...(window.syntariRenderer ?? {}), public: true, model: false };
   const fail = (code, message) => Object.assign(new Error(message), { code });
   const cancelled = () => fail('cancelled', 'Stopped');
   async function post(path, body, signal) {

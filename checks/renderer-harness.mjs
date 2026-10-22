@@ -91,11 +91,12 @@ export function installClaude({ tools = false } = {}) {
 export async function openRenderer(browserPage, { tools = false, example = null, publicPage = false } = {}) {
   const errors = [];
   browserPage.on('pageerror', error => errors.push(error.message));
-  if (publicPage) await browserPage.addInitScript(() => { window.syntariRenderer = { public: true }; });
+  if (publicPage) await browserPage.addInitScript(model => { window.syntariRenderer = { public: true, model }; }, publicPage === 'model');
   await browserPage.addInitScript(installClaude, { tools });
   if (example) await browserPage.addInitScript(id => { try { localStorage.setItem('syntari-renderer:example', id); } catch {} }, example);
   await browserPage.goto(origin);
-  await expect(browserPage.locator('[data-app][data-ai-ready]')).toBeAttached({ timeout: 30000 });
+  /* The templates-only public page never connects a model: it is ready when it starts building its first template. */
+  await expect(browserPage.locator(publicPage === true ? '[data-app][data-templates]' : '[data-app][data-ai-ready]')).toBeAttached({ timeout: 30000 });
   if (!publicPage) await expect(browserPage.locator('[data-status-label]')).toHaveText(/Ready/);
   return errors;
 }
