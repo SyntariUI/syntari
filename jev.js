@@ -13,7 +13,7 @@ const FILLER = new Set(['el', 'la', 'los', 'las', 'lo', 'un', 'una', 'de', 'del'
 const KINDS = [
   [/^(tabla|table|tablas|tables|listado|detalle)$/, ['table', 'comparison-table', 'data-table', 'simple-data-table']],
   [/^(grafico|grafica|graficos|chart|charts|graph)$/, ['chart-bars', 'line-chart', 'area-chart', 'chart-donut', 'metric-and-sparkline']],
-  [/^(barras|bars|columnas|columns|escalera|ladder)$/, ['chart-bars']],
+  [/^(barras|barra|bars|bar|columnas|columns|escalera|ladder)$/, ['chart-bars']],
   [/^(linea|lineas|line|evolucion|tendencia|trend)$/, ['line-chart', 'area-chart']],
   [/^(kpi|kpis|metricas|metrica|indicadores|stats|metrics|cifras|resumen)$/, ['stat-row', 'headline-metric', 'metric-strip']],
   [/^(desglose|breakdown|reparto|asignacion|allocation|composicion)$/, ['breakdown']],
@@ -45,7 +45,9 @@ function score(phrase, part) {
   const asked = words(phrase);
   if (!asked.length) return 0;
   if (asked.some(word => word === `#${fold(part.id)}`) || fold(phrase).replace(/^#/, '') === fold(part.id)) return 1;
-  const kinds = new Set(asked.flatMap(word => KINDS.filter(([pattern]) => pattern.test(word)).flatMap(([, slugs]) => slugs)));
+  /* Each kind word narrows the kinds: "bar chart" means bar charts, not every chart. */
+  const kinds = asked.map(word => new Set(KINDS.filter(([pattern]) => pattern.test(word)).flatMap(([, slugs]) => slugs))).filter(set => set.size)
+    .reduce((acc, set) => acc ? new Set([...acc].filter(slug => set.has(slug))) : set, null) ?? new Set();
   const own = new Set([...words(part.title ?? ''), ...words(part.id), ...words(part.name ?? '')]);
   const named = asked.filter(word => !KINDS.some(([pattern]) => pattern.test(word)));
   const hits = named.filter(word => own.has(word) || [...own].some(other => other.length > 4 && word.length > 4 && (other.startsWith(word) || word.startsWith(other)))).length;
@@ -72,14 +74,14 @@ const PATTERNS = [
   /* remove X */
   { intent: 'remove', re: /^(?:por favor,?\s*)?(?:elimina|quita|borra|suprime|saca|remove|delete|drop)\s+(.+?)\s*\.?$/i },
   /* move X to the top / to the end */
-  { intent: 'move-edge', re: /^(?:mueve|pon|coloca|lleva|sube|baja|move|put|place)\s+(.+?)\s+(?:al principio|al inicio|arriba del todo|en primer lugar|primero|to the top|at the top|first|al final|abajo del todo|en ultimo lugar|el ultimo|to the bottom|at the bottom|to the end|last)\s*\.?$/i },
+  { intent: 'move-edge', re: /^(?:mueve|pon|coloca|lleva|sube|baja|move|put|place)\s+(.+?)\s+(?:al principio|al inicio|arriba del todo|en primer lugar|primero|to the top|at the top|to the start|at the start|at the beginning|first|al final|abajo del todo|en ultimo lugar|el ultimo|to the bottom|at the bottom|to the end|at the end|last)\s*\.?$/i },
   /* move X before / after Y */
   { intent: 'move', re: /^(?:mueve|pon|coloca|lleva|sube|baja|move|put|place)\s+(.+?)\s+(antes de|antes del|delante de|delante del|encima de|encima del|por encima de|above|before|despues de|despues del|detras de|detras del|debajo de|debajo del|por debajo de|tras|after|below|under)\s+(.+?)\s*\.?$/i },
   /* rename X to "Y" */
   { intent: 'rename', re: /^(?:cambia|renombra|pon|titula|change|rename|set|call)\s+(?:el\s+|the\s+)?(?:titulo|nombre|encabezado|heading|title|name)?\s*(?:de|del|de la|of)?\s*(.+?)\s+(?:a|por|como|to|as)\s+["“”«»'‘’]/i }
 ];
 const AFTER = /^(despues de|despues del|detras de|detras del|debajo de|debajo del|por debajo de|tras|after|below|under)$/;
-const TOP = /(principio|inicio|arriba del todo|primer lugar|primero|top|first)/;
+const TOP = /(principio|inicio|arriba del todo|primer lugar|primero|top|start|beginning|first)/;
 
 /**
  * Decide a request without a model when it can be decided with certainty. Returns { route: 'jev', change, decisions } with

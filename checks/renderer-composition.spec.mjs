@@ -10,33 +10,33 @@ import { HOLDINGS } from '../tests/fixtures/portfolio.mjs';
 serveRenderer(test);
 
 const ops = (operations, extra = {}) => JSON.stringify({ version: 'syntari-ops-1', base: '{{BASE}}', ...extra, operations });
-const perfTable = { id: 'performance-table', type: 'section', heading: 'Rentabilidad por mes', children: [{ id: 'performance-by-month', component: 'syntari.table', props: { caption: 'Rentabilidad acumulada por mes', columns: [{ label: 'Mes' }, { label: 'Cartera' }, { label: 'Benchmark' }], rows: { $data: 'tables.performance', cells: ['month', { field: 'portfolio', format: 'signed-percent' }, { field: 'benchmark', format: 'signed-percent' }] } }, provenance: { reason: 'Pedido: una tabla debajo del gráfico.' } }] };
-const addPerfTable = ops([{ op: 'insert', parent: 'screen', after: 'performance', node: perfTable, reason: 'Pedido: una tabla debajo del gráfico' }], { summary: 'Añade la rentabilidad por mes bajo el gráfico' });
-const riskTable = { id: 'risk-return-table', type: 'section', heading: 'Riesgo y peso por posición', children: [{ id: 'risk-by-position', component: 'syntari.table', props: { caption: 'Contribución al riesgo frente al peso, por posición', sortable: true, columns: [{ label: 'Activo' }, { label: 'Peso' }, { label: 'Riesgo' }], rows: { $data: 'tables.holdings', sort: { by: 'risk', dir: 'desc' }, cells: ['asset', { field: 'weight', format: 'percent' }, { field: 'risk', format: 'percent' }] } }, provenance: { reason: 'Sustituye al gráfico de dispersión que no existe.' } }] };
+const perfTable = { id: 'performance-table', type: 'section', heading: 'Return by month', children: [{ id: 'performance-by-month', component: 'syntari.table', props: { caption: 'Cumulative return by month', columns: [{ label: 'Month' }, { label: 'Portfolio' }, { label: 'Benchmark' }], rows: { $data: 'tables.performance', cells: ['month', { field: 'portfolio', format: 'signed-percent' }, { field: 'benchmark', format: 'signed-percent' }] } }, provenance: { reason: 'Asked for: a table under the chart.' } }] };
+const addPerfTable = ops([{ op: 'insert', parent: 'screen', after: 'performance', node: perfTable, reason: 'Asked for: a table under the chart' }], { summary: 'Add the monthly return under the chart' });
+const riskTable = { id: 'risk-return-table', type: 'section', heading: 'Risk and weight by position', children: [{ id: 'risk-by-position', component: 'syntari.table', props: { caption: 'Risk contribution against weight, by position', sortable: true, columns: [{ label: 'Asset' }, { label: 'Weight' }, { label: 'Risk' }], rows: { $data: 'tables.holdings', sort: { by: 'risk', dir: 'desc' }, cells: ['asset', { field: 'weight', format: 'percent' }, { field: 'risk', format: 'percent' }] } }, provenance: { reason: 'Stands in for the scatter plot that does not exist.' } }] };
 const holdingsRows = HOLDINGS.map(({ value, ...row }) => row);
 /* The recomposition of the failed portfolio screen: its rows move into screen data, and every figure is bound to them. */
 const recomposed = (rows = holdingsRows) => JSON.stringify({
   version: 'syntari-ir-1', type: 'screen',
-  meta: { job: 'Revisar la cartera del trimestre', audience: 'Gestor patrimonial', decision: 'none',
-    outline: [{ node: 'stat-row' }, { section: 'Dónde está el dinero y cuándo se puede mover', layout: 'two-column', nodes: ['breakdown', 'chart-bars'] }, { node: 'chart-bars' }, { section: 'Posiciones', layout: 'stack', nodes: ['table'] }],
-    plan: { pattern: 'dashboard', purpose: 'Saber cuánto se puede mover y de dónde viene el riesgo.', questions: ['¿Cuánto es líquido a 30 días?', '¿De dónde viene el riesgo?'],
-      groups: [{ zone: 'summary', answers: [0], data: 'measures.liquid30', role: 'kpi', component: 'stat-row', why: 'Tres medidas con su contexto.' }, { zone: 'primary', answers: [0], data: 'groups.liquidity', role: 'ordered-distribution', component: 'chart-bars', why: 'Buckets ordenados por plazo.' }, { zone: 'supporting', answers: [1], data: 'groups.riskVsWeight', role: 'category-comparison', component: 'chart-bars', why: 'Peso frente a riesgo en una escala.' }, { zone: 'details', answers: [0, 1], data: 'tables.holdings', role: 'records', component: 'table', why: 'Cada posición, ordenable.' }],
-      alternatives: [{ option: 'breakdown para la liquidez', rejected: 'Una sola barra pierde el orden de los plazos.' }],
-      rationale: 'Corrige la liquidez D0–D30: las posiciones suman 48 %, no 38 %; el riesgo se compara con el peso.' } },
-  data: { mode: 'demo', currency: 'EUR', locale: 'es-ES',
-    tables: { holdings: { label: 'Posiciones', key: 'asset', fields: { asset: { type: 'text', label: 'Activo' }, assetClass: { type: 'category', label: 'Clase', order: ['Liquidez', 'Renta fija', 'Renta variable', 'Alternativos'] }, weight: { type: 'percent', label: 'Peso', total: 100, role: 'allocation' }, liquidityDays: { type: 'days', label: 'Liquidez', role: 'liquidity' }, risk: { type: 'percent', label: 'Riesgo', total: 100, role: 'risk-contribution' } }, rows } },
-    measures: { liquid30: { label: 'Liquidez D0–D30', sum: 'holdings.weight', where: { liquidityDays: { max: 30 } }, format: 'percent', digits: 0 } },
-    groups: { allocation: { label: 'Asignación', table: 'holdings', by: 'assetClass', value: 'weight' }, liquidity: { label: 'Escalera de liquidez', table: 'holdings', by: 'liquidityDays', value: 'weight', buckets: [{ label: 'D0', max: 0 }, { label: 'D1–7', max: 7 }, { label: 'D8–30', max: 30 }, { label: 'D31–90', max: 90 }, { label: '>D90' }] }, riskVsWeight: { label: 'Peso frente a riesgo', table: 'holdings', by: 'assetClass', values: ['weight', 'risk'] } } },
-  title: 'La cartera Ortega tiene un 48 % disponible a 30 días, y la renta variable concentra el riesgo', layout: 'stack',
+  meta: { job: 'Review the quarter’s portfolio', audience: 'Wealth manager', decision: 'none',
+    outline: [{ node: 'stat-row' }, { section: 'Where the money is and when it can move', layout: 'two-column', nodes: ['breakdown', 'chart-bars'] }, { node: 'chart-bars' }, { section: 'Positions', layout: 'stack', nodes: ['table'] }],
+    plan: { pattern: 'dashboard', purpose: 'Know how much can move and where the risk comes from.', questions: ['How much is liquid within 30 days?', 'Where does the risk come from?'],
+      groups: [{ zone: 'summary', answers: [0], data: 'measures.liquid30', role: 'kpi', component: 'stat-row', why: 'Three measures with their context.' }, { zone: 'primary', answers: [0], data: 'groups.liquidity', role: 'ordered-distribution', component: 'chart-bars', why: 'Buckets in order of time.' }, { zone: 'supporting', answers: [1], data: 'groups.riskVsWeight', role: 'category-comparison', component: 'chart-bars', why: 'Weight against risk on one scale.' }, { zone: 'details', answers: [0, 1], data: 'tables.holdings', role: 'records', component: 'table', why: 'Every position, sortable.' }],
+      alternatives: [{ option: 'a breakdown for liquidity', rejected: 'One bar loses the order of the horizons.' }],
+      rationale: 'Fixes liquidity D0–D30: the positions add up to 48%, not 38%; risk is compared with weight.' } },
+  data: { mode: 'demo', currency: 'USD', locale: 'en-US',
+    tables: { holdings: { label: 'Positions', key: 'asset', fields: { asset: { type: 'text', label: 'Asset' }, assetClass: { type: 'category', label: 'Class', order: ['Cash', 'Fixed income', 'Equities', 'Alternatives'] }, weight: { type: 'percent', label: 'Weight', total: 100, role: 'allocation' }, liquidityDays: { type: 'days', label: 'Liquidity', role: 'liquidity' }, risk: { type: 'percent', label: 'Risk', total: 100, role: 'risk-contribution' } }, rows } },
+    measures: { liquid30: { label: 'Liquidity D0–D30', sum: 'holdings.weight', where: { liquidityDays: { max: 30 } }, format: 'percent', digits: 0 } },
+    groups: { allocation: { label: 'Allocation', table: 'holdings', by: 'assetClass', value: 'weight' }, liquidity: { label: 'Liquidity ladder', table: 'holdings', by: 'liquidityDays', value: 'weight', buckets: [{ label: 'D0', max: 0 }, { label: 'D1–7', max: 7 }, { label: 'D8–30', max: 30 }, { label: 'D31–90', max: 90 }, { label: '>D90' }] }, riskVsWeight: { label: 'Weight against risk', table: 'holdings', by: 'assetClass', values: ['weight', 'risk'] } } },
+  title: 'The Ortega portfolio has 48% available within 30 days, and equities carry most of the risk', layout: 'stack',
   children: [
-    { id: 'summary-kpis', component: 'syntari.stat-row', props: { stats: [{ label: 'Patrimonio', value: '10 M€', note: 'A 30 de septiembre', tone: 'neutral' }, { label: 'Rentabilidad YTD', value: '+3,6 %', badge: '+0,9 pp', note: 'Frente al benchmark' }, { label: 'Liquidez D0–D30', value: { $data: 'measures.liquid30' }, note: 'Calculada de las posiciones', tone: 'neutral' }] }, provenance: { reason: 'El resumen.' } },
-    { id: 'section-structure', type: 'section', heading: 'Dónde está el dinero y cuándo se puede mover', layout: 'two-column', children: [
-      { id: 'allocation', component: 'syntari.breakdown', props: { title: 'Asignación por clase de activo', segments: { $data: 'groups.allocation', map: { label: 'label', share: 'share', value: { field: 'value', format: 'percent', digits: 0 } } } }, provenance: { reason: 'Partes de un todo.' } },
-      { id: 'liquidity-ladder', component: 'syntari.chart-bars', props: { title: 'Escalera de liquidez', orientation: 'vertical', unit: '%', seriesA: 'Peso', chartLabel: 'Peso por plazo: D0 6 %, D1–7 30 %, D8–30 12 %, D31–90 31 %, más de 90 días 21 %.', columns: { $data: 'groups.liquidity', map: { label: 'label', a: 'value' } } }, provenance: { reason: 'Buckets en su orden.' } }
+    { id: 'summary-kpis', component: 'syntari.stat-row', props: { stats: [{ label: 'Total assets', value: '$10M', note: 'As of September 30', tone: 'neutral' }, { label: 'YTD return', value: '+3.6%', badge: '+0.9 pp', note: 'Against the benchmark' }, { label: 'Liquidity D0–D30', value: { $data: 'measures.liquid30' }, note: 'Computed from the positions', tone: 'neutral' }] }, provenance: { reason: 'The summary.' } },
+    { id: 'section-structure', type: 'section', heading: 'Where the money is and when it can move', layout: 'two-column', children: [
+      { id: 'allocation', component: 'syntari.breakdown', props: { title: 'Allocation by asset class', segments: { $data: 'groups.allocation', map: { label: 'label', share: 'share', value: { field: 'value', format: 'percent', digits: 0 } } } }, provenance: { reason: 'Parts of one whole.' } },
+      { id: 'liquidity-ladder', component: 'syntari.chart-bars', props: { title: 'Liquidity ladder', orientation: 'vertical', unit: '%', seriesA: 'Weight', chartLabel: 'Weight by horizon: D0 6%, D1–7 30%, D8–30 12%, D31–90 31%, over 90 days 21%.', columns: { $data: 'groups.liquidity', map: { label: 'label', a: 'value' } } }, provenance: { reason: 'Buckets in their order.' } }
     ] },
-    { id: 'risk-vs-weight', component: 'syntari.chart-bars', props: { title: 'Peso frente a contribución al riesgo', unit: '%', seriesA: 'Peso', seriesB: 'Riesgo', chartLabel: 'La renta variable pesa un 27 % y aporta el 52 % del riesgo.', columns: { $data: 'groups.riskVsWeight', map: { label: 'label', a: 'weight', b: 'risk' } } }, provenance: { reason: 'El riesgo frente al peso.' } },
-    { id: 'section-positions', type: 'section', heading: 'Posiciones', children: [
-      { id: 'holdings', component: 'syntari.table', props: { caption: 'Posiciones de la cartera', sortable: true, columns: [{ label: 'Activo' }, { label: 'Clase' }, { label: 'Peso' }, { label: 'Liquidez' }, { label: 'Riesgo' }], rows: { $data: 'tables.holdings', sort: { by: 'weight', dir: 'desc' }, cells: ['asset', 'assetClass', { field: 'weight', format: 'percent' }, { field: 'liquidityDays', format: 'days' }, { field: 'risk', format: 'percent' }] } }, provenance: { reason: 'El detalle.' } }
+    { id: 'risk-vs-weight', component: 'syntari.chart-bars', props: { title: 'Weight against risk contribution', unit: '%', seriesA: 'Weight', seriesB: 'Risk', chartLabel: 'Equities weigh 27% and bring 52% of the risk.', columns: { $data: 'groups.riskVsWeight', map: { label: 'label', a: 'weight', b: 'risk' } } }, provenance: { reason: 'Risk against weight.' } },
+    { id: 'section-positions', type: 'section', heading: 'Positions', children: [
+      { id: 'holdings', component: 'syntari.table', props: { caption: 'Portfolio positions', sortable: true, columns: [{ label: 'Asset' }, { label: 'Class' }, { label: 'Weight' }, { label: 'Liquidity' }, { label: 'Risk' }], rows: { $data: 'tables.holdings', sort: { by: 'weight', dir: 'desc' }, cells: ['asset', 'assetClass', { field: 'weight', format: 'percent' }, { field: 'liquidityDays', format: 'days' }, { field: 'risk', format: 'percent' }] } }, provenance: { reason: 'The detail.' } }
     ] }
   ]
 });
@@ -143,12 +143,12 @@ test('D. figures that contradict the holdings are caught: inferred on a written 
   await p.locator('[data-tab=validation]').click();
   const issues = p.locator('[data-issues]');
   await expect(issues).toContainText('Data integrity');
-  await expect(issues).toContainText('“Liquidez D0–D30” shows 38%, but the Peso column of the table on this screen adds up to 48%');
-  await expect(issues).toContainText('“D8–30” shows 2%, but the Peso column of the table on this screen adds up to 12%');
+  await expect(issues).toContainText('“Liquidity D0–D30” shows 38%, but the Weight column of the table on this screen adds up to 48%');
+  await expect(issues).toContainText('“D8–30” shows 2%, but the Weight column of the table on this screen adds up to 12%');
   /* On the bound dashboard, writing the old 38% by hand is a hard error: the part is not painted. */
   await openExample(p, 'wealth');
   const ir = await screenIR(p);
-  ir.children.find(node => node.id === 'summary-kpis').props.stats[2].value = '38 %';
+  ir.children.find(node => node.id === 'summary-kpis').props.stats[2].value = '38%';
   await p.locator('[data-tab=ir]').click();
   await p.locator('[data-ir-text]').fill(JSON.stringify(ir));
   await p.locator('[data-apply]').click();
@@ -173,9 +173,9 @@ test('E. a global improvement recomposes the screen from its own data, resolves 
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
   const after = await screenIR(p);
   expect(after.data.tables.holdings.rows).toHaveLength(10);
-  expect(after.data.tables.holdings.rows.map(row => row.asset)).toEqual(before.children.find(n => n.id === 'section-posiciones').children[0].props.rows.map(row => row[0]));
+  expect(after.data.tables.holdings.rows.map(row => row.asset)).toEqual(before.children.find(n => n.id === 'section-positions').children[0].props.rows.map(row => row[0]));
   expect(Object.keys(nodesById(after))).not.toEqual(Object.keys(nodesById(before)));
-  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48 %');
+  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48%');
   await expect(p.locator('.canvas [data-ir-id=liquidity-ladder] .chart-column')).toHaveCount(5);
   await expect(p.locator('.canvas [data-ir-component=breakdown]')).toHaveCount(1);
   const card = p.locator('[data-changes] .change-card').first();
@@ -191,7 +191,7 @@ test('E. a global improvement recomposes the screen from its own data, resolves 
   expect(await screenIR(p)).toEqual(before);
   await p.locator('[data-compare-back]').click();
   await expect(p.locator('[data-compare]')).toBeHidden();
-  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48 %');
+  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48%');
   await p.locator('[data-undo]').click();
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v1 /);
   expect(await screenIR(p)).toEqual(before);
@@ -222,9 +222,10 @@ test('F. a small scoped edit leaves every other part, figure, and id exactly as 
   const errors = await openRenderer(p);
   await openExample(p, 'wealth');
   const before = await screenIR(p), shownBefore = await shown(p);
-  /* Figures follow the screen data's locale everywhere, charts included: 14,5 %, never 14.5% beside a table that says 14,5 %. */
-  await expect(p.locator('.canvas [data-ir-id=risk-vs-weight]')).toContainText('27 % · 52 %');
-  await expect(p.locator('.canvas [data-ir-id=performance]')).not.toContainText('3.6');
+  /* Figures follow the screen data's locale everywhere, charts included: 27% · 52%, the same way the table writes them. */
+  await expect(p.locator('.canvas [data-ir-id=risk-vs-weight]')).toContainText('27% · 52%');
+  await expect(p.locator('.canvas [data-ir-id=performance]')).toContainText('3.6%');
+  await expect(p.locator('.canvas [data-ir-id=performance]')).not.toContainText('3,6');
   await script(p, addPerfTable);
   await ask(p, 'Añade una tabla de rentabilidad mensual debajo del gráfico');
   await settled(p);
@@ -276,15 +277,15 @@ test('the Plan tab exposes the decision trace and the data the runtime computed'
   await p.locator('[data-tab=plan]').click();
   const plan = p.locator('[data-plan]');
   await expect(plan).toContainText('Questions it answers');
-  await expect(plan).toContainText('¿Cuánto es líquido a 30 días?');
+  await expect(plan).toContainText('How much is liquid within 30 days?');
   await expect(plan).toContainText('Line chart');
   await expect(plan).toContainText('Actual against a benchmark over time');
   await expect(plan).toContainText('measures.liquid30');
-  await expect(plan).toContainText('48 %');
+  await expect(plan).toContainText('48%');
   /* The sortable table sorts by a column of figures, largest first, and back. */
   const firstCell = () => p.locator('.canvas [data-ir-id=holdings] tbody tr:first-child td:first-child').textContent();
-  expect(await firstCell()).toBe('ETF MSCI World');
-  await p.locator('.canvas [data-ir-id=holdings] th button', { hasText: 'Liquidez' }).click();
+  expect(await firstCell()).toBe('MSCI World ETF');
+  await p.locator('.canvas [data-ir-id=holdings] th button', { hasText: 'Liquidity' }).click();
   expect(await firstCell()).toBe('Private equity Fund III');
   await expect(p.locator('.canvas [data-ir-id=holdings] th[aria-sort=descending]')).toHaveCount(1);
   expect(errors).toEqual([]);

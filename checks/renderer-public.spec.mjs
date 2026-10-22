@@ -51,15 +51,15 @@ test('a template chosen again is built again without piling up copies, and its f
   await expect(p.locator('[data-status-label]')).toHaveText(/^Building “Portfolio dashboard”|^Planning|^Adding/);
   await arriving(p);
   await expect(p.locator('[data-status-label]')).toHaveText(/Ready/, { timeout: 20000 });
-  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48 %');
-  await expect(p.locator('.canvas [data-ir-id=allocation]')).toContainText('1,5 M€');
+  await expect(p.locator('.canvas [data-ir-id=summary-kpis]')).toContainText('48%');
+  await expect(p.locator('.canvas [data-ir-id=allocation]')).toContainText('$1.5M');
   const built = await screenIR(p);
   expect(built.children.map(node => node.id)).toContain('performance');
   await choose('wealth');
   await arriving(p);
   await expect(p.locator('[data-status-label]')).toHaveText(/Ready/, { timeout: 20000 });
   await p.locator('[data-screens-toggle]').click();
-  await expect(p.locator('[data-screens] button', { hasText: 'La cartera Ortega' })).toHaveCount(1);
+  await expect(p.locator('[data-screens] button', { hasText: 'The Ortega portfolio' })).toHaveCount(1);
   expect(await prompts(p)).toEqual([]);
   expect(errors).toEqual([]);
 });

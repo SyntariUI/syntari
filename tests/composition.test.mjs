@@ -41,7 +41,7 @@ test('screen data refuses totals that do not add up, rows in the wrong bucket, a
   assert.ok(findings(result, 'data-total').some(d => /add up to 104/.test(d.message)), 'weights must add up to 100');
   const mismatch = findings(result, 'bucket-mismatch');
   assert.equal(mismatch.length, 1);
-  assert.match(mismatch[0].message, /Bono corporativo IG 2029: liquidityDays 30 belongs in “D8–30”/);
+  assert.match(mismatch[0].message, /IG corporate bond 2029: liquidityDays 30 belongs in “D8–30”/);
   assert.ok(findings(result, 'unknown-data-ref').length);
 });
 
@@ -59,7 +59,7 @@ test('bound props render computed figures, and the contract checks the resolved 
 /* Test D: a numerical contradiction between asset-level data, the headline, and the bucket chart. */
 test('a headline or bucket chart that contradicts the rows fails semantic validation', async () => {
   const broken = clone(CANONICAL);
-  broken.children[0].props.stats[2].value = '38 %';
+  broken.children[0].props.stats[2].value = '38%';
   broken.children[2].children[1].props.columns = [{ label: 'D0', a: 6 }, { label: 'D1–7', a: 30 }, { label: 'D8–30', a: 2 }, { label: 'D31–90', a: 41 }, { label: '>D90', a: 21 }];
   const result = await validateScreen(broken);
   assert.equal(result.ok, false, 'a structurally valid screen fails on its data');
@@ -70,13 +70,13 @@ test('a headline or bucket chart that contradicts the rows fails semantic valida
   const legacy = await validateScreen(FLAWED);
   const inferred = findings(legacy, 'data-conflict');
   assert.ok(inferred.every(d => d.severity === 'warning'));
-  assert.ok(inferred.some(d => /Liquidez D0–D30” shows 38%.*adds up to 48%/.test(d.message)));
+  assert.ok(inferred.some(d => /Liquidity D0–D30” shows 38%.*adds up to 48%/.test(d.message)));
   assert.ok(inferred.some(d => /D8–30” shows 2%.*adds up to 12%/.test(d.message)), 'the day-30 bond is counted where its bound says');
 });
 
 test('a part titled as risk that shows allocation weights is refused', async () => {
   const broken = clone(CANONICAL);
-  broken.children[3].props.title = 'Contribución al riesgo';
+  broken.children[3].props.title = 'Risk contribution';
   broken.children[3].props.columns = { $data: 'groups.allocation', map: { label: 'label', a: 'weight' } };
   delete broken.children[3].props.seriesB;
   const result = await validateScreen(broken);
@@ -90,7 +90,7 @@ test('the composition planner detects redundant and relabeled visualizations, no
   const signal = code => flawed.signals.filter(item => item.code === code);
   assert.ok(signal('relabeled-data').some(item => item.ids.includes('risk')), 'the risk chart repeats the allocation numbers');
   assert.ok(signal('monotone-composition').length, 'three single bars stand in for three different analyses');
-  assert.ok(signal('repeated-metric').some(item => /patrimonio/.test(item.message)));
+  assert.ok(signal('repeated-metric').some(item => /total assets/i.test(item.message)));
   assert.equal(flawed.criteria.find(c => c.id === 'redundancy').verdict, 'concern');
   /* Two bar charts with distinct information roles are not redundant. */
   const good = assessComposition(CANONICAL, { policy });
@@ -196,13 +196,13 @@ test('a recomposition keeps the data, every record, and every figure, and valida
 
 test('recomposing a screen without data states its rows in data, using only figures it already showed', async () => {
   const screen = assignIds(FLAWED);
-  const data = { mode: 'demo', tables: { holdings: clone(DATA.tables.holdings) }, measures: { liquid30: clone(DATA.measures.liquid30) }, groups: { liquidity: clone(DATA.groups.liquidity), allocation: { label: 'Asignación', table: 'holdings', by: 'assetClass', value: 'weight' } } };
+  const data = { mode: 'demo', tables: { holdings: clone(DATA.tables.holdings) }, measures: { liquid30: clone(DATA.measures.liquid30) }, groups: { liquidity: clone(DATA.groups.liquidity), allocation: { label: 'Allocation', table: 'holdings', by: 'assetClass', value: 'weight' } } };
   data.tables.holdings.rows = data.tables.holdings.rows.map(({ value, ...row }) => row);
   delete data.tables.holdings.fields.value;
   const children = [
-    { id: 'kpis', component: 'syntari.stat-row', props: { stats: [{ label: 'Liquidez D0–D30', value: { $data: 'measures.liquid30' }, note: 'Calculada de las posiciones' }] } },
-    { id: 'ladder', component: 'syntari.chart-bars', props: { title: 'Escalera de liquidez', orientation: 'vertical', unit: '%', chartLabel: 'Peso por plazo de liquidez.', columns: { $data: 'groups.liquidity', map: { label: 'label', a: 'value' } } } },
-    { id: 'holdings', component: 'syntari.table', props: { caption: 'Posiciones', sortable: true, columns: [{ label: 'Activo' }, { label: 'Peso' }], rows: { $data: 'tables.holdings', cells: ['asset', { field: 'weight', format: 'percent' }] } } }
+    { id: 'kpis', component: 'syntari.stat-row', props: { stats: [{ label: 'Liquidity D0–D30', value: { $data: 'measures.liquid30' }, note: 'Computed from the positions' }] } },
+    { id: 'ladder', component: 'syntari.chart-bars', props: { title: 'Liquidity ladder', orientation: 'vertical', unit: '%', chartLabel: 'Weight by liquidity horizon.', columns: { $data: 'groups.liquidity', map: { label: 'label', a: 'value' } } } },
+    { id: 'holdings', component: 'syntari.table', props: { caption: 'Positions', sortable: true, columns: [{ label: 'Asset' }, { label: 'Weight' }], rows: { $data: 'tables.holdings', cells: ['asset', { field: 'weight', format: 'percent' }] } } }
   ];
   const ok = await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data, children } }]));
   assert.equal(ok.ok, true, JSON.stringify(ok.diagnostics.filter(d => d.severity === 'error')));
@@ -217,9 +217,9 @@ test('recomposing a screen without data states its rows in data, using only figu
   made.tables.holdings.rows[1].weight = 8.5;
   const madeUp = await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data: made, children } }]));
   assert.ok(codes(madeUp).includes('unsourced-data'), 'a recomposition never adds figures');
-  /* The screen wrote "10 M€": stating it as 10000000 in the data is the same figure, not a new one. 12000000 is new. */
+  /* The screen wrote "$10M": stating it as 10000000 in the data is the same figure, not a new one. 12000000 is new. */
   const total = clone(data);
-  total.measures.totalValue = { label: 'Patrimonio', value: 10000000, format: 'compact-currency' };
+  total.measures.totalValue = { label: 'Total assets', value: 10000000, format: 'compact-currency' };
   const scaled = await applyScreenOperations(screen, change(screen, [{ op: 'recompose', screen: { title: FLAWED.title, data: total, children } }]));
   assert.equal(scaled.ok, true, JSON.stringify(scaled.diagnostics.filter(d => d.severity === 'error')));
   total.measures.totalValue.value = 12000000;
