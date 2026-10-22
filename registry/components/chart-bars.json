@@ -134,9 +134,9 @@
         "fields": {
           "label": {
             "type": "string",
-            "maxLength": 16,
+            "maxLength": 40,
             "required": true,
-            "description": "Up to 6 characters reads best in vertical columns; horizontal bars fit up to 16, such as an asset class."
+            "description": "Up to 6 characters reads best in vertical columns; horizontal bars take a full name, such as a product or an asset class."
           },
           "a": {
             "type": "number",
