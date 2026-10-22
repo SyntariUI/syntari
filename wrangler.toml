@@ -1,7 +1,10 @@
 name = "syntari"
+main = "worker.mjs"
 compatibility_date = "2026-09-24"
+compatibility_flags = ["nodejs_compat"]
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
 
 [previews]
