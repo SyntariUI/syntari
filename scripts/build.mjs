@@ -28,8 +28,8 @@ async function injectKobbeTracking(file) {
 }
 
 const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
-/* The live Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
-const kobbeIgnoredPaths = new Set(['dist/renderer/live']);
+/* The public Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
+const kobbeIgnoredPaths = new Set(['dist/renderer/index.html']);
 
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -72,13 +72,14 @@ execFileSync('npm',['pack','--pack-destination','downloads','--silent'],{
 });
 await rm('dist',{recursive:true,force:true});await mkdir('dist');
 await copyFile('landing.html','dist/index.html');
+/* The public Renderer at /renderer/: the Renderer artifact, opening on its templates, with window.claude answered by the Worker's /api/claude. */
 await mkdir('dist/renderer',{recursive:true});
-await copyFile('renderer.html','dist/renderer/index.html');
-/* The Renderer artifact, live on the site: the same page, with window.claude answered by the Worker's /api/claude. */
-await mkdir('dist/renderer/live',{recursive:true});
-await writeFile('dist/renderer/live/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
-await copyFile('artifacts/renderer/live.js','dist/renderer/live/live.js');
-await cp('kit/runtime','dist/renderer/live/runtime',{recursive:true});
+await writeFile('dist/renderer/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
+await copyFile('artifacts/renderer/live.js','dist/renderer/live.js');
+await cp('kit/runtime','dist/renderer/runtime',{recursive:true});
+/* The intent workspace that /renderer/ used to serve. */
+await mkdir('dist/renderer/workspace',{recursive:true});
+await copyFile('renderer.html','dist/renderer/workspace/index.html');
 await writeFile('dist/library.html',redirect('/system/'));
 await writeFile('dist/gallery.html',redirect('/system/'));
 for(const file of ['HISTORY.md','CONTRIBUTING.md','LICENSE','landing.css','homepage.js','intent-renderer.js','renderer-workspace.css','workspace.css','workspace.js','favicon.svg','docs-data.js','docs-guides.js','preview.html','preview.js','preview.css','generative-ui.html','generative-ui.js',...runtime])await copyFile(file,'dist/'+file);
@@ -109,7 +110,7 @@ function redirect(target, preserveHash=false){
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${target}"><title>Syntari</title></head><body><a href="${target}">Open Syntari</a><script>location.replace(${JSON.stringify(target)}${preserveHash ? '+location.hash' : ''})</script></body></html>`;
 }
 // Prototype workspaces live on the archive/prototypes branch; their public URLs lead to the production surfaces.
-const legacyRoutes={'ai-behavioural-patterns.html':'/system/?guide=ai-patterns#agent-questions','Jev/index.html':'/renderer/','tmp/index.html':'/system/','tmp/components.html':'/system/','art-atlas/index.html':'/',
+const legacyRoutes={'ai-behavioural-patterns.html':'/system/?guide=ai-patterns#agent-questions','Jev/index.html':'/renderer/','renderer/live/index.html':'/renderer/','tmp/index.html':'/system/','tmp/components.html':'/system/','art-atlas/index.html':'/',
   'new/index.html':'/system/','new/components.html':'/system/','new/gallery.html':'/system/'};
 for(const id of ['agentic-playground','command-palette','q2-performance','revenue-card','team-projects-report'])legacyRoutes[`new/${id}/index.html`]='/system/';
 for(const [path,target] of Object.entries(legacyRoutes)){await mkdir(dirname(`dist/${path}`),{recursive:true});await writeFile(`dist/${path}`,redirect(target));}
