@@ -466,7 +466,8 @@
       "volatility"
     ],
     "allocation": [
-      "allocation"
+      "allocation",
+      "value"
     ],
     "exposure": [
       "exposure"

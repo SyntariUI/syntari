@@ -85,14 +85,14 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 
 /* ---------- Composer (region A): compact trigger, expanded editor ---------- */
 /* ---------- Interface Composer: docked over the canvas. One box, always mounted; it grows upward to edit and settles back to a line. */
-.composer{position:absolute;z-index:40;left:50%;bottom:14px;width:min(760px,calc(100% - 32px));transform:translateX(-50%);display:grid;grid-template-rows:0fr auto;background:var(--w-surface);border:1px solid var(--w-line-strong);border-radius:14px;box-shadow:var(--w-shadow);transition:grid-template-rows var(--m-3) var(--w-ease),box-shadow var(--m-3),border-color var(--m-2)}
+.composer{position:absolute;z-index:40;left:50%;bottom:14px;width:min(760px,calc(100% - 32px));transform:translateX(-50%);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:0fr auto;background:var(--w-surface);border:1px solid var(--w-line-strong);border-radius:14px;box-shadow:var(--w-shadow);transition:grid-template-rows var(--m-3) var(--w-ease),box-shadow var(--m-3),border-color var(--m-2)}
 .composer[data-open]{grid-template-rows:1fr auto;box-shadow:var(--w-pop)}
 .composer-editor{min-height:0;overflow:hidden;display:grid;grid-template-rows:auto auto;opacity:0;transition:opacity var(--m-2)}
 .composer[data-open] .composer-editor{opacity:1}
 .composer textarea{display:block;width:100%;min-height:118px;max-height:40dvh;resize:none;border:0;background:transparent;padding:14px 16px 4px;font-size:14px;line-height:1.55;field-sizing:content}
 .composer textarea:focus{outline:none}
 .composer-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 14px 10px}
-.composer-bar{display:flex;align-items:center;gap:6px;min-height:44px;padding:4px 6px 4px 6px}
+.composer-bar{display:flex;align-items:center;gap:6px;min-width:0;min-height:44px;padding:4px 6px 4px 6px}
 .composer-bar[hidden]{display:none}
 .composer[data-open] .composer-bar{border-top:1px solid var(--w-line)}
 .trigger{flex:1;min-width:0;height:36px;display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;border:0;border-radius:9px;background:transparent;color:var(--w-faint);text-align:left;transition:background var(--m-1)}
@@ -107,7 +107,8 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 .composer-live[hidden]{display:none}
 .pulse{width:8px;height:8px;flex-shrink:0;border-radius:50%;background:var(--w-accent);animation:breathe 1s ease-in-out infinite alternate}
 .composer-live b{font-weight:500;white-space:nowrap}
-.composer-live span{min-width:0;color:var(--w-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.composer-live span{flex:1;min-width:0;color:var(--w-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.composer-live .pulse{flex:none}
 .composer-live .btn{margin-left:auto}
 .mini{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--w-faint);margin-right:4px}
 .chip{height:26px;padding:0 10px;border:1px solid var(--w-line);border-radius:999px;background:transparent;color:var(--w-muted);font-size:12px;transition:color var(--m-2),border-color var(--m-2),background var(--m-2)}
