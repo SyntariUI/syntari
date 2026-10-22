@@ -857,10 +857,12 @@ function bootDone() {
   box.dataset.done = '';
   setTimeout(() => box.remove(), 400);
 }
-let ir, compose, reg, contracts, policy, renderable;
+let ir, compose, jev, reg, contracts, policy, renderable;
 try {
   ir = await import('./runtime/ir.js');
   compose = await import('./runtime/ir-compose.js');
+  /* Jev decides what needs no model; without it, every request goes to Claude as before. */
+  jev = await import('./runtime/jev.js').catch(() => null);
   boot('Reading the registry');
   reg = await ir.registry();
   const slugs = await ir.renderableSlugs();
@@ -1065,6 +1067,7 @@ function sourceText(source) {
   if (!source) return '';
   if (source.kind === 'claude') return `Claude · ${TIERS[source.tier] ?? source.tier}${source.mode === 'fix' ? ' · fix' : source.mode === 'improve' ? ' · composition pass' : source.mode === 'repair' ? ' · one part fixed' : source.mode === 'edit' ? ' · change' : ''}`;
   if (source.kind === 'edit') return 'Your edit';
+  if (source.kind === 'jev') return 'Jev · change, no model call';
   if (source.kind === 'restore') return `${sourceText(source.from)} · restored`;
   return `Example · ${source.label}${source.illustrative ? ' · illustrative data' : ''}`;
 }
@@ -3311,12 +3314,41 @@ function submitRequest() {
     if (missing) { askUnsupported(request, missing); return; }
     if (looksLikeNewScreen(request)) { askNewOrEdit(request, `This reads like a different screen. Syntari won’t replace “${shortTitle(screen.title, 48)}” on its own.`); return; }
     if (looksLikeRecompose(request)) { generateRecompose(request); return; }
-    generateEdit(request);
+    jevThenClaude(request);
     return;
   }
   generate('new');
 }
 
+/* Jev first: what needs no model, such as removing, moving, or renaming a part with the new words in quotes, is decided and
+   applied in milliseconds through the same validated operations. Everything else goes to Claude, with the part Jev found. */
+async function jevThenClaude(request) {
+  const screen = activeScreen(), version = currentVersion(screen);
+  if (!jev || !screen || !version || state.busy) { generateEdit(request); return; }
+  const names = Object.fromEntries([...reg.entries].map(([slug, entry]) => [slug, entry.name]));
+  const routed = jev.routeRequest(request, version.spec, { base: version.fingerprint, names });
+  const hint = routed.hint?.targets?.length ? `Jev found the part this request is about: ${routed.hint.targets.map(id => `#${id}`).join(', ')}. Change that part unless the request clearly says otherwise.` : null;
+  if (routed.route !== 'jev') { generateEdit(request, hint ? { constraint: hint } : {}); return; }
+  const run = { id: ++runSeq, mode: 'edit', state: 'completed', t0: performance.now(), marks: {}, log: [], request };
+  state.run = run;
+  $('[data-activity]').replaceChildren();
+  logActivity(run, 'Jev decided this without a model', { detail: `${routed.decisions.map(d => `${d.name}: ${d.value}`).join(' · ')} · ${routed.ms} ms` });
+  if (!routed.change) { logActivity(run, routed.unchanged); showAlert(`${routed.unchanged} Nothing changed.`, [], 'info'); return; }
+  const final = await ir.applyOperations(version.spec, routed.change, editOptions(screen));
+  /* A change Jev wrote that does not validate is not shown: Claude gets the request instead, with the part Jev found. */
+  if (!final.ok) {
+    logActivity(run, 'Jev’s change did not validate; Claude takes the request', { detail: final.diagnostics.filter(d => d.severity === 'error').map(d => d.code).join(', '), tone: 'warn' });
+    generateEdit(request, { constraint: `Jev found the part this request is about: ${routed.change.operations.map(op => `#${op.target}`).join(', ')}.` });
+    return;
+  }
+  hideConfirm();
+  hideAlert();
+  screen.conversation.push({ role: 'user', mode: 'edit', text: request, version: version.n, at: Date.now() });
+  await commitChange({ screen, request, change: routed.change, final, by: 'jev', decided: { decisions: routed.decisions, ms: routed.ms } });
+  logActivity(run, `Applied by Jev: v${version.n} → v${currentVersion(screen).n}`, { detail: `${plural(final.effects.length, 'operation')} · validated with the whole screen` });
+  setComposer('idle');
+  if (wide.matches) selectTab('changes');
+}
 const editOptions = (screen, extra = {}) => ({ registry: reg, sandbox: state.allowBlocks, data: screen?.data?.mode === 'provided' ? 'strict' : 'demo', sources: screen?.data?.values ?? [], ...extra });
 /* The shape of a change, as the tool's input schema: Claude's tool call arrives as structured data, never as text to parse. */
 const CHANGE_SCHEMA = { type: 'object', required: ['version', 'base'], properties: {
@@ -3792,13 +3824,13 @@ async function unsupportedEdit(run, item) {
   askUnsupported(run.request, { missing, closest, reason: typeof item?.reason === 'string' ? item.reason : '' });
 }
 /* A new version: the screen it came from stays one Undo away. */
-async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false, corrected = false }) {
+async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false, corrected = false, by = 'claude', decided = null }) {
   const b = run?.build;
   if (b) { for (const record of b.records.values()) record.unwrap?.(); clearMarks(b); b.removals.forEach(node => node.remove()); }
-  const source = { kind: 'claude', tier: run?.tier ?? $('[data-tier]').value, mode: 'edit', streamed: Boolean(run) };
+  const source = by === 'jev' ? { kind: 'jev', mode: 'edit' } : { kind: 'claude', tier: run?.tier ?? $('[data-tier]').value, mode: 'edit', streamed: Boolean(run) };
   const base = currentVersion(screen);
   const version = commitVersion(screen, { spec: final.spec, source, request, change: { summary: final.summary, base: base.n } });
-  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], corrected, viaTool: Boolean(run?.viaTool), baseSpec: base.spec, spec: final.spec, at: Date.now() };
+  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], corrected, viaTool: Boolean(run?.viaTool), by, decided, baseSpec: base.spec, spec: final.spec, at: Date.now() };
   screen.conversation.push({ role: 'assistant', status: 'applied', text: `Applied as v${version.n}: ${final.effects.map(effect => describeEffect(effect, base.spec, final.spec)).join('; ')}`, version: version.n, at: Date.now() });
   state.request = request;
   state.recent = recentFrom(final.changes);
@@ -3934,7 +3966,7 @@ const STATUS_TEXT = { applied: 'Applied', rejected: 'Refused', stopped: 'Stopped
 function countNodes(spec) { let n = 0; const go = list => (Array.isArray(list) ? list : []).forEach(node => { n += 1; go(node?.children); }); go(spec?.children); return n; }
 function changeCard(screen, change) {
   const card = el('div', { class: 'change-card', 'data-status': change.status });
-  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'recomposed' ? `Recomposed · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
+  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}${change.by === 'jev' ? ` · Jev, no model call, ${change.decided?.ms ?? 0} ms` : ''}${change.corrected ? ' · after one correction' : ''}` : change.status === 'recomposed' ? `Recomposed · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
   card.append(el('p', { class: 'verdict', 'data-tone': ['applied', 'undo', 'recomposed'].includes(change.status) ? 'ok' : ['rejected', 'failed'].includes(change.status) ? 'bad' : 'warn', text: head }));
   if (change.request) card.append(el('q', { text: change.request }));
   if (change.summary) card.append(el('p', { text: change.summary }));

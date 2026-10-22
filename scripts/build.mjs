@@ -42,7 +42,7 @@ async function injectKobbeTrackingTree(dir) {
 }
 
 const components=await catalog();
-const runtime=['syntari.js','support.html','ir.js','ir-data.js','ir-compose.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
+const runtime=['syntari.js','support.html','ir.js','ir-data.js','ir-compose.js','jev.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
 const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});

@@ -206,12 +206,13 @@ test('E. a recomposition that drops a record is refused, corrected once, and the
   const short = holdingsRows.slice(0, 9);
   await script(p, { text: recomposed(short), chunk: 600 }, { text: recomposed(short), chunk: 600 });
   await ask(p, 'Rediseña la jerarquía de toda la pantalla');
+  /* The end of a refused correction is the recovery message; between the two attempts the page is briefly idle. */
+  await expect(p.locator('[data-alert]')).toContainText('Syntari couldn’t apply the recomposition. Your screen is unchanged (v1).', { timeout: 30000 });
   await settled(p);
   expect((await prompts(p)).at(-1)).toContain('YOUR PREVIOUS RECOMPOSITION WAS REFUSED');
   expect(await screenIR(p)).toEqual(before);
   expect(await p.locator('.canvas').innerHTML()).toBe(html);
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v1 /);
-  await expect(p.locator('[data-alert]')).toContainText('Syntari couldn’t apply the recomposition. Your screen is unchanged (v1).');
   await expect(p.locator('[data-changes] .change-card').first()).toContainText('dropped-records');
   expect(errors).toEqual([]);
 });
