@@ -360,9 +360,12 @@ export function buildDataModel(data, report = () => {}, base = 'data') {
     }
     const primary = valueFields[0];
     entry.total = tidy(entry.items.reduce((sum, item) => sum + (primary ? item[primary] ?? 0 : item.count), 0));
+    /* "value" names the primary measure, unless the table has a field called value: then it is that field's sum, never another's. */
+    const ownValue = valueFields.includes('value');
     for (const item of entry.items) {
-      item.value = primary ? item[primary] ?? 0 : item.count;
-      item.share = entry.total ? tidy(round(item.value / entry.total * 100, 4)) : 0;
+      const amount = primary ? item[primary] ?? 0 : item.count;
+      if (!ownValue) item.value = amount;
+      item.share = entry.total ? tidy(round(amount / entry.total * 100, 4)) : 0;
     }
     model.groups.set(name, entry);
   }
@@ -401,7 +404,7 @@ function fieldValue(model, kind, entry, source, item, descriptor, binding, at, r
   if (kind === 'groups') {
     if (!['label', 'value', 'share', 'count', ...entry.values].includes(field)) { report('error', 'unknown-data-field', at, `${entry.name} items have label, value, share, count${entry.values.length ? `, ${entry.values.join(', ')}` : ''}; not "${field}".`); return undefined; }
     value = item[field];
-    type = field === 'label' ? 'text' : field === 'share' ? 'percent' : field === 'count' ? 'number' : model.tables.get(entry.table).fields[field === 'value' ? entry.values[0] : field]?.type ?? 'number';
+    type = field === 'label' ? 'text' : field === 'share' ? 'percent' : field === 'count' ? 'number' : model.tables.get(entry.table).fields[field === 'value' && !entry.values.includes('value') ? entry.values[0] : field]?.type ?? 'number';
   } else {
     const fs = entry.fields[field];
     if (!fs) { report('error', 'unknown-data-field', at, `${entry.name} has no field "${field}".`); return undefined; }

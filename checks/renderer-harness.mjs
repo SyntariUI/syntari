@@ -88,14 +88,15 @@ export function installClaude({ tools = false } = {}) {
   window.claude = { use: async name => name !== 'sample' ? null : sample };
 }
 
-export async function openRenderer(browserPage, { tools = false, example = null } = {}) {
+export async function openRenderer(browserPage, { tools = false, example = null, publicPage = false } = {}) {
   const errors = [];
   browserPage.on('pageerror', error => errors.push(error.message));
+  if (publicPage) await browserPage.addInitScript(() => { window.syntariRenderer = { public: true }; });
   await browserPage.addInitScript(installClaude, { tools });
   if (example) await browserPage.addInitScript(id => { try { localStorage.setItem('syntari-renderer:example', id); } catch {} }, example);
   await browserPage.goto(origin);
   await expect(browserPage.locator('[data-app][data-ai-ready]')).toBeAttached({ timeout: 30000 });
-  await expect(browserPage.locator('[data-status-label]')).toHaveText(/Ready/);
+  if (!publicPage) await expect(browserPage.locator('[data-status-label]')).toHaveText(/Ready/);
   return errors;
 }
 export const script = (p, ...answers) => p.evaluate(list => window.__claude.queue.push(...list), answers.map(answer => typeof answer === 'string' ? { text: answer } : answer));

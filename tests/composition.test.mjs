@@ -19,8 +19,10 @@ test('screen data computes measures, buckets with inclusive bounds, and groups f
   assert.equal(model.measures.get('excess').value, 0.9);
   const ladder = model.groups.get('liquidity').items.map(item => [item.label, item.value]);
   assert.deepEqual(ladder, [['D0', 6], ['D1–7', 30], ['D8–30', 12], ['D31–90', 31], ['>D90', 21]], 'day 30 is in D8–30 and day 90 in D31–90');
-  assert.deepEqual(model.groups.get('allocation').items.map(item => item.value), [15, 29, 27, 29]);
+  assert.deepEqual(model.groups.get('allocation').items.map(item => item.weight), [15, 29, 27, 29]);
   assert.deepEqual(model.groups.get('riskVsWeight').items.map(item => item.risk), [0.5, 14.5, 52, 33]);
+  /* A table field called "value" keeps its own sums: the primary measure's alias never overwrites it. */
+  assert.deepEqual(model.groups.get('allocation').items.map(item => [item.weight, item.value, item.share]), [[15, 1500000, 15], [29, 2900000, 29], [27, 2700000, 27], [29, 2900000, 29]]);
   /* ICU versions differ on the space before € in compact Spanish currency, so spaces are not part of what is checked. */
   assert.equal(formatData(10000000, 'compact-currency', { locale: 'es-ES', currency: 'EUR', digits: 0 }).replace(/\s/g, ''), '10M€');
   assert.deepEqual(parseFigure('1.250.000 €'), { value: 1250000, unit: 'currency' });
@@ -75,7 +77,7 @@ test('a headline or bucket chart that contradicts the rows fails semantic valida
 test('a part titled as risk that shows allocation weights is refused', async () => {
   const broken = clone(CANONICAL);
   broken.children[3].props.title = 'Contribución al riesgo';
-  broken.children[3].props.columns = { $data: 'groups.allocation', map: { label: 'label', a: 'value' } };
+  broken.children[3].props.columns = { $data: 'groups.allocation', map: { label: 'label', a: 'weight' } };
   delete broken.children[3].props.seriesB;
   const result = await validateScreen(broken);
   assert.ok(codes(result).includes('role-mismatch'));

@@ -4,6 +4,8 @@
  * key never leaves the server.
  */
 (() => {
+  /* This is the public Renderer: its examples are templates, built in front of the person. */
+  window.syntariRenderer = { ...(window.syntariRenderer ?? {}), public: true };
   const fail = (code, message) => Object.assign(new Error(message), { code });
   const cancelled = () => fail('cancelled', 'Stopped');
   async function post(path, body, signal) {
