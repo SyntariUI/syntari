@@ -14,27 +14,50 @@ async function loadGallery(){
   const command=document.querySelector('[data-home-command]');command.textContent='npx syntari-ui add app-shell';
   const copy=document.querySelector('[data-home-copy]');copy.disabled=false;copy.addEventListener('click',()=>copyText(command.textContent,document.querySelector('[data-home-copy-status]')));
   const catalog=await getComponents();const grid=document.querySelector('[data-home-gallery]');grid.replaceChildren();
-  const slugs=['metric-and-sparkline','button','tool-approval','chart-bars','tabs','otp-input'];
-    const observer=new IntersectionObserver(entries=>{for(const entry of entries){if(!entry.isIntersecting)continue;observer.unobserve(entry.target);const slug=entry.target.dataset.homePreview;mount(slug,entry.target,{configure:slug==='otp-input'?root=>{
-      root.querySelector('.agent-heading')?.remove();
-      const note=root.querySelector('p'),form=root.querySelector('[data-otp-form]'),group=form?.querySelector('.otp-group');
-      if(note&&form&&group){note.textContent='Use 123456';note.classList.add('home-otp-note');form.dataset.homeCompact='true';form.insertBefore(note,group);}
-    }:slug==='chart-bars'?root=>{
-      const chart=root.querySelector('.chart-bars-modern');
-      chart?.classList.add('home-compact-chart');
-      chart?.querySelector('figcaption')?.remove();
-      chart?.querySelectorAll('.column-value').forEach(value=>value.remove());
-    }:slug==='tool-approval'?root=>{
-      const approval=root.querySelector('[data-agent-kind="approval"]');
-      approval?.querySelector('p.hint')?.remove();
-      if(approval)approval.dataset.showResetPreview='false';
-    }:undefined}).catch(()=>{entry.target.textContent='Open this component in System to explore it.';});}},{rootMargin:'200px'});
-  for(const slug of slugs){
-    const c=catalog.find(item=>item.slug===slug);if(!c)continue;
-    const article=document.createElement('article');article.className='home-card';
-    const preview=document.createElement('div');preview.className='home-card-stage';preview.dataset.homePreview=slug;preview.setAttribute('role','group');preview.setAttribute('aria-label',`${c.name} live preview`);
-    const info=document.createElement('div');info.className='home-card-info';const link=document.createElement('a');link.href=`/system/#${slug}`;link.append(document.createTextNode(c.name));const arrow=document.createElement('span');arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');link.append(arrow);
-    info.append(link);article.append(preview,info);grid.append(article);observer.observe(preview);
+  // An asymmetric bento grid of actual, interactive Syntari components.
+  const featured=[
+    {slug:'chart-bars',size:'hero',eyebrow:'Data visualisation',caption:'Numbers that tell a story'},
+    {slug:'expandable-dock',size:'side',eyebrow:'Navigation',caption:'Interaction at every level'},
+    {slug:'tool-approval',size:'side',eyebrow:'Agent actions',caption:'Confidence before action'},
+    {slug:'session-card',size:'third',eyebrow:'Surfaces',caption:'Small details, considered'},
+    {slug:'selectable-cards',size:'third',eyebrow:'Selection',caption:'Every choice feels clear'},
+    {slug:'metric-and-sparkline',size:'third',eyebrow:'Analytics',caption:'Clarity at a glance'},
+    {slug:'otp-input',size:'small',eyebrow:'Inputs',caption:'Purposeful feedback'},
+    {slug:'agent-activity',size:'medium',eyebrow:'Agent patterns',caption:'Every step visible'},
+    {slug:'command-palette',size:'large',eyebrow:'Productivity',caption:'Find it. Do it.'}
+  ];
+  const observer=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      observer.unobserve(entry.target);
+      const slug=entry.target.dataset.homePreview;
+      mount(slug,entry.target,{configure:slug==='otp-input'?root=>{
+        root.querySelector('.agent-heading')?.remove();
+        const note=root.querySelector('p'),form=root.querySelector('[data-otp-form]'),group=form?.querySelector('.otp-group');
+        if(note&&form&&group){note.textContent='Use 123456';note.classList.add('home-otp-note');form.dataset.homeCompact='true';form.insertBefore(note,group);}
+      }:slug==='tool-approval'?root=>{
+        const approval=root.querySelector('[data-agent-kind="approval"]');
+        approval?.querySelector('p.hint')?.remove();
+        if(approval)approval.dataset.showResetPreview='false';
+      }:undefined}).catch(()=>{entry.target.textContent='Preview unavailable — explore this component in System.';});
+    }
+  },{rootMargin:'250px'});
+  for(const item of featured){
+    const component=catalog.find(entry=>entry.slug===item.slug);
+    if(!component)continue;
+    const article=document.createElement('article');article.className='home-card home-card--'+item.size;
+    const stage=document.createElement('div');
+    stage.className='home-card-stage';stage.dataset.homePreview=item.slug;
+    stage.setAttribute('role','group');stage.setAttribute('aria-label',component.name+' live preview');
+    const info=document.createElement('div');info.className='home-card-info';
+    const caption=document.createElement('div');caption.className='home-card-caption';
+    const eyebrow=document.createElement('span');eyebrow.className='home-card-eyebrow';eyebrow.textContent=item.eyebrow;
+    const title=document.createElement('strong');title.textContent=item.caption;caption.append(eyebrow,title);
+    const link=document.createElement('a');link.href='/system/#'+encodeURIComponent(item.slug);
+    link.textContent='Explore '+component.name+' ↗';
+    link.setAttribute('aria-label','Inspect '+component.name+' in the component library');
+    info.append(caption,link);article.append(stage,info);grid.append(article);
+    observer.observe(stage);
   }
 }
 if(document.body.classList.contains('landing-body'))initHomepage();
