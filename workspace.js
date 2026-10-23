@@ -54,7 +54,8 @@ export function initWorkspace() {
     if (open) focusable(rail)[0]?.focus();
   });
   $('[data-workspace-backdrop]').addEventListener('click', () => { closeNav(); menu.focus(); });
-  $('[data-workspace-focus]').addEventListener('click', event => {
+  /* A host may leave focus mode out, such as the Renderer, whose toolbar keeps only the code button. */
+  $('[data-workspace-focus]')?.addEventListener('click', event => {
     shell.classList.toggle('is-focus');
     event.currentTarget.setAttribute('aria-pressed', String(shell.classList.contains('is-focus')));
     closePanel(false); sync();
@@ -71,7 +72,7 @@ export function initWorkspace() {
     if (event.key === 'Escape' && !event.target.closest('dialog,[popover]')) {
       if (shell.classList.contains('nav-open')) { closeNav(); menu.focus(); }
       else if (workspace.dataset.panel !== 'none') closePanel();
-      else { shell.classList.remove('is-focus'); $('[data-workspace-focus]').setAttribute('aria-pressed','false'); sync(); }
+      else { shell.classList.remove('is-focus'); $('[data-workspace-focus]')?.setAttribute('aria-pressed','false'); sync(); }
     }
     const trap = media.matches && (shell.classList.contains('nav-open') ? rail : workspace.dataset.panel !== 'none' ? inspector : null);
     if (event.key === 'Tab' && trap) {
