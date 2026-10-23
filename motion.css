@@ -2,7 +2,7 @@
 :where(.button,.icon-button,.inspect,.nav-item,.segmented button,.dock button,.theme-toggle button,.view-tabs button,.pagination button,.tabs button,.dropdown-panel button,.swatch,.chip,.avatar,.step span){transition:background-color var(--motion-fast) ease,color var(--motion-fast) ease,border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,transform var(--motion-fast) var(--ease-out)}
 :where(body,.sidebar,.topbar,.gallery-toolbar,.specimen,.specimen-footer,.mini-card,.input-shell,.field input,.field select,.field textarea,.search,.composer,.badge,.banner,.table td,.activity-symbol,.file-drop,.skeleton,.message){transition:background-color var(--motion-medium) ease,color var(--motion-fast) ease,border-color var(--motion-fast) ease,box-shadow var(--motion-medium) ease}
 .specimen{box-shadow:var(--shadow-card)}
-.specimen:focus-within{border-color:var(--blue-a3);box-shadow:var(--shadow-card-hover)}
+.specimen:focus-within{border-color:var(--focus-halo);box-shadow:var(--shadow-card-hover)}
 @media(hover:hover){
 .specimen:hover{box-shadow:var(--shadow-card-hover);border-color:var(--bg-a3)}
 .button:not(.ghost):not(.danger):not(.accent):not(:disabled):hover,.icon-button:not(:disabled):hover{box-shadow:var(--shadow-control-hover);transform:translateY(-1px)}
@@ -18,7 +18,7 @@
 .button.ghost:active,.button.accent:active,.button.danger:active{box-shadow:none}
 .button .icon{transition:transform var(--motion-medium) var(--ease-out)}
 .button:hover .icon-arrow:last-child:not(:first-child){transform:translateX(2px)}
-.field input:focus,.field textarea:focus,.field select:focus,.input-shell:focus-within,.search:focus-within,.composer:focus-within{box-shadow:0 0 0 3px var(--blue-a1)}
+.field input:focus,.field textarea:focus,.field select:focus,.input-shell:focus-within,.search:focus-within,.composer:focus-within{box-shadow:0 0 0 3px var(--focus-halo)}
 .switch span{transition:background-color var(--motion-medium) ease}
 .switch span:after{transition:transform var(--motion-medium) var(--ease-out),box-shadow var(--motion-fast) ease}
 .switch input:active+span:after{box-shadow:0 0 0 3px var(--blue-a2)}
@@ -35,9 +35,9 @@ dialog.is-closing::backdrop{animation:backdrop-exit 140ms ease forwards}
 .has-indicator{position:relative;isolation:isolate}
 .selection-indicator{position:absolute;pointer-events:none;z-index:-1;border-radius:inherit;background:var(--surface);box-shadow:var(--shadow-soft);transform-origin:0 0}
 .has-indicator>button.active{background:transparent;box-shadow:none}
-.segmented.has-indicator .selection-indicator,.theme-toggle.has-indicator .selection-indicator{border-radius:30px}
+.segmented.has-indicator .selection-indicator,.theme-toggle.has-indicator .selection-indicator{border-radius:var(--radius-control)}
 .view-tabs.has-indicator .selection-indicator{border-radius:8px;background:var(--subtle);box-shadow:none}
-.dock.has-indicator .selection-indicator{background:#333447;border-radius:50%;box-shadow:inset 0 1px 0 #ffffff09}
+.dock.has-indicator .selection-indicator{background:#333447;border-radius:var(--radius-control);box-shadow:inset 0 1px 0 #ffffff09}
 .tabs.has-indicator .selection-indicator{background:transparent;box-shadow:none;border-bottom:2px solid var(--accent);border-radius:0}
 .tabs.has-indicator>button.active:after{display:none}
 .dock{box-shadow:0 2px 3px #0000000d,0 8px 20px #00000012,inset 0 1px 0 #ffffff0c;transition:box-shadow var(--motion-medium) ease}
@@ -57,7 +57,7 @@ dialog.is-closing::backdrop{animation:backdrop-exit 140ms ease forwards}
 .session-row>span:last-child{margin-left:auto;color:var(--muted)}
 .session-footer{display:flex;align-items:center;gap:6px;padding:11px 8px 5px;font-size:var(--type-caption);color:var(--muted)}
 .session-footer time{margin-left:auto}.session-footer .icon{width:13px;height:13px}
-.body-toolbar{display:flex;align-items:center;gap:6px;width:100%;padding:7px;background:var(--surface);border:1px solid var(--border);border-radius:30px;box-shadow:var(--shadow-card)}
+.body-toolbar{display:flex;align-items:center;gap:6px;width:100%;padding:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-5);box-shadow:var(--shadow-card)}
 .body-toolbar .toolbar-count{font-size:var(--type-caption);color:var(--muted);padding:0 6px;margin-right:auto}
 .body-toolbar .icon-button{width:29px;height:29px;border:0;box-shadow:none;background:var(--subtle)}
 .body-toolbar .button{min-height:29px;font-size:var(--type-caption);padding:5px 10px}
