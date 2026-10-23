@@ -8,7 +8,7 @@ const settled = page => page.waitForFunction(() => !document.getAnimations().som
 
 test('select, calendar and slider keep their keyboard contracts', async ({ page }) => {
   const errors = watchErrors(page);
-  const select = await component(page, 'Select & date');
+  const select = await component(page, 'select-and-date');
   await select.getByRole('button', { name: 'Workspace', exact: true }).click();
   await expect(page.getByRole('listbox', { name: 'Workspaces' })).toBeVisible();
   await page.getByRole('option', { name: 'Product team' }).click();
@@ -42,7 +42,7 @@ test('select, calendar and slider keep their keyboard contracts', async ({ page 
     await page.setViewportSize({ width: 1440, height: 1000 });
   }
 
-  const slider = (await component(page, 'Slider')).getByRole('slider', { name: 'Monthly events' });
+  const slider = (await component(page, 'slider')).getByRole('slider', { name: 'Monthly events' });
   await slider.focus(); await page.keyboard.press('End');
   await expect(slider).toHaveValue('50000');
   expect(await slider.evaluate(el => el.style.getPropertyValue('--range-fill'))).toBe('100%');
@@ -53,27 +53,27 @@ test('select, calendar and slider keep their keyboard contracts', async ({ page 
 
 test('checkbox, switch, segmented control, tabs and dropdown keep native behaviour', async ({ page }) => {
   const errors = watchErrors(page);
-  const checkboxes = await component(page, 'Checkbox');
+  const checkboxes = await component(page, 'checkbox');
   const checkbox = checkboxes.getByRole('checkbox', { name: 'Include all team members' });
   const was = await checkbox.isChecked();
   await checkbox.focus(); await page.keyboard.press('Space');
   await expect(checkbox).toBeChecked({ checked: !was });
 
-  const toggle = (await component(page, 'Switch')).getByRole('switch', { name: 'Weekly digest', exact: true });
+  const toggle = (await component(page, 'switch')).getByRole('switch', { name: 'Weekly digest', exact: true });
   await toggle.check();
   await expect(toggle).toBeChecked();
 
-  const segmented = await component(page, 'Segmented control');
+  const segmented = await component(page, 'segmented-control');
   await segmented.getByRole('button', { name: 'List', exact: true }).click();
   await expect(segmented.getByRole('button', { name: 'List', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await segmented.getByRole('button', { name: 'List', exact: true }).press('ArrowRight');
   await expect(segmented.getByRole('button', { name: 'Board', exact: true })).toHaveAttribute('aria-pressed', 'true');
 
-  const tabs = await component(page, 'Tabs');
+  const tabs = await component(page, 'tabs');
   await tabs.getByRole('tab', { name: 'Activity' }).click();
   await expect(tabs.getByRole('tabpanel')).toContainText('Jamie');
 
-  const menu = await component(page, 'Dropdown menu');
+  const menu = await component(page, 'dropdown-menu');
   await menu.getByRole('button', { name: 'Project actions' }).click();
   await expect(menu.locator('.dropdown-panel')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -83,23 +83,23 @@ test('checkbox, switch, segmented control, tabs and dropdown keep native behavio
 
 test('dialog, pagination, chat composer and toast work from System', async ({ page }) => {
   const errors = watchErrors(page);
-  const dialogCard = await component(page, 'Dialog');
+  const dialogCard = await component(page, 'dialog');
   await dialogCard.locator('[data-open-project]').click();
   await page.getByRole('textbox', { name: 'Project name', exact: true }).fill('A considered product');
   await page.locator('#sample-dialog').getByRole('button', { name: 'Create project', exact: true }).click();
   await expect(page.locator('#sample-dialog')).toBeHidden();
   await expect(page.locator('#toast')).toContainText('A considered product');
 
-  const pagination = await component(page, 'Pagination');
+  const pagination = await component(page, 'pagination');
   await pagination.getByRole('button', { name: 'Next page' }).click();
   await expect(pagination.locator('.page-range')).toContainText('11–20');
 
-  const chat = await component(page, 'Chat composer');
+  const chat = await component(page, 'chat-composer');
   await chat.getByRole('textbox').fill('Hello Syntari');
   await chat.getByRole('button', { name: 'Send message' }).click();
   await expect(chat.locator('[data-messages]')).toContainText('Hello Syntari');
 
-  const toast = await component(page, 'Toast');
+  const toast = await component(page, 'toast');
   for (const theme of ['Light theme', 'Dark theme']) {
     await setTheme(page, theme);
     await toast.getByRole('button', { name: 'Show toast', exact: true }).click();
@@ -111,7 +111,7 @@ test('dialog, pagination, chat composer and toast work from System', async ({ pa
 
 test('file input accepts click, keyboard and drop without exposing the native button', async ({ page }) => {
   const errors = watchErrors(page);
-  const zone = (await component(page, 'File input')).locator('[data-drop-zone]');
+  const zone = (await component(page, 'file-input')).locator('[data-drop-zone]');
   await expect(zone.getByRole('button', { name: 'Select assets', exact: true })).toBeVisible();
   await zone.locator('input').setInputFiles({ name: 'syntari-attachment.txt', mimeType: 'text/plain', buffer: Buffer.from('Syntari test attachment') });
   await expect(zone).toContainText('syntari-attachment.txt');
@@ -129,14 +129,14 @@ test('file input accepts click, keyboard and drop without exposing the native bu
 test('motion patterns settle after interruption and respect reduced motion', async ({ page }) => {
   const errors = watchErrors(page);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const dock = await component(page, 'Expandable dock');
+  const dock = await component(page, 'expandable-dock');
   await dock.getByRole('button', { name: 'Realtime', exact: true }).click();
   await expect(dock.locator('.expanded-dock')).toHaveClass(/is-expanded/);
   await expect(dock.locator('.dock-content')).toHaveAttribute('aria-hidden', 'false');
   await dock.getByRole('button', { name: 'People', exact: true }).click();
   await expect(dock.locator('.dock-content')).toHaveAttribute('aria-hidden', 'true');
 
-  const session = await component(page, 'Session card');
+  const session = await component(page, 'session-card');
   const details = session.locator('details');
   await details.locator('summary').click();
   await expect(details).toHaveAttribute('open', '');
@@ -147,14 +147,14 @@ test('motion patterns settle after interruption and respect reduced motion', asy
   await page.waitForFunction(() => !document.querySelector('.syntari-component details').dataset.motionTarget);
   expect(await details.evaluate(el => el.open && el.style.overflow === '')).toBe(true);
 
-  const toolbar = await component(page, 'Selection toolbar');
+  const toolbar = await component(page, 'selection-toolbar');
   await toolbar.getByRole('button', { name: 'Archive', exact: true }).click();
   await expect(toolbar.locator('.toolbar-count')).toHaveText('0 selected');
   await expect(toolbar.getByRole('button', { name: 'Archive', exact: true })).toBeDisabled();
   await toolbar.getByRole('checkbox', { name: 'Brand assets', exact: true }).check();
   await expect(toolbar.locator('.toolbar-count')).toHaveText('1 selected');
 
-  const dialogCard = await component(page, 'Dialog');
+  const dialogCard = await component(page, 'dialog');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.waitForFunction(() => document.getAnimations().filter(a => a.playState === 'running').length === 0, {}, { timeout: 1500 });
   await dialogCard.locator('[data-open-project]').click();
@@ -166,7 +166,7 @@ test('motion patterns settle after interruption and respect reduced motion', asy
 
 test('rolling numbers and the attribution table update exactly and pause for reduced motion', async ({ page }) => {
   const errors = watchErrors(page);
-  const table = (await component(page, 'Attribution table')).locator('[data-attribution]');
+  const table = (await component(page, 'attribution-table')).locator('[data-attribution]');
   await table.getByRole('button', { name: 'Automatic table updates' }).click();
   await expect(table.locator('tbody tr')).toHaveCount(7);
   const first = table.locator('tbody tr').first(), number = first.locator('[data-row-value]');
@@ -183,7 +183,7 @@ test('rolling numbers and the attribution table update exactly and pause for red
   await table.getByRole('button', { name: 'Sources', exact: true }).click();
   await expect(first).toContainText('Search');
 
-  const demo = (await component(page, 'Rolling number')).locator('[data-number-demo]');
+  const demo = (await component(page, 'rolling-number')).locator('[data-number-demo]');
   const counter = demo.locator('[data-number]');
   await demo.getByRole('button', { name: '+127', exact: true }).click();
   await expect(counter).toHaveAttribute('aria-label', '2,496');
@@ -198,7 +198,7 @@ test('rolling numbers and the attribution table update exactly and pause for red
   await expect(counter.locator('.number-track')).toHaveCount(0);
 
   /* A fresh mount starts with automatic updates on; reduced motion must hold them until motion is allowed. */
-  const live = (await component(page, 'Attribution table')).locator('[data-attribution]');
+  const live = (await component(page, 'attribution-table')).locator('[data-attribution]');
   await expect(live.getByRole('button', { name: 'Automatic table updates' })).toHaveAttribute('aria-pressed', 'true');
   const row = live.locator('tbody tr').first();
   const value = await row.getAttribute('data-people');

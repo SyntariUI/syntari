@@ -127,7 +127,9 @@
       ],
       "acceptable": [
         "metric-and-sparkline",
-        "live-readout"
+        "live-readout",
+        "score",
+        "progress"
       ],
       "rule": "Two to four measures in one block, each with its unit and what it is measured against."
     },
@@ -145,7 +147,9 @@
       },
       "misleading": {
         "breakdown": "A single bar of parts cannot show change over time.",
-        "table": "A table of periods hides the trend it is meant to show."
+        "table": "A table of periods hides the trend it is meant to show.",
+        "chart-donut": "A ring of parts cannot show change over time.",
+        "treemap": "Tiles of parts cannot show change over time."
       },
       "rule": "Oldest first, on a labelled time axis."
     },
@@ -166,11 +170,13 @@
     "composition": {
       "label": "Parts of one whole",
       "recommended": [
-        "breakdown"
+        "breakdown",
+        "chart-donut"
       ],
       "acceptable": [
         "table",
-        "chart-bars"
+        "chart-bars",
+        "treemap"
       ],
       "misleading": {
         "line-chart": "A line implies an order between parts that have none.",
@@ -265,12 +271,14 @@
     },
     "hierarchy": {
       "label": "Nested parts of a whole",
-      "recommended": [],
-      "missing": "treemap",
-      "closest": [
+      "recommended": [
+        "treemap"
+      ],
+      "acceptable": [
         "breakdown",
         "table"
-      ]
+      ],
+      "rule": "Parts of one whole by size, in at most three groups; values above 0."
     },
     "geography": {
       "label": "Values by place",
@@ -292,12 +300,14 @@
     },
     "matrix": {
       "label": "A value for every pair of two categories",
-      "recommended": [],
-      "missing": "heatmap",
-      "closest": [
+      "recommended": [
+        "heatmap"
+      ],
+      "acceptable": [
         "table",
         "comparison-table"
-      ]
+      ],
+      "rule": "One measure in every cell, one value per column in every row."
     }
   },
   "components": {
@@ -368,6 +378,21 @@
     ],
     "selectable-cards": [
       "decision"
+    ],
+    "chart-donut": [
+      "composition"
+    ],
+    "treemap": [
+      "hierarchy"
+    ],
+    "heatmap": [
+      "matrix"
+    ],
+    "score": [
+      "kpi"
+    ],
+    "progress": [
+      "kpi"
     ]
   },
   "concepts": [
@@ -501,24 +526,6 @@
       ]
     },
     {
-      "role": "matrix",
-      "words": [
-        "heatmap",
-        "heat map",
-        "mapa de calor",
-        "matriz de correlacion"
-      ]
-    },
-    {
-      "role": "hierarchy",
-      "words": [
-        "treemap",
-        "tree map",
-        "mapa de arbol",
-        "sunburst"
-      ]
-    },
-    {
       "role": "geography",
       "words": [
         "on a map",
@@ -537,6 +544,19 @@
         "sankey",
         "flow diagram",
         "diagrama de flujos"
+      ]
+    },
+    {
+      "role": "hierarchy",
+      "missing": "sunburst",
+      "closest": [
+        "treemap",
+        "breakdown"
+      ],
+      "words": [
+        "sunburst",
+        "sun burst",
+        "grafico solar"
       ]
     }
   ]

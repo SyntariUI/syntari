@@ -60,3 +60,6 @@
 @media(max-width:520px){.agent-chat-layout{grid-template-columns:minmax(110px,32%) minmax(0,1fr);min-height:min(440px,64vh)}.agent-chat-main{padding:16px}.agent-chat-sidebar{padding:14px 8px}.agent-surface[data-agent-kind=notfound]{min-height:280px;padding:30px 20px}}
 /* Contract instances leave optional small print empty; an empty line takes no space. */
 .agent-surface .hint:empty,.agent-surface>p:empty{display:none}
+/* Agent todo list states beyond the demo's: a failed task in the danger colour, a skipped one quiet. */
+.is-failed .task-mark{color:var(--danger-text)}
+.is-skipped{color:var(--muted)}

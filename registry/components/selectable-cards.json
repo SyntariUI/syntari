@@ -23,7 +23,7 @@
   },
   "source": "components/selectable-cards/",
   "name": "Selectable cards",
-  "category": "Form controls",
+  "category": "Forms",
   "purpose": "Let a person choose one option when each needs a sentence to explain it.",
   "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
   "intents": [

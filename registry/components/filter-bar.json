@@ -21,7 +21,7 @@
   },
   "source": "components/filter-bar/",
   "name": "Filter bar",
-  "category": "Action",
+  "category": "Forms",
   "purpose": "Say what a view is scoped to.",
   "description": "The period selector, the filter action, and the settings that change what a report covers.",
   "intents": [

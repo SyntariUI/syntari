@@ -66,6 +66,7 @@ for (const component of components) {
     category: component.category,
     version: releaseVersion,
     description: component.description,
+    aliases: component.aliases ?? [],
     tokens: component.tokens || [],
     source: `components/${component.slug}/`,
     manifest: `components/${component.slug}.json`,

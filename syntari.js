@@ -1,4 +1,6 @@
 /** Syntari 0.4.0 · HTML, CSS and DOM interactions. No framework runtime required. */
+import { matchScore, searchItems } from './search.js';
+export { matchScore, searchItems };
 const base = new URL('.', import.meta.url);
 let ready;
 const scripts = ['motion.js', 'numbers.js', 'app.js', 'controls.js', 'navigation.js', 'starter.js', 'agents.js', 'extras.js'];
@@ -12,6 +14,9 @@ export function initialize() {
       const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = new URL(file, base);
       link.onload = resolve; link.onerror = () => reject(new Error(`Could not load ${file}`)); document.head.append(link);
     }));
+    /* Each component carries the names people search for it by; the runtime's own scripts search with the same rules. */
+    const aliases = fetch(new URL('registry/aliases.json', base)).then(response => response.ok ? response.json() : {}).catch(() => ({}));
+    window.SyntariMatch = matchScore;
     let host;
     try {
       const support = await fetch(new URL('support.html', base));
@@ -50,10 +55,12 @@ export function initialize() {
     });
     if (host) window.SyntariIcon && host.querySelectorAll('[data-icon]').forEach(el => el.outerHTML = window.SyntariIcon(el.dataset.icon));
     await Promise.all(css);
+    const names = await aliases;
+    for (const component of window.SyntariCatalog) component.aliases = names[component.id] ?? [];
     return window.SyntariCatalog;
   })();
 }
-export async function getComponents() { return (await initialize()).map(c => ({ ...c, slug: slugify(c.name) })); }
+export async function getComponents() { return (await initialize()).map(c => ({ ...c, slug: c.id ?? slugify(c.name) })); }
 /** Enhance copied component HTML. Call once for each newly inserted subtree. */
 export async function prepare(root) {
   await initialize();

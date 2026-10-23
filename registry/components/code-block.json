@@ -1,0 +1,106 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "code-block",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Install the button",
+      "language": "Shell",
+      "code": "npx syntari-ui add button",
+      "note": "Run it in your project root."
+    }
+  },
+  "source": "components/code-block/",
+  "name": "Code block",
+  "category": "Content",
+  "purpose": "Show code or a command exactly as written, ready to copy.",
+  "description": "A titled block of code that keeps its spacing and line breaks, with its language and a copy button. Copy puts the code on the clipboard and never runs it.",
+  "intents": [
+    "show-code",
+    "instruct",
+    "copy"
+  ],
+  "variants": {
+    "note": [
+      "with note",
+      "without"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "language",
+    "code",
+    "note",
+    "copy"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "code-is-shown-exactly-as-written",
+    "the-title-says-what-the-code-is-for",
+    "copying-never-runs-anything"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default"
+  ],
+  "compatibleWith": [
+    "agent-message",
+    "file-diff",
+    "text-block"
+  ],
+  "avoidWhen": [
+    "the-code-changes-a-file",
+    "the-text-is-prose"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What the code is or does, such as a file name or 'Install the button'."
+    },
+    "language": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "Its language, such as 'Shell' or 'CSS'."
+    },
+    "code": {
+      "type": "string",
+      "maxLength": 4000,
+      "required": true,
+      "description": "The code, with its line breaks."
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Small print under the code, such as where to run it."
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "text": {
+      "title": ".agent-heading strong",
+      "language": ".agent-heading .hint",
+      "code": "code",
+      "note": ".agent-footer .hint"
+    },
+    "showWhen": {
+      "language": ".agent-heading .hint",
+      "note": ".agent-footer .hint"
+    }
+  }
+}

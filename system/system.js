@@ -1,5 +1,5 @@
-import { initialize, getComponents, mount } from '../syntari.js';
-import { statesFor } from '../docs-data.js';
+import { initialize, getComponents, mount, searchItems } from '../syntari.js';
+import { statesFor, groups as categoryGroups } from '../docs-data.js';
 import {initReference,renderReference,manifestReference,codeSource,renderGuide} from './reference.js';
 import { initWorkspace, copyText } from '../workspace.js';
 
@@ -11,9 +11,16 @@ let catalog = [], registry, selected, activeMount, query = '', swapToken = 0, st
 const manifests = new Map();
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function nav() {
-  const groups = {};
-  for (const c of catalog.filter(c => `${c.name} ${c.category} ${c.description}`.toLowerCase().includes(query.trim().toLowerCase()))) (groups[c.category] ||= []).push(c);
-  $('[data-nav]').innerHTML = Object.entries(groups).map(([category,items]) => `<div class="sys-nav-group"><div class="sys-nav-label">${esc(category)}</div>${items.map(c => `<button class="sys-nav-item" data-slug="${c.slug}" aria-current="${selected?.slug === c.slug}"><span>${esc(c.name)}</span></button>`).join('')}</div>`).join('') || '<p class="sys-nav-label">No matching components</p>';
+  const item = c => `<button class="sys-nav-item" data-slug="${c.slug}" aria-current="${selected?.slug === c.slug}"><span>${esc(c.name)}</span></button>`;
+  /* While searching, the rail lists the best matches first, names and aliases before descriptions, as one group. */
+  if (query.trim()) {
+    const found = searchItems(catalog, query);
+    $('[data-nav]').innerHTML = found.length ? `<div class="sys-nav-group"><div class="sys-nav-label">Best matches</div>${found.map(item).join('')}</div>` : '<p class="sys-nav-label">No matching components</p>';
+  } else {
+    const groups = {};
+    for (const c of catalog) (groups[c.category] ||= []).push(c);
+    $('[data-nav]').innerHTML = Object.entries(groups).map(([category,items]) => `<div class="sys-nav-group"><div class="sys-nav-label">${esc(category)}</div>${items.map(item).join('')}</div>`).join('');
+  }
   $('[data-nav]').querySelectorAll('[data-slug]').forEach(button => button.addEventListener('click', () => { workspace.closeNav(); select(button.dataset.slug, true); }));
 }
 function stateControls() {
@@ -82,8 +89,8 @@ async function select(slug, push = false, preserveState = false) {
     surface.removeAttribute('data-syntari-delay');
     for (const [property,value] of Object.entries({opacity:'1',visibility:'visible',filter:'none',transform:'none',animation:'none'})) surface.style.setProperty(property,value,'important');
     host.classList.remove('is-wide','is-compact','is-swapping');
-    if (/table|list|data|navigation/i.test(component.category) || /table|chart|navigation|calendar|chat-workspace/.test(slug)) host.classList.add('is-wide');
-    else if (/action|form|feedback/i.test(component.category)) host.classList.add('is-compact');
+    if (/tables|lists|charts|metrics|navigation/i.test(component.category) || /table|chart|navigation|calendar|chat-workspace/.test(slug)) host.classList.add('is-wide');
+    else if (/buttons|menus|forms|feedback/i.test(component.category)) host.classList.add('is-compact');
     stage.dataset.loading = 'false'; stage.dataset.error = 'false';
     $('[data-system-status]').textContent = '';
     if (push) history.pushState(null,'',`/system/#${slug}`);
@@ -94,7 +101,8 @@ async function select(slug, push = false, preserveState = false) {
   } finally { if (token === swapToken) host.setAttribute('aria-busy','false'); }
 }
 function routeSlug() {
-  return decodeURIComponent(location.hash.slice(1) || location.pathname.match(/^\/components\/([^/]+)/)?.[1] || 'metric-and-sparkline');
+  /* With nothing named, System opens on the first component of its own list. */
+  return decodeURIComponent(location.hash.slice(1) || location.pathname.match(/^\/components\/([^/]+)/)?.[1] || catalog[0]?.slug || '');
 }
 async function boot() {
   const response = await fetch('/registry/index.json');
@@ -102,7 +110,9 @@ async function boot() {
   registry = await response.json();
   await initialize();
   const ids = new Set(registry.components.map(c => c.id));
-  catalog = (await getComponents()).filter(c => ids.has(c.slug)).sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  /* Categories in one deliberate order, the same as the docs: buttons first, agents last. */
+  const rank = Object.keys(categoryGroups);
+  catalog = (await getComponents()).filter(c => ids.has(c.slug)).sort((a,b) => (rank.indexOf(a.category) - rank.indexOf(b.category)) || a.name.localeCompare(b.name));
   $('[data-component-count]').textContent = catalog.length;
   const params=new URLSearchParams(location.search);
   const guide=params.get('guide'), panel=params.get('panel');

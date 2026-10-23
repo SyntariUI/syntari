@@ -3,6 +3,7 @@ import { access, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateRegistry, validateScreenSchema } from './registry-validator.mjs';
+import { searchItems } from './kit/runtime/search.js';
 
 const packageRoot = dirname(fileURLToPath(import.meta.url));
 const kitRoot = join(packageRoot, 'kit');
@@ -157,11 +158,12 @@ async function main() {
     const { values } = parseOptions(rest);
     const query = values.join(' ').trim().toLocaleLowerCase();
     if (!query) fail('Provide a search query, for example: syntari search dashboard.', 'INVALID_ARGUMENT');
-    const components = catalog.filter((item) => [item.slug, item.id, item.name, item.category, item.description].join(' ').toLocaleLowerCase().includes(query))
+    /* Names and aliases first, then the category, then the description, with the same rules as System. */
+    const components = searchItems(catalog, query)
       .map((item) => ({ id: item.slug ?? item.id, kind: 'component', name: item.name, category: item.category, description: item.description, renderable: renderable.has(item.slug ?? item.id) }));
     const patterns = (patternIndex.patterns ?? []).filter((item) => [item.id, item.name, item.type, item.description, ...(item.keywords ?? [])].join(' ').toLocaleLowerCase().includes(query))
       .map((item) => ({ id: item.id, kind: 'pattern', name: item.name, category: item.type, description: item.description }));
-    const items = [...components, ...patterns].sort((a, b) => a.id.localeCompare(b.id));
+    const items = [...components, ...patterns];
     return emit(jsonOutput ? { query, count: items.length, results: items } : items.length ? items.map((item) => `${item.id} — ${item.name} (${item.kind})\n  ${item.description ?? ''}`).join('\n') : 'No matching registry entries.');
   }
   if (command === 'info') {

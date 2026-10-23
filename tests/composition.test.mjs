@@ -121,7 +121,10 @@ test('a request for a visualization Syntari does not have is reported with the c
   assert.equal(scatter.role, 'correlation');
   assert.equal(scatter.missing, 'scatter-plot');
   assert.deepEqual(scatter.closest, ['table', 'chart-bars']);
-  assert.equal(unsupportedRequest('Add a treemap of the holdings', policy).missing, 'treemap');
+  /* A treemap and a heatmap exist now; a sunburst is still missing, and the treemap is the closest. */
+  assert.equal(unsupportedRequest('Add a treemap of the holdings', policy), null);
+  assert.equal(unsupportedRequest('Add a heatmap of runs by hour', policy), null);
+  assert.deepEqual(unsupportedRequest('Show the holdings as a sunburst', policy), { role: 'hierarchy', label: 'Nested parts of a whole', missing: 'sunburst', closest: ['treemap', 'breakdown'], matched: 'sunburst' });
   assert.equal(unsupportedRequest('Añade una tabla de empleados debajo del gráfico', policy), null);
 });
 

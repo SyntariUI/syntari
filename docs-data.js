@@ -1,12 +1,20 @@
 /** Components that need the full documentation stage rather than the narrow preview column. */
-export const wideStage = /table|chart-|heatmap|treemap|network-graph|gantt|kanban|stat-row|process-ledger|transport|live-readout|feature-grid|pricing|page-footer|cta-band|chat-workspace|app-shell|masonry-grid|agent-questions/;
+export const wideStage = /table|chart-|heatmap|treemap|network-graph|gantt|stat-row|process-ledger|transport|live-readout|feature-grid|pricing|page-footer|cta-band|chat-workspace|app-shell|masonry-grid|agent-questions/;
 export const groups = {
- 'Action':['cursor','Give people a clear next step.'], 'Form controls':['sliders','Collect a little information, thoughtfully.'],
- 'Feedback & status':['bell','Make progress and outcomes easy to understand.'], 'Navigation':['layout','Keep people oriented, wherever they go.'],
- 'Data display':['chart','Give numbers a clear, quiet shape.'], 'Content':['type','Put the useful details in the right place.'],
- 'Container':['layers','Bring related information together.'], 'Overlay':['copy','A little more context, close by.'],
- 'Table & list':['list','Make information easy to scan and act on.'], 'Chat':['chat','A place for conversation.'],
- 'Layout':['layout','Connect small components into whole products.'], 'Agents':['bot','Keep automated work understandable and in your control.']
+ 'Buttons':['cursor','Give people a clear next step.'],
+ 'Forms':['sliders','Collect a little information, thoughtfully.'],
+ 'Menus':['list','Put more actions one press away.'],
+ 'Navigation':['layout','Keep people oriented, wherever they go.'],
+ 'Overlays':['copy','A little more context, close by.'],
+ 'Feedback':['bell','Make progress and outcomes easy to understand.'],
+ 'Cards':['layers','Bring related information together.'],
+ 'Tables':['list','Make records easy to scan, sort, and compare.'],
+ 'Lists':['list','Make sequences easy to follow and act on.'],
+ 'Charts':['chart','Give numbers a clear, quiet shape.'],
+ 'Metrics':['chart','Let the numbers that matter stand on their own.'],
+ 'Content':['type','Put the useful details in the right place.'],
+ 'Media':['layers','Images and motion, used with care.'],
+ 'Agents':['bot','Keep automated work understandable and in your control.']
 };
 export const guideLinks=[['getting-started','Getting started','arrow'],['installation','Installation','terminal'],['theming','Theming','palette'],['motion','Motion & accessibility','chart'],['generative-ui','Generative UI','bot'],['ai-patterns','AI behaviour patterns','chat'],['composition','Composition','layers'],['api','Runtime API','code'],['migration','What’s new in 0.3','circlecheck']];
 const state = (id,label,description,code='')=>({id,label,description,code});
@@ -35,7 +43,7 @@ const special={
  'slider':[defaultState,state('minimum','Minimum','The thumb stops at the lower bound.',`const input = root.querySelector('input');\ninput.value = input.min;\ninput.dispatchEvent(new Event('input', { bubbles: true }));`),state('maximum','Maximum','The filled track reaches the upper bound.',`const input = root.querySelector('input');\ninput.value = input.max;\ninput.dispatchEvent(new Event('input', { bubbles: true }));`),disabled],
  'range-slider':[defaultState,state('wide','Wide range','Lower and upper values remain bounded.',`const inputs = [...root.querySelectorAll('input[type="range"]')];\ninputs[0].value = inputs[0].min; inputs[1].value = inputs[1].max;\ninputs.forEach(input => input.dispatchEvent(new Event('input', { bubbles: true })));`),disabled],
  'skeleton-and-spinner':[defaultState,state('skeleton','Skeleton','Reserve the shape of the content before it arrives.',`root.querySelector('[role="status"]')?.remove();`)],
- 'progress-and-score':[defaultState,state('complete','Complete','Completion updates the text and the fill together.',`root.querySelector('.ring strong').textContent = '100%';\nroot.querySelector('.ring').style.setProperty('--ring-progress', '100');\nroot.querySelector('.ring').setAttribute('aria-valuenow', '100');\nroot.querySelector('.performance-copy h3').textContent = 'Storage';\nroot.querySelector('.performance-copy p').textContent = '50 GB of 50 GB used';\nconst progress = root.querySelector('.progress');\nif (progress) { progress.setAttribute('aria-valuenow', '100'); progress.firstElementChild.style.width = '100%'; }`)],
+ 'score':[defaultState,state('complete','Complete','Completion updates the text and the fill together.',`root.querySelector('.ring strong').textContent = '100%';\nroot.querySelector('.ring').style.setProperty('--ring-progress', '100');\nroot.querySelector('.ring').setAttribute('aria-valuenow', '100');\nroot.querySelector('.performance-copy h3').textContent = 'Storage';\nroot.querySelector('.performance-copy p').textContent = '50 GB of 50 GB used';\nconst progress = root.querySelector('.progress');\nif (progress) { progress.setAttribute('aria-valuenow', '100'); progress.firstElementChild.style.width = '100%'; }`)],
  'tabs':[defaultState,clickState('activity','Activity','[data-tab="Activity"]','The selected tab and its content change together.'),clickState('settings','Settings','[data-tab="Settings"]','Each tab retains its own accessible panel association.')],
  'floating-navigation':[defaultState,clickState('people','People','[aria-label="People"]','The selected destination moves smoothly within the dark dock.'),clickState('realtime','Realtime','[aria-label="Realtime"]','The active destination is exposed through its pressed state.')],
  'expandable-dock':[defaultState,clickState('expanded','Expanded','[aria-label="Realtime"]','A contextual summary expands above the navigation.')],

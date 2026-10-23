@@ -13,7 +13,7 @@
   },
   "source": "components/chart-toolbar/",
   "name": "Chart toolbar",
-  "category": "Data display",
+  "category": "Charts",
   "purpose": "Scope a chart before reading it.",
   "description": "The comparison, the view switch, and the legend that belong above a plot.",
   "intents": [

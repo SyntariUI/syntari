@@ -13,7 +13,9 @@ import { buildDataModel, parseFigure, normalLabel, isBinding, parseRef, dayRange
 
 const slugOf = component => String(component ?? '').replace(/^syntari\./, '');
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-const VISUAL_LISTS = { 'area-chart': 'points', 'line-chart': 'points', 'chart-bars': 'columns', breakdown: 'segments', 'metric-and-sparkline': 'series' };
+const VISUAL_LISTS = { 'area-chart': 'points', 'line-chart': 'points', 'chart-bars': 'columns', breakdown: 'segments', 'chart-donut': 'segments', treemap: 'tiles', heatmap: 'rows', 'metric-and-sparkline': 'series' };
+/* Visualizations of parts of one whole: a split of shares reads as a composition whatever its labels look like. */
+const PARTS = ['breakdown', 'chart-donut'];
 const TEXT_PROPS = ['title', 'chartLabel', 'caption', 'note', 'seriesA', 'seriesB', 'total'];
 const MONTHS = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|ene|abr|ago|dic|sept?|q[1-4]|t[1-4]|h[12]|s[12]|w\d+|week|sem|day|dia|d\d+$|mon|tue|wed|thu|fri|sat|sun|lun|mie|jue|vie|sab|dom|20\d\d|19\d\d|'\d\d|\d{4}-\d\d|\d{1,2}\/\d{1,2}|\d{1,2}:\d\d)/;
 
@@ -61,6 +63,9 @@ export function roleOf(entry, resolved, model, policy) {
   const concept = conceptOf(wordsOf(node, entry.heading), policy);
   const base = { slug, concept, certain: false, ref: null, fields: [] };
   if (!listKey) return { ...base, role: roles[0], certain: true };
+  /* A heatmap is a matrix by its shape; a treemap is a hierarchy once its tiles are grouped, and parts of a whole before. */
+  if (slug === 'heatmap') return { ...base, role: 'matrix', certain: true };
+  if (slug === 'treemap') return { ...base, role: (Array.isArray(shown.tiles) ? shown.tiles : []).some(tile => typeof tile?.group === 'string' && tile.group.trim()) ? 'hierarchy' : 'composition', certain: true };
   const bound = isBinding(props[listKey]) ? props[listKey] : null;
   const items = Array.isArray(shown[listKey]) ? shown[listKey] : [];
   const labels = items.map(item => item?.label).filter(label => typeof label === 'string');
@@ -86,12 +91,12 @@ export function roleOf(entry, resolved, model, policy) {
       const temporal = table && ['period', 'date'].includes(table.fields[labelField]?.type);
       out.valueRoles = valueFields.map(field => table?.fields[field]?.role).filter(Boolean);
       if (temporal) return { ...out, role: valueFields.length >= 2 || isObject(bound.map) && bound.map.compare !== undefined ? 'time-series-comparison' : 'time-series' };
-      return { ...out, role: slug === 'breakdown' ? 'composition' : 'ranking' };
+      return { ...out, role: PARTS.includes(slug) ? 'composition' : 'ranking' };
     }
   }
   /* Written by hand: the labels say what the axis is. */
   const twoSeries = items.some(item => item?.b !== undefined || item?.compare !== undefined);
-  if (slug === 'breakdown') return { ...base, role: looksTemporal(labels) ? 'time-series' : looksBucketed(labels) ? 'ordered-distribution' : 'composition' };
+  if (PARTS.includes(slug)) return { ...base, role: looksTemporal(labels) ? 'time-series' : looksBucketed(labels) ? 'ordered-distribution' : 'composition' };
   if (looksTemporal(labels)) return { ...base, role: twoSeries ? 'time-series-comparison' : 'time-series' };
   if (looksBucketed(labels)) return { ...base, role: 'ordered-distribution' };
   if (slug === 'chart-bars') return { ...base, role: twoSeries ? 'category-comparison' : 'ranking' };
@@ -112,7 +117,7 @@ function seriesOf(resolvedNode) {
   const slug = slugOf(resolvedNode?.component), key = VISUAL_LISTS[slug];
   const items = Array.isArray(resolvedNode?.props?.[key]) ? resolvedNode.props[key] : [];
   /* Every series counts: bars of weight against risk are not the weight bars again. */
-  const fields = slug === 'breakdown' ? ['share'] : slug === 'chart-bars' ? ['a', 'b'] : ['value', 'compare'];
+  const fields = PARTS.includes(slug) ? ['share'] : slug === 'chart-bars' ? ['a', 'b'] : ['value', 'compare'];
   const read = item => fields.map(field => parseFigure(item?.[field])?.value).filter(Number.isFinite).map(value => Math.round(value * 10) / 10).join('/');
   const pairs = items.map(item => [normalLabel(item?.label), read(item)]).filter(([label, value]) => label && value !== '');
   return pairs.length >= 3 ? pairs.map(([label, value]) => `${label}=${value}`).sort().join('|') : null;
@@ -152,7 +157,8 @@ export function unsupportedRequest(text, policy) {
     const word = request.words.find(item => words.includes(normalLabel(item)));
     if (!word) continue;
     const rule = policy.roles[request.role] ?? {};
-    return { role: request.role, label: rule.label ?? request.role, missing: rule.missing ?? request.role, closest: rule.closest ?? [], matched: word };
+    /* A request can name its own missing visualization, such as a sunburst where a treemap exists. */
+    return { role: request.role, label: rule.label ?? request.role, missing: request.missing ?? rule.missing ?? request.role, closest: request.closest ?? rule.closest ?? [], matched: word };
   }
   return null;
 }

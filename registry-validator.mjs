@@ -79,6 +79,17 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) for (const part of [].concat(parts)) {
       if (part.cellCount && manifest.props?.[part.cellCount]?.type !== 'array') problems.push(`cellCount for ${entry.id}.${key} must name an array prop`);
     }
+    for (const [key, binding] of Object.entries(manifest.ir?.count ?? {})) {
+      if (!manifest.props?.[key]?.items?.fields?.[binding.field]) problems.push(`count for ${entry.id}.${key} names a field its items do not have: ${binding.field}`);
+    }
+    for (const [key, binding] of Object.entries(manifest.ir?.matrix ?? {})) {
+      if (manifest.props?.[binding.columns]?.type !== 'array') problems.push(`matrix.columns for ${entry.id}.${key} must name an array prop`);
+      for (const role of ['unit', 'showValues', 'caption']) if (binding[role] !== undefined && !(binding[role] in (manifest.props ?? {}))) problems.push(`matrix.${role} for ${entry.id}.${key} must name a prop`);
+    }
+    for (const [key, binding] of Object.entries(manifest.ir?.tiles ?? {})) {
+      if (manifest.props?.[key]?.items?.fields?.value?.type !== 'number') problems.push(`tiles for ${entry.id}.${key} need items with a number value`);
+      if (binding.name !== undefined && !(binding.name in (manifest.props ?? {}))) problems.push(`tiles.name for ${entry.id}.${key} must name a prop`);
+    }
     /* A field that follows another names an enum beside it, maps only that enum's values, and maps an icon field to icons the runtime ships. */
     for (const [key, prop] of Object.entries(manifest.props ?? {})) {
       if (prop.defaultFrom) problems.push(`defaultFrom for ${entry.id}.${key} is only read for fields of list items`);

@@ -2,7 +2,7 @@
 
 A design system for people and agents. Syntari's components, interactive examples, source runtime, registry, and documentation are maintained as one shared product surface.
 
-The current release includes 137 components across 12 categories, 302 authored preview states, four composed starter screens, and six documented AI behaviour patterns. 38 components can be rendered from Screen IR or mounted with props. Components share Syntari’s tokens, typography, interaction runtime, accessibility conventions, and restrained motion system.
+The current release includes 137 components across 14 categories, 302 authored preview states, four composed starter screens, and six documented AI behaviour patterns. 48 components can be rendered from Screen IR or mounted with props. Components share Syntari’s tokens, typography, interaction runtime, accessibility conventions, and restrained motion system.
 
 ## Coverage principles
 

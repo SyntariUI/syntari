@@ -1,0 +1,112 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "error-and-retry",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Couldn’t load the invoices",
+      "message": "The billing service did not answer. Your filters are kept.",
+      "action": "Try again",
+      "icon": "info"
+    }
+  },
+  "source": "components/error-and-retry/",
+  "name": "Error state",
+  "category": "Feedback",
+  "purpose": "Say what failed, what is kept, and offer one way forward.",
+  "description": "A failed load in plain words, with one action to try again. The host decides what retrying does.",
+  "intents": [
+    "recover",
+    "explain-failure",
+    "retry"
+  ],
+  "variants": {
+    "action": [
+      "with retry",
+      "without"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "icon",
+    "title",
+    "message",
+    "action"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Enter"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "say-what-failed",
+    "say-what-is-kept",
+    "offer-one-way-forward"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "card",
+    "banner",
+    "empty-state"
+  ],
+  "avoidWhen": [
+    "nothing-failed",
+    "the-region-is-empty-by-design"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What failed, such as 'Couldn’t load the invoices'."
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "Why, if known, and what is kept."
+    },
+    "action": {
+      "type": "string",
+      "maxLength": 28,
+      "description": "The retry button's label. Omit it to show no button."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "info"
+    }
+  },
+  "ir": {
+    "node": ".retry-demo",
+    "text": {
+      "title": "h3",
+      "message": "p"
+    },
+    "showWhen": {
+      "message": "p"
+    },
+    "lead": {
+      "action": ".retry-demo > .button"
+    },
+    "icon": {
+      "icon": ".empty-icon"
+    }
+  },
+  "actions": {
+    "retry": {
+      "selector": ".retry-demo > .button",
+      "description": "The person asked to try again. Re-render with the result; omit action to show no button."
+    }
+  }
+}

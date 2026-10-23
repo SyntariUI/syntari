@@ -24,8 +24,8 @@
     }
   },
   "source": "components/metric-strip/",
-  "name": "Metric strip",
-  "category": "Data display",
+  "name": "Metric tabs",
+  "category": "Metrics",
   "purpose": "Let one measure be the focus of a report.",
   "description": "A row of measures where the active one is the thing being charted, and choosing another changes the focus.",
   "intents": [

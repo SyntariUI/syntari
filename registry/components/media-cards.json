@@ -26,7 +26,7 @@
   },
   "source": "components/media-cards/",
   "name": "Media cards",
-  "category": "Content",
+  "category": "Cards",
   "purpose": "Introduce a few kinds of thing side by side, each with a picture and a caption.",
   "description": "A short row of cards, each with artwork, a title, and a caption. Images come only from the host; without one a card shows its icon.",
   "intents": [

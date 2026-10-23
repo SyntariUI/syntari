@@ -28,7 +28,7 @@ const tools = {
   list_components: {
     title: 'List components',
     description: 'All Syntari components with category and whether they can be rendered from Screen IR. Filter by category or renderable.',
-    inputSchema: object({ category: { type: 'string', description: 'Exact category, such as Agents or Data display.' }, renderable: { type: 'boolean', description: 'Only components with a render contract.' } }),
+    inputSchema: object({ category: { type: 'string', description: 'Exact category, such as Agents or Charts.' }, renderable: { type: 'boolean', description: 'Only components with a render contract.' } }),
     async run({ category, renderable }) {
       const components = (await listComponents())
         .filter(item => category === undefined || item.category === category)

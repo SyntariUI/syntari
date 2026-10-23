@@ -20,8 +20,8 @@
     }
   },
   "source": "components/chart-bars/",
-  "name": "Chart bars",
-  "category": "Data display",
+  "name": "Bar chart",
+  "category": "Charts",
   "purpose": "Compare two series across the same checkpoints.",
   "description": "Columns or bars for one or two series on a shared scale, with a legend and a summary a screen reader can read.",
   "intents": [

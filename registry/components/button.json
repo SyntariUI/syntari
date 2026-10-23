@@ -3,7 +3,7 @@
   "id": "button",
   "name": "Button",
   "version": "1.0.0",
-  "category": "Action",
+  "category": "Buttons",
   "status": "authored",
   "purpose": "Trigger an immediate user action.",
   "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
@@ -80,10 +80,10 @@
   ],
   "compatibleWith": [
     "dialog",
-    "form",
+    "divider-and-form-section",
     "card",
     "tool-approval",
-    "page-header",
+    "page-header-and-breadcrumbs",
     "empty-state"
   ],
   "avoidWhen": [

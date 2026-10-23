@@ -1,0 +1,209 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "agent-todo-list",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Migrate the billing tables",
+      "tasks": [
+        {
+          "label": "Back up the current tables",
+          "state": "done"
+        },
+        {
+          "label": "Copy rows to the new schema",
+          "state": "active",
+          "detail": "1.2M of 3.4M rows"
+        },
+        {
+          "label": "Compare row counts",
+          "state": "pending"
+        },
+        {
+          "label": "Switch reads to the new tables",
+          "state": "pending"
+        }
+      ]
+    }
+  },
+  "source": "components/agent-todo-list/",
+  "name": "Agent todo list",
+  "category": "Agents",
+  "purpose": "Show an agent's plan as tasks with their state, and how many are done.",
+  "description": "A collapsible plan: each task with a mark and a word for its state, and a count of completed tasks that always agrees with the rows.",
+  "intents": [
+    "delegate",
+    "show-progress",
+    "plan"
+  ],
+  "variants": {
+    "state": [
+      "pending",
+      "active",
+      "done",
+      "failed",
+      "skipped"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "summary",
+    "count",
+    "tasks",
+    "task",
+    "mark",
+    "detail"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-task-is-active-at-a-time",
+    "the-count-is-read-from-the-tasks",
+    "a-failed-task-says-so-in-words"
+  ],
+  "tokens": [
+    "color.status.success",
+    "color.status.danger",
+    "color.action.primary.text",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "agent-activity",
+    "streaming-response",
+    "tool-approval"
+  ],
+  "avoidWhen": [
+    "the-steps-are-instructions-for-a-person",
+    "the-person-ticks-the-steps"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What the plan is for."
+    },
+    "tasks": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "The tasks in order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "required": true
+          },
+          "state": {
+            "type": "enum",
+            "values": [
+              "pending",
+              "active",
+              "done",
+              "failed",
+              "skipped"
+            ],
+            "default": "pending"
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "A word on the task's state, such as '1.2M of 3.4M rows'. Left out, it says the state.",
+            "defaultFrom": {
+              "field": "state",
+              "values": {
+                "pending": "Pending",
+                "active": "In progress",
+                "done": "Completed",
+                "failed": "Failed",
+                "skipped": "Skipped"
+              }
+            }
+          },
+          "mark": {
+            "type": "string",
+            "maxLength": 24,
+            "description": "An icon name. Left out, it follows the state.",
+            "defaultFrom": {
+              "field": "state",
+              "values": {
+                "pending": "circle",
+                "active": "clock",
+                "done": "circlecheck",
+                "failed": "x",
+                "skipped": "minus"
+              }
+            }
+          }
+        }
+      }
+    },
+    "open": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show the tasks, or only the summary."
+    }
+  },
+  "ir": {
+    "node": ".agent-surface",
+    "remove": [
+      ".agent-footer",
+      ".task-percent"
+    ],
+    "lead": {
+      "title": "summary > span"
+    },
+    "attributes": {
+      "open": {
+        "selector": "details",
+        "attribute": "open"
+      }
+    },
+    "count": {
+      "tasks": {
+        "selector": "[data-todo-count]",
+        "field": "state",
+        "value": "done",
+        "format": "{count} of {total} completed"
+      }
+    },
+    "list": {
+      "tasks": {
+        "container": ".agent-tasks",
+        "item": "li",
+        "lead": {
+          "label": "li > span:not(.task-mark)"
+        },
+        "text": {
+          "detail": "small"
+        },
+        "icon": {
+          "mark": ".task-mark"
+        },
+        "variant": {
+          "state": {
+            "values": {
+              "pending": "",
+              "active": "is-current",
+              "done": "is-complete",
+              "failed": "is-failed",
+              "skipped": "is-skipped"
+            }
+          }
+        }
+      }
+    }
+  }
+}

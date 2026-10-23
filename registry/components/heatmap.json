@@ -1,0 +1,203 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "heatmap",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Failed runs by day and time",
+      "note": "Last four weeks",
+      "columns": [
+        "Night",
+        "Morning",
+        "Afternoon",
+        "Evening"
+      ],
+      "rows": [
+        {
+          "label": "Mon",
+          "values": [
+            2,
+            14,
+            9,
+            4
+          ]
+        },
+        {
+          "label": "Tue",
+          "values": [
+            1,
+            11,
+            8,
+            3
+          ]
+        },
+        {
+          "label": "Wed",
+          "values": [
+            3,
+            18,
+            12,
+            5
+          ]
+        },
+        {
+          "label": "Thu",
+          "values": [
+            2,
+            9,
+            7,
+            2
+          ]
+        },
+        {
+          "label": "Fri",
+          "values": [
+            1,
+            6,
+            5,
+            1
+          ]
+        }
+      ],
+      "unit": "runs",
+      "showValues": true
+    }
+  },
+  "source": "components/heatmap/",
+  "name": "Heatmap",
+  "category": "Charts",
+  "purpose": "Show one measure for every pair of two categories, so the pattern is visible before any number is read.",
+  "description": "A table of rows and columns whose cells are shaded by value, lightest for the smallest and darkest for the largest, with the range beside it.",
+  "intents": [
+    "find-patterns",
+    "compare-across-two-categories",
+    "spot-hotspots"
+  ],
+  "variants": {
+    "values": [
+      "shade only",
+      "shade and figures"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "note",
+    "column-headers",
+    "row-headers",
+    "cells",
+    "scale"
+  ],
+  "accessibility": {
+    "role": "table",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-measure-in-every-cell",
+    "one-value-per-column-in-every-row",
+    "darker-means-more-not-better",
+    "the-scale-names-the-real-range"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.action.primary.soft",
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "text-block",
+    "stat-row",
+    "table"
+  ],
+  "avoidWhen": [
+    "the-cells-hold-different-measures",
+    "one-of-the-categories-has-only-one-value",
+    "exact-values-matter-more-than-the-pattern"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What every cell measures, such as 'Failed runs by day and time'."
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Small print beside the title, such as the period."
+    },
+    "columns": {
+      "type": "array",
+      "required": true,
+      "maxItems": 24,
+      "description": "Column labels, in order.",
+      "items": {
+        "type": "string",
+        "maxLength": 12
+      }
+    },
+    "rows": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "One row per category, each with one number per column, in column order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 20,
+            "required": true
+          },
+          "values": {
+            "type": "array",
+            "required": true,
+            "maxItems": 24,
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "What the figures count, written with each one, such as 'runs', '%', or '$'."
+    },
+    "showValues": {
+      "type": "boolean",
+      "default": false,
+      "description": "Write the figures in the cells. Leave off for large grids; screen readers and tooltips read them either way."
+    }
+  },
+  "ir": {
+    "node": ".heat-figure",
+    "text": {
+      "title": "figcaption strong",
+      "note": "figcaption .hint"
+    },
+    "showWhen": {
+      "note": "figcaption .hint"
+    },
+    "matrix": {
+      "rows": {
+        "selector": ".heatmap",
+        "columns": "columns",
+        "unit": "unit",
+        "showValues": "showValues",
+        "caption": "title",
+        "scale": {
+          "min": ".heat-scale .hint:first-child",
+          "max": ".heat-scale .hint:last-child"
+        }
+      }
+    }
+  }
+}

@@ -68,9 +68,17 @@
     {
       "id": "attribution-table",
       "name": "Attribution table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "Proportional traffic and revenue segments sit behind stable, borderless rows. Values roll during live updates. Hover or focus a country to reveal revenue, or use Show revenue on touch devices. Pause stops the three-second demo updates.",
+      "aliases": [
+        "attribution",
+        "ranked table",
+        "traffic sources",
+        "leaderboard",
+        "bar table",
+        "live table"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -100,9 +108,18 @@
     {
       "id": "rolling-number",
       "name": "Rolling number",
-      "category": "Data display",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "Individual digits roll inside fixed-width masks. Thousands separators and currency stay legible; the final number is exposed as one accessible label. Try crossing a digit boundary or changing direction.",
+      "aliases": [
+        "number ticker",
+        "animated number",
+        "counter",
+        "odometer",
+        "count up",
+        "number flow",
+        "ticker"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -132,9 +149,18 @@
     {
       "id": "visitor-table",
       "name": "Visitor table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "A compact visitor list with an overlapping avatar and country flag, a source pill, and right-aligned revenue. Value animations share the same numeric primitive as the attribution table.",
+      "aliases": [
+        "visitor table",
+        "user table",
+        "users",
+        "people table",
+        "members",
+        "customers",
+        "user list"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -164,9 +190,16 @@
     {
       "id": "button",
       "name": "Button",
-      "category": "Action",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "Actions with a clear hierarchy. Use one primary action per region, secondary for alternatives, and ghost for low emphasis.",
+      "aliases": [
+        "btn",
+        "primary button",
+        "secondary button",
+        "ghost button",
+        "danger button"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -202,9 +235,14 @@
     {
       "id": "icon-button",
       "name": "Icon button",
-      "category": "Action",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "Compact actions with accessible names. Toggle buttons expose pressed state, and disabled actions remain visible.",
+      "aliases": [
+        "icon-only button",
+        "toggle button",
+        "action icon"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -234,9 +272,17 @@
     {
       "id": "segmented-control",
       "name": "Segmented control",
-      "category": "Action",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "Switch between mutually exclusive views. Each control exposes its selected state and supports arrow-key navigation.",
+      "aliases": [
+        "segmented",
+        "segmented button",
+        "toggle group",
+        "button group",
+        "toggle button group",
+        "view switcher"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -266,9 +312,18 @@
     {
       "id": "text-input",
       "name": "Text input",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Labeled fields with persistent hints and associated validation messages. Error meaning is communicated with text as well as color.",
+      "aliases": [
+        "input",
+        "text field",
+        "textfield",
+        "form field",
+        "input field",
+        "text box",
+        "textbox"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -298,9 +353,15 @@
     {
       "id": "switch",
       "name": "Switch",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Turn a setting on or off immediately. Each switch has a descriptive label and a generous interaction area.",
+      "aliases": [
+        "toggle",
+        "toggle switch",
+        "on off",
+        "on/off"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -330,9 +391,14 @@
     {
       "id": "checkbox",
       "name": "Checkbox",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Use checkboxes for independent choices that can be combined.",
+      "aliases": [
+        "check box",
+        "tick box",
+        "checkbox group"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -362,9 +428,14 @@
     {
       "id": "radio",
       "name": "Radio",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Use radio buttons for a single selection within a set.",
+      "aliases": [
+        "radio button",
+        "radio group",
+        "single choice"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -393,10 +464,20 @@
     },
     {
       "id": "badge-and-status",
-      "name": "Badge & status",
-      "category": "Feedback & status",
+      "name": "Badge",
+      "category": "Content",
       "version": "0.4.0",
       "description": "Quiet status indicators with semantic text colors. A dot, label, or sign carries the meaning beyond color.",
+      "aliases": [
+        "badge & status",
+        "tag",
+        "pill",
+        "label",
+        "status badge",
+        "status dot",
+        "lozenge",
+        "indicator"
+      ],
       "tokens": [
         "--green-a1",
         "--success-text",
@@ -406,8 +487,8 @@
       ],
       "source": "components/badge-and-status/",
       "manifest": "components/badge-and-status.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -425,10 +506,19 @@
     },
     {
       "id": "metric-and-sparkline",
-      "name": "Metric & sparkline",
-      "category": "Data display",
+      "name": "Metric summary",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "A compact metric pair with comparison badges and a bar chart.",
+      "aliases": [
+        "metric & sparkline",
+        "sparkline",
+        "kpi card",
+        "stat card",
+        "mini chart",
+        "metric card",
+        "kpi"
+      ],
       "tokens": [
         "--blue-4",
         "--green-a1",
@@ -456,10 +546,18 @@
     },
     {
       "id": "floating-navigation",
-      "name": "Floating navigation",
+      "name": "Floating dock",
       "category": "Navigation",
       "version": "0.4.0",
       "description": "A compact utility rail for switching views. The selected destination has a quiet filled state and an accessible pressed label.",
+      "aliases": [
+        "floating navigation",
+        "floating dock",
+        "dock",
+        "bottom navigation",
+        "tab bar",
+        "navigation rail"
+      ],
       "tokens": [
         "--background",
         "--bg-4",
@@ -487,10 +585,18 @@
     },
     {
       "id": "avatar-and-group",
-      "name": "Avatar & group",
+      "name": "Avatar",
       "category": "Content",
       "version": "0.4.0",
       "description": "Abstract color avatars provide recognizable identity without depending on photography. Groups show overflow as a count.",
+      "aliases": [
+        "avatar & group",
+        "avatar group",
+        "user avatar",
+        "profile picture",
+        "initials",
+        "facepile"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -500,8 +606,8 @@
       ],
       "source": "components/avatar-and-group/",
       "manifest": "components/avatar-and-group.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -519,10 +625,18 @@
     },
     {
       "id": "select-and-date",
-      "name": "Select & date",
-      "category": "Form controls",
+      "name": "Select & date picker",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A workspace selector and calendar share the same floating surface, selection colors, and Lucide icons. The calendar supports arrow keys, Home/End, Page Up/Down, Enter, and Escape.",
+      "aliases": [
+        "select & date",
+        "dropdown",
+        "date picker",
+        "datepicker",
+        "single date",
+        "listbox"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -551,18 +665,27 @@
     },
     {
       "id": "score",
-      "name": "Score",
-      "category": "Feedback & status",
+      "name": "Progress ring",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A progress ring pairs a numerical score with a written evaluation.",
+      "aliases": [
+        "score",
+        "progress ring",
+        "circular progress",
+        "radial progress",
+        "progress circle",
+        "gauge",
+        "ring"
+      ],
       "tokens": [
         "--green-4",
         "--green-a1"
       ],
       "source": "components/score/",
       "manifest": "components/score.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -580,18 +703,24 @@
     },
     {
       "id": "progress",
-      "name": "Progress",
-      "category": "Feedback & status",
+      "name": "Progress bar",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A linear progress bar shows measurable completion with a written value.",
+      "aliases": [
+        "progress bar",
+        "linear progress",
+        "loading bar",
+        "meter"
+      ],
       "tokens": [
         "--accent",
         "--bg-3"
       ],
       "source": "components/progress/",
       "manifest": "components/progress.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -610,9 +739,15 @@
     {
       "id": "dropdown-menu",
       "name": "Dropdown menu",
-      "category": "Action",
+      "category": "Menus",
       "version": "0.4.0",
       "description": "A contextual action list that opens on demand, dismisses on Escape or outside click, and supports keyboard navigation.",
+      "aliases": [
+        "dropdown",
+        "action menu",
+        "menu button",
+        "popup menu"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -645,6 +780,12 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "Switch related content in place. Tabs expose selected state, are connected to their panels, and support arrow keys.",
+      "aliases": [
+        "tab",
+        "tab bar",
+        "tab list",
+        "tabbed"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -674,9 +815,19 @@
     {
       "id": "banner",
       "name": "Banner",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Inline feedback communicates what happened and whether the user needs to act. Text remains readable in both themes.",
+      "aliases": [
+        "alert",
+        "callout",
+        "notice",
+        "inline message",
+        "message bar",
+        "inline notification",
+        "info box",
+        "announcement"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -706,9 +857,15 @@
     {
       "id": "table",
       "name": "Table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "Compact rows with subtle filled backgrounds. Semantic column headers keep the values understandable to screen readers.",
+      "aliases": [
+        "basic table",
+        "static table",
+        "simple table",
+        "html table"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -738,9 +895,16 @@
     {
       "id": "card",
       "name": "Card",
-      "category": "Container",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A composed container for a project summary. Surface, border, and spacing tokens work independently of product domain.",
+      "aliases": [
+        "tile",
+        "panel",
+        "surface",
+        "project card",
+        "content card"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -770,9 +934,13 @@
     {
       "id": "slider",
       "name": "Slider",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Choose a value along a range. The live output is associated with the labeled slider and updates on every change.",
+      "aliases": [
+        "range input",
+        "slider input"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -802,9 +970,16 @@
     {
       "id": "dialog",
       "name": "Dialog",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "A focused modal for a single task. Native dialog manages focus containment and Escape. The form validates before confirming.",
+      "aliases": [
+        "modal",
+        "modal dialog",
+        "popup",
+        "pop-up",
+        "form dialog"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -834,9 +1009,16 @@
     {
       "id": "toast",
       "name": "Toast",
-      "category": "Overlay",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Transient confirmation after an action. The message is announced through a live status region without moving focus.",
+      "aliases": [
+        "snackbar",
+        "notification",
+        "sonner",
+        "flash message",
+        "toaster"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -866,9 +1048,15 @@
     {
       "id": "tooltip",
       "name": "Tooltip",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "A short label for an icon action, shown on pointer hover and keyboard focus. It never contains essential instructions.",
+      "aliases": [
+        "hint",
+        "tip",
+        "info tip",
+        "hover label"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -901,6 +1089,12 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "Navigate a bounded set of pages. Current page and visible item range stay synchronized, including previous and next actions.",
+      "aliases": [
+        "pager",
+        "page numbers",
+        "paging",
+        "next previous"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -933,6 +1127,13 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "Progress through a short sequence with completed, current, and upcoming steps. The demo advances and can be restarted.",
+      "aliases": [
+        "steps",
+        "wizard",
+        "multi-step",
+        "progress indicator",
+        "step indicator"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -962,9 +1163,16 @@
     {
       "id": "empty-state",
       "name": "Empty state",
-      "category": "Content",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Explain what belongs in an empty space and offer the next useful action.",
+      "aliases": [
+        "blank state",
+        "zero state",
+        "no data",
+        "no results",
+        "nothing here"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -994,9 +1202,17 @@
     {
       "id": "activity-list",
       "name": "Activity list",
-      "category": "Table & list",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "A simple timeline pairs an event, context, and time. The connecting line is decorative; event order is semantic.",
+      "aliases": [
+        "timeline",
+        "activity feed",
+        "feed",
+        "history",
+        "audit log",
+        "event list"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1026,9 +1242,18 @@
     {
       "id": "skeleton-and-spinner",
       "name": "Skeleton & spinner",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Static skeletons reserve the shape of loading content. The spinner respects reduced-motion preferences.",
+      "aliases": [
+        "skeleton & spinner",
+        "loader",
+        "loading",
+        "placeholder",
+        "shimmer",
+        "spin",
+        "loading indicator"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1058,9 +1283,17 @@
     {
       "id": "accordion",
       "name": "Accordion",
-      "category": "Container",
+      "category": "Content",
       "version": "0.4.0",
       "description": "Progressively disclose supporting details. Native details elements retain keyboard and screen-reader behavior.",
+      "aliases": [
+        "collapse",
+        "collapsible",
+        "disclosure",
+        "expansion panel",
+        "details",
+        "faq"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1090,9 +1323,14 @@
     {
       "id": "funnel",
       "name": "Funnel",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "A flowing stage comparison, with stage names and values available as text.",
+      "aliases": [
+        "funnel chart",
+        "conversion funnel",
+        "drop-off"
+      ],
       "tokens": [
         "--blue-4",
         "--blue-a2",
@@ -1121,9 +1359,17 @@
     {
       "id": "filter-chips",
       "name": "Filter chips",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Applied filters are visible and individually removable. Clear all and reset keep the example repeatable.",
+      "aliases": [
+        "chip",
+        "filter tags",
+        "removable tags",
+        "token",
+        "pills",
+        "active filters"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1153,9 +1399,16 @@
     {
       "id": "chat-composer",
       "name": "Chat composer",
-      "category": "Chat",
+      "category": "Agents",
       "version": "0.4.0",
       "description": "A local AI-chat composer with room to write, attach, and send. Messages are kept locally and announced when added.",
+      "aliases": [
+        "chat input",
+        "chat box",
+        "mini chat",
+        "chat widget",
+        "composer"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1191,9 +1444,19 @@
     {
       "id": "file-input",
       "name": "File input",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "An empty-state pattern for assets: drop files on the surface or use Select assets. Selection stays on your device.",
+      "aliases": [
+        "upload",
+        "file upload",
+        "dropzone",
+        "drop zone",
+        "drag and drop",
+        "file picker",
+        "attachment",
+        "uploader"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1223,9 +1486,16 @@
     {
       "id": "text-area",
       "name": "Text area",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A multiline field with an associated character counter. Length limits are enforced by the native textarea.",
+      "aliases": [
+        "textarea",
+        "multiline",
+        "multi-line input",
+        "comment box",
+        "long text"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1255,9 +1525,15 @@
     {
       "id": "session-card",
       "name": "Session card",
-      "category": "Container",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A layered review card. Expand the result row to see what was checked; spacing and shadows keep nested surfaces quiet.",
+      "aliases": [
+        "review card",
+        "summary card",
+        "result card",
+        "session summary"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1287,9 +1563,16 @@
     {
       "id": "selection-toolbar",
       "name": "Selection toolbar",
-      "category": "Action",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "A compact body toolbar responds to selection. Actions confirm the selected items locally and clear selection after archiving.",
+      "aliases": [
+        "bulk actions",
+        "action bar",
+        "contextual toolbar",
+        "batch actions",
+        "selection bar"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1322,6 +1605,13 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "A contextual activity switcher opens into a compact realtime summary. Select Realtime to expand; any other destination collapses it.",
+      "aliases": [
+        "dock",
+        "expanding dock",
+        "bottom navigation",
+        "tab bar",
+        "activity switcher"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1351,9 +1641,21 @@
     {
       "id": "app-shell",
       "name": "App shell",
-      "category": "Layout",
+      "category": "Navigation",
       "version": "0.4.0",
       "description": "One navigation system with sidebar and topbar layouts, a collapsible rail, and a keyboard-accessible mobile drawer. Starter screens use the same component.",
+      "aliases": [
+        "sidebar",
+        "navbar",
+        "nav bar",
+        "top bar",
+        "topbar",
+        "header",
+        "navigation drawer",
+        "nav rail",
+        "app layout",
+        "app bar"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1386,6 +1688,13 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "A page title, supporting description, breadcrumb trail, and primary action share a reusable alignment.",
+      "aliases": [
+        "breadcrumb",
+        "breadcrumbs",
+        "page header",
+        "page title",
+        "title bar"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1415,9 +1724,18 @@
     {
       "id": "side-drawer",
       "name": "Side drawer",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "Inspect and edit a record without losing your place. Native modal semantics keep keyboard focus inside until dismissed.",
+      "aliases": [
+        "sheet",
+        "side sheet",
+        "side panel",
+        "slide-over",
+        "slideover",
+        "offcanvas",
+        "inspector"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1447,9 +1765,15 @@
     {
       "id": "bottom-sheet",
       "name": "Bottom sheet",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "A compact action surface rises from the bottom, with Escape and backdrop dismissal.",
+      "aliases": [
+        "action sheet",
+        "mobile drawer",
+        "bottom drawer",
+        "drawer"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1479,9 +1803,16 @@
     {
       "id": "popover",
       "name": "Popover",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "Small controls appear next to their trigger and dismiss on outside click or Escape.",
+      "aliases": [
+        "popup",
+        "flyout",
+        "popper",
+        "hover card",
+        "overlay panel"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1511,9 +1842,17 @@
     {
       "id": "confirmation-dialog",
       "name": "Confirmation dialog",
-      "category": "Overlay",
+      "category": "Overlays",
       "version": "0.4.0",
       "description": "Confirm a consequential action with a clear description, safe cancel action, and explicit outcome.",
+      "aliases": [
+        "alert dialog",
+        "confirm dialog",
+        "are you sure",
+        "popconfirm",
+        "destructive dialog",
+        "delete confirmation"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1543,9 +1882,16 @@
     {
       "id": "searchable-select",
       "name": "Searchable select",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Search a list of options. Arrow keys move the active option; Enter commits and Escape dismisses.",
+      "aliases": [
+        "combobox",
+        "combo box",
+        "searchable dropdown",
+        "listbox",
+        "select with search"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1575,9 +1921,16 @@
     {
       "id": "autocomplete",
       "name": "Autocomplete",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Suggestions narrow as you type. Choose an existing value or keep a custom value.",
+      "aliases": [
+        "typeahead",
+        "suggest",
+        "autosuggest",
+        "combobox",
+        "combo box"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1606,10 +1959,20 @@
     },
     {
       "id": "multiselect",
-      "name": "Multiselect",
-      "category": "Form controls",
+      "name": "Multi-select",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Select several values from a searchable list. Remove selected chips without reopening the list.",
+      "aliases": [
+        "multiselect",
+        "multi select",
+        "multi-select",
+        "tag input",
+        "tags input",
+        "chips input",
+        "multiple select",
+        "token input"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1639,9 +2002,19 @@
     {
       "id": "command-palette",
       "name": "Command palette",
-      "category": "Overlay",
+      "category": "Menus",
       "version": "0.4.0",
       "description": "Find screens, components, and common actions with the keyboard. Open anywhere with Command/Ctrl K.",
+      "aliases": [
+        "cmdk",
+        "command menu",
+        "command k",
+        "spotlight",
+        "quick search",
+        "kbar",
+        "launcher",
+        "jump to"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1670,10 +2043,19 @@
     },
     {
       "id": "number-stepper",
-      "name": "Number stepper",
-      "category": "Form controls",
+      "name": "Number input",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Increment, decrement, or enter a number. Boundary buttons disable at the minimum and maximum.",
+      "aliases": [
+        "number stepper",
+        "number input",
+        "numeric input",
+        "spin button",
+        "quantity",
+        "counter",
+        "input number"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1702,10 +2084,16 @@
     },
     {
       "id": "password-field",
-      "name": "Password field",
-      "category": "Form controls",
+      "name": "Password input",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Reveal a password without changing its value. The toggle exposes its pressed state and updates its label.",
+      "aliases": [
+        "password field",
+        "password input",
+        "show password",
+        "reveal password"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1735,9 +2123,15 @@
     {
       "id": "date-range-picker",
       "name": "Date range picker",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Choose two dates across months, or use a quick preset. Apply commits the selection; cancel preserves the original value.",
+      "aliases": [
+        "date picker",
+        "datepicker",
+        "range calendar",
+        "period picker"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1767,9 +2161,15 @@
     {
       "id": "time-picker",
       "name": "Time picker",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A tactile hour-and-minute wheel with momentum scrolling, keyboard control, and explicit confirmation.",
+      "aliases": [
+        "time input",
+        "clock picker",
+        "hour picker",
+        "timepicker"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1799,9 +2199,16 @@
     {
       "id": "selectable-cards",
       "name": "Selectable cards",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A richer radio option combines a title, description, and Lucide icon. Native radio semantics preserve keyboard behavior.",
+      "aliases": [
+        "radio cards",
+        "choice cards",
+        "option cards",
+        "card select",
+        "radio tiles"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1830,10 +2237,16 @@
     },
     {
       "id": "simple-data-table",
-      "name": "Simple data table",
-      "category": "Table & list",
+      "name": "Sortable table",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "A quiet table with one record per line. Sort project names, status, progress, currency, and dates without extra toolbars or bulk controls.",
+      "aliases": [
+        "simple data table",
+        "sortable table",
+        "sort table",
+        "basic data table"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1863,9 +2276,19 @@
     {
       "id": "data-table",
       "name": "Data table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "Sort, search, filter, hide columns, select rows, paginate, expand details, and edit records. Actions update local preview data.",
+      "aliases": [
+        "data grid",
+        "datagrid",
+        "grid",
+        "advanced table",
+        "editable table",
+        "table with filters",
+        "bulk actions",
+        "tanstack table"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1895,9 +2318,16 @@
     {
       "id": "inline-validation",
       "name": "Inline validation",
-      "category": "Feedback & status",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Associated inline errors explain how to correct an invalid field. Valid input replaces the error with confirmation.",
+      "aliases": [
+        "form validation",
+        "field error",
+        "error message",
+        "helper text",
+        "validation message"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1926,10 +2356,18 @@
     },
     {
       "id": "error-and-retry",
-      "name": "Error & retry",
-      "category": "Feedback & status",
+      "name": "Error state",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Recover from a failed load without losing context. Retry shows a loading state before replacing the error.",
+      "aliases": [
+        "error & retry",
+        "error state",
+        "retry",
+        "failed state",
+        "load error",
+        "try again"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1939,8 +2377,8 @@
       ],
       "source": "components/error-and-retry/",
       "manifest": "components/error-and-retry.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -1959,9 +2397,15 @@
     {
       "id": "upload-progress",
       "name": "Upload progress",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A bounded progress simulation with cancel and retry. Screen-reader updates announce milestones, not every frame.",
+      "aliases": [
+        "file upload",
+        "uploading",
+        "upload status",
+        "transfer progress"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -1991,9 +2435,16 @@
     {
       "id": "unsaved-changes",
       "name": "Unsaved changes",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A contextual save bar appears when values differ from the saved version. Discard restores the original.",
+      "aliases": [
+        "save bar",
+        "contextual save bar",
+        "dirty state",
+        "sticky save",
+        "discard changes"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2023,9 +2474,19 @@
     {
       "id": "metadata-list",
       "name": "Metadata list",
-      "category": "Content",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "Aligned labels and values display the details that accompany a record.",
+      "aliases": [
+        "description list",
+        "key value",
+        "key-value",
+        "properties",
+        "details list",
+        "definition list",
+        "descriptions",
+        "attributes"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2054,10 +2515,17 @@
     },
     {
       "id": "thumbnail-and-lightbox",
-      "name": "Thumbnail & lightbox",
-      "category": "Content",
+      "name": "Lightbox",
+      "category": "Media",
       "version": "0.4.0",
       "description": "Local abstract artwork demonstrates an asset thumbnail and larger lightbox preview. Escape returns focus to the thumbnail.",
+      "aliases": [
+        "thumbnail & lightbox",
+        "thumbnail",
+        "image viewer",
+        "image preview",
+        "zoom"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2086,10 +2554,18 @@
     },
     {
       "id": "divider-and-form-section",
-      "name": "Divider & form section",
-      "category": "Layout",
+      "name": "Form section",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A titled section and quiet divider separate related fields without adding another card.",
+      "aliases": [
+        "divider & form section",
+        "divider",
+        "separator",
+        "form section",
+        "fieldset",
+        "section header"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2122,6 +2598,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A collapsible task plan with explicit task states and bounded progress.",
+      "aliases": [
+        "todo",
+        "to-do",
+        "task list",
+        "agent plan",
+        "tasks"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2131,8 +2614,8 @@
       ],
       "source": "components/agent-todo-list/",
       "manifest": "components/agent-todo-list.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -2154,6 +2637,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A response with source identity and contextual actions.",
+      "aliases": [
+        "assistant message",
+        "ai message",
+        "ai response",
+        "bot message",
+        "chat message"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2192,6 +2682,12 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Role-specific message surfaces.",
+      "aliases": [
+        "chat bubble",
+        "message bubble",
+        "speech bubble",
+        "chat message"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2220,10 +2716,17 @@
     },
     {
       "id": "message-scroller",
-      "name": "Message scroller",
+      "name": "Message list",
       "category": "Agents",
       "version": "0.4.0",
       "description": "A bounded message history with an explicit jump action.",
+      "aliases": [
+        "message scroller",
+        "chat history",
+        "scroll to bottom",
+        "jump to latest",
+        "chat log"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2256,6 +2759,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A growing prompt field with a local attachment picker and submit feedback.",
+      "aliases": [
+        "chat input",
+        "composer",
+        "message input",
+        "prompt box",
+        "prompt field"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2291,9 +2801,16 @@
     {
       "id": "code-block",
       "name": "Code block",
-      "category": "Agents",
+      "category": "Content",
       "version": "0.4.0",
       "description": "Code is preserved as text, with a copy action.",
+      "aliases": [
+        "code snippet",
+        "snippet",
+        "pre",
+        "syntax highlighting",
+        "copy code"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2303,8 +2820,8 @@
       ],
       "source": "components/code-block/",
       "manifest": "components/code-block.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -2326,6 +2843,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A decision card that records an explicit choice.",
+      "aliases": [
+        "approve",
+        "review card",
+        "sign-off",
+        "decision card",
+        "approve reject"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2358,6 +2882,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Readable additions and deletions with a review outcome.",
+      "aliases": [
+        "code diff",
+        "diff viewer",
+        "changes",
+        "patch",
+        "compare files"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2396,6 +2927,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Inspect structured output and run a bounded local simulation.",
+      "aliases": [
+        "tool call",
+        "tool output",
+        "function call",
+        "function result",
+        "run result"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2434,6 +2972,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A cancellable response preview. Completion is announced without reading every character.",
+      "aliases": [
+        "streaming",
+        "streaming text",
+        "typewriter",
+        "live response",
+        "ai response"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2466,6 +3011,11 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Local artwork illustrates generation states; no model service is called.",
+      "aliases": [
+        "image placeholder",
+        "ai image",
+        "generated image"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2498,6 +3048,14 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Show the requested scope before the user decides.",
+      "aliases": [
+        "permission request",
+        "consent",
+        "human in the loop",
+        "allow deny",
+        "tool call approval",
+        "authorize"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2536,6 +3094,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Numbered references disclose context next to a response.",
+      "aliases": [
+        "sources",
+        "references",
+        "footnotes",
+        "source links",
+        "citation"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2574,6 +3139,14 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A chronological record separate from the task plan.",
+      "aliases": [
+        "activity log",
+        "run log",
+        "event log",
+        "timeline",
+        "trace",
+        "agent log"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2612,6 +3185,12 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Feedback before a durable task plan is available.",
+      "aliases": [
+        "thinking indicator",
+        "typing indicator",
+        "working indicator",
+        "ai loading"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2644,6 +3223,12 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "Conversation navigation next to a working composer.",
+      "aliases": [
+        "chat sidebar",
+        "conversation list",
+        "copilot panel",
+        "assistant panel"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2676,6 +3261,13 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A composed local conversation with retained messages between previews.",
+      "aliases": [
+        "chat app",
+        "chat ui",
+        "chat layout",
+        "messenger",
+        "chatbot"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2708,6 +3300,14 @@
       "category": "Navigation",
       "version": "0.4.0",
       "description": "Explore nested files with disclosures and preview feedback.",
+      "aliases": [
+        "tree view",
+        "treeview",
+        "folder tree",
+        "file explorer",
+        "directory",
+        "nested list"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2737,9 +3337,15 @@
     {
       "id": "preview-rail",
       "name": "Preview rail",
-      "category": "Content",
+      "category": "Media",
       "version": "0.4.0",
       "description": "A compact artwork selector updates a shared preview.",
+      "aliases": [
+        "thumbnail selector",
+        "image picker",
+        "preview picker",
+        "artwork selector"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2769,9 +3375,18 @@
     {
       "id": "otp-input",
       "name": "OTP input",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A six-digit verification field supports paste, autofill, animated completion, and clear rejection feedback.",
+      "aliases": [
+        "one-time code",
+        "verification code",
+        "pin input",
+        "pin code",
+        "2fa",
+        "passcode",
+        "code input"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2801,9 +3416,17 @@
     {
       "id": "feedback-widget",
       "name": "Feedback widget",
-      "category": "Feedback & status",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Collect a rating and optional note within the local preview.",
+      "aliases": [
+        "rating",
+        "star rating",
+        "survey",
+        "nps",
+        "feedback form",
+        "csat"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2833,9 +3456,15 @@
     {
       "id": "notification-stack",
       "name": "Notification stack",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A compact inbox with per-notification dismissal.",
+      "aliases": [
+        "notifications",
+        "notification center",
+        "inbox",
+        "notification list"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2865,9 +3494,14 @@
     {
       "id": "context-menu",
       "name": "Context menu",
-      "category": "Overlay",
+      "category": "Menus",
       "version": "0.4.0",
       "description": "Secondary actions open with right-click, Shift F10, or an explicit button.",
+      "aliases": [
+        "right click menu",
+        "right-click",
+        "contextual menu"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2897,9 +3531,17 @@
     {
       "id": "availability-scheduler",
       "name": "Availability scheduler",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "Choose a day and available time with explicit confirmation.",
+      "aliases": [
+        "booking",
+        "scheduler",
+        "appointment",
+        "time slots",
+        "meeting picker",
+        "slot picker"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2929,9 +3571,16 @@
     {
       "id": "wheel-picker",
       "name": "Wheel picker",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A bounded duration list with scroll snapping and keyboard selection.",
+      "aliases": [
+        "duration picker",
+        "scroll picker",
+        "picker wheel",
+        "ios picker",
+        "drum picker"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2961,9 +3610,16 @@
     {
       "id": "swipeable-list",
       "name": "Swipeable list",
-      "category": "Table & list",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "Pointer swipes and visible actions lead to the same reversible outcome.",
+      "aliases": [
+        "swipe actions",
+        "swipe to delete",
+        "swipe to archive",
+        "list item actions",
+        "swipe list"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -2993,9 +3649,15 @@
     {
       "id": "not-found",
       "name": "Not found",
-      "category": "Content",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "An actionable empty route state.",
+      "aliases": [
+        "404",
+        "page not found",
+        "error page",
+        "missing page"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3025,9 +3687,16 @@
     {
       "id": "range-slider",
       "name": "Range slider",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A budget interval with independent, labeled lower and upper controls.",
+      "aliases": [
+        "range",
+        "dual slider",
+        "min max slider",
+        "double slider",
+        "range input"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3057,9 +3726,15 @@
     {
       "id": "tilt-card",
       "name": "Tilt card",
-      "category": "Container",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A restrained perspective response on pointer movement, without changing the content hierarchy.",
+      "aliases": [
+        "3d card",
+        "hover card",
+        "parallax card",
+        "perspective card"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3089,9 +3764,16 @@
     {
       "id": "marquee",
       "name": "Marquee",
-      "category": "Content",
+      "category": "Media",
       "version": "0.4.0",
       "description": "A pausable horizontal strip. Motion stops when reduced motion is requested.",
+      "aliases": [
+        "ticker",
+        "scrolling text",
+        "logo strip",
+        "logo cloud",
+        "crawl"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3121,9 +3803,15 @@
     {
       "id": "pull-to-refresh",
       "name": "Pull to refresh",
-      "category": "Feedback & status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "Refresh a short feed using a downward gesture or accessible button.",
+      "aliases": [
+        "refresh",
+        "pull down",
+        "swipe to refresh",
+        "reload"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3153,9 +3841,16 @@
     {
       "id": "ambient-background",
       "name": "Ambient background",
-      "category": "Content",
+      "category": "Media",
       "version": "0.4.0",
       "description": "A lightweight CSS interpretation of the reference shader effect, using only Syntari palette tokens.",
+      "aliases": [
+        "animated background",
+        "gradient background",
+        "aurora",
+        "shader",
+        "hero background"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3184,10 +3879,16 @@
     },
     {
       "id": "rotating-carousel",
-      "name": "Rotating carousel",
-      "category": "Content",
+      "name": "Carousel",
+      "category": "Media",
       "version": "0.4.0",
       "description": "Three artwork cards rotate through a shared stage, with explicit controls and reduced motion.",
+      "aliases": [
+        "rotating carousel",
+        "slideshow",
+        "slides",
+        "image carousel"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3216,10 +3917,17 @@
     },
     {
       "id": "card-and-project-folder",
-      "name": "Card & project folder",
-      "category": "Container",
+      "name": "Project folder",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A folder opens into a compact set of file actions.",
+      "aliases": [
+        "card & project folder",
+        "project folder",
+        "folder",
+        "folder card",
+        "expandable folder"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3249,9 +3957,17 @@
     {
       "id": "masonry-grid",
       "name": "Masonry grid",
-      "category": "Layout",
+      "category": "Media",
       "version": "0.4.0",
       "description": "An editorial masonry gallery where each card has its own artwork, crop, and title.",
+      "aliases": [
+        "masonry",
+        "gallery",
+        "image grid",
+        "pinterest grid",
+        "photo grid",
+        "mosaic"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3280,10 +3996,19 @@
     },
     {
       "id": "fixtures",
-      "name": "Fixtures",
-      "category": "Data display",
+      "name": "Match schedule",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "A compact schedule pattern with selectable fixtures and local detail feedback.",
+      "aliases": [
+        "fixtures",
+        "fixture list",
+        "match list",
+        "matches",
+        "schedule",
+        "event schedule",
+        "agenda"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3313,9 +4038,17 @@
     {
       "id": "asset-swap",
       "name": "Asset swap",
-      "category": "Form controls",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "A local illustrative crypto convert form: each field carries its own asset select, enter an amount, and review the order. No wallet, trading, or network transaction is connected.",
+      "aliases": [
+        "asset swap",
+        "crypto swap",
+        "token swap",
+        "exchange",
+        "convert",
+        "currency converter"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3344,10 +4077,18 @@
     },
     {
       "id": "status-island",
-      "name": "Status island",
-      "category": "Feedback & status",
+      "name": "Floating status",
+      "category": "Feedback",
       "version": "0.4.0",
       "description": "A dark floating surface reveals task context without switching pages.",
+      "aliases": [
+        "status island",
+        "dynamic island",
+        "floating status",
+        "sync status",
+        "status pill",
+        "save status"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3376,10 +4117,19 @@
     },
     {
       "id": "overflow-actions",
-      "name": "Overflow actions",
-      "category": "Action",
+      "name": "Overflow menu",
+      "category": "Menus",
       "version": "0.4.0",
       "description": "Low-frequency actions share the standard Syntari menu surface.",
+      "aliases": [
+        "overflow actions",
+        "overflow menu",
+        "more menu",
+        "kebab menu",
+        "ellipsis menu",
+        "three dots menu",
+        "more actions"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3409,9 +4159,16 @@
     {
       "id": "wallet-card",
       "name": "Wallet card",
-      "category": "Content",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A sample account surface with concealed balance and a copyable demonstration identifier.",
+      "aliases": [
+        "balance card",
+        "account card",
+        "wallet",
+        "crypto wallet",
+        "account balance"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3440,10 +4197,17 @@
     },
     {
       "id": "prediction-card",
-      "name": "Prediction card",
-      "category": "Data display",
+      "name": "Poll card",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A product-planning prediction sample with local choices; no betting or payment.",
+      "aliases": [
+        "prediction card",
+        "poll",
+        "vote",
+        "forecast",
+        "survey card"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3472,10 +4236,19 @@
     },
     {
       "id": "bloom-menu",
-      "name": "Bloom menu",
-      "category": "Action",
+      "name": "Speed dial",
+      "category": "Menus",
       "version": "0.4.0",
       "description": "Circular actions float above a central trigger that clearly changes between Create and Close.",
+      "aliases": [
+        "bloom menu",
+        "speed dial",
+        "fab",
+        "floating action button",
+        "float button",
+        "radial menu",
+        "quick actions"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3504,10 +4277,17 @@
     },
     {
       "id": "morphing-search",
-      "name": "Morphing search",
+      "name": "Expandable search",
       "category": "Navigation",
       "version": "0.4.0",
       "description": "An inline search expands in place and filters a small set of recent projects.",
+      "aliases": [
+        "morphing search",
+        "search bar",
+        "search input",
+        "search field",
+        "expandable search"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3536,10 +4316,17 @@
     },
     {
       "id": "action-swap",
-      "name": "Action swap",
-      "category": "Action",
+      "name": "Loading button",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "A single action changes its label and icon as work progresses.",
+      "aliases": [
+        "action swap",
+        "loading button",
+        "stateful button",
+        "progress button",
+        "async button"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3572,6 +4359,12 @@
       "category": "Agents",
       "version": "0.4.0",
       "description": "A small guided approval flow combines radio options, free text, and a reviewable result.",
+      "aliases": [
+        "agent question",
+        "clarifying question",
+        "ask user",
+        "multiple choice"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3606,10 +4399,19 @@
     },
     {
       "id": "chart-bars",
-      "name": "Chart bars",
-      "category": "Data display",
+      "name": "Bar chart",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "A monthly comparison keeps each period on a shared scale with a readable value and concise legend.",
+      "aliases": [
+        "chart bars",
+        "bar graph",
+        "column chart",
+        "grouped bar chart",
+        "histogram",
+        "vertical bar chart",
+        "horizontal bar chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3638,10 +4440,17 @@
     },
     {
       "id": "chart-line",
-      "name": "Chart line",
-      "category": "Data display",
+      "name": "Line chart (indexed)",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "An animated line chart with keyboard-accessible points and hover details for each year.",
+      "aliases": [
+        "chart line",
+        "line graph",
+        "multi-series line",
+        "indexed chart",
+        "trend line"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3670,10 +4479,17 @@
     },
     {
       "id": "chart-donut",
-      "name": "Chart donut",
-      "category": "Data display",
+      "name": "Donut chart",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "A softly animated ring keeps the total centered and aligns each share label as a clear group.",
+      "aliases": [
+        "chart donut",
+        "pie chart",
+        "pie",
+        "doughnut",
+        "ring chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3683,8 +4499,8 @@
       ],
       "source": "components/chart-donut/",
       "manifest": "components/chart-donut.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -3703,9 +4519,15 @@
     {
       "id": "heatmap",
       "name": "Heatmap",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "A compact grid where one intensity ramp carries the comparison, with the scale beside it.",
+      "aliases": [
+        "heat map",
+        "density grid",
+        "contribution graph",
+        "matrix chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3715,8 +4537,8 @@
       ],
       "source": "components/heatmap/",
       "manifest": "components/heatmap.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -3735,9 +4557,14 @@
     {
       "id": "treemap",
       "name": "Treemap",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "Tiles sized by share, so the shape of the whole is readable before any number is.",
+      "aliases": [
+        "tree map",
+        "nested rectangles",
+        "hierarchy chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3747,8 +4574,8 @@
       ],
       "source": "components/treemap/",
       "manifest": "components/treemap.json",
-      "status": "generated",
-      "renderable": false,
+      "status": "authored",
+      "renderable": true,
       "dependencies": [],
       "examples": {
         "good": [],
@@ -3767,9 +4594,17 @@
     {
       "id": "network-graph",
       "name": "Network graph",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "Move the services by pointer or keyboard. Labels stay centered within each generously sized node.",
+      "aliases": [
+        "node graph",
+        "force graph",
+        "network diagram",
+        "topology",
+        "dependency graph",
+        "diagram"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3799,9 +4634,15 @@
     {
       "id": "gantt-chart",
       "name": "Gantt chart",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "Rows of work with a span and a marker for today, at a grain people can read at a glance.",
+      "aliases": [
+        "gantt",
+        "timeline chart",
+        "roadmap",
+        "project schedule"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3831,9 +4672,16 @@
     {
       "id": "comparison-table",
       "name": "Comparison table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "The same metric measured across options, with the advantage column naming the winner in words rather than colour alone.",
+      "aliases": [
+        "comparison",
+        "versus",
+        "vs",
+        "feature comparison",
+        "side by side"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3863,9 +4711,19 @@
     {
       "id": "stat-row",
       "name": "Stat row",
-      "category": "Data display",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "A row of measures with a label, a value, a change, and the note that explains it.",
+      "aliases": [
+        "kpi",
+        "kpi row",
+        "stats",
+        "stat cards",
+        "statistics",
+        "scorecards",
+        "summary cards",
+        "metrics row"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3894,10 +4752,18 @@
     },
     {
       "id": "process-ledger",
-      "name": "Process ledger",
-      "category": "Data display",
+      "name": "Pipeline stages",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "A pipeline shown as stages with their durations and a total, so the cost of each step is visible.",
+      "aliases": [
+        "process ledger",
+        "pipeline",
+        "stages",
+        "stage durations",
+        "timing breakdown",
+        "waterfall"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3926,10 +4792,18 @@
     },
     {
       "id": "transport-controls",
-      "name": "Transport controls",
-      "category": "Action",
+      "name": "Playback controls",
+      "category": "Buttons",
       "version": "0.4.0",
       "description": "Controls for something that runs: play, pause, step, and a speed that states its own value.",
+      "aliases": [
+        "transport controls",
+        "playback controls",
+        "media controls",
+        "media player",
+        "play pause",
+        "player controls"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3958,10 +4832,18 @@
     },
     {
       "id": "live-readout",
-      "name": "Live readout",
-      "category": "Feedback & status",
+      "name": "Live stats",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "A small panel of measures with a live status, for anything that changes while someone watches.",
+      "aliases": [
+        "live readout",
+        "live stats",
+        "realtime",
+        "real-time",
+        "telemetry",
+        "live metrics"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -3991,9 +4873,16 @@
     {
       "id": "feature-grid",
       "name": "Feature grid",
-      "category": "Content",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A short row of capabilities: an icon, a claim, the explanation, and the footnote that qualifies it.",
+      "aliases": [
+        "features",
+        "feature list",
+        "feature cards",
+        "benefits",
+        "capabilities"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4023,9 +4912,16 @@
     {
       "id": "pricing-table",
       "name": "Pricing table",
-      "category": "Table & list",
+      "category": "Tables",
       "version": "0.4.0",
       "description": "A plan matrix where included, limited, and absent stay readable without relying on colour.",
+      "aliases": [
+        "plans",
+        "plan comparison",
+        "tiers",
+        "price table",
+        "subscription plans"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4058,6 +4954,12 @@
       "category": "Content",
       "version": "0.4.0",
       "description": "A closing call to action: one statement, one next step, and no competing links.",
+      "aliases": [
+        "call to action",
+        "cta",
+        "cta section",
+        "closing section"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4090,6 +4992,11 @@
       "category": "Content",
       "version": "0.4.0",
       "description": "The end of a page: the mark, the promise, grouped links, and whether the service is up.",
+      "aliases": [
+        "footer",
+        "site footer",
+        "bottom links"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4119,9 +5026,16 @@
     {
       "id": "area-chart",
       "name": "Area chart",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "An animated mention-rate trend with exact daily values on focus and hover.",
+      "aliases": [
+        "area graph",
+        "stacked area",
+        "trend chart",
+        "time series",
+        "filled line chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4151,9 +5065,15 @@
     {
       "id": "line-chart",
       "name": "Line chart",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "Performance against a benchmark on one scale, with a zero line and exact values on focus.",
+      "aliases": [
+        "line graph",
+        "trend chart",
+        "time series",
+        "benchmark chart"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4191,9 +5111,17 @@
     {
       "id": "chart-toolbar",
       "name": "Chart toolbar",
-      "category": "Data display",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "The controls that belong above a chart: a comparison, a view switch, and room for a legend.",
+      "aliases": [
+        "chart controls",
+        "chart header",
+        "legend",
+        "chart filters",
+        "view switch",
+        "compare toggle"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4222,10 +5150,17 @@
     },
     {
       "id": "metric-strip",
-      "name": "Metric strip",
-      "category": "Data display",
+      "name": "Metric tabs",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "A row of measures where the active one is the thing being charted. Choosing another changes the focus.",
+      "aliases": [
+        "metric strip",
+        "kpi tabs",
+        "metric selector",
+        "stat tabs",
+        "kpi selector"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4255,9 +5190,17 @@
     {
       "id": "headline-metric",
       "name": "Headline metric",
-      "category": "Data display",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "The one number a screen is about, with an optional total it is measured against.",
+      "aliases": [
+        "kpi",
+        "big number",
+        "hero number",
+        "statistic",
+        "key metric",
+        "single value"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4287,9 +5230,16 @@
     {
       "id": "filter-bar",
       "name": "Filter bar",
-      "category": "Action",
+      "category": "Forms",
       "version": "0.4.0",
       "description": "The row that scopes a view: a period selector, a filter action, and the chips that describe the current scope.",
+      "aliases": [
+        "filters",
+        "filter toolbar",
+        "period selector",
+        "date filter",
+        "scope bar"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4318,10 +5268,18 @@
     },
     {
       "id": "source-list",
-      "name": "Source list",
-      "category": "Table & list",
+      "name": "Bar list",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "A short ranked list with share bars, for the sources or answers behind a number.",
+      "aliases": [
+        "source list",
+        "bar list",
+        "ranked list",
+        "leaderboard",
+        "top list",
+        "ranking"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4354,6 +5312,13 @@
       "category": "Content",
       "version": "0.4.0",
       "description": "A paragraph that explains, with optional numbered or bulleted steps and small print.",
+      "aliases": [
+        "paragraph",
+        "prose",
+        "rich text",
+        "typography",
+        "body text"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4382,10 +5347,20 @@
     },
     {
       "id": "breakdown",
-      "name": "Breakdown",
-      "category": "Data display",
+      "name": "Breakdown bar",
+      "category": "Charts",
       "version": "0.4.0",
       "description": "How a whole splits into parts: one bar, each part named with its value and share, in words as well as colour.",
+      "aliases": [
+        "breakdown",
+        "stacked bar",
+        "100% bar",
+        "segmented bar",
+        "part to whole",
+        "composition bar",
+        "category bar",
+        "share bar"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4415,9 +5390,16 @@
     {
       "id": "checklist",
       "name": "Checklist",
-      "category": "Content",
+      "category": "Lists",
       "version": "0.4.0",
       "description": "Steps a person ticks off. Progress is counted from the boxes themselves, so it can never disagree with them.",
+      "aliases": [
+        "check list",
+        "todo list",
+        "task list",
+        "to-do",
+        "onboarding checklist"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4447,9 +5429,15 @@
     {
       "id": "media-cards",
       "name": "Media cards",
-      "category": "Content",
+      "category": "Cards",
       "version": "0.4.0",
       "description": "A short row of cards, each with artwork, a title, and a caption. Images come only from the host; without one a card shows its icon.",
+      "aliases": [
+        "image cards",
+        "picture cards",
+        "card grid",
+        "thumbnails"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",
@@ -4479,9 +5467,15 @@
     {
       "id": "calculator",
       "name": "Calculator",
-      "category": "Data display",
+      "category": "Metrics",
       "version": "0.4.0",
       "description": "Sliders a person moves and results computed from them by declared formulas, with the parts of the main result shown as shares.",
+      "aliases": [
+        "what-if",
+        "estimator",
+        "simulator",
+        "savings calculator"
+      ],
       "tokens": [
         "--radius-control",
         "--surface",

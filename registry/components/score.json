@@ -1,0 +1,140 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "score",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Checks passed",
+      "value": 92,
+      "detail": "46 of 50 checks passed on the last run.",
+      "tone": "positive"
+    }
+  },
+  "source": "components/score/",
+  "name": "Progress ring",
+  "category": "Feedback",
+  "purpose": "Show one score out of 100 as a ring, with what it measures and what it means.",
+  "description": "A progress ring with the score in its centre, a title, and a written evaluation. Its colour follows the tone, so a low score never looks like a good one.",
+  "intents": [
+    "summarize",
+    "evaluate",
+    "show-progress"
+  ],
+  "variants": {
+    "tone": [
+      "neutral",
+      "positive",
+      "warning",
+      "critical"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "ring",
+    "value",
+    "title",
+    "detail"
+  ],
+  "accessibility": {
+    "role": "progressbar",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-score-out-of-100",
+    "the-tone-says-what-the-score-means",
+    "the-detail-explains-the-score"
+  ],
+  "tokens": [
+    "color.status.success",
+    "color.status.warning",
+    "color.status.danger",
+    "color.action.primary",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "stat-row",
+    "card",
+    "text-block"
+  ],
+  "avoidWhen": [
+    "the-value-is-not-out-of-100",
+    "several-scores-compare-to-each-other"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "required": true,
+      "description": "What is scored, such as 'Checks passed'."
+    },
+    "value": {
+      "type": "number",
+      "required": true,
+      "minimum": 0,
+      "maximum": 100,
+      "description": "The score, out of 100."
+    },
+    "detail": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "What the score means, such as '46 of 50 checks passed'."
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "neutral",
+        "positive",
+        "warning",
+        "critical"
+      ],
+      "default": "neutral",
+      "description": "What the score means: positive when it is good, warning or critical when it needs attention."
+    }
+  },
+  "ir": {
+    "node": ".score-readout",
+    "text": {
+      "value": {
+        "selector": ".ring strong",
+        "suffix": "%"
+      },
+      "title": ".performance-copy h3",
+      "detail": ".performance-copy p"
+    },
+    "showWhen": {
+      "detail": ".performance-copy p"
+    },
+    "attributes": {
+      "title": {
+        "selector": ".ring",
+        "attribute": "aria-label"
+      },
+      "value": {
+        "selector": ".ring",
+        "attribute": "aria-valuenow"
+      }
+    },
+    "style": {
+      "value": {
+        "selector": ".ring",
+        "name": "--ring-progress"
+      }
+    },
+    "variant": {
+      "tone": {
+        "selector": ".ring",
+        "values": {
+          "neutral": "tone-neutral",
+          "positive": "",
+          "warning": "tone-warning",
+          "critical": "tone-critical"
+        }
+      }
+    }
+  }
+}

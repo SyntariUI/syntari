@@ -23,7 +23,7 @@
   },
   "source": "components/activity-list/",
   "name": "Activity list",
-  "category": "Table & list",
+  "category": "Lists",
   "purpose": "Show what happened, in order, with the context needed to trust it.",
   "description": "A timeline pairs an event, its context, and when it happened. Order is semantic.",
   "intents": [

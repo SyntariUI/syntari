@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "status": "authored",
   "name": "Empty state",
-  "category": "Content",
+  "category": "Feedback",
   "purpose": "Explain what belongs in an empty region and offer the next useful step.",
   "description": "A quiet placeholder with an icon, an explanation, and one action.",
   "intents": [

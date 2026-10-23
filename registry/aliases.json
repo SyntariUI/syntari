@@ -1,0 +1,996 @@
+{
+  "accordion": [
+    "collapse",
+    "collapsible",
+    "disclosure",
+    "expansion panel",
+    "details",
+    "faq"
+  ],
+  "action-swap": [
+    "action swap",
+    "loading button",
+    "stateful button",
+    "progress button",
+    "async button"
+  ],
+  "activity-list": [
+    "timeline",
+    "activity feed",
+    "feed",
+    "history",
+    "audit log",
+    "event list"
+  ],
+  "agent-activity": [
+    "activity log",
+    "run log",
+    "event log",
+    "timeline",
+    "trace",
+    "agent log"
+  ],
+  "agent-loading-states": [
+    "thinking indicator",
+    "typing indicator",
+    "working indicator",
+    "ai loading"
+  ],
+  "agent-message": [
+    "assistant message",
+    "ai message",
+    "ai response",
+    "bot message",
+    "chat message"
+  ],
+  "agent-questions": [
+    "agent question",
+    "clarifying question",
+    "ask user",
+    "multiple choice"
+  ],
+  "agent-todo-list": [
+    "todo",
+    "to-do",
+    "task list",
+    "agent plan",
+    "tasks"
+  ],
+  "ai-sidebar": [
+    "chat sidebar",
+    "conversation list",
+    "copilot panel",
+    "assistant panel"
+  ],
+  "ambient-background": [
+    "animated background",
+    "gradient background",
+    "aurora",
+    "shader",
+    "hero background"
+  ],
+  "app-shell": [
+    "sidebar",
+    "navbar",
+    "nav bar",
+    "top bar",
+    "topbar",
+    "header",
+    "navigation drawer",
+    "nav rail",
+    "app layout",
+    "app bar"
+  ],
+  "approval-card": [
+    "approve",
+    "review card",
+    "sign-off",
+    "decision card",
+    "approve reject"
+  ],
+  "area-chart": [
+    "area graph",
+    "stacked area",
+    "trend chart",
+    "time series",
+    "filled line chart"
+  ],
+  "asset-swap": [
+    "asset swap",
+    "crypto swap",
+    "token swap",
+    "exchange",
+    "convert",
+    "currency converter"
+  ],
+  "attribution-table": [
+    "attribution",
+    "ranked table",
+    "traffic sources",
+    "leaderboard",
+    "bar table",
+    "live table"
+  ],
+  "autocomplete": [
+    "typeahead",
+    "suggest",
+    "autosuggest",
+    "combobox",
+    "combo box"
+  ],
+  "availability-scheduler": [
+    "booking",
+    "scheduler",
+    "appointment",
+    "time slots",
+    "meeting picker",
+    "slot picker"
+  ],
+  "avatar-and-group": [
+    "avatar & group",
+    "avatar group",
+    "user avatar",
+    "profile picture",
+    "initials",
+    "facepile"
+  ],
+  "badge-and-status": [
+    "badge & status",
+    "tag",
+    "pill",
+    "label",
+    "status badge",
+    "status dot",
+    "lozenge",
+    "indicator"
+  ],
+  "banner": [
+    "alert",
+    "callout",
+    "notice",
+    "inline message",
+    "message bar",
+    "inline notification",
+    "info box",
+    "announcement"
+  ],
+  "bloom-menu": [
+    "bloom menu",
+    "speed dial",
+    "fab",
+    "floating action button",
+    "float button",
+    "radial menu",
+    "quick actions"
+  ],
+  "bottom-sheet": [
+    "action sheet",
+    "mobile drawer",
+    "bottom drawer",
+    "drawer"
+  ],
+  "breakdown": [
+    "breakdown",
+    "stacked bar",
+    "100% bar",
+    "segmented bar",
+    "part to whole",
+    "composition bar",
+    "category bar",
+    "share bar"
+  ],
+  "button": [
+    "btn",
+    "primary button",
+    "secondary button",
+    "ghost button",
+    "danger button"
+  ],
+  "calculator": [
+    "what-if",
+    "estimator",
+    "simulator",
+    "savings calculator"
+  ],
+  "card": [
+    "tile",
+    "panel",
+    "surface",
+    "project card",
+    "content card"
+  ],
+  "card-and-project-folder": [
+    "card & project folder",
+    "project folder",
+    "folder",
+    "folder card",
+    "expandable folder"
+  ],
+  "chart-bars": [
+    "chart bars",
+    "bar graph",
+    "column chart",
+    "grouped bar chart",
+    "histogram",
+    "vertical bar chart",
+    "horizontal bar chart"
+  ],
+  "chart-donut": [
+    "chart donut",
+    "pie chart",
+    "pie",
+    "doughnut",
+    "ring chart"
+  ],
+  "chart-line": [
+    "chart line",
+    "line graph",
+    "multi-series line",
+    "indexed chart",
+    "trend line"
+  ],
+  "chart-toolbar": [
+    "chart controls",
+    "chart header",
+    "legend",
+    "chart filters",
+    "view switch",
+    "compare toggle"
+  ],
+  "chat-composer": [
+    "chat input",
+    "chat box",
+    "mini chat",
+    "chat widget",
+    "composer"
+  ],
+  "chat-workspace": [
+    "chat app",
+    "chat ui",
+    "chat layout",
+    "messenger",
+    "chatbot"
+  ],
+  "checkbox": [
+    "check box",
+    "tick box",
+    "checkbox group"
+  ],
+  "checklist": [
+    "check list",
+    "todo list",
+    "task list",
+    "to-do",
+    "onboarding checklist"
+  ],
+  "citations": [
+    "sources",
+    "references",
+    "footnotes",
+    "source links",
+    "citation"
+  ],
+  "code-block": [
+    "code snippet",
+    "snippet",
+    "pre",
+    "syntax highlighting",
+    "copy code"
+  ],
+  "command-palette": [
+    "cmdk",
+    "command menu",
+    "command k",
+    "spotlight",
+    "quick search",
+    "kbar",
+    "launcher",
+    "jump to"
+  ],
+  "comparison-table": [
+    "comparison",
+    "versus",
+    "vs",
+    "feature comparison",
+    "side by side"
+  ],
+  "confirmation-dialog": [
+    "alert dialog",
+    "confirm dialog",
+    "are you sure",
+    "popconfirm",
+    "destructive dialog",
+    "delete confirmation"
+  ],
+  "context-menu": [
+    "right click menu",
+    "right-click",
+    "contextual menu"
+  ],
+  "cta-band": [
+    "call to action",
+    "cta",
+    "cta section",
+    "closing section"
+  ],
+  "data-table": [
+    "data grid",
+    "datagrid",
+    "grid",
+    "advanced table",
+    "editable table",
+    "table with filters",
+    "bulk actions",
+    "tanstack table"
+  ],
+  "date-range-picker": [
+    "date picker",
+    "datepicker",
+    "range calendar",
+    "period picker"
+  ],
+  "dialog": [
+    "modal",
+    "modal dialog",
+    "popup",
+    "pop-up",
+    "form dialog"
+  ],
+  "divider-and-form-section": [
+    "divider & form section",
+    "divider",
+    "separator",
+    "form section",
+    "fieldset",
+    "section header"
+  ],
+  "dropdown-menu": [
+    "dropdown",
+    "action menu",
+    "menu button",
+    "popup menu"
+  ],
+  "empty-state": [
+    "blank state",
+    "zero state",
+    "no data",
+    "no results",
+    "nothing here"
+  ],
+  "error-and-retry": [
+    "error & retry",
+    "error state",
+    "retry",
+    "failed state",
+    "load error",
+    "try again"
+  ],
+  "expandable-dock": [
+    "dock",
+    "expanding dock",
+    "bottom navigation",
+    "tab bar",
+    "activity switcher"
+  ],
+  "feature-grid": [
+    "features",
+    "feature list",
+    "feature cards",
+    "benefits",
+    "capabilities"
+  ],
+  "feedback-widget": [
+    "rating",
+    "star rating",
+    "survey",
+    "nps",
+    "feedback form",
+    "csat"
+  ],
+  "file-diff": [
+    "code diff",
+    "diff viewer",
+    "changes",
+    "patch",
+    "compare files"
+  ],
+  "file-input": [
+    "upload",
+    "file upload",
+    "dropzone",
+    "drop zone",
+    "drag and drop",
+    "file picker",
+    "attachment",
+    "uploader"
+  ],
+  "file-tree": [
+    "tree view",
+    "treeview",
+    "folder tree",
+    "file explorer",
+    "directory",
+    "nested list"
+  ],
+  "filter-bar": [
+    "filters",
+    "filter toolbar",
+    "period selector",
+    "date filter",
+    "scope bar"
+  ],
+  "filter-chips": [
+    "chip",
+    "filter tags",
+    "removable tags",
+    "token",
+    "pills",
+    "active filters"
+  ],
+  "fixtures": [
+    "fixtures",
+    "fixture list",
+    "match list",
+    "matches",
+    "schedule",
+    "event schedule",
+    "agenda"
+  ],
+  "floating-navigation": [
+    "floating navigation",
+    "floating dock",
+    "dock",
+    "bottom navigation",
+    "tab bar",
+    "navigation rail"
+  ],
+  "funnel": [
+    "funnel chart",
+    "conversion funnel",
+    "drop-off"
+  ],
+  "gantt-chart": [
+    "gantt",
+    "timeline chart",
+    "roadmap",
+    "project schedule"
+  ],
+  "headline-metric": [
+    "kpi",
+    "big number",
+    "hero number",
+    "statistic",
+    "key metric",
+    "single value"
+  ],
+  "heatmap": [
+    "heat map",
+    "density grid",
+    "contribution graph",
+    "matrix chart"
+  ],
+  "icon-button": [
+    "icon-only button",
+    "toggle button",
+    "action icon"
+  ],
+  "image-generation": [
+    "image placeholder",
+    "ai image",
+    "generated image"
+  ],
+  "inline-validation": [
+    "form validation",
+    "field error",
+    "error message",
+    "helper text",
+    "validation message"
+  ],
+  "line-chart": [
+    "line graph",
+    "trend chart",
+    "time series",
+    "benchmark chart"
+  ],
+  "live-readout": [
+    "live readout",
+    "live stats",
+    "realtime",
+    "real-time",
+    "telemetry",
+    "live metrics"
+  ],
+  "marquee": [
+    "ticker",
+    "scrolling text",
+    "logo strip",
+    "logo cloud",
+    "crawl"
+  ],
+  "masonry-grid": [
+    "masonry",
+    "gallery",
+    "image grid",
+    "pinterest grid",
+    "photo grid",
+    "mosaic"
+  ],
+  "media-cards": [
+    "image cards",
+    "picture cards",
+    "card grid",
+    "thumbnails"
+  ],
+  "message-bubbles": [
+    "chat bubble",
+    "message bubble",
+    "speech bubble",
+    "chat message"
+  ],
+  "message-scroller": [
+    "message scroller",
+    "chat history",
+    "scroll to bottom",
+    "jump to latest",
+    "chat log"
+  ],
+  "metadata-list": [
+    "description list",
+    "key value",
+    "key-value",
+    "properties",
+    "details list",
+    "definition list",
+    "descriptions",
+    "attributes"
+  ],
+  "metric-and-sparkline": [
+    "metric & sparkline",
+    "sparkline",
+    "kpi card",
+    "stat card",
+    "mini chart",
+    "metric card",
+    "kpi"
+  ],
+  "metric-strip": [
+    "metric strip",
+    "kpi tabs",
+    "metric selector",
+    "stat tabs",
+    "kpi selector"
+  ],
+  "morphing-search": [
+    "morphing search",
+    "search bar",
+    "search input",
+    "search field",
+    "expandable search"
+  ],
+  "multiselect": [
+    "multiselect",
+    "multi select",
+    "multi-select",
+    "tag input",
+    "tags input",
+    "chips input",
+    "multiple select",
+    "token input"
+  ],
+  "network-graph": [
+    "node graph",
+    "force graph",
+    "network diagram",
+    "topology",
+    "dependency graph",
+    "diagram"
+  ],
+  "not-found": [
+    "404",
+    "page not found",
+    "error page",
+    "missing page"
+  ],
+  "notification-stack": [
+    "notifications",
+    "notification center",
+    "inbox",
+    "notification list"
+  ],
+  "number-stepper": [
+    "number stepper",
+    "number input",
+    "numeric input",
+    "spin button",
+    "quantity",
+    "counter",
+    "input number"
+  ],
+  "otp-input": [
+    "one-time code",
+    "verification code",
+    "pin input",
+    "pin code",
+    "2fa",
+    "passcode",
+    "code input"
+  ],
+  "overflow-actions": [
+    "overflow actions",
+    "overflow menu",
+    "more menu",
+    "kebab menu",
+    "ellipsis menu",
+    "three dots menu",
+    "more actions"
+  ],
+  "page-footer": [
+    "footer",
+    "site footer",
+    "bottom links"
+  ],
+  "page-header-and-breadcrumbs": [
+    "breadcrumb",
+    "breadcrumbs",
+    "page header",
+    "page title",
+    "title bar"
+  ],
+  "pagination": [
+    "pager",
+    "page numbers",
+    "paging",
+    "next previous"
+  ],
+  "password-field": [
+    "password field",
+    "password input",
+    "show password",
+    "reveal password"
+  ],
+  "popover": [
+    "popup",
+    "flyout",
+    "popper",
+    "hover card",
+    "overlay panel"
+  ],
+  "prediction-card": [
+    "prediction card",
+    "poll",
+    "vote",
+    "forecast",
+    "survey card"
+  ],
+  "preview-rail": [
+    "thumbnail selector",
+    "image picker",
+    "preview picker",
+    "artwork selector"
+  ],
+  "pricing-table": [
+    "plans",
+    "plan comparison",
+    "tiers",
+    "price table",
+    "subscription plans"
+  ],
+  "process-ledger": [
+    "process ledger",
+    "pipeline",
+    "stages",
+    "stage durations",
+    "timing breakdown",
+    "waterfall"
+  ],
+  "progress": [
+    "progress bar",
+    "linear progress",
+    "loading bar",
+    "meter"
+  ],
+  "prompt-input": [
+    "chat input",
+    "composer",
+    "message input",
+    "prompt box",
+    "prompt field"
+  ],
+  "pull-to-refresh": [
+    "refresh",
+    "pull down",
+    "swipe to refresh",
+    "reload"
+  ],
+  "radio": [
+    "radio button",
+    "radio group",
+    "single choice"
+  ],
+  "range-slider": [
+    "range",
+    "dual slider",
+    "min max slider",
+    "double slider",
+    "range input"
+  ],
+  "rolling-number": [
+    "number ticker",
+    "animated number",
+    "counter",
+    "odometer",
+    "count up",
+    "number flow",
+    "ticker"
+  ],
+  "rotating-carousel": [
+    "rotating carousel",
+    "slideshow",
+    "slides",
+    "image carousel"
+  ],
+  "score": [
+    "score",
+    "progress ring",
+    "circular progress",
+    "radial progress",
+    "progress circle",
+    "gauge",
+    "ring"
+  ],
+  "searchable-select": [
+    "combobox",
+    "combo box",
+    "searchable dropdown",
+    "listbox",
+    "select with search"
+  ],
+  "segmented-control": [
+    "segmented",
+    "segmented button",
+    "toggle group",
+    "button group",
+    "toggle button group",
+    "view switcher"
+  ],
+  "select-and-date": [
+    "select & date",
+    "dropdown",
+    "date picker",
+    "datepicker",
+    "single date",
+    "listbox"
+  ],
+  "selectable-cards": [
+    "radio cards",
+    "choice cards",
+    "option cards",
+    "card select",
+    "radio tiles"
+  ],
+  "selection-toolbar": [
+    "bulk actions",
+    "action bar",
+    "contextual toolbar",
+    "batch actions",
+    "selection bar"
+  ],
+  "session-card": [
+    "review card",
+    "summary card",
+    "result card",
+    "session summary"
+  ],
+  "side-drawer": [
+    "sheet",
+    "side sheet",
+    "side panel",
+    "slide-over",
+    "slideover",
+    "offcanvas",
+    "inspector"
+  ],
+  "simple-data-table": [
+    "simple data table",
+    "sortable table",
+    "sort table",
+    "basic data table"
+  ],
+  "skeleton-and-spinner": [
+    "skeleton & spinner",
+    "loader",
+    "loading",
+    "placeholder",
+    "shimmer",
+    "spin",
+    "loading indicator"
+  ],
+  "slider": [
+    "range input",
+    "slider input"
+  ],
+  "source-list": [
+    "source list",
+    "bar list",
+    "ranked list",
+    "leaderboard",
+    "top list",
+    "ranking"
+  ],
+  "stat-row": [
+    "kpi",
+    "kpi row",
+    "stats",
+    "stat cards",
+    "statistics",
+    "scorecards",
+    "summary cards",
+    "metrics row"
+  ],
+  "status-island": [
+    "status island",
+    "dynamic island",
+    "floating status",
+    "sync status",
+    "status pill",
+    "save status"
+  ],
+  "stepper": [
+    "steps",
+    "wizard",
+    "multi-step",
+    "progress indicator",
+    "step indicator"
+  ],
+  "streaming-response": [
+    "streaming",
+    "streaming text",
+    "typewriter",
+    "live response",
+    "ai response"
+  ],
+  "swipeable-list": [
+    "swipe actions",
+    "swipe to delete",
+    "swipe to archive",
+    "list item actions",
+    "swipe list"
+  ],
+  "switch": [
+    "toggle",
+    "toggle switch",
+    "on off",
+    "on/off"
+  ],
+  "table": [
+    "basic table",
+    "static table",
+    "simple table",
+    "html table"
+  ],
+  "tabs": [
+    "tab",
+    "tab bar",
+    "tab list",
+    "tabbed"
+  ],
+  "text-area": [
+    "textarea",
+    "multiline",
+    "multi-line input",
+    "comment box",
+    "long text"
+  ],
+  "text-block": [
+    "paragraph",
+    "prose",
+    "rich text",
+    "typography",
+    "body text"
+  ],
+  "text-input": [
+    "input",
+    "text field",
+    "textfield",
+    "form field",
+    "input field",
+    "text box",
+    "textbox"
+  ],
+  "thumbnail-and-lightbox": [
+    "thumbnail & lightbox",
+    "thumbnail",
+    "image viewer",
+    "image preview",
+    "zoom"
+  ],
+  "tilt-card": [
+    "3d card",
+    "hover card",
+    "parallax card",
+    "perspective card"
+  ],
+  "time-picker": [
+    "time input",
+    "clock picker",
+    "hour picker",
+    "timepicker"
+  ],
+  "toast": [
+    "snackbar",
+    "notification",
+    "sonner",
+    "flash message",
+    "toaster"
+  ],
+  "tool-approval": [
+    "permission request",
+    "consent",
+    "human in the loop",
+    "allow deny",
+    "tool call approval",
+    "authorize"
+  ],
+  "tool-result": [
+    "tool call",
+    "tool output",
+    "function call",
+    "function result",
+    "run result"
+  ],
+  "tooltip": [
+    "hint",
+    "tip",
+    "info tip",
+    "hover label"
+  ],
+  "transport-controls": [
+    "transport controls",
+    "playback controls",
+    "media controls",
+    "media player",
+    "play pause",
+    "player controls"
+  ],
+  "treemap": [
+    "tree map",
+    "nested rectangles",
+    "hierarchy chart"
+  ],
+  "unsaved-changes": [
+    "save bar",
+    "contextual save bar",
+    "dirty state",
+    "sticky save",
+    "discard changes"
+  ],
+  "upload-progress": [
+    "file upload",
+    "uploading",
+    "upload status",
+    "transfer progress"
+  ],
+  "visitor-table": [
+    "visitor table",
+    "user table",
+    "users",
+    "people table",
+    "members",
+    "customers",
+    "user list"
+  ],
+  "wallet-card": [
+    "balance card",
+    "account card",
+    "wallet",
+    "crypto wallet",
+    "account balance"
+  ],
+  "wheel-picker": [
+    "duration picker",
+    "scroll picker",
+    "picker wheel",
+    "ios picker",
+    "drum picker"
+  ]
+}

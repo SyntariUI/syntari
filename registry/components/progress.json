@@ -1,0 +1,128 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "progress",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "bars": [
+        {
+          "label": "Storage used",
+          "value": 68
+        },
+        {
+          "label": "Seats assigned",
+          "value": 42
+        }
+      ]
+    }
+  },
+  "source": "components/progress/",
+  "name": "Progress bar",
+  "category": "Feedback",
+  "purpose": "Show how far each of a few measures is toward its whole, as a bar and a written percentage.",
+  "description": "Labelled progress bars, each with its percentage in words, exposed as progress bars to assistive technology.",
+  "intents": [
+    "show-progress",
+    "compare-to-a-limit",
+    "summarize"
+  ],
+  "variants": {
+    "bars": [
+      "1 to 6"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "value",
+    "track",
+    "fill"
+  ],
+  "accessibility": {
+    "role": "progressbar",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "value-is-a-percentage-of-a-stated-whole",
+    "label-names-what-is-measured",
+    "the-number-is-written-not-only-drawn"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.surface.subtle",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "stat-row",
+    "card",
+    "banner"
+  ],
+  "avoidWhen": [
+    "there-is-no-whole-to-measure-against",
+    "values-change-over-time"
+  ],
+  "props": {
+    "bars": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "description": "One bar per measure, in display order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "required": true,
+            "description": "What is measured and against what, such as 'Storage used'."
+          },
+          "value": {
+            "type": "number",
+            "required": true,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percent of the whole."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".progress-list",
+    "list": {
+      "bars": {
+        "container": ".progress-list",
+        "item": ".progress-item",
+        "text": {
+          "label": ".progress-label",
+          "value": {
+            "selector": ".progress-value",
+            "suffix": "%"
+          }
+        },
+        "attributes": {
+          "label": {
+            "selector": ".progress",
+            "attribute": "aria-label"
+          },
+          "value": {
+            "selector": ".progress",
+            "attribute": "aria-valuenow"
+          }
+        },
+        "style": {
+          "value": {
+            "selector": ".progress > span",
+            "name": "width",
+            "suffix": "%"
+          }
+        }
+      }
+    }
+  }
+}

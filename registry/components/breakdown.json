@@ -27,8 +27,8 @@
     }
   },
   "source": "components/breakdown/",
-  "name": "Breakdown",
-  "category": "Data display",
+  "name": "Breakdown bar",
+  "category": "Charts",
   "purpose": "Show how one whole splits into parts.",
   "description": "How a whole splits into parts: one bar, each part named with its value and share, in words as well as colour.",
   "intents": [

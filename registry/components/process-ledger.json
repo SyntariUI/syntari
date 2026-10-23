@@ -19,8 +19,8 @@
     }
   },
   "source": "components/process-ledger/",
-  "name": "Process ledger",
-  "category": "Data display",
+  "name": "Pipeline stages",
+  "category": "Lists",
   "purpose": "Show the stages of a pipeline and what each one cost.",
   "description": "Stages with their status, their duration, and the total so far.",
   "intents": [
