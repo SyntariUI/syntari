@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Explore considered interactive components, live interaction patterns, and developer-ready foundations for people and agents.">
+  <meta name="description" content="A design system for people and agents. Explore considered interactive components, live interaction patterns, and developer-ready foundations for people and agents.">
   <title>Syntari — A design system made to feel alive</title>
   <link rel="icon" href="/favicon.svg">
   <link rel="preload" href="/assets/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
@@ -19,32 +19,38 @@
     <a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
     <nav aria-label="Main navigation">
       <a href="/system/">Components</a>
-      <a href="/system/?guide=getting-started#button">Docs</a>
+      <a href="/renderer/">Renderer</a>
     </nav>
     <div class="home-nav-end">
-      <a class="home-github" href="https://github.com/SyntariUI/syntari" aria-label="Syntari on GitHub">GitHub <span aria-hidden="true">↗</span></a>
-      <button class="home-theme" data-home-theme type="button" aria-label="Switch to light theme"><span aria-hidden="true">◐</span></button>
+      <a class="icon-button" href="https://github.com/SyntariUI/syntari" aria-label="Syntari on GitHub"><svg class="icon home-github-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      <button class="icon-button" data-home-theme type="button" aria-label="Switch to light theme"><span aria-hidden="true">◐</span></button>
     </div>
   </header>
   <main id="main">
     <section class="home-hero home-width" aria-labelledby="home-title">
-      <h1 id="home-title">Made to feel alive.</h1>
-      <p>A design system for people and agents. Thoughtful components, precise interactions, and a shared language for everything you build.</p>
-      <div class="home-hero-actions">
-        <a href="/system/" class="home-button home-primary">Explore components <span aria-hidden="true">↗</span></a>
+      <div class="home-dot-field" aria-hidden="true"></div>
+      <div class="home-eyebrow"><span class="status-dot"></span> A design system for people and agents</div>
+      <h1 id="home-title">Made to feel alive.<br><span>Built to work together.</span></h1>
+      <p>Thoughtful components. Precise interactions. One shared language, from the first button to the whole interface.</p>
+      <div class="home-agent-install">
+        <div class="home-agent-install-row"><div class="home-agent-command"><code data-agent-command>npm install syntari-ui</code><button class="icon-button" type="button" data-agent-copy aria-label="Copy npm installation command"><svg class="icon lucide" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><a href="/system/?guide=getting-started#button" class="button primary">Quick start</a></div>
       </div>
     </section>
 
     <section class="home-gallery home-width" id="components" aria-labelledby="gallery-title">
-      <div class="home-section-head"><div><h2 id="gallery-title">Made to be explored.</h2><p>Real components, real states. Try them here or inspect the full system.</p></div><a class="home-inline-link" href="/system/">Explore all components <span aria-hidden="true">↗</span></a></div>
+      <div class="home-section-head"><div><h2 id="gallery-title">Made to be explored.</h2><p>The same components you’ll find in System. Try them here.</p></div><a class="home-inline-link" href="/system/">Explore all components <span aria-hidden="true">↗</span></a></div>
       <div class="home-grid" data-home-gallery aria-busy="true"><p class="home-gallery-loading">Preparing the components…</p></div>
     </section>
 
-    <section class="home-build home-width" aria-labelledby="build-title"><div class="home-build-copy"><h2 id="build-title">A system you can<br>actually build with.</h2><p>Install the same editable components showcased above. Give your agents the contracts to discover, compose, and validate UI — without inventing a design system each time.</p><div class="home-build-links"><a href="/system/?guide=getting-started#button">Read the docs ↗</a><a href="/registry/agent-policy.json">Explore agent rules ↗</a></div></div>
-      <div class="home-install"><div class="home-install-head"><span>Terminal</span><button data-home-copy type="button" aria-label="Copy installation command" disabled>Copy <span aria-hidden="true">↗</span></button></div><pre tabindex="0"><code data-home-command>Loading install command…</code></pre><div class="home-install-foot"><span>Editable source · MIT licensed</span><span data-home-copy-status role="status">Install in your project</span></div></div>
+    <section class="home-collection home-width" aria-labelledby="collection-title">
+      <div class="home-dot-field" aria-hidden="true"></div>
+      <div class="home-collection-number" aria-label="137 components. And counting."><span data-component-count aria-hidden="true">137</span><span class="home-collection-plus" aria-hidden="true">+</span></div>
+      <h2 id="collection-title">Components. And counting.</h2>
+      <div class="home-collection-actions"><a class="button primary" href="/system/">Explore all components</a><a class="button ghost" href="/system/?guide=getting-started#button">Read the docs</a></div>
     </section>
   </main>
-  <footer class="home-footer home-width"><div class="home-footer-main"><div class="home-footer-identity"><a class="home-brand" href="/"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><p>A design system for people and agents.<br>Made to be explored.</p></div><nav aria-label="Footer"><div class="home-footer-group"><h2>Product</h2><a href="/system/">Components</a><a href="/system/?guide=getting-started#button">Documentation</a></div><div class="home-footer-group"><h2>Developers</h2><a href="/registry/index.json">Registry</a><a href="/registry/agent-policy.json">Agent policy</a><a href="https://github.com/SyntariUI/syntari">GitHub ↗</a></div></nav></div><div class="home-footer-bottom"><span>© 2026 Syntari · Open source under MIT</span><span data-analytics-notice>This site uses Kobbe analytics; the package and components do not.</span></div></footer>
+  <div class="toast home-feedback" data-home-feedback role="status" aria-live="polite" hidden><span data-copy-feedback></span></div>
+  <footer class="home-footer home-width"><a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><span class="home-footer-credit">© 2026 · MIT licensed</span><nav aria-label="Footer"><a href="/system/">Components</a><a href="/system/?guide=getting-started#button">Docs</a><a href="https://github.com/SyntariUI/syntari">GitHub ↗</a></nav></footer>
 </div>
 <script type="module" src="/homepage.js"></script>
 </body>
