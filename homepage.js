@@ -37,7 +37,7 @@ async function loadGallery(){
   for(const item of featured){
     const component=catalog.find(entry=>entry.slug===item.slug);
     if(!component)continue;
-    const article=document.createElement('article');article.className='home-card home-card--'+item.size;
+    const article=document.createElement('article');article.className='home-card home-card--'+item.size;article.dataset.feature=item.slug;
     const stage=document.createElement('div');
     stage.className='home-card-stage';stage.dataset.homePreview=item.slug;stage.setAttribute('data-ui','');
     stage.setAttribute('role','group');stage.setAttribute('aria-label',component.name+' live preview');
