@@ -96,3 +96,19 @@ test('a template build can be stopped, and the templates come back', async ({ pa
   expect(await prompts(p)).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+test('a screen sits on the panel while it builds: no block of its own in Fit, and a device width is a card with no border', async ({ page: p }) => {
+  const errors = await openRenderer(p, { publicPage: true });
+  await p.locator('[data-template-grid] [data-template="renewal"]').click();
+  await arriving(p);
+  const surface = () => p.evaluate(() => ({ screen: getComputedStyle(document.querySelector('.canvas>.ir-screen')).backgroundColor, frame: getComputedStyle(document.querySelector('.frame')).backgroundColor, border: getComputedStyle(document.querySelector('.frame')).borderTopWidth }));
+  /* The screen is a Syntari root, which paints its own page colour elsewhere; on the canvas it takes the panel's. */
+  expect(await surface(p)).toEqual({ screen: 'rgba(0, 0, 0, 0)', frame: 'rgba(0, 0, 0, 0)', border: '0px' });
+  await expect(p.locator('[data-status-label]')).toHaveText(/Ready/, { timeout: 20000 });
+  await p.locator('.sys-preview-controls [data-viewport="834"]').click();
+  const device = await surface(p);
+  expect(device.screen).toBe('rgba(0, 0, 0, 0)');
+  expect(device.frame).not.toBe('rgba(0, 0, 0, 0)');
+  expect(device.border).toBe('0px');
+  expect(errors).toEqual([]);
+});

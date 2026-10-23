@@ -185,10 +185,13 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 .progress::before{content:"";position:absolute;inset:0 auto 0 0;width:28%;background:var(--w-accent);animation:slide 1.15s cubic-bezier(.4,0,.2,1) infinite}
 @keyframes slide{from{transform:translateX(-100%)}to{transform:translateX(360%)}}
 .frame{position:relative;max-width:1180px;margin:0 auto;padding:clamp(20px,3.2vw,44px) clamp(16px,3.2vw,44px) 96px}
-.stage[data-mode=device] .frame{width:var(--frame-w);max-width:none;margin:34px auto 48px;padding:var(--frame-pad) var(--frame-pad) calc(var(--frame-pad) + 8px);background:var(--w-stage);border:1px solid var(--w-line);border-radius:14px;transition:width var(--m-3) var(--w-ease)}
+/* A device width is its own card: its surface sets it apart, with no border around it. */
+.stage[data-mode=device] .frame{width:var(--frame-w);max-width:none;margin:34px auto 48px;padding:var(--frame-pad) var(--frame-pad) calc(var(--frame-pad) + 8px);background:var(--w-stage);border-radius:14px;transition:width var(--m-3) var(--w-ease)}
 .frame-label{display:none;position:absolute;top:-24px;left:2px;font:11px var(--w-mono);color:var(--w-faint)}
 .stage[data-mode=device] .frame-label{display:block}
 .canvas{transition:opacity var(--m-3)}
+/* The screen is a Syntari root, which paints its own page colour; on the canvas it takes the panel's (or the device card's) instead, so no block appears behind it while it builds. */
+.canvas>.ir-screen{background:transparent}
 /* Streaming: nothing dims the canvas. Planned parts hold their place as skeletons, and each real node replaces its skeleton in place once it validates. */
 .stream-slot{position:relative;display:grid;min-width:0}
 .stream-slot>*{grid-area:1/1;min-width:0}
