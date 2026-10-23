@@ -27,7 +27,7 @@
     }
   },
   "source": "components/metric-and-sparkline/",
-  "name": "Metric & sparkline",
+  "name": "Metric summary",
   "category": "Metrics",
   "purpose": "Show the numbers that matter now and how they moved.",
   "description": "A compact metric pair with comparison badges and a bar chart of the same period.",

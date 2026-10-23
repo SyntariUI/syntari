@@ -1,5 +1,5 @@
 // Compiled by tests/types.test.mjs: the browser runtime's types, as a host page would use them.
-import { mount } from 'syntari-ui/runtime/syntari.js';
+import { mount, getComponents, searchItems, matchScore } from 'syntari-ui/runtime/syntari.js';
 import { render, validate, IR_LIMITS, buildDataModel, formatData } from 'syntari-ui/runtime/ir.js';
 import type { ActionRequest } from 'syntari-ui';
 
@@ -13,5 +13,7 @@ const total: string = formatData(model?.measures.get('total')?.value ?? null, 'p
 const bound = checked.bindings.map(binding => binding.ref);
 // @ts-expect-error mount takes options, not a callback
 await mount('button', '#save', () => {});
+const ranked = searchItems(await getComponents(), 'modal').map(component => component.slug);
+const score: number = matchScore({ name: 'Dialog', aliases: ['modal'] }, 'modal');
 
-export { button, screen, checked, depth, total, bound };
+export { button, screen, checked, depth, total, bound, ranked, score };

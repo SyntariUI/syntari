@@ -18,7 +18,7 @@
     }
   },
   "source": "components/source-list/",
-  "name": "Source list",
+  "name": "Bar list",
   "category": "Charts",
   "purpose": "Show which sources make up a number.",
   "description": "A short ranked list where each row carries its share as a bar and a value.",

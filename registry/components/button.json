@@ -80,10 +80,10 @@
   ],
   "compatibleWith": [
     "dialog",
-    "form",
+    "divider-and-form-section",
     "card",
     "tool-approval",
-    "page-header",
+    "page-header-and-breadcrumbs",
     "empty-state"
   ],
   "avoidWhen": [

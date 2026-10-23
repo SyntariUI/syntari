@@ -6,25 +6,25 @@ const watchErrors = page => { const errors = []; page.on('pageerror', e => error
 
 test('starter controls work on their System routes', async ({ page }) => {
   const errors = watchErrors(page);
-  let c = await component(page, 'Searchable select');
+  let c = await component(page, 'searchable-select');
   await c.getByRole('combobox').fill('Jamie'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await expect(c.getByRole('combobox')).toHaveValue('Jamie Chen');
 
-  c = await component(page, 'Multiselect');
+  c = await component(page, 'multiselect');
   await c.getByRole('combobox').fill('Design'); await c.getByRole('option', { name: 'Design', exact: true }).click();
   await expect(c.getByRole('button', { name: 'Remove Design' })).toBeVisible();
   await c.getByRole('button', { name: 'Remove Design' }).click();
   await expect(c.getByRole('button', { name: 'Remove Design' })).toHaveCount(0);
 
-  c = await component(page, 'Number stepper');
+  c = await component(page, 'number-stepper');
   await c.getByRole('button', { name: 'Increase Seats' }).click();
   await expect(c.getByRole('spinbutton')).toHaveValue('4');
 
-  c = await component(page, 'Password field');
+  c = await component(page, 'password-field');
   await c.getByLabel('Password', { exact: true }).fill('syntari1234'); await c.getByRole('button', { name: 'Show password' }).click();
   await expect(c.getByLabel('Password', { exact: true })).toHaveAttribute('type', 'text');
 
-  c = await component(page, 'Date range picker');
+  c = await component(page, 'date-range-picker');
   await c.locator('[data-date-range]').click();
   await page.getByRole('button', { name: 'September 5, 2026', exact: true }).click();
   await page.getByRole('button', { name: 'September 12, 2026', exact: true }).click();
@@ -32,7 +32,7 @@ test('starter controls work on their System routes', async ({ page }) => {
   await expect(page.locator('#starter-dialog')).not.toBeVisible();
   await expect(c.locator('[data-date-range]')).toHaveAttribute('data-end', '2026-09-12');
 
-  c = await component(page, 'Time picker');
+  c = await component(page, 'time-picker');
   await c.locator('[data-time-picker]').click();
   const hours = page.getByRole('listbox', { name: 'Hours' });
   await expect(hours.getByRole('option', { selected: true })).toHaveText('09');
@@ -42,7 +42,7 @@ test('starter controls work on their System routes', async ({ page }) => {
   await expect(c.locator('[data-time-picker]')).toHaveAttribute('data-time', '10:30');
   await expect(page.locator('#starter-dialog')).not.toBeVisible();
 
-  c = await component(page, 'Data table');
+  c = await component(page, 'data-table');
   await c.getByRole('searchbox').fill('Brand'); await expect(c.locator('tbody tr')).toHaveCount(1);
   await c.getByRole('checkbox', { name: 'Select Brand refresh' }).check();
   await expect(c.locator('[data-table-selection]')).toBeVisible();
@@ -95,42 +95,42 @@ test('starter screens save, create, onboard and navigate by command', async ({ p
 
 test('agent workflows', async ({ page }) => {
   const errors = watchErrors(page);
-  let c = await component(page, 'Agent todo list');
+  let c = await component(page, 'agent-todo-list');
   await c.getByRole('button', { name: 'Run plan' }).click();
   await expect(c.locator('[data-todo-count]')).toHaveText('4 of 4 completed', { timeout: 6000 });
   await c.getByRole('button', { name: 'Replay' }).click(); await c.getByRole('button', { name: 'Stop plan' }).click();
   await expect(c.locator('[data-run-status]')).toContainText('stopped');
 
-  c = await component(page, 'Approval card');
+  c = await component(page, 'approval-card');
   await c.getByRole('button', { name: 'Approve', exact: true }).click();
   await expect(c.locator('.agent-decision')).toContainText('Approved');
   await c.getByRole('button', { name: 'Reset preview' }).click(); await c.getByRole('button', { name: 'Decline' }).click();
   await expect(c.locator('.agent-decision')).toContainText('Declined');
 
-  c = await component(page, 'Streaming response');
+  c = await component(page, 'streaming-response');
   await c.getByRole('button', { name: 'Generate response' }).click();
   await expect(c.locator('[data-stream-status]')).toHaveText('Response complete.');
   await c.getByRole('button', { name: 'Regenerate' }).click(); await c.getByRole('button', { name: 'Stop' }).click();
   await expect(c.locator('[data-stream-status]')).toHaveText('Response stopped.');
 
-  c = await component(page, 'Chat workspace');
+  c = await component(page, 'chat-workspace');
   await c.getByRole('textbox').fill('<script>local text</script>'); await c.getByRole('button', { name: 'Send message' }).click();
   await expect(c.locator('.user-message')).toHaveText('<script>local text</script>');
   await c.getByRole('button', { name: 'New chat' }).click();
   await expect(c.locator('.user-message')).toHaveCount(0);
 
-  c = await component(page, 'Agent questions');
+  c = await component(page, 'agent-questions');
   await c.getByRole('radio', { name: 'Accessibility', exact: true }).check();
   await c.getByRole('button', { name: 'Review response' }).click();
   await expect(c.getByRole('status')).toContainText('accessibility');
   await c.getByRole('button', { name: 'Confirm response' }).click();
   await expect(c.getByRole('status')).toContainText('saved');
 
-  c = await component(page, 'Prompt input');
+  c = await component(page, 'prompt-input');
   await c.getByLabel('Attach a file').setInputFiles({ name: 'sample.txt', mimeType: 'text/plain', buffer: Buffer.from('local preview') });
   await expect(c.locator('[data-attachment-name]')).toHaveText('sample.txt');
 
-  c = await component(page, 'Streaming response');
+  c = await component(page, 'streaming-response');
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => fitsViewport(page)).toBeTruthy();
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -141,12 +141,12 @@ test('agent workflows', async ({ page }) => {
 
 test('remaining catalog patterns behave on their System routes', async ({ page }) => {
   const errors = watchErrors(page);
-  let c = await component(page, 'Data table');
+  let c = await component(page, 'data-table');
   await c.getByRole('button', { name: 'All statuses', exact: true }).click();
   await c.getByRole('button', { name: 'Review', exact: true }).click();
   await expect(c.locator('tbody tr')).toHaveCount(2);
 
-  const otp = await component(page, 'OTP input');
+  const otp = await component(page, 'otp-input');
   const fillOtp = async value => { const digits = otp.locator('.otp-digit'); for (let i = 0; i < value.length; i++) await digits.nth(i).fill(value[i]); };
   await expect(otp.locator('.otp-submit')).toHaveCount(0);
   await fillOtp('111111');
@@ -157,32 +157,32 @@ test('remaining catalog patterns behave on their System routes', async ({ page }
   await expect.poll(() => otp.locator('[data-otp-form]').getAttribute('data-otp-state')).toBe('success');
   await expect(otp.locator('[data-otp-status]')).toHaveClass(/sr-only/);
 
-  c = await component(page, 'Range slider');
+  c = await component(page, 'range-slider');
   await c.getByRole('slider', { name: 'Minimum budget' }).fill('900');
   await expect(c.getByRole('slider', { name: 'Maximum budget' })).toHaveValue('900');
 
-  c = await component(page, 'Availability scheduler');
+  c = await component(page, 'availability-scheduler');
   await c.getByRole('button', { name: 'Tue', exact: true }).click();
   await c.getByRole('button', { name: '14:00' }).click();
   await c.getByRole('button', { name: 'Confirm time' }).click();
   await expect(c.getByRole('status')).toContainText('Tuesday at 14:00');
 
-  c = await component(page, 'Context menu');
+  c = await component(page, 'context-menu');
   await c.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await expect(c.getByRole('status')).toContainText('Rename');
 
-  c = await component(page, 'Swipeable list');
+  c = await component(page, 'swipeable-list');
   await c.getByRole('button', { name: 'Archive', exact: true }).first().click();
   await expect(c.locator('.swipe-item')).toHaveCount(2);
   await c.getByRole('button', { name: 'Undo' }).click();
   await expect(c.locator('.swipe-item')).toHaveCount(3);
 
-  c = await component(page, 'Masonry grid');
+  c = await component(page, 'masonry-grid');
   await c.getByRole('button', { name: 'Load more' }).click();
   await expect(c.locator('.masonry-grid>div')).toHaveCount(7);
 
-  c = await component(page, 'Wallet card');
+  c = await component(page, 'wallet-card');
   await c.getByRole('button', { name: 'Hide balance' }).click();
   await expect(c.locator('[data-wallet-balance]')).toHaveText('••••••');
   await c.getByRole('button', { name: 'Show balance' }).click();

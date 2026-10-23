@@ -3,7 +3,10 @@ import type { ActionRequest, Diagnostic } from '../agent.js';
 
 export interface CatalogComponent {
   name: string;
+  /** The component's id. It stays fixed when the display name changes, so look components up by it, not by name. */
   slug: string;
+  /** Other names people search by: earlier names and the names other design systems use. */
+  aliases?: string[];
   category: string;
   description: string;
   [key: string]: unknown;
@@ -34,4 +37,10 @@ export function getComponents(): Promise<CatalogComponent[]>;
 export function prepare(root: Element): Promise<Element>;
 export function mount(slug: string, target: string | Element, options?: MountOptions): Promise<MountedComponent>;
 export function setTheme(theme: 'light' | 'dark'): void;
+/** Turns a name into URL form. A renamed component keeps its old id, so this is not a component's slug; use `slug`. */
 export function slugify(name: string): string;
+export interface Searchable { name?: string; id?: string; slug?: string; aliases?: string[]; category?: string; description?: string }
+/** How well an item matches a query: 100 for its name or an alias exactly, down to 30 for a match in its description, 0 for none. */
+export function matchScore(item: Searchable, query: string): number;
+/** The items that match a query, best first; items that match equally keep their order. */
+export function searchItems<T extends Searchable>(items: T[], query: string): T[];

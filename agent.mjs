@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { validate as validateRuntime, applyOperations as applyRuntime, assignIds, versionOf, diffScreens, findNode, OPS_VERSION } from './kit/runtime/ir.js';
 import { validateScreenSchema } from './registry-validator.mjs';
 import { assessComposition, profileData } from './kit/runtime/ir-compose.js';
+import { matchScore } from './kit/runtime/search.js';
 
 const registryDir = fileURLToPath(new URL('./kit/runtime/registry/', import.meta.url));
 const readJson = async path => JSON.parse(await readFile(join(registryDir, path), 'utf8'));
@@ -38,15 +39,24 @@ export async function getComponent(id) {
   return { ...manifest, renderable: Boolean(manifest.props && manifest.ir), install: `npx syntari add ${id}`, preview: entry.preview, ...icons };
 }
 
-/** Components and patterns whose id, name, category, description, or intents mention every word of the query. */
+/**
+ * Components whose name, aliases, category, or description match every word of the query, best match first (the same
+ * rules as System and the command palette), then those whose intents do; then patterns that mention every word.
+ */
 export async function searchRegistry(query) {
   const words = String(query ?? '').toLocaleLowerCase().split(/\s+/).filter(Boolean);
   if (!words.length) return [];
   const matches = text => words.every(word => text.toLocaleLowerCase().includes(word));
-  const components = [];
+  const scored = [];
   for (const entry of await listComponents()) {
     const intents = entry.status === 'authored' ? (await readJson(`components/${entry.id}.json`)).intents ?? [] : [];
-    if (matches([entry.id, entry.name, entry.category, entry.description, ...intents].join(' '))) components.push({ kind: 'component', id: entry.id, name: entry.name, category: entry.category, renderable: Boolean(entry.renderable), description: entry.description });
+    const score = matchScore(entry, query) || (matches([entry.id, ...intents].join(' ')) ? 10 : 0);
+    if (score) scored.push({ score, entry });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  const components = [];
+  for (const { entry } of scored) {
+    components.push({ kind: 'component', id: entry.id, name: entry.name, category: entry.category, renderable: Boolean(entry.renderable), description: entry.description });
   }
   const patterns = (await listPatterns()).filter(item => matches([item.id, item.name, item.type, item.description, ...(item.keywords ?? [])].join(' ')))
     .map(item => ({ kind: 'pattern', id: item.id, name: item.name, category: item.type, description: item.description }));

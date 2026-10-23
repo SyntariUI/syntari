@@ -266,7 +266,7 @@ test('G. a scatter plot is reported as missing, and the person chooses what to s
   await ask(p, 'Añade un diagrama de cuerdas de los flujos entre clases');
   await settled(p);
   await expect(p.locator('[data-confirm-text]')).toContainText('Syntari has no chord diagram');
-  await expect(p.locator('[data-confirm-actions] button', { hasText: 'Use chart bars instead' })).toBeVisible();
+  await expect(p.locator('[data-confirm-actions] button', { hasText: 'Use bar chart instead' })).toBeVisible();
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
   expect(errors).toEqual([]);
 });

@@ -1,9 +1,9 @@
-/** Open one component on its System route and return the live preview root. */
+/** Open one component on its System route, by its registry id, and return the live preview root. Ids stay fixed when
+    a display name changes, so a rename never breaks a check. */
 export const origin = 'http://127.0.0.1:4398';
-export const slugify = name => name.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-export async function component(page, name) {
-  await page.goto(`${origin}/components/${slugify(name)}/`);
+export async function component(page, slug) {
+  await page.goto(`${origin}/components/${slug}/`);
   const root = page.locator('.syntari-component');
   await root.waitFor();
   return root;

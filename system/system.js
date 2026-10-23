@@ -1,4 +1,4 @@
-import { initialize, getComponents, mount } from '../syntari.js';
+import { initialize, getComponents, mount, searchItems } from '../syntari.js';
 import { statesFor, groups as categoryGroups } from '../docs-data.js';
 import {initReference,renderReference,manifestReference,codeSource,renderGuide} from './reference.js';
 import { initWorkspace, copyText } from '../workspace.js';
@@ -11,9 +11,16 @@ let catalog = [], registry, selected, activeMount, query = '', swapToken = 0, st
 const manifests = new Map();
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function nav() {
-  const groups = {};
-  for (const c of catalog.filter(c => `${c.name} ${c.category} ${c.description}`.toLowerCase().includes(query.trim().toLowerCase()))) (groups[c.category] ||= []).push(c);
-  $('[data-nav]').innerHTML = Object.entries(groups).map(([category,items]) => `<div class="sys-nav-group"><div class="sys-nav-label">${esc(category)}</div>${items.map(c => `<button class="sys-nav-item" data-slug="${c.slug}" aria-current="${selected?.slug === c.slug}"><span>${esc(c.name)}</span></button>`).join('')}</div>`).join('') || '<p class="sys-nav-label">No matching components</p>';
+  const item = c => `<button class="sys-nav-item" data-slug="${c.slug}" aria-current="${selected?.slug === c.slug}"><span>${esc(c.name)}</span></button>`;
+  /* While searching, the rail lists the best matches first, names and aliases before descriptions, as one group. */
+  if (query.trim()) {
+    const found = searchItems(catalog, query);
+    $('[data-nav]').innerHTML = found.length ? `<div class="sys-nav-group"><div class="sys-nav-label">Best matches</div>${found.map(item).join('')}</div>` : '<p class="sys-nav-label">No matching components</p>';
+  } else {
+    const groups = {};
+    for (const c of catalog) (groups[c.category] ||= []).push(c);
+    $('[data-nav]').innerHTML = Object.entries(groups).map(([category,items]) => `<div class="sys-nav-group"><div class="sys-nav-label">${esc(category)}</div>${items.map(item).join('')}</div>`).join('');
+  }
   $('[data-nav]').querySelectorAll('[data-slug]').forEach(button => button.addEventListener('click', () => { workspace.closeNav(); select(button.dataset.slug, true); }));
 }
 function stateControls() {
