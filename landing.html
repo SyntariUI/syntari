@@ -17,9 +17,9 @@
 <div class="landing">
   <a class="home-skip" href="#main">Skip to content</a>
   <header class="home-nav home-width">
-    <a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari <span class="home-brand-suffix">/ UI</span></a>
+    <a class="home-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span>Syntari</a>
     <nav aria-label="Main navigation">
-      <a class="home-nav-active" href="/system/">Components</a>
+      <a href="/system/">Components</a>
       <a href="/renderer/">Renderer</a>
       <a href="/system/?guide=getting-started#button">Docs</a>
     </nav>
@@ -30,50 +30,48 @@
   </header>
   <main id="main">
     <section class="home-hero home-width" aria-labelledby="home-title">
-      <span class="home-release"><span class="home-dot" aria-hidden="true"></span> THE SYNTARI DESIGN SYSTEM <span class="home-release-note">Built for people and agents</span></span>
-      <h1 id="home-title">Made to feel alive<span class="home-punctuation">.</span></h1>
-      <p>Thoughtful components, precise interactions, and a shared language that agents can actually build with.</p>
+      <h1 id="home-title">Made to feel alive.</h1>
+      <p>A design system for people and agents. Thoughtful components, precise interactions, and a shared language for everything you build.</p>
       <div class="home-hero-actions">
         <a href="/system/" class="home-button home-primary">Explore components <span aria-hidden="true">↗</span></a>
-        <a href="#renderer" class="home-button home-secondary">Meet the Renderer <span aria-hidden="true">↓</span></a>
+        <a href="#renderer" class="home-text-link">See how Syntari renders <span aria-hidden="true">↓</span></a>
       </div>
     </section>
 
     <section class="home-gallery home-width" id="components" aria-labelledby="gallery-title">
-      <div class="home-section-head"><div><span class="home-eyebrow">AN INTERACTIVE LIBRARY</span><h2 id="gallery-title">Made to be explored.</h2><p>Try the interactions, explore the states, discover the details.</p></div><a class="home-inline-link" href="/system/">Explore all components <span aria-hidden="true">↗</span></a></div>
+      <div class="home-section-head"><div><h2 id="gallery-title">Made to be explored.</h2><p>Real components, real states. Try them here or inspect the full system.</p></div><a class="home-inline-link" href="/system/">Explore all components <span aria-hidden="true">↗</span></a></div>
       <div class="home-grid" data-home-gallery aria-busy="true"><p class="home-gallery-loading">Preparing the components…</p></div>
     </section>
 
     <div class="home-renderer-intro home-width" id="renderer">
-      <div><span class="home-eyebrow">FROM COMPONENTS TO COMPOSITIONS</span>
-      <h2>Now see what they can build together.</h2>
+      <div><h2>See how the pieces come together.</h2>
       <p>Describe an interface. Syntari selects trusted patterns, validates the composition, and renders something you can inspect.</p></div>
       <a class="home-inline-link" href="/renderer/">Launch Renderer ↗</a>
     </div>
     <section class="home-demo home-width" aria-label="Try the Syntari Renderer">
-      <div class="home-demo-top"><div class="home-demo-identity"><span class="home-demo-symbol" aria-hidden="true">✳</span><span>Renderer <small>/ Playground</small></span></div><div class="home-demo-actions"><span class="home-demo-version">Syntari Engine</span><a href="/renderer/" data-open-renderer>Open full Renderer <span aria-hidden="true">↗</span></a></div></div>
+      <div class="home-demo-top"><div class="home-demo-identity"><span class="brand-mark" aria-hidden="true"></span><span>Syntari Renderer</span></div><div class="home-demo-actions"><a href="/renderer/" data-open-renderer>Open full Renderer <span aria-hidden="true">↗</span></a></div></div>
       <div class="home-demo-body">
         <div class="home-demo-main">
-          <div class="home-composer-label"><span class="home-step-index">01</span><span>DESCRIBE AN INTERFACE</span></div>
+          <div class="home-composer-label">Describe an interface</div>
           <form class="home-prompt" data-home-intent-form>
             <label class="sr-only" for="home-intent">Describe the interface you want Syntari to render</label>
             <textarea id="home-intent" data-home-intent rows="2" maxlength="1200" required placeholder="Describe a dashboard, an approval workflow, a report…">Show a release report with measures, comparisons, and evidence.</textarea>
             <div class="home-prompt-bottom"><span><kbd>⌘</kbd><kbd>↵</kbd> to render</span><button class="home-submit" data-home-render type="submit">Render interface <span aria-hidden="true">↗</span></button></div>
           </form>
           <div class="home-suggestions" aria-label="Try an example"><span>Try an example</span><div data-home-examples><span class="home-suggestions-loading">Loading patterns…</span></div></div>
-          <div class="home-preview-head"><span><span class="home-step-index">02</span> RENDERED INTERFACE</span><div><span class="home-preview-mode">Preview</span><span class="home-validation" data-home-validation>Preparing…</span></div></div>
+          <div class="home-preview-head"><span>Rendered interface</span><div><span class="home-preview-mode">Preview</span><span class="home-validation" data-home-validation>Preparing…</span></div></div>
           <div class="home-preview-canvas" id="home-preview" data-home-output aria-label="Rendered interface" aria-busy="true"><div class="home-stage-empty"><span class="home-stage-loader" aria-hidden="true"></span><span>Preparing your first render…</span></div></div>
           <div class="home-preview-foot"><span data-home-pattern>Pattern registry loading</span><a href="/renderer/" data-open-renderer>Explore in workspace <span aria-hidden="true">↗</span></a></div>
         </div>
-        <aside class="home-trace" aria-labelledby="trace-title"><div class="home-trace-header"><span class="home-step-index">03</span><div><h2 id="trace-title">Inside the decision</h2><p>Why this interface looks this way</p></div><span class="home-trace-icon" aria-hidden="true">✳</span></div>
+        <aside class="home-trace" aria-labelledby="trace-title"><div class="home-trace-header"><div><h2 id="trace-title">Why this interface?</h2><p>Pattern, rules and validation</p></div></div>
           <dl data-home-trace aria-live="polite"><div class="home-trace-row"><dt>Intent</dt><dd>Waiting for the registry</dd></div></dl>
           <div class="home-trace-foot"><span class="home-trace-status" data-home-status role="status">Loading trusted patterns…</span><a href="/renderer/" data-open-renderer>Inspect Screen IR ↗</a></div>
         </aside>
       </div>
     </section>
 
-    <section class="home-build home-width" aria-labelledby="build-title"><div class="home-build-copy"><span class="home-eyebrow">DESIGNED FOR PEOPLE. STRUCTURED FOR AGENTS.</span><h2 id="build-title">A system you can<br>actually build with.</h2><p>Install the same editable components used by the Renderer. Give your agents the contracts to choose, compose, and validate UI — without inventing a design system each time.</p><div class="home-build-links"><a href="/system/?guide=getting-started#button">Read the docs ↗</a><a href="/registry/agent-policy.json">Explore agent rules ↗</a></div></div>
-      <div class="home-install"><div class="home-install-head"><span><span class="home-install-dot"></span>Terminal</span><button data-home-copy type="button" aria-label="Copy installation command" disabled>Copy <span aria-hidden="true">↗</span></button></div><pre tabindex="0"><code data-home-command>Loading install command…</code></pre><div class="home-install-foot"><span>Editable source · MIT licensed</span><span data-home-copy-status role="status">Install in your project</span></div></div>
+    <section class="home-build home-width" aria-labelledby="build-title"><div class="home-build-copy"><h2 id="build-title">A system you can<br>actually build with.</h2><p>Install the same editable components used by the Renderer. Give your agents the contracts to choose, compose, and validate UI — without inventing a design system each time.</p><div class="home-build-links"><a href="/system/?guide=getting-started#button">Read the docs ↗</a><a href="/registry/agent-policy.json">Explore agent rules ↗</a></div></div>
+      <div class="home-install"><div class="home-install-head"><span>Terminal</span><button data-home-copy type="button" aria-label="Copy installation command" disabled>Copy <span aria-hidden="true">↗</span></button></div><pre tabindex="0"><code data-home-command>Loading install command…</code></pre><div class="home-install-foot"><span>Editable source · MIT licensed</span><span data-home-copy-status role="status">Install in your project</span></div></div>
     </section>
   </main>
   <footer class="home-footer home-width"><div class="home-footer-main"><div class="home-footer-identity"><a class="home-brand" href="/"><span class="brand-mark" aria-hidden="true"></span>Syntari</a><p>A design system for people and agents.<br>Made to be explored.</p></div><nav aria-label="Footer"><div class="home-footer-group"><h2>Product</h2><a href="/renderer/">Renderer</a><a href="/system/">Components</a><a href="/system/?guide=getting-started#button">Documentation</a></div><div class="home-footer-group"><h2>Developers</h2><a href="/registry/index.json">Registry</a><a href="/registry/agent-policy.json">Agent policy</a><a href="https://github.com/SyntariUI/syntari">GitHub ↗</a></div></nav></div><div class="home-footer-bottom"><span>© 2026 Syntari · Open source under MIT</span><span data-analytics-notice>This site uses Kobbe analytics; the package and components do not.</span></div></footer>
