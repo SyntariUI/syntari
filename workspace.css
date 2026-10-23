@@ -4,7 +4,7 @@
 .workspace-skip:focus{top:12px}
 .workspace-theme{width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:var(--type-title-md)/1 inherit}
 .workspace-theme:hover{background:var(--bg-a2);color:var(--text)}
-:is(.sys-body,.renderer-page) :is(button,a,input,textarea,select,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:is(.sys-body,.renderer-page) :is(button,a,input,textarea,select,[tabindex]):focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}
 :is(.sys-rail-foot,.renderer-rail-foot) a{font-size:var(--type-caption);min-height:36px}
 :is(.sys-nav-item,.renderer-nav-item){font-size:var(--type-caption);min-height:34px;height:auto}
 .renderer-section-title h1{font-size:var(--type-title-lg);line-height:1.2;letter-spacing:-.03em;font-weight:500;margin:0;max-width:190px}
