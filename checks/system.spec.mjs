@@ -135,3 +135,13 @@ test('code shows its own characters: monospace ligatures are off', async ({page}
  await page.getByRole('button', {name: 'View code'}).click();
  expect(await page.evaluate(() => getComputedStyle(document.querySelector('[data-source]')).fontVariantLigatures)).toBe('none');
 });
+test('System with no component named opens on the first one in its list',async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto(origin+'/system/');
+ const first=page.locator('[data-nav] .sys-nav-item').first();
+ await expect(first).toHaveAttribute('aria-current','true');
+ const slug=await first.getAttribute('data-slug');
+ await expect(page).toHaveURL(`${origin}/system/#${slug}`);
+ await expect(page.locator('[data-component-mount] [data-syntari-component]')).toBeVisible();
+ expect(errors).toEqual([]);
+});

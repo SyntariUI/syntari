@@ -23,6 +23,11 @@ export function serveRenderer(test) {
           res.writeHead(200, { 'Content-Type': types['.html'] }).end(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>\n${body}\n</body></html>`);
           return;
         }
+        /* The public page wears the System shell: its stylesheets, fonts, and workspace script come from the site root. */
+        if (/^\/(workspace\.js|workspace\.css|tokens\.css|system\/system\.css|assets\/[\w.-]+)$/.test(path)) {
+          res.writeHead(200, { 'Content-Type': types[extname(path)] ?? 'application/octet-stream' }).end(await readFile(resolve(`.${path}`)));
+          return;
+        }
         if (path.startsWith('/runtime/')) {
           const file = resolve(runtime, `.${path.slice('/runtime'.length)}`);
           if (!file.startsWith(runtime + sep)) throw new Error('Outside the runtime');

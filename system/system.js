@@ -94,7 +94,8 @@ async function select(slug, push = false, preserveState = false) {
   } finally { if (token === swapToken) host.setAttribute('aria-busy','false'); }
 }
 function routeSlug() {
-  return decodeURIComponent(location.hash.slice(1) || location.pathname.match(/^\/components\/([^/]+)/)?.[1] || 'metric-and-sparkline');
+  /* With nothing named, System opens on the first component of its own list. */
+  return decodeURIComponent(location.hash.slice(1) || location.pathname.match(/^\/components\/([^/]+)/)?.[1] || catalog[0]?.slug || '');
 }
 async function boot() {
   const response = await fetch('/registry/index.json');
