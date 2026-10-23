@@ -68,7 +68,7 @@ test('A. an edit applies to the active dashboard through the submit_change tool,
   const after = await screenIR(p);
   expect(after.data).toEqual(before.data);
   await expect(p.locator('.canvas [data-ir-id=performance-by-month] tbody tr')).toHaveCount(9);
-  await expect(p.locator('[data-changes] .change-card').first()).toContainText('Applied · v1 → v2 · after one correction');
+  await expect(p.locator('[data-changes] .change-card').first()).toContainText('Applied · v1 → v2 · Claude, briefed by Jev · after one correction');
   expect((await rawLog(p)).join('\n')).toMatch(/Change · corrected tool call[\s\S]*valid|valid[\s\S]*Change · corrected tool call/);
   expect(errors).toEqual([]);
 });

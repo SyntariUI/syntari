@@ -239,7 +239,7 @@ test('a change that fails validation is refused whole, corrected once, and the l
   await p.locator('[data-alert] button', { hasText: 'Try again' }).click();
   await settled(p);
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
-  await expect(p.locator('[data-changes] .change-card').first()).toContainText('Applied · v1 → v2 · after one correction');
+  await expect(p.locator('[data-changes] .change-card').first()).toContainText('Applied · v1 → v2 · Claude, briefed by Jev · after one correction');
   expect(errors).toEqual([]);
 });
 
@@ -330,13 +330,15 @@ test('existing data changes only with the person’s confirmation', async ({ pag
   await expect(p.locator('.canvas .headline-number')).toHaveText('5.1%');
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
   await expect(p.locator('[data-changes] .proof')).toContainText('Existing data changed with your approval');
-  /* An unrequested data change in the same answer as a requested insert refuses the whole change. */
-  await script(p, ops([{ op: 'insert', parent: 'section-how-absence-moved-month', after: 'area-chart', node: employeeSection }, { op: 'replace', target: 'table', set: { 'props.rows': [['Customer Support', '9.9%', '+5 pts']] } }]));
+  /* An unrequested data change in the same answer as a requested insert refuses the whole change: Jev briefed one new part,
+     so the change to the table is outside the brief, refused before anything paints, and Claude corrects it once. */
+  const insert = { op: 'insert', parent: 'section-how-absence-moved-month', after: 'area-chart', node: employeeSection };
+  await script(p, ops([insert, { op: 'replace', target: 'table', set: { 'props.rows': [['Customer Support', '9.9%', '+5 pts']] } }]), ops([insert]));
+  const tableBefore = nodesById(await screenIR(p)).table;
   await ask(p, 'Añade una tabla de empleados debajo del gráfico');
-  await settled(p);
-  await expect(p.locator('.canvas [data-ir-id=employee-absence]')).toHaveCount(0);
-  await expect(p.locator('[data-alert]')).toContainText('would modify data already on the screen');
-  await p.locator('[data-alert] button', { hasText: 'Keep the data' }).click();
-  await expect(p.locator('[data-context-sub]')).toHaveText(/^v2 /);
+  await expect(p.locator('[data-context-sub]')).toHaveText(/^v3 /);
+  expect((await prompts(p)).at(-1)).toContain('outside-brief');
+  expect(nodesById(await screenIR(p)).table).toEqual(tableBefore);
+  await expect(p.locator('.canvas [data-ir-id=employee-absence]')).toHaveCount(1);
   expect(errors).toEqual([]);
 });

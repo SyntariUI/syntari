@@ -779,7 +779,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
         <label for="ir-text" class="sr-only">Screen IR</label>
         <textarea id="ir-text" class="ir-edit" spellcheck="false" autocomplete="off" data-ir-text></textarea>
         <details class="more" data-raw-box hidden><summary>Claude’s raw answer</summary><pre data-raw></pre></details>
-        <details class="more"><summary>What Claude was told</summary><p>Each call carries the composition rules, every renderable contract with its registry guidance, one example, and the request. The contracts come from the same registry files the validator reads.</p><pre data-prompt-text>Generate a screen to see the exact prompt.</pre></details>
+        <details class="more"><summary>What Claude was told</summary><p>A new screen carries the composition rules, every renderable contract with its registry guidance, one example, and the request. A change Jev briefed carries only what its task needs: the part, its contract, and its data, or the field to write. The contracts come from the same registry files the validator reads.</p><pre data-prompt-text>Generate a screen to see the exact prompt.</pre></details>
         <details class="more"><summary>Diagnostics as JSON</summary><pre data-diag-json>[]</pre></details>
       </div>
     </aside>
@@ -873,7 +873,7 @@ function bootDone() {
   box.dataset.done = '';
   setTimeout(() => box.remove(), 400);
 }
-let ir, compose, jev, reg, contracts, policy, renderable;
+let ir, compose, jev, reg, contracts, policy, renderable, manifestOf = new Map();
 try {
   ir = await import('./runtime/ir.js');
   compose = await import('./runtime/ir-compose.js');
@@ -886,6 +886,7 @@ try {
   boot(`Reading ${slugs.length} contracts of ${reg.index.components.length} components`);
   const manifests = await Promise.all(slugs.map(slug => reg.manifest(slug)));
   contracts = manifests.map(describeContract).join('');
+  manifestOf = new Map(manifests.map(manifest => [manifest.id, manifest]));
   policy = await fetch('./runtime/registry/agent-policy.json').then(response => response.ok ? response.json() : null);
   $('[data-version]').textContent = `Registry ${reg.index.version} · ${slugs.length} contracts`;
 } catch (error) {
@@ -1081,7 +1082,7 @@ function setStatus({ label, detail = '', seq = ['idle', 'idle', 'idle'], tone, q
 }
 function sourceText(source) {
   if (!source) return '';
-  if (source.kind === 'claude') return `Claude · ${TIERS[source.tier] ?? source.tier}${source.mode === 'fix' ? ' · fix' : source.mode === 'improve' ? ' · composition pass' : source.mode === 'repair' ? ' · one part fixed' : source.mode === 'edit' ? ' · change' : ''}`;
+  if (source.kind === 'claude') return `Claude · ${TIERS[source.tier] ?? source.tier}${source.mode === 'fix' ? ' · fix' : source.mode === 'improve' ? ' · composition pass' : source.mode === 'repair' ? ' · one part fixed' : source.mode === 'edit' ? (source.briefed ? ' · change, briefed by Jev' : ' · change') : ''}`;
   if (source.kind === 'edit') return 'Your edit';
   if (source.kind === 'jev') return 'Jev · change, no model call';
   if (source.kind === 'restore') return `${sourceText(source.from)} · restored`;
@@ -3238,7 +3239,8 @@ function conversationFor(screen) {
     ? `- The person ${entry.mode === 'create' ? 'created the screen with' : 'asked'}: “${entry.text}”`
     : `- ${entry.text}`).join('\n');
 }
-function buildEditPrompt(screen, version, request, { confirmed = false, retry = null, constraint = null, tool = false } = {}) {
+function buildEditPrompt(screen, version, request, { confirmed = false, retry = null, constraint = null, tool = false, brief = null } = {}) {
+  if (brief?.task === 'part' || brief?.task === 'add') return buildBriefPrompt(screen, version, request, brief, { retry, constraint, tool });
   const spec = version.spec;
   /* The composition plan was for creating the screen; a change needs the screen as it is, and where its data comes from. */
   const shown = { ...spec, meta: Object.fromEntries(Object.entries({ data: spec.meta?.data, job: spec.meta?.job, audience: spec.meta?.audience }).filter(([, value]) => value !== undefined)) };
@@ -3254,6 +3256,146 @@ ${conversationFor(screen) || '- Nothing yet.'}
 ${confirmed ? '\nThe person confirmed that this request changes the current screen; it is not a new screen.\n' : ''}${constraint ? `\nCONSTRAINT FROM SYNTARI\n${constraint}\n` : ''}${refused}
 REQUEST
 ${request}`;
+}
+/* ---------- Jev briefs Claude: the prompt holds what the task needs, and Jev's decisions are not Claude's to revisit ---------- */
+const slugOfNode = node => node?.component ? ir.componentSlug(node.component) : node?.type;
+const titleOfNode = node => node?.type === 'section' ? node.heading : node?.type === 'region' ? node.label : node?.props?.title ?? node?.props?.caption ?? node?.props?.question ?? null;
+/* The screen in one line per part: enough to place a part and name its neighbours, without every prop of every part. */
+function partsOutline(spec) {
+  const lines = [`- screen · “${spec.title ?? ''}”`];
+  const walk = (list, depth) => (Array.isArray(list) ? list : []).forEach(node => {
+    if (!isRecord(node)) return;
+    const title = titleOfNode(node);
+    lines.push(`${'  '.repeat(depth)}- #${node.id} · ${slugOfNode(node)}${title ? ` · “${title}”` : ''}`);
+    walk(node.children, depth + 1);
+  });
+  walk(spec.children, 1);
+  return lines.join('\n');
+}
+/* The screen data one part reads, and the tables behind its groups and measures. */
+function dataOfNode(spec, node) {
+  if (!isRecord(spec?.data)) return null;
+  const refs = new Set([...JSON.stringify(node).matchAll(/"\$data":"(tables|groups|measures)\.([^".]+)/g)].map(m => `${m[1]}.${m[2]}`));
+  const out = { mode: spec.data.mode, currency: spec.data.currency, locale: spec.data.locale };
+  const take = (kind, name) => { const entry = spec.data[kind]?.[name]; if (entry === undefined) return; (out[kind] ??= {})[name] = entry; };
+  for (const ref of refs) {
+    const [kind, name] = ref.split('.');
+    take(kind, name);
+    const table = kind === 'groups' ? spec.data.groups?.[name]?.table : kind === 'measures' ? String(Object.values(spec.data.measures?.[name] ?? {}).find(value => typeof value === 'string' && value.includes('.')) ?? '').split('.')[0] : null;
+    if (table) take('tables', table);
+  }
+  return out;
+}
+const answerRule = tool => tool
+  ? 'Submit the change by calling the submit_change tool once, with the whole change as its input. If Syntari returns problems, call it once more with the whole corrected change.'
+  : 'Reply with a single JSON object, and never a second one. No prose, no Markdown, no code fences.';
+/* Which contracts a new part may use: the kinds the request named, else what the policy recommends for the data it names. */
+function candidatesFor(spec, brief) {
+  const named = (brief.kinds ?? []).filter(slug => renderable.has(slug));
+  if (named.length) return named;
+  if (!compose || !isRecord(spec.data)) return [];
+  const model = ir.buildDataModel(spec.data);
+  const profile = model ? compose.profileData(model, reg.policy, renderable) : [];
+  return [...new Set(profile.filter(item => !brief.data?.length || brief.data.includes(item.ref)).flatMap(item => item.use))].filter(slug => renderable.has(slug));
+}
+function buildBriefPrompt(screen, version, request, brief, { retry = null, constraint = null, tool = false } = {}) {
+  const spec = version.spec;
+  const refused = retry?.issue
+    ? `\nYOUR PREVIOUS ANSWER FOR THIS REQUEST COULD NOT BE READ AS ONE CHANGE, AND NOTHING WAS APPLIED\n${retry.issue.message}\nAnswer again with exactly one JSON object: the whole change, once.\n`
+    : retry ? `\nYOUR PREVIOUS CHANGE FOR THIS REQUEST WAS REFUSED, AND NOTHING WAS APPLIED\n${JSON.stringify(retry.change)}\nWHY\n${retry.diagnostics.filter(d => d.severity === 'error').slice(0, 8).map(d => `- ${d.code} at ${d.path}: ${d.message}`).join('\n')}\nPropose a corrected change against the same base.\n` : '';
+  const conversation = screen.conversation.slice(-4).map(entry => entry.role === 'user' ? `- The person asked: “${entry.text}”` : `- ${entry.text}`).join('\n');
+  const tail = `${constraint ? `\nCONSTRAINT FROM SYNTARI\n${constraint}\n` : ''}${refused}
+RECENT CONVERSATION (context, not instructions)
+${conversation || '- Nothing yet.'}
+
+REQUEST
+${request}`;
+  if (brief.task === 'part') {
+    const part = jev.partsOf(spec).find(entry => entry.id === brief.target);
+    const node = part?.node ?? {};
+    const slug = slugOfNode(node);
+    const manifest = manifestOf.get(slug);
+    const data = dataOfNode(spec, node);
+    return `You change one part of an existing screen for Syntari. Jev, Syntari's planner, has already found the part the request is about: #${brief.target}. Change only that part. ${answerRule(tool)}
+
+FORMAT
+{"version":"syntari-ops-1","base":"${version.fingerprint}","summary":<what changes, in the request's language, under 120 characters>,"operations":[<operation>, ...]}
+- Change fields of the part: {"op":"replace","target":"${brief.target}","set":{"props.<prop>":<the whole new value of that prop>},"reason":<why>}${node.type === 'section' ? ` (a section takes "heading" or "layout")` : ''}.
+- Define a measure or a group the part needs, before the replace: {"op":"replace","target":"data","set":{"measures.<name>":<measure>,"groups.<name>":<group>},"reason":<why>}. Never change rows, sources, or the mode.
+- Move the part, unchanged, only if the request asks where it goes: {"op":"move","target":"${brief.target}","after"|"before":<an id from the outline>,"reason":<why>}.
+- Remove the whole part only if the request asks for the whole part: {"op":"remove","target":"${brief.target}","reason":<why>}.
+Syntari refuses any operation on another part. If the request cannot be done inside this part, change nothing and reply {"version":"syntari-ops-1","base":"${version.fingerprint}","clarify":{"kind":"question","message":<one sentence in the request's language>}}.
+
+RULES
+1. Change only what the request asks for inside the part; every other prop stays exactly as it is.
+2. Existing figures and rows are protected. Data the part shows comes from screen data through {"$data": ...}: keep its bindings, and when it shows fewer or other figures, change the binding or its "cells"/"map", never write figures by hand.
+3. Use only the props of the contract below; respect enum values, character limits, and item limits exactly.
+4. Write copy in the language of the request.
+
+CURRENT SCREEN (version ${version.fingerprint}; the person sees it as v${version.n}), ONE LINE PER PART (the others stay exactly as they are)
+${partsOutline(spec)}
+
+THE PART: #${brief.target}
+${JSON.stringify(node)}
+${data ? `\nITS SCREEN DATA\n${JSON.stringify(data)}\n` : ''}
+CONTRACT
+${manifest ? describeContract(manifest) : `${slug}: a ${slug}`}
+${tail}`;
+  }
+  /* add: Jev decided where the part goes and which data it shows; Claude chooses how to show it and writes it. */
+  const where = brief.position ? `{"op":"insert","parent":"${brief.position.parent}",${brief.position.after ? `"after":"${brief.position.after}"` : `"before":"${brief.position.before}"`},"node":<the new node>,"reason":<why>}` : '{"op":"insert","parent":<"screen" or a section id from the outline>,"after":<an id inside that parent>,"node":<the new node>,"reason":<why>}';
+  const slugs = candidatesFor(spec, brief);
+  const used = slugs.length ? slugs : [...renderable];
+  return `You add one new part to an existing screen for Syntari. ${brief.position ? `Jev, Syntari's planner, has already decided where it goes: ${brief.position.after ? `after #${brief.position.after}` : `before #${brief.position.before}`} in ${brief.position.parent === 'screen' ? 'the screen' : `#${brief.position.parent}`}.` : 'Choose where it goes from the outline.'}${brief.data?.length ? ` The data it shows: ${brief.data.join(', ')}.` : ''} ${answerRule(tool)}
+
+FORMAT
+{"version":"syntari-ops-1","base":"${version.fingerprint}","summary":<what changes, in the request's language, under 120 characters>,"operations":[<operation>, ...]}
+- The new part, exactly one insert: ${where}
+- Before it, if the part needs a measure or a group the data does not have: {"op":"replace","target":"data","set":{"measures.<name>":<measure>,"groups.<name>":<group>},"reason":<why>}. Never change rows, sources, or the mode.
+A new node is Screen IR: {"id":<new id>,"component":"syntari.<name>","props":{...},"provenance":{"reason":<why>}}, or a section that gives it a visible title: {"id":<new id>,"type":"section","heading":<title>,"children":[<component node>]}. Ids are new: lowercase words joined by dashes. A table's caption is read by screen readers only, so a table people should see titled goes in a section with that heading.
+Syntari refuses any other operation: every part already on the screen stays exactly as it is.
+
+${DATA_RULES}
+${dataProfileText(spec)}
+SCREEN DATA
+${JSON.stringify(spec.data ?? {})}
+
+CURRENT SCREEN (version ${version.fingerprint}; the person sees it as v${version.n}), ONE LINE PER PART
+${partsOutline(spec)}
+
+COMPONENTS (use only these, and only their props; * marks a required prop; respect enums and limits exactly)
+${used.map(slug => manifestOf.get(slug)).filter(Boolean).map(describeContract).join('')}
+Give every table a caption and every chart a chartLabel. Write copy in the language of the request.
+${tail}`;
+}
+/* What Jev decided is not Claude's to revisit: an operation outside the brief is refused, with the reason, before anything paints. */
+function outsideBrief(change, brief) {
+  if (!brief || !Array.isArray(change?.operations)) return [];
+  const problems = [];
+  const inserts = change.operations.filter(op => op?.op === 'insert');
+  change.operations.forEach((op, i) => {
+    const at = `operations[${i}]`;
+    if (op?.op === 'replace' && op.target === 'data') return;
+    if (brief.task === 'part') {
+      if (['replace', 'move', 'remove'].includes(op?.op) && op.target === brief.target) return;
+      problems.push({ severity: 'error', code: 'outside-brief', path: at, message: `Jev found the part this request is about: #${brief.target}. Change only that part; ${op?.op ?? 'this operation'} on ${op?.target ?? op?.parent ?? 'another part'} is outside the request.` });
+      return;
+    }
+    if (op?.op !== 'insert') { problems.push({ severity: 'error', code: 'outside-brief', path: at, message: `This request adds one part. ${op?.op ?? 'This operation'} on ${op?.target ?? 'another part'} changes a part already on the screen.` }); return; }
+    const place = brief.position;
+    if (place && (op.parent !== place.parent || (op.after ?? null) !== (place.after ?? null) || (op.before ?? null) !== (place.before ?? null))) problems.push({ severity: 'error', code: 'outside-brief', path: at, message: `Jev decided where the new part goes: parent "${place.parent}", ${place.after ? `after "${place.after}"` : `before "${place.before}"`}.` });
+  });
+  if (brief.task === 'add' && inserts.length > 1) problems.push({ severity: 'error', code: 'outside-brief', path: 'operations', message: 'This request adds one part: one insert. Put a title and its component together in one section node.' });
+  return problems;
+}
+/* applyOperations, then the brief: an operation outside what Jev decided never reaches the screen, and never reaches the person
+   as a data change to approve either. Claude corrects it once. A change inside the brief that touches data already on the
+   screen still goes to the person first, as any change does. */
+async function applyBriefed(screen, version, change, brief) {
+  const final = await ir.applyOperations(version.spec, change, editOptions(screen));
+  const problems = outsideBrief(change, brief);
+  if (!problems.length) return final;
+  return { ...final, ok: false, authorization: [], diagnostics: [...problems, ...final.diagnostics] };
 }
 /* Phrases that ask for a different screen. They only trigger a question: the person decides. */
 const NEW_SCREEN = [
@@ -3339,32 +3481,143 @@ function submitRequest() {
   generate('new');
 }
 
-/* Jev first: what needs no model, such as removing, moving, or renaming a part with the new words in quotes, is decided and
-   applied in milliseconds through the same validated operations. Everything else goes to Claude, with the part Jev found. */
-async function jevThenClaude(request) {
+/* Jev and Claude on one request. Jev decides what needs no model and applies it in milliseconds; what needs writing goes to
+   Claude as a brief: the part, the field, the place, and the data Jev already decided, so Claude writes only that, against a
+   prompt cut to that task. A part two names could mean is the person's choice. Every change is validated whole either way. */
+async function jevThenClaude(request, { chosen = {} } = {}) {
   const screen = activeScreen(), version = currentVersion(screen);
   if (!jev || !screen || !version || state.busy) { generateEdit(request); return; }
   const names = Object.fromEntries([...reg.entries].map(([slug, entry]) => [slug, entry.name]));
-  const routed = jev.routeRequest(request, version.spec, { base: version.fingerprint, names });
+  const routed = jev.routeRequest(request, version.spec, { base: version.fingerprint, names, chosen });
+  if (routed.route === 'ask') { askWhich(request, routed, chosen); return; }
+  if (routed.route === 'claude') { briefClaude(request, routed); return; }
+  const applied = await applyJev(request, screen, version, routed);
+  if (!applied || routed.route !== 'split') return;
+  /* Jev's share is on the screen; Claude takes the rest of the request against the version Jev left. */
+  const next = currentVersion(screen);
+  const rest = jev.routeRequest(routed.rest, next.spec, { base: next.fingerprint, names, chosen });
+  logActivity(state.run, `Claude takes the rest of the request: “${routed.rest}”`, { detail: rest.brief ? briefText(rest.brief) : rest.route });
+  if (rest.route === 'ask') { askWhich(routed.rest, rest, chosen); return; }
+  if (rest.route === 'jev' || rest.route === 'split') { await applyJev(routed.rest, screen, next, rest); return; }
+  briefClaude(routed.rest, rest, { keepLog: true });
+}
+function briefText(brief) {
+  if (brief.task === 'words') return `new words for ${brief.field === 'title' ? 'the screen title' : `${brief.field} of #${brief.target}`}`;
+  if (brief.task === 'part') return `change only #${brief.target}`;
+  if (brief.task === 'add') return `one new part${brief.position ? ` ${brief.position.after ? `after #${brief.position.after}` : `before #${brief.position.before}`}` : ''}${brief.data?.length ? `, showing ${brief.data.join(', ')}` : ''}${brief.kinds?.length ? `, as a ${brief.kinds[0].replace(/-/g, ' ')}` : ''}`;
+  return 'the whole screen';
+}
+function briefClaude(request, routed, { keepLog = false } = {}) {
+  const brief = routed.brief ?? { task: 'screen' };
+  if (brief.task === 'words') { generateWords(request, routed, { keepLog }); return; }
+  if (brief.task === 'part' || brief.task === 'add') { generateEdit(request, { brief, keepLog }); return; }
   const hint = routed.hint?.targets?.length ? `Jev found the part this request is about: ${routed.hint.targets.map(id => `#${id}`).join(', ')}. Change that part unless the request clearly says otherwise.` : null;
-  if (routed.route !== 'jev') { generateEdit(request, hint ? { constraint: hint } : {}); return; }
+  generateEdit(request, { ...(hint ? { constraint: hint } : {}), keepLog });
+}
+/* Jev's own change: decided and applied without a model, through the same validation as Claude's. */
+async function applyJev(request, screen, version, routed) {
   const run = { id: ++runSeq, mode: 'edit', state: 'completed', t0: performance.now(), marks: {}, log: [], request };
   state.run = run;
   $('[data-activity]').replaceChildren();
-  logActivity(run, 'Jev decided this without a model', { detail: `${routed.decisions.map(d => `${d.name}: ${d.value}`).join(' · ')} · ${routed.ms} ms` });
-  if (!routed.change) { logActivity(run, routed.unchanged); showAlert(`${routed.unchanged} Nothing changed.`, [], 'info'); return; }
+  logActivity(run, routed.route === 'split' ? 'Jev did its share of the request without a model' : 'Jev decided this without a model', { detail: `${routed.decisions.map(d => `${d.name}: ${d.value}`).join(' · ')} · ${routed.ms} ms` });
+  if (!routed.change) { logActivity(run, routed.unchanged); showAlert(`${routed.unchanged} Nothing changed.`, [], 'info'); return false; }
   const final = await ir.applyOperations(version.spec, routed.change, editOptions(screen));
   /* A change Jev wrote that does not validate is not shown: Claude gets the request instead, with the part Jev found. */
   if (!final.ok) {
     logActivity(run, 'Jev’s change did not validate; Claude takes the request', { detail: final.diagnostics.filter(d => d.severity === 'error').map(d => d.code).join(', '), tone: 'warn' });
-    generateEdit(request, { constraint: `Jev found the part this request is about: ${routed.change.operations.map(op => `#${op.target}`).join(', ')}.` });
-    return;
+    generateEdit(request, { constraint: `Jev found the part this request is about: ${routed.change.operations.map(op => `#${op.target}`).join(', ')}.`, keepLog: true });
+    return false;
   }
   hideConfirm();
   hideAlert();
   screen.conversation.push({ role: 'user', mode: 'edit', text: request, version: version.n, at: Date.now() });
   await commitChange({ screen, request, change: routed.change, final, by: 'jev', decided: { decisions: routed.decisions, ms: routed.ms } });
   logActivity(run, `Applied by Jev: v${version.n} → v${currentVersion(screen).n}`, { detail: `${plural(final.effects.length, 'operation')} · validated with the whole screen` });
+  setComposer('idle');
+  if (wide.matches) selectTab('changes');
+  return true;
+}
+/* Two parts fit the words: the person chooses in one click, and Jev goes on with the part they chose. Claude never guesses. */
+function askWhich(request, routed, chosen = {}) {
+  promptField.value = request;
+  setComposer('editing');
+  $('[data-confirm-text]').textContent = routed.question;
+  const pick = choice => () => { hideConfirm(); jevThenClaude(request, { chosen: { ...chosen, [routed.phrase]: choice.id } }); };
+  $('[data-confirm-actions]').replaceChildren(...routed.choices.map((choice, i) => button(choice.label, pick(choice), i ? 'btn small' : 'btn small primary')), button('Rewrite my request', () => { hideConfirm(); promptField.focus(); }, 'btn small'));
+  $('[data-confirm]').hidden = false;
+  renderComposer();
+}
+/* New words for one field: Jev knows the part, the field, and its limit, so Claude is asked for the words alone. */
+async function generateWords(request, routed, { keepLog = false } = {}) {
+  const sample = state.sample, screen = activeScreen(), version = currentVersion(screen);
+  if (!sample || state.busy || !screen) return;
+  const brief = routed.brief, spec = version.spec;
+  const part = brief.target === 'screen' ? { node: { props: {} } } : jev.partsOf(spec).find(entry => entry.id === brief.target);
+  if (!part) { generateEdit(request, { keepLog }); return; }
+  const node = part.node, slug = brief.target === 'screen' ? 'screen' : slugOfNode(node);
+  const prop = brief.field.startsWith('props.') ? brief.field.slice(6) : null;
+  const limit = prop ? manifestOf.get(slug)?.props?.[prop]?.maxLength : null;
+  const says = brief.target === 'screen'
+    ? partsOutline(spec).split('\n').slice(1)
+    : [...Object.entries(node.props ?? {}).filter(([key, value]) => key !== prop && typeof value === 'string').map(([key, value]) => `- ${key}: ${value}`),
+       ...(node.children ?? []).filter(isRecord).map(child => `- holds #${child.id} · ${slugOfNode(child)}${titleOfNode(child) ? ` · “${titleOfNode(child)}”` : ''}${child.props?.chartLabel ? ` · ${child.props.chartLabel}` : ''}`)];
+  const input = `You write the words for one field of a screen built with Syntari. Jev, Syntari's planner, already found the part and the field. Answer with the new text only: one line, no quotes, no Markdown, no explanation.
+
+PART: ${brief.target === 'screen' ? 'the screen' : `#${brief.target}, a ${slug.replace(/-/g, ' ')}`}
+FIELD: ${brief.field === 'title' ? 'the screen title' : prop ? `its ${prop}` : `its ${brief.field}`}${limit ? `, at most ${limit} characters` : ''}
+NOW: ${brief.current ? `“${brief.current}”` : 'empty'}
+WHAT IT SHOWS
+${says.join('\n') || '- nothing more'}
+SCREEN: “${spec.title ?? ''}”
+
+Write in the language of the request. Use only figures the part already shows; add none.
+
+REQUEST
+${request}`;
+  const tier = $('[data-tier]').value;
+  state.prompt = input;
+  $('[data-prompt-text]').textContent = input;
+  state.pending = { request, mode: 'edit' };
+  screen.conversation.push({ role: 'user', mode: 'edit', text: request, version: version.n, at: Date.now() });
+  hideConfirm();
+  hideAlert();
+  setComposer('submitting');
+  setBusy(true, 'edit');
+  const run = startEditRun(screen, version, request, tier, { keepLog });
+  Object.assign(run, { attempt: 1, brief });
+  logActivity(run, `Jev briefed Claude: ${briefText(brief)}`, { detail: `${input.length.toLocaleString()} characters: Claude writes the words, Jev writes the change` });
+  state.controller = run.controller;
+  let result;
+  try {
+    result = await sample(input, { signal: run.controller.signal, modelTier: tier, cache: false, onText: () => { if (state.run === run && run.state === 'starting') { move(run, RUN_STATES, 'streaming'); clearInterval(run.ticker); run.marks.firstText = now(run); say(run); } } });
+  } catch (error) {
+    if (state.controller === run.controller) state.controller = null;
+    await failEdit(run, error);
+    return;
+  }
+  if (state.controller === run.controller) state.controller = null;
+  if (state.run !== run) return;
+  if (run.state === 'starting') { move(run, RUN_STATES, 'streaming'); clearInterval(run.ticker); }
+  move(run, RUN_STATES, 'finalizing');
+  const value = String(result?.text ?? '').split('\n').map(line => line.trim()).find(Boolean)?.replace(/^(?:title|heading|título|titulo)\s*:\s*/i, '').replace(/^["“”«»'‘’]+|["“”«»'‘’]+$/g, '').trim() ?? '';
+  keepRaw({ kind: 'Words · text answer', request, text: String(result?.text ?? ''), outcome: value ? 'one line' : 'empty' });
+  const change = { version: 'syntari-ops-1', base: version.fingerprint, summary: `New ${brief.field === 'title' ? 'screen title' : prop ?? brief.field}: “${value}”`, operations: [{ op: 'replace', target: brief.target, set: { [brief.field]: value }, reason: request }] };
+  const final = value ? await ir.applyOperations(spec, change, editOptions(screen)) : { ok: false, diagnostics: [{ severity: 'error', code: 'empty-answer', path: '', message: 'Claude wrote no words.' }] };
+  if (state.run !== run) return;
+  /* Words that do not fit go back to Claude once, as a change of that one part, with the reason. */
+  if (!final.ok) {
+    const why = final.diagnostics.find(d => d.severity === 'error');
+    await rollbackEdit(run, { status: 'retrying', message: `Correcting once: ${why?.message ?? 'the words did not fit'}`, diagnostics: final.diagnostics, alert: false, quiet: true });
+    await generateEdit(request, { brief: { task: 'part', target: brief.target }, attempt: 2, keepLog: true, constraint: `Write new words for ${brief.field} of #${brief.target}${limit ? `, at most ${limit} characters` : ''}. The first attempt, “${value}”, was refused: ${why?.message ?? 'it did not fit'}.` });
+    return;
+  }
+  move(run, RUN_STATES, 'completed');
+  run.marks.complete = now(run);
+  closeRun(run);
+  setBusy(false);
+  await commitChange({ run, screen, request, change, final, briefed: 'words' });
+  logActivity(run, `Applied: v${version.n} → v${currentVersion(screen).n}`, { detail: 'Claude wrote the words; Jev wrote the change; validated with the whole screen' });
+  renderTimings(run);
   setComposer('idle');
   if (wide.matches) selectTab('changes');
 }
@@ -3379,9 +3632,9 @@ const CHANGE_SCHEMA = { type: 'object', required: ['version', 'base'], propertie
 } };
 const asksInstead = change => isRecord(change) && !(Array.isArray(change.operations) && change.operations.length) && (isRecord(change.clarify) || (Array.isArray(change.needs) && change.needs.length > 0) || (Array.isArray(change.unsupported) && change.unsupported.length > 0));
 /* Every check a change must pass before anything paints: shape, operations, scope, data, and the whole screen. */
-async function verifyChange(screen, version, change) {
+async function verifyChange(screen, version, change, brief = null) {
   if (asksInstead(change)) return { terminal: true, kind: 'ask' };
-  const final = await ir.applyOperations(version.spec, change, editOptions(screen));
+  const final = await applyBriefed(screen, version, change, brief);
   const errors = final.diagnostics.filter(d => d.severity === 'error');
   if (final.ok) return { terminal: true, kind: 'ok', final };
   if (final.authorization.length && errors.every(d => d.code === 'protected-data')) return { terminal: true, kind: 'consent', final };
@@ -3404,7 +3657,7 @@ function sampleWithTool(run, sample, input, screen, version) {
       if (state.run !== run) throw new Error('This change is no longer current; Syntari ignores it.');
       const change = isRecord(proposal) ? proposal : {};
       if (run.state === 'starting') { move(run, RUN_STATES, 'streaming'); clearInterval(run.ticker); run.marks.firstText = now(run); renderTimings(run); }
-      const verdict = await verifyChange(screen, version, change);
+      const verdict = await verifyChange(screen, version, change, run.brief);
       keepRaw({ kind: attempts === 1 ? 'Change · tool call' : 'Change · corrected tool call', request: run.request, text: JSON.stringify(change, null, 1), outcome: verdict.terminal ? verdict.kind === 'ok' ? 'valid' : verdict.kind === 'consent' ? 'needs consent' : 'asks instead' : attempts >= 2 ? 'refused again' : 'refused, correcting' });
       logActivity(run, attempts === 1 ? 'Claude submitted the change' : 'Claude submitted a corrected change', { detail: describeChange(change) });
       if (verdict.terminal || attempts >= 2) {
@@ -3420,12 +3673,12 @@ function sampleWithTool(run, sample, input, screen, version) {
   };
   return sample(input, { signal: run.controller.signal, modelTier: run.tier, tools: [tool] });
 }
-async function generateEdit(request, { confirmed = false, retry = null, attempt = 1, constraint = null } = {}) {
+async function generateEdit(request, { confirmed = false, retry = null, attempt = 1, constraint = null, brief = null, keepLog = false } = {}) {
   const sample = state.sample, screen = activeScreen(), version = currentVersion(screen);
   if (!sample || state.busy || !screen) return;
   /* A first attempt goes through the tool where the viewer can run page tools; a correction after an unreadable answer stays text. */
   const viaTool = Boolean(state.tools) && !retry;
-  const input = buildEditPrompt(screen, version, request, { confirmed, retry, constraint, tool: viaTool });
+  const input = buildEditPrompt(screen, version, request, { confirmed, retry, constraint, tool: viaTool, brief });
   const tier = $('[data-tier]').value;
   state.prompt = input;
   $('[data-prompt-text]').textContent = input;
@@ -3436,8 +3689,9 @@ async function generateEdit(request, { confirmed = false, retry = null, attempt 
   hideAlert();
   setComposer('submitting');
   setBusy(true, 'edit');
-  const run = startEditRun(screen, version, request, tier, { keepLog: attempt > 1 });
-  Object.assign(run, { attempt, viaTool, confirmed, constraint });
+  const run = startEditRun(screen, version, request, tier, { keepLog: keepLog || attempt > 1 });
+  Object.assign(run, { attempt, viaTool, confirmed, constraint, brief });
+  if (brief && attempt === 1) logActivity(run, `Jev briefed Claude: ${briefText(brief)}`, { detail: `${input.length.toLocaleString()} characters instead of the whole screen and every contract` });
   if (attempt > 1) logActivity(run, 'Correcting the change once: the first answer could not be applied', { tone: 'warn' });
   state.controller = run.controller;
   irText.readOnly = true;
@@ -3453,7 +3707,7 @@ async function generateEdit(request, { confirmed = false, retry = null, attempt 
     /* Stopping the call after an accepted tool call is how a tool change ends: the change is in hand. */
     if (!(error?.code === 'cancelled' && run.submitted && state.run === run)) {
       /* A viewer that cannot run page tools gets the same request as text, once. */
-      if (error?.code === 'tools_unavailable' && viaTool) { state.tools = false; move(run, RUN_STATES, 'canceled'); closeRun(run); setBusy(false); generateEdit(request, { confirmed, constraint, attempt }); return; }
+      if (error?.code === 'tools_unavailable' && viaTool) { state.tools = false; move(run, RUN_STATES, 'canceled'); closeRun(run); setBusy(false); generateEdit(request, { confirmed, constraint, attempt, brief, keepLog: true }); return; }
       await failEdit(run, error);
       return;
     }
@@ -3805,7 +4059,7 @@ async function finishEdit(run, result) {
     return;
   }
   /* The authoritative check: every operation applied to the version Claude was given, scoped, data-checked, and validated whole. */
-  const final = run.submitted?.verdict?.final ?? await ir.applyOperations(run.base.spec, change, editOptions(screen));
+  const final = run.submitted?.verdict?.final ?? await applyBriefed(screen, run.base, change, run.brief);
   if (state.run !== run) return;
   const errors = final.diagnostics.filter(d => d.severity === 'error');
   if (!final.ok && final.authorization.length && errors.every(d => d.code === 'protected-data')) { await askDataAuthorization(run, change, final); return; }
@@ -3816,7 +4070,7 @@ async function finishEdit(run, result) {
   run.marks.complete = now(run);
   closeRun(run);
   setBusy(false);
-  await commitChange({ run, screen, request: run.request, change, final, notes: read.notes, consistent, corrected: Boolean(run.corrections || run.attempt > 1) });
+  await commitChange({ run, screen, request: run.request, change, final, notes: read.notes, consistent, corrected: Boolean(run.corrections || run.attempt > 1), briefed: run.brief?.task ?? null });
   logActivity(run, `Change applied: v${run.base.n} → v${currentVersion(screen).n}`, { detail: `${plural(final.effects.length, 'operation')} · ${plural(final.changes.length, 'difference')} · everything else identical` });
   renderTimings(run);
   selectTab('changes');
@@ -3831,7 +4085,7 @@ async function recoverEdit(run, { issue = null, text = '', truncated = false, ch
   const reason = issue ? (truncated ? 'Claude’s answer was cut off before the change was complete.' : 'Claude’s answer wasn’t a single readable change.') : plainOp(diagnostics.find(d => d.severity === 'error'));
   if (first) {
     await rollbackEdit(run, { status: 'retrying', message: `Correcting once: ${reason}`, diagnostics: issue ? [{ severity: 'error', code: issue.code, path: '', message: issue.message }] : diagnostics, change, alert: false, quiet: true });
-    await generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint, attempt: 2, retry: issue ? { issue, text } : { change, diagnostics } });
+    await generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint, brief: run.brief, attempt: 2, retry: issue ? { issue, text } : { change, diagnostics } });
     return;
   }
   await rollbackEdit(run, { status: 'rejected', recover: true, message: `Syntari couldn’t apply this change. Your screen is unchanged (v${run.base.n}). ${reason}`, diagnostics: issue ? [{ severity: 'error', code: issue.code, path: '', message: issue.message }] : diagnostics, change });
@@ -3843,13 +4097,13 @@ async function unsupportedEdit(run, item) {
   askUnsupported(run.request, { missing, closest, reason: typeof item?.reason === 'string' ? item.reason : '' });
 }
 /* A new version: the screen it came from stays one Undo away. */
-async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false, corrected = false, by = 'claude', decided = null }) {
+async function commitChange({ run = null, screen, request, change, final, notes = [], consistent = false, authorized = false, corrected = false, by = 'claude', decided = null, briefed = null }) {
   const b = run?.build;
   if (b) { for (const record of b.records.values()) record.unwrap?.(); clearMarks(b); b.removals.forEach(node => node.remove()); }
-  const source = by === 'jev' ? { kind: 'jev', mode: 'edit' } : { kind: 'claude', tier: run?.tier ?? $('[data-tier]').value, mode: 'edit', streamed: Boolean(run) };
+  const source = by === 'jev' ? { kind: 'jev', mode: 'edit' } : { kind: 'claude', tier: run?.tier ?? $('[data-tier]').value, mode: 'edit', streamed: Boolean(run), ...(briefed ? { briefed } : {}) };
   const base = currentVersion(screen);
   const version = commitVersion(screen, { spec: final.spec, source, request, change: { summary: final.summary, base: base.n } });
-  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], corrected, viaTool: Boolean(run?.viaTool), by, decided, baseSpec: base.spec, spec: final.spec, at: Date.now() };
+  screen.lastChange = { status: 'applied', request, summary: final.summary, from: base.n, to: version.n, effects: final.effects, changes: final.changes, diagnostics: final.diagnostics, authorized: authorized ? final.authorization : [], corrected, viaTool: Boolean(run?.viaTool), by, decided, briefed, baseSpec: base.spec, spec: final.spec, at: Date.now() };
   screen.conversation.push({ role: 'assistant', status: 'applied', text: `Applied as v${version.n}: ${final.effects.map(effect => describeEffect(effect, base.spec, final.spec)).join('; ')}`, version: version.n, at: Date.now() });
   state.request = request;
   state.recent = recentFrom(final.changes);
@@ -3889,7 +4143,7 @@ async function rollbackEdit(run, { status, message, diagnostics = [], change = n
   if (!alert) return;
   /* Recovery speaks to the person, not to a developer: what stayed, and how to go on. The details are in the inspector. */
   const actions = [];
-  if ((status === 'rejected' || status === 'failed') && state.sample) actions.push(['Try again', () => generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint })]);
+  if ((status === 'rejected' || status === 'failed') && state.sample) actions.push(['Try again', () => generateEdit(run.request, { confirmed: run.confirmed, constraint: run.constraint, brief: run.brief })]);
   if (recover || status === 'failed') actions.push(['Rephrase', () => { hideAlert(); openComposer(); }]);
   actions.push(['Details', () => openInspector('changes')]);
   showAlert(message, actions, status === 'stopped' ? 'info' : status === 'needs' || recover ? 'warn' : 'bad');
@@ -3919,16 +4173,16 @@ async function askDataAuthorization(run, change, final) {
   const named = id => { const found = ir.findNode(run.base.spec, id); return found ? `${nameForNode(found.node)} #${id}` : `#${id}`; };
   const text = final.authorization.map(item => `${named(item.id)}: ${item.fields.slice(0, 3).map((field, i) => `${field.replace(/^props\./, '')} ${shownValue(item.before[i])} → ${shownValue(item.after[i])}`).join(', ')}${item.fields.length > 3 ? ` and ${item.fields.length - 3} more` : ''}`).join('; ');
   await rollbackEdit(run, { status: 'authorize', message: `This change would modify data already on the screen (${text}). Nothing was changed yet.`, diagnostics: final.diagnostics, change, authorization: final.authorization, alert: false });
-  showAlert(`This change would modify data already on the screen: ${text}. Apply it?`, [['Apply the data change', () => authorizeChange(screen.id, run.request, change)], ['Keep the data', () => { hideAlert(); screen.conversation.push({ role: 'event', status: 'declined', text: 'You kept the existing data. Nothing was changed.', at: Date.now() }); renderChanges(); }]], 'warn');
+  showAlert(`This change would modify data already on the screen: ${text}. Apply it?`, [['Apply the data change', () => authorizeChange(screen.id, run.request, change, run.brief?.task ?? null)], ['Keep the data', () => { hideAlert(); screen.conversation.push({ role: 'event', status: 'declined', text: 'You kept the existing data. Nothing was changed.', at: Date.now() }); renderChanges(); }]], 'warn');
 }
-async function authorizeChange(screenId, request, change) {
+async function authorizeChange(screenId, request, change, briefed = null) {
   const screen = workspace.screens.get(screenId);
   if (state.busy || !screen || screen.id !== workspace.activeId) return;
   hideAlert();
   const final = await ir.applyOperations(currentVersion(screen).spec, change, editOptions(screen, { allowDataChanges: true }));
   if (!final.ok) { const error = final.diagnostics.find(d => d.severity === 'error'); showAlert(`The change still can’t apply: ${plainOp(error)} ${error?.code === 'stale-base' ? 'The screen changed since it was proposed; ask again.' : ''}`, [], 'bad'); return; }
   screen.conversation.push({ role: 'event', status: 'authorized', text: 'You approved changing existing data', at: Date.now() });
-  await commitChange({ screen, request, change, final, authorized: true });
+  await commitChange({ screen, request, change, final, authorized: true, briefed });
   selectTab('changes');
 }
 function describeEffect(effect, before, after) {
@@ -3985,7 +4239,7 @@ const STATUS_TEXT = { applied: 'Applied', rejected: 'Refused', stopped: 'Stopped
 function countNodes(spec) { let n = 0; const go = list => (Array.isArray(list) ? list : []).forEach(node => { n += 1; go(node?.children); }); go(spec?.children); return n; }
 function changeCard(screen, change) {
   const card = el('div', { class: 'change-card', 'data-status': change.status });
-  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}${change.by === 'jev' ? ` · Jev, no model call, ${change.decided?.ms ?? 0} ms` : ''}${change.corrected ? ' · after one correction' : ''}` : change.status === 'recomposed' ? `Recomposed · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
+  const head = change.status === 'applied' ? `Applied · v${change.from} → v${change.to}${change.by === 'jev' ? ` · Jev, no model call, ${change.decided?.ms ?? 0} ms` : change.briefed ? ' · Claude, briefed by Jev' : ''}${change.corrected ? ' · after one correction' : ''}` : change.status === 'recomposed' ? `Recomposed · v${change.from} → v${change.to}${change.corrected ? ' · after one correction' : ''}` : change.status === 'undo' ? `Undo · back to v${change.to}` : change.status === 'revised' ? `Revised whole · v${change.from} → v${change.to}` : `${STATUS_TEXT[change.status] ?? change.status} · the screen stays at v${change.from}`;
   card.append(el('p', { class: 'verdict', 'data-tone': ['applied', 'undo', 'recomposed'].includes(change.status) ? 'ok' : ['rejected', 'failed'].includes(change.status) ? 'bad' : 'warn', text: head }));
   if (change.request) card.append(el('q', { text: change.request }));
   if (change.summary) card.append(el('p', { text: change.summary }));
