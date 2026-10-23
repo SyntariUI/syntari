@@ -89,3 +89,21 @@ test('a request with several asks is split: Jev does its share, planned in order
   assert.equal(decide('Rename the risk chart to "Risk and remove nothing"').routed.change.operations[0].set['props.title'], 'Risk and remove nothing');
   assert.equal(decide('Can you remove the liquidity ladder?').routed.route, 'jev');
 });
+
+test('Jev knows the newer parts by their kind: one word for one kind, and a word two kinds share is the person’s choice', () => {
+  const spec = { type: 'screen', children: [
+    { id: 'decisions', component: 'syntari.chart-donut', props: { title: 'Decisions this week', segments: [{ label: 'Approved', share: 60 }, { label: 'Waiting', share: 40 }] } },
+    { id: 'runs', component: 'syntari.heatmap', props: { title: 'Failed runs by day', columns: ['Night', 'Day'], rows: [{ label: 'Mon', values: [1, 2] }] } },
+    { id: 'spend', component: 'syntari.treemap', props: { title: 'Cloud spend', tiles: [{ label: 'EC2', value: 4 }, { label: 'S3', value: 2 }] } },
+    { id: 'checks', component: 'syntari.score', props: { title: 'Checks passed', value: 92 } },
+    { id: 'plan', component: 'syntari.agent-todo-list', props: { title: 'Migration plan', tasks: [{ label: 'Back up the tables' }] } }
+  ] };
+  const target = request => { const { routed } = decide(request, spec); return routed.route === 'jev' ? routed.change.operations.map(op => [op.op, op.target]) : routed.route; };
+  assert.deepEqual(target('Remove the heatmap'), [['remove', 'runs']]);
+  assert.deepEqual(target('Quita el donut'), [['remove', 'decisions']]);
+  assert.deepEqual(target('Remove the score'), [['remove', 'checks']]);
+  assert.deepEqual(target('Borra el plan'), [['remove', 'plan']]);
+  assert.equal(decide('Rename the treemap to "Spend by service"', spec).routed.change.operations[0].set['props.title'], 'Spend by service');
+  assert.equal(target('Delete the chart'), 'ask', 'three charts: the person chooses');
+  assert.deepEqual(decide('Quita el anillo', spec).routed.choices.map(choice => choice.id), ['decisions', 'checks']);
+});

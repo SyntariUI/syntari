@@ -17,6 +17,14 @@ October 21, 2026. Change a screen without regenerating it.
 - Every component has aliases, in `registry/aliases.json` and the `aliases` field of `registry/index.json`: its earlier name and the names other design systems use, such as modal for Dialog, toggle for Switch, and snackbar for Toast.
 - System, the component gallery, the docs navigation, the command palette, `syntari search`, and the MCP tool `search_components` rank results the same way: a name or an alias first, then the category, then the description, and every word typed must start a word. The runtime exports the ranking as `matchScore()` and `searchItems()`.
 - System opens on the first component of its list.
+- Ten more components render from Screen IR, so 48 do: Donut chart, Heatmap, Treemap, Progress bar, Progress ring, Badge, Avatar, Error state, Code block, and Agent todo list. The registry's own patterns already named Agent todo list for delegation and Error state for recovery, and a heatmap or a treemap used to be answered as missing although Syntari had both.
+  - Donut chart takes two to four shares of one total, which must add up to 100. Its three colours keep their separation under colour-vision deficiencies and their contrast in both themes; a fourth part is drawn neutral, as the rest.
+  - Heatmap is a table: every value is read with its row and column headers, cells are shaded from the smallest value to the largest in one hue, and the scale names the real range. A row needs one value per column (`row-length`).
+  - Treemap lays out tiles with areas proportional to their values (squarified), keeps tiles of one group together in the group's colour, and names the groups with their shares. A value of 0 has no area to draw (`below-minimum`); more than three groups warn (`too-many-groups`). A tile too small for its words keeps them for screen readers and its tooltip.
+  - Progress ring takes a tone, so a score that needs attention is not drawn in green. A Badge's dot takes the badge's colour.
+  - Error state reports `retry` to the host and never runs the demo's retry. Agent todo list counts completed tasks from the tasks themselves.
+- Contracts can now bind a custom property (`style`), several properties from one field with running sums (`running`), a count read from a list (`count`), a matrix (`matrix`), and a treemap layout (`tiles`); a text slot can carry a `prefix` and a `suffix`.
+- The composition policy recommends Donut chart for parts of a whole, Heatmap for a value per pair of categories, and Treemap for nested parts. A sunburst is still reported as missing, with the treemap as the closest. Jev finds the new parts by their kind: “remove the heatmap” or “quita el donut” need no model, and “the ring” asks which one when a donut and a progress ring are both on screen.
 
 ---
 

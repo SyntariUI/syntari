@@ -118,3 +118,19 @@ header.site-topbar .site-actions .icon-button:hover{color:var(--text)}
 @media(max-width:760px){header.site-topbar{padding:12px var(--topbar-inset,18px);gap:10px;flex-wrap:wrap;row-gap:8px}header.site-topbar .site-nav{flex:1 1 100%;order:2;margin-left:0}header.site-topbar .site-actions{margin-left:auto}header.site-topbar .site-brand{font-size:var(--type-reading)}header.site-topbar .site-nav a{padding:7px 9px;font-size:var(--type-caption)}}
 /* Contract slots whose optional prop is unset. */
 [data-syntari-empty]{display:none!important}
+/* Badge contract: a dot only where asked, in the badge's own colour, so a critical badge never shows a green dot. */
+.badge-row[data-syntari-contract]{flex-wrap:wrap}
+.badge-row[data-syntari-contract] .badge:not(.has-dot)>.status-dot{display:none}
+.badge-row[data-syntari-contract] .status-dot{background:currentColor}
+/* Avatar contract: initials name each person; the overflow count comes last. */
+.avatar[data-initials]{display:inline-grid;place-items:center}
+.avatar[data-initials]::after{content:attr(data-initials);font-size:var(--type-caption);font-weight:500;line-height:1;color:#1b1b29;text-transform:uppercase}
+.avatar-group[data-syntari-contract] .avatars>*{margin-left:-9px}
+.avatar-group[data-syntari-contract] .avatars>[data-syntari-index="0"]{margin-left:0}
+.avatar-group[data-syntari-contract] .avatar-count{order:1}
+.avatar-group[data-syntari-contract] .avatar:is([data-syntari-index="1"],[data-syntari-index="4"]){background:#9ab2f9}
+.avatar-group[data-syntari-contract] .avatar:is([data-syntari-index="2"],[data-syntari-index="5"]){background:#cfcd82}
+/* Progress ring tones: the ring's colour follows what the score means, not only how full it is. */
+.ring.tone-neutral circle{stroke:var(--blue-a1)}.ring.tone-neutral circle:last-child{stroke:var(--accent)}
+.ring.tone-warning circle{stroke:var(--amber-a1)}.ring.tone-warning circle:last-child{stroke:var(--amber-4)}
+.ring.tone-critical circle{stroke:var(--red-a1)}.ring.tone-critical circle:last-child{stroke:var(--red-4)}

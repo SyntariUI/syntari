@@ -1,0 +1,198 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "chart-donut",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Decisions this week",
+      "note": "96 reviewed",
+      "total": "96",
+      "unit": "decisions",
+      "segments": [
+        {
+          "label": "Approved",
+          "share": 62
+        },
+        {
+          "label": "Waiting",
+          "share": 23
+        },
+        {
+          "label": "Declined",
+          "share": 15
+        }
+      ]
+    }
+  },
+  "source": "components/chart-donut/",
+  "name": "Donut chart",
+  "category": "Charts",
+  "purpose": "Show how one whole splits into two to four parts, with the whole in the middle.",
+  "description": "A ring of shares of one total, with the total in its centre and every part named with its share.",
+  "intents": [
+    "break-down",
+    "compare-parts",
+    "explain"
+  ],
+  "variants": {
+    "parts": [
+      "2 to 4"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "note",
+    "ring",
+    "centre",
+    "legend"
+  ],
+  "accessibility": {
+    "role": "figure",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "shares-add-up-to-100",
+    "two-to-four-parts",
+    "a-fourth-part-is-the-rest-and-is-drawn-neutral",
+    "the-legend-carries-the-meaning-not-the-colour"
+  ],
+  "tokens": [
+    "color.action.primary",
+    "color.surface.subtle",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default"
+  ],
+  "compatibleWith": [
+    "stat-row",
+    "headline-metric",
+    "text-block",
+    "table"
+  ],
+  "avoidWhen": [
+    "the-parts-are-not-shares-of-one-total",
+    "more-than-four-parts",
+    "values-change-over-time",
+    "parts-need-a-precise-comparison"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What the whole is."
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Small print beside the title, such as the period or the source."
+    },
+    "total": {
+      "type": "string",
+      "maxLength": 10,
+      "description": "The whole, as written, in the centre of the ring, such as '96' or '$4.2M'."
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "What the total counts, under it, such as 'decisions'."
+    },
+    "chartLabel": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "What the ring shows, for screen readers. Defaults to the title."
+    },
+    "segments": {
+      "type": "array",
+      "required": true,
+      "maxItems": 4,
+      "sum": {
+        "field": "share",
+        "total": 100,
+        "tolerance": 1
+      },
+      "description": "Two to four parts in display order, largest first. Shares add up to 100. A fourth part is drawn neutral, so make it the rest, such as 'Other'.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "share": {
+            "type": "number",
+            "required": true,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percent of the whole."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".donut-figure",
+    "text": {
+      "title": "figcaption strong",
+      "note": "figcaption .hint",
+      "total": ".donut-centre strong",
+      "unit": ".donut-centre small"
+    },
+    "showWhen": {
+      "note": "figcaption .hint",
+      "total": ".donut-centre strong",
+      "unit": ".donut-centre small"
+    },
+    "attributes": {
+      "chartLabel": {
+        "selector": ".donut-wrap svg",
+        "attribute": "aria-label",
+        "fallback": "title"
+      }
+    },
+    "list": {
+      "segments": [
+        {
+          "container": ".donut-wrap svg g",
+          "item": ".donut-segment",
+          "strip": [
+            "stroke-dasharray",
+            "stroke-dashoffset",
+            "style"
+          ],
+          "style": {
+            "share": [
+              {
+                "selector": "",
+                "name": "--share"
+              },
+              {
+                "selector": "",
+                "name": "--start",
+                "running": true
+              }
+            ]
+          }
+        },
+        {
+          "container": ".donut-legend",
+          "item": "li",
+          "text": {
+            "label": "span:not(.legend-swatch)",
+            "share": {
+              "selector": "b",
+              "suffix": "%"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "treemap",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "title": "Cloud spend by service",
+      "note": "September",
+      "tiles": [
+        {
+          "label": "EC2",
+          "value": 41.2,
+          "display": "$41.2k",
+          "group": "Compute"
+        },
+        {
+          "label": "Lambda",
+          "value": 6.1,
+          "display": "$6.1k",
+          "group": "Compute"
+        },
+        {
+          "label": "RDS",
+          "value": 18.3,
+          "display": "$18.3k",
+          "group": "Data"
+        },
+        {
+          "label": "Redshift",
+          "value": 9.6,
+          "display": "$9.6k",
+          "group": "Data"
+        },
+        {
+          "label": "S3",
+          "value": 12.4,
+          "display": "$12.4k",
+          "group": "Storage"
+        },
+        {
+          "label": "EBS",
+          "value": 7.9,
+          "display": "$7.9k",
+          "group": "Storage"
+        },
+        {
+          "label": "Other",
+          "value": 4.5,
+          "display": "$4.5k"
+        }
+      ]
+    }
+  },
+  "source": "components/treemap/",
+  "name": "Treemap",
+  "category": "Charts",
+  "purpose": "Show the parts of a whole by size, nested in up to three groups, when there are too many parts for a bar.",
+  "description": "Tiles whose areas are their values, laid out to stay close to square. Tiles of one group sit together in one colour, and a legend names the groups with their share.",
+  "intents": [
+    "break-down",
+    "show-hierarchy",
+    "find-the-largest-parts"
+  ],
+  "variants": {
+    "grouping": [
+      "flat",
+      "grouped"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "note",
+    "tiles",
+    "legend"
+  ],
+  "accessibility": {
+    "role": "list",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "areas-are-values-of-one-whole",
+    "values-above-zero",
+    "at-most-three-groups-get-a-colour",
+    "a-small-tile-keeps-its-words-for-screen-readers"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.border.default",
+    "color.text.primary",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "stat-row",
+    "headline-metric",
+    "text-block",
+    "table"
+  ],
+  "avoidWhen": [
+    "the-values-are-not-parts-of-one-whole",
+    "values-change-over-time",
+    "fewer-than-four-parts",
+    "parts-need-a-precise-comparison"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true,
+      "description": "What the whole is."
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Small print beside the title, such as the period."
+    },
+    "tiles": {
+      "type": "array",
+      "required": true,
+      "maxItems": 16,
+      "description": "The parts, each with a value above 0 that sets its area. Give tiles a group to nest them; three groups get a colour.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "value": {
+            "type": "number",
+            "required": true,
+            "minimum": 0,
+            "description": "The part's size, in any one unit. Its area is its share of the sum."
+          },
+          "display": {
+            "type": "string",
+            "maxLength": 12,
+            "description": "The value as written, such as '$41.2k'. Left out, the tile shows its share."
+          },
+          "group": {
+            "type": "string",
+            "maxLength": 20,
+            "description": "The group the tile belongs to, such as 'Compute'."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".tree-figure",
+    "text": {
+      "title": "figcaption strong",
+      "note": "figcaption .hint"
+    },
+    "showWhen": {
+      "note": "figcaption .hint"
+    },
+    "tiles": {
+      "tiles": {
+        "container": ".treemap",
+        "item": ".tree-tile",
+        "label": "strong",
+        "text": "span",
+        "name": "title"
+      }
+    }
+  }
+}

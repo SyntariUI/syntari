@@ -321,6 +321,154 @@
             }
           },
           "additionalProperties": false
+        },
+        "style": {
+          "type": "object",
+          "description": "Prop name to the custom property it sets, such as how far a ring is filled. An unset prop removes the property.",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/styleBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/styleBinding"
+                },
+                "minItems": 1
+              }
+            ]
+          }
+        },
+        "count": {
+          "type": "object",
+          "description": "List prop to a text slot that counts its items whose field has one value, such as \"2 of 5 completed\", so the summary always agrees with the rows.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "selector",
+              "field",
+              "value"
+            ],
+            "properties": {
+              "selector": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "value": {},
+              "format": {
+                "type": "string",
+                "description": "Text with {count} and {total}. Defaults to \"{count} of {total}\"."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "matrix": {
+          "type": "object",
+          "description": "Rows prop drawn as a table of cells shaded by value, with row and column headers, so a heatmap stays readable as numbers.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "selector",
+              "columns"
+            ],
+            "properties": {
+              "selector": {
+                "type": "string",
+                "description": "Element the table replaces the contents of."
+              },
+              "columns": {
+                "type": "string",
+                "description": "Array prop of column labels."
+              },
+              "label": {
+                "type": "string",
+                "description": "Field of a row that labels it. Defaults to label."
+              },
+              "values": {
+                "type": "string",
+                "description": "Field of a row that holds one number per column. Defaults to values."
+              },
+              "levels": {
+                "type": "integer",
+                "minimum": 2,
+                "description": "Number of shades. Defaults to 5."
+              },
+              "unit": {
+                "type": "string",
+                "description": "Prop whose value is written with every figure."
+              },
+              "showValues": {
+                "type": "string",
+                "description": "Boolean prop: true writes the figures in the cells; otherwise they are read by screen readers and tooltips."
+              },
+              "caption": {
+                "type": "string",
+                "description": "Prop that names the table for screen readers."
+              },
+              "table": {
+                "type": "string",
+                "description": "Class of the generated table."
+              },
+              "scale": {
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "type": "string"
+                  },
+                  "max": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Slots that receive the smallest and largest figures."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "tiles": {
+          "type": "object",
+          "description": "Tiles prop laid out as a squarified treemap: each tile's area is its value, tiles of one group sit together, and a legend names the groups.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "container",
+              "item",
+              "label",
+              "text"
+            ],
+            "properties": {
+              "container": {
+                "type": "string"
+              },
+              "item": {
+                "type": "string",
+                "description": "Template tile, cloned for every tile."
+              },
+              "label": {
+                "type": "string",
+                "description": "Slot for the tile's label."
+              },
+              "text": {
+                "type": "string",
+                "description": "Slot for the tile's display value, or its share of the whole."
+              },
+              "name": {
+                "type": "string",
+                "description": "Prop that names the set for screen readers."
+              },
+              "aspect": {
+                "type": "number",
+                "minimum": 0.5,
+                "description": "Width over height of the area the layout fills. Defaults to 2."
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
@@ -623,6 +771,14 @@
               "joinField": {
                 "type": "string",
                 "description": "A second field of the same item written after the first, such as the other series of a bar."
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Text written before the value, such as \"+\" before an overflow count."
+              },
+              "suffix": {
+                "type": "string",
+                "description": "Text written after the value, such as \"%\". A number is written in the screen's locale."
               }
             },
             "additionalProperties": false
@@ -670,6 +826,10 @@
         "scaleGroup": {
           "type": "string",
           "description": "Fields that share a group are drawn against the largest value among them."
+        },
+        "running": {
+          "type": "boolean",
+          "description": "Write the sum of this field over the items before this one, such as where a ring segment begins."
         }
       },
       "additionalProperties": false
@@ -815,7 +975,7 @@
               },
               "nameFrom": {
                 "type": "string",
-                "description": "Prop that names this series in each point’s reading."
+                "description": "Prop that names this series in each point\u2019s reading."
               }
             },
             "additionalProperties": false
@@ -839,7 +999,7 @@
         },
         "markerBox": {
           "type": "string",
-          "description": "Shape behind a marker’s text, sized to fit it."
+          "description": "Shape behind a marker\u2019s text, sized to fit it."
         }
       },
       "additionalProperties": false,
@@ -911,7 +1071,18 @@
         "style": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/styleBinding"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/styleBinding"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/styleBinding"
+                },
+                "minItems": 1
+              }
+            ]
           }
         },
         "strip": {

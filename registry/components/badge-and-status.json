@@ -1,0 +1,140 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "badge-and-status",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "badges": [
+        {
+          "label": "Active",
+          "tone": "positive",
+          "dot": true
+        },
+        {
+          "label": "3 pending",
+          "tone": "warning"
+        },
+        {
+          "label": "Pro plan",
+          "tone": "accent"
+        }
+      ]
+    }
+  },
+  "source": "components/badge-and-status/",
+  "name": "Badge",
+  "category": "Content",
+  "purpose": "Label a status or a category in a few words, with a tone that says what it means.",
+  "description": "A row of quiet badges. The words carry the meaning; the tone and an optional dot reinforce it.",
+  "intents": [
+    "show-status",
+    "label",
+    "summarize"
+  ],
+  "variants": {
+    "tone": [
+      "neutral",
+      "positive",
+      "warning",
+      "critical",
+      "accent"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "badge",
+    "dot",
+    "label"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "the-label-says-the-status-in-words",
+    "tone-follows-meaning",
+    "a-dot-takes-the-badge-colour"
+  ],
+  "tokens": [
+    "color.status.success",
+    "color.status.warning",
+    "color.status.danger",
+    "color.action.primary.soft",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "card",
+    "metadata-list",
+    "banner"
+  ],
+  "avoidWhen": [
+    "the-status-needs-an-explanation",
+    "the-badges-would-be-actions"
+  ],
+  "props": {
+    "badges": {
+      "type": "array",
+      "required": true,
+      "maxItems": 8,
+      "description": "Badges in reading order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "required": true
+          },
+          "tone": {
+            "type": "enum",
+            "values": [
+              "neutral",
+              "positive",
+              "warning",
+              "critical",
+              "accent"
+            ],
+            "default": "neutral"
+          },
+          "dot": {
+            "type": "boolean",
+            "default": false,
+            "description": "A status dot before the label, in the badge's colour."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".badge-row",
+    "list": {
+      "badges": {
+        "container": ".badge-row",
+        "item": ".badge",
+        "lead": {
+          "label": ""
+        },
+        "variant": {
+          "tone": {
+            "selector": "",
+            "values": {
+              "neutral": "",
+              "positive": "green",
+              "warning": "amber",
+              "critical": "red",
+              "accent": "accent"
+            }
+          }
+        },
+        "class": {
+          "dot": "has-dot"
+        }
+      }
+    }
+  }
+}

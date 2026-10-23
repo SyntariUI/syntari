@@ -318,6 +318,19 @@ export function checkProps(manifest, props, path, report, icons) {
     if (!part.cells || !Array.isArray(columns) || !Array.isArray(props[key])) continue;
     props[key].forEach((row, i) => { if (Array.isArray(row) && row.length !== columns.length) report('warning', 'row-length', `${path}.${key}[${i}]`, `This row has ${row.length} cells for ${columns.length} columns. Missing cells render empty and extra cells are dropped.`); });
   }
+  /* A matrix value sits under its column: a row with too few or too many would shade the wrong cells. */
+  for (const [key, binding] of Object.entries(manifest.ir?.matrix ?? {})) {
+    const columns = props[binding.columns], field = binding.values ?? 'values';
+    if (!Array.isArray(columns) || !Array.isArray(props[key])) continue;
+    props[key].forEach((row, i) => { if (Array.isArray(row?.[field]) && row[field].length !== columns.length) report('error', 'row-length', `${path}.${key}[${i}].${field}`, `This row has ${row[field].length} values for ${columns.length} columns. Give one value per column, in column order.`); });
+  }
+  /* A tile's area is its value, so a value of nothing has no tile to draw. */
+  for (const key of Object.keys(manifest.ir?.tiles ?? {})) {
+    if (!Array.isArray(props[key])) continue;
+    props[key].forEach((tile, i) => { if (typeof tile?.value === 'number' && !(tile.value > 0)) report('error', 'below-minimum', `${path}.${key}[${i}].value`, 'A tile needs a value above 0: its area is its value. Leave out parts that are empty.'); });
+    const groups = new Set(props[key].map(tile => tile?.group).filter(group => typeof group === 'string' && group.trim()));
+    if (groups.size > 3) report('warning', 'too-many-groups', `${path}.${key}`, `${groups.size} groups were given; three get a colour and the rest are drawn neutral. Merge the smallest groups, or leave them ungrouped.`);
+  }
 }
 
 const COMPUTE_NAME = /^[a-z][A-Za-z0-9_]{0,23}$/;
@@ -1140,6 +1153,158 @@ function bindSort(root, binding, props) {
   });
 }
 
+/** A figure with its unit: $482 and £12 lead, 14% and 9€ follow it, a word follows a space: 12 runs. Words can be left out. */
+function withUnit(text, unit, percent = '%', words = true) {
+  if (!unit || (!words && /^\p{L}/u.test(unit))) return text;
+  if (['$', '£'].includes(unit)) return text.startsWith('-') ? `-${unit}${text.slice(1)}` : `${unit}${text}`;
+  if (unit === '%') return `${text}${percent}`;
+  return /^\p{L}/u.test(unit) ? `${text} ${unit}` : `${text}${unit}`;
+}
+
+/**
+ * A matrix of values as a table whose cells are shaded by value, lightest for the smallest and darkest for the largest.
+ * It stays a table, so every value is read with its row and its column, and the numbers can be shown or left to the shade.
+ */
+function paintMatrix(root, binding, rows, value, { number, percent, report, path }) {
+  const host = pick(root, binding.selector);
+  if (!host) { report('warning', 'matrix-slot-missing', path, `The contract expects "${binding.selector}" for the matrix.`); return; }
+  const list = Array.isArray(rows) ? rows.slice(0, IR_LIMITS.maxListItems) : [];
+  const columns = Array.isArray(value(binding.columns)) ? value(binding.columns).slice(0, IR_LIMITS.maxListItems) : [];
+  const labelField = binding.label ?? 'label', valuesField = binding.values ?? 'values';
+  const unit = binding.unit && value(binding.unit) !== undefined ? String(value(binding.unit)) : '';
+  const shown = Boolean(binding.showValues) && value(binding.showValues) === true;
+  const levels = binding.levels ?? 5;
+  const figureAt = (row, c) => { const raw = Array.isArray(row?.[valuesField]) ? row[valuesField][c] : undefined; return typeof raw === 'number' && Number.isFinite(raw) ? raw : null; };
+  const figures = list.flatMap(row => columns.map((_, c) => figureAt(row, c))).filter(figure => figure !== null);
+  const min = figures.length ? Math.min(...figures) : 0, max = figures.length ? Math.max(...figures) : 0;
+  /* A symbol goes with every figure; a word such as "runs" is said once, on the scale, since the title says what is counted. */
+  const reading = (figure, words = false) => withUnit(number(tidy(figure)), unit, percent, words);
+  const table = document.createElement('table');
+  table.className = binding.table ?? 'heat-table';
+  /* The figure's caption shows the title; the table carries it as its name, so it is not read twice. */
+  if (binding.caption && value(binding.caption) !== undefined) table.setAttribute('aria-label', String(value(binding.caption)));
+  const head = table.createTHead().insertRow();
+  head.append(document.createElement('td'));
+  for (const column of columns) { const th = document.createElement('th'); th.scope = 'col'; th.textContent = String(column); head.append(th); }
+  const body = table.createTBody();
+  list.forEach((row, r) => {
+    const tr = body.insertRow();
+    tr.dataset.syntariIndex = String(r);
+    const heading = document.createElement('th');
+    heading.scope = 'row';
+    heading.textContent = String(row?.[labelField] ?? '');
+    tr.append(heading);
+    columns.forEach((column, c) => {
+      const cell = document.createElement('td'), text = document.createElement('span');
+      const figure = figureAt(row, c);
+      text.className = shown ? 'heat-value' : 'heat-value sr-only';
+      if (figure === null) { cell.dataset.level = 'none'; text.textContent = 'No value'; }
+      else {
+        cell.dataset.level = String(max > min ? Math.round((figure - min) / (max - min) * (levels - 1)) : levels - 1);
+        text.textContent = reading(figure);
+        cell.title = `${heading.textContent} · ${column}: ${reading(figure)}`;
+      }
+      cell.append(text);
+      tr.append(cell);
+    });
+  });
+  host.replaceChildren(table);
+  host.removeAttribute('role');
+  host.removeAttribute('aria-label');
+  host.dataset.matrix = '';
+  if (columns.length > 12) host.dataset.dense = ''; else delete host.dataset.dense;
+  /* The scale names the real range, so "lightest" and "darkest" mean figures. */
+  if (binding.scale && figures.length) { fillText(pick(root, binding.scale.min), reading(min)); fillText(pick(root, binding.scale.max), reading(max, true)); }
+}
+
+/**
+ * Squarified treemap layout (Bruls, Huizing and van Wijk): rows of rectangles along the shorter side, each row grown while
+ * it makes its rectangles squarer. Areas are proportional to the values. Returns each entry's rectangle by its ref.
+ */
+function squarify(entries, x, y, w, h) {
+  const out = new Map();
+  const total = entries.reduce((sum, entry) => sum + entry.value, 0);
+  if (!(total > 0) || !(w > 0) || !(h > 0)) return out;
+  const rest = entries.map(entry => ({ ...entry, area: entry.value / total * w * h })).sort((a, b) => b.area - a.area);
+  const worst = (row, side) => {
+    const sum = row.reduce((t, entry) => t + entry.area, 0), big = Math.max(...row.map(entry => entry.area)), small = Math.min(...row.map(entry => entry.area));
+    return Math.max(side * side * big / (sum * sum), (sum * sum) / (side * side * small));
+  };
+  while (rest.length) {
+    const side = Math.min(w, h);
+    const row = [rest.shift()];
+    while (rest.length && worst([...row, rest[0]], side) <= worst(row, side)) row.push(rest.shift());
+    const sum = row.reduce((t, entry) => t + entry.area, 0);
+    if (w >= h) {
+      const thick = sum / h;
+      let at = y;
+      for (const entry of row) { const length = entry.area / thick; out.set(entry.ref, { x, y: at, w: thick, h: length }); at += length; }
+      x += thick; w -= thick;
+    } else {
+      const thick = sum / w;
+      let at = x;
+      for (const entry of row) { const length = entry.area / thick; out.set(entry.ref, { x: at, y, w: length, h: thick }); at += length; }
+      y += thick; h -= thick;
+    }
+  }
+  return out;
+}
+
+/**
+ * Tiles whose areas are proportional to their values. Tiles of one group sit together, in the group's colour, and a
+ * legend names the groups. A tile too small for its words keeps them for screen readers and its tooltip (in CSS, by size).
+ */
+function paintTiles(root, binding, tiles, value, { number, percent, report, path }) {
+  const container = pick(root, binding.container);
+  const template = container ? pick(container, binding.item) : null;
+  if (!container || !template) { report('warning', 'list-slot-missing', path, `The contract expects "${binding.item}" inside "${binding.container}" for the tiles.`); return; }
+  const clone = template.cloneNode(true);
+  clone.removeAttribute('style');
+  container.querySelectorAll(binding.item).forEach(node => node.remove());
+  const items = (Array.isArray(tiles) ? tiles.slice(0, IR_LIMITS.maxListItems) : []).map((item, index) => ({ item, index, value: Number(item?.value) })).filter(tile => Number.isFinite(tile.value) && tile.value > 0);
+  const total = items.reduce((sum, tile) => sum + tile.value, 0);
+  const groups = [...new Set(items.map(tile => tile.item.group).filter(group => typeof group === 'string' && group.trim()))];
+  const width = (binding.aspect ?? 2) * 100, height = 100;
+  const rects = new Map();
+  const place = (members, x, y, w, h) => { for (const [ref, rect] of squarify(members.map(tile => ({ ref: tile, value: tile.value })), x, y, w, h)) rects.set(ref, rect); };
+  if (groups.length) {
+    const blocks = [...groups.map(name => items.filter(tile => tile.item.group === name)), items.filter(tile => !groups.includes(tile.item.group))].filter(members => members.length);
+    for (const [members, rect] of squarify(blocks.map(members => ({ ref: members, value: members.reduce((sum, tile) => sum + tile.value, 0) })), 0, 0, width, height)) place(members, rect.x, rect.y, rect.w, rect.h);
+  } else place(items, 0, 0, width, height);
+  const share = figure => { const part = figure / total * 100; return part < 1 ? `<1${percent}` : `${number(Math.round(part))}${percent}`; };
+  for (const tile of items) {
+    const rect = rects.get(tile);
+    if (!rect) continue;
+    const node = clone.cloneNode(true);
+    node.dataset.syntariIndex = String(tile.index);
+    for (const [name, at] of [['--x', rect.x / width], ['--y', rect.y / height], ['--w', rect.w / width], ['--h', rect.h / height]]) node.style.setProperty(name, `${tidy(at * 100)}%`);
+    const label = String(tile.item.label ?? ''), shown = tile.item.display !== undefined ? String(tile.item.display) : share(tile.value);
+    fillText(pick(node, binding.label), label);
+    fillText(pick(node, binding.text), shown);
+    node.dataset.tone = groups.includes(tile.item.group) ? String(groups.indexOf(tile.item.group)) : 'none';
+    node.setAttribute('role', 'listitem');
+    node.title = `${label}: ${shown}${tile.item.display !== undefined ? ` (${share(tile.value)})` : ''}`;
+    container.append(node);
+  }
+  container.dataset.layout = 'tiles';
+  container.setAttribute('role', 'list');
+  if (binding.name && value(binding.name) !== undefined) container.setAttribute('aria-label', String(value(binding.name)));
+  else container.removeAttribute('aria-label');
+  if (!groups.length) return;
+  const legend = document.createElement('ul');
+  legend.className = 'chart-legend tree-legend';
+  groups.forEach((name, tone) => {
+    const entry = document.createElement('li'), swatch = document.createElement('span'), text = document.createElement('span'), amount = document.createElement('b');
+    swatch.className = 'legend-swatch';
+    swatch.dataset.tone = String(tone);
+    text.textContent = name;
+    amount.textContent = share(items.filter(tile => tile.item.group === name).reduce((sum, tile) => sum + tile.value, 0));
+    entry.append(swatch, text, amount);
+    legend.append(entry);
+  });
+  container.after(legend);
+}
+
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
 export function applyContract(element, manifest, props, diagnostics, path, context = {}) {
   const ir = manifest.ir;
@@ -1164,7 +1329,13 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
   /** Text comes from props or defaults only: a slot whose optional prop is unset is emptied, never left with demo copy. */
   const bound = (key, apply, clear) => { const current = value(key); if (current !== undefined) apply(current); else clear?.(); };
   const each = (selector, fn) => { for (const one of [].concat(selector)) fn(pick(root, one)); };
-  for (const [key, selector] of Object.entries(ir.text ?? {})) bound(key, current => each(selector, target => fillText(target, current)), () => each(selector, target => fillText(target, '')));
+  /* A text slot may frame its value, such as "68%" from 68 or "+4" from 4; a figure is then written in the screen's locale. */
+  for (const [key, selector] of Object.entries(ir.text ?? {})) {
+    const framed = typeof selector === 'object' && selector !== null && !Array.isArray(selector) ? selector : null;
+    const at = framed ? framed.selector : selector;
+    const write = current => !framed ? current : `${framed.prefix ?? ''}${typeof current === 'number' ? `${number(current)}${unitAfter(framed.suffix ?? '')}` : `${current}${framed.suffix ?? ''}`}`;
+    bound(key, current => each(at, target => fillText(target, write(current))), () => each(at, target => fillText(target, '')));
+  }
   for (const [key, selector] of Object.entries(ir.lead ?? {})) bound(key, current => each(selector, target => fillLead(target, current)), () => each(selector, target => fillLead(target, '')));
   for (const [key, selector] of Object.entries(ir.icon ?? {})) bound(key, current => each(selector, target => setIcon(target, current)));
   /* Chrome that only means something beside a value, like a "Total" label, goes when that value is unset. */
@@ -1180,6 +1351,13 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
     }
   }
   for (const [key, className] of Object.entries(ir.class ?? {})) bound(key, current => toggleClass(root, className, current));
+  /* A value can drive a custom property, such as how far a ring is filled; unset, the template's own value goes too. */
+  for (const [key, binding] of Object.entries(ir.style ?? {})) for (const one of [].concat(binding)) {
+    const target = pick(root, one.selector);
+    if (!target?.style) continue;
+    if (value(key) === undefined) target.style.removeProperty(one.name);
+    else target.style.setProperty(one.name, `${value(key)}${one.suffix ?? ''}`);
+  }
   /**
    * Chart geometry stays data: the series arrives as numbers and the renderer draws the path. A contract may draw several
    * lines from one list ("lines": one field each), and they always share one scale, so two series are comparable by eye.
@@ -1284,7 +1462,9 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
       existing.forEach(node => node.remove());
       const limit = Math.min(items.length, IR_LIMITS.maxListItems);
       const scales = {};
-      for (const [name, style] of Object.entries(part.style ?? {})) if (style.scaleGroup) scales[style.scaleGroup] = Math.max(scales[style.scaleGroup] ?? 0, ...items.map(item => Number(item?.[name])).filter(Number.isFinite));
+      /* One field can drive several properties, such as a ring segment's length and where it starts. */
+      const styles = Object.entries(part.style ?? {}).flatMap(([name, style]) => [].concat(style).map(one => [name, one]));
+      for (const [name, style] of styles) if (style.scaleGroup) scales[style.scaleGroup] = Math.max(scales[style.scaleGroup] ?? 0, ...items.map(item => Number(item?.[name])).filter(Number.isFinite));
       for (let i = 0; i < limit; i += 1) {
         const item = clone.cloneNode(true);
         const data = items[i];
@@ -1313,17 +1493,18 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
            first, such as both series of a bar, so neither number hides behind the bar. */
         for (const [name, selector] of Object.entries(part.text ?? {})) {
           const at = typeof selector === 'object' && selector ? selector.selector : selector;
-          const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : '';
+          const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : typeof selector === 'object' && selector?.suffix ? selector.suffix : '';
           const joined = typeof selector === 'object' && selector?.joinField ? given(selector.joinField) : undefined;
           const write = figure => `${number(figure)}${typeof figure === 'number' ? unitAfter(suffix) : suffix}`;
           filled(name, current => fillText(pick(item, at), `${write(current)}${joined !== undefined ? ` · ${write(joined)}` : ''}`), () => fillText(pick(item, at), ''));
         }
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
         for (const [name, selector] of Object.entries(part.icon ?? {})) filled(name, current => setIcon(pick(item, selector), current));
-        for (const [name, style] of Object.entries(part.style ?? {})) {
+        for (const [name, style] of styles) {
           /* A field left out removes what it would have drawn, such as the second bar of a single-series chart. */
           /* A scale group draws every field in it against the largest value, so the longest bar fills its track. */
-          const scaled = current => style.scaleGroup && scales[style.scaleGroup] > 0 ? tidy(Number(current) / scales[style.scaleGroup] * 100) : current;
+          /* A running value is the sum of the items before this one: where a segment of a ring begins. */
+          const scaled = current => style.running ? tidy(items.slice(0, i).reduce((sum, other) => sum + (Number(other?.[name]) || 0), 0)) : style.scaleGroup && scales[style.scaleGroup] > 0 ? tidy(Number(current) / scales[style.scaleGroup] * 100) : current;
           filled(name, current => { const target = pick(item, style.selector) ?? item; if (target.style) target.style.setProperty(style.name, `${scaled(current)}${style.suffix ?? ''}`); }, () => { if (style.removeWhenEmpty) pick(item, style.selector)?.remove(); });
         }
         for (const [name, binding] of Object.entries(part.variant ?? {})) filled(name, current => applyVariant(pick(item, binding.selector), binding.values, current, report, path));
@@ -1349,6 +1530,15 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
       }
     }
   }
+  /* A count read from a list, such as how many tasks are done, so the summary can never disagree with the rows. */
+  for (const [key, binding] of Object.entries(ir.count ?? {})) {
+    const items = Array.isArray(value(key)) ? value(key) : [];
+    const fallback = manifest.props?.[key]?.items?.fields?.[binding.field]?.default;
+    const count = items.filter(item => (item?.[binding.field] ?? fallback) === binding.value).length;
+    each(binding.selector, target => fillText(target, String(binding.format ?? '{count} of {total}').replace('{count}', number(count)).replace('{total}', number(items.length))));
+  }
+  for (const [key, binding] of Object.entries(ir.matrix ?? {})) paintMatrix(root, binding, value(key), value, { number, percent: unitAfter('%'), report, path });
+  for (const [key, binding] of Object.entries(ir.tiles ?? {})) paintTiles(root, binding, value(key), value, { number, percent: unitAfter('%'), report, path });
   /* The item whose field matches the prop is the selected one, so the two can never disagree. */
   for (const [key, binding] of Object.entries(ir.select ?? {})) {
     const part = [].concat(ir.list?.[binding.list] ?? [])[0];

@@ -1,0 +1,152 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "avatar-and-group",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "people": [
+        {
+          "name": "Ada Okafor",
+          "initials": "AO"
+        },
+        {
+          "name": "Jamie Chen",
+          "initials": "JC"
+        },
+        {
+          "name": "Sam Rivera",
+          "initials": "SR"
+        }
+      ],
+      "others": 4,
+      "caption": "Reviewers on this change"
+    }
+  },
+  "source": "components/avatar-and-group/",
+  "name": "Avatar",
+  "category": "Content",
+  "purpose": "Show who is involved, such as owners or reviewers, as a group of avatars with a caption.",
+  "description": "Overlapping avatars with initials, a count of the people not shown, and a caption that says who they are.",
+  "intents": [
+    "show-people",
+    "assign",
+    "summarize"
+  ],
+  "variants": {
+    "people": [
+      "1 to 6",
+      "with overflow"
+    ]
+  },
+  "states": [
+    "default"
+  ],
+  "anatomy": [
+    "root",
+    "avatars",
+    "avatar",
+    "overflow",
+    "caption"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "every-avatar-names-its-person",
+    "the-caption-says-who-they-are",
+    "overflow-counts-the-people-not-shown"
+  ],
+  "tokens": [
+    "color.surface.subtle",
+    "color.text.secondary"
+  ],
+  "compatibleWith": [
+    "card",
+    "metadata-list",
+    "approval-card"
+  ],
+  "avoidWhen": [
+    "the-people-need-to-be-read-one-by-one",
+    "more-detail-than-a-name-matters"
+  ],
+  "props": {
+    "people": {
+      "type": "array",
+      "required": true,
+      "maxItems": 6,
+      "description": "The people shown, in order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "name": {
+            "type": "string",
+            "maxLength": 40,
+            "required": true,
+            "description": "Read by screen readers and shown on hover."
+          },
+          "initials": {
+            "type": "string",
+            "maxLength": 2,
+            "description": "One or two letters shown in the avatar."
+          }
+        }
+      }
+    },
+    "others": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 9999,
+      "description": "How many more people there are than are shown."
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Who they are, such as 'Reviewers on this change'. It also names the group for screen readers."
+    }
+  },
+  "ir": {
+    "node": ".avatar-group",
+    "list": {
+      "people": {
+        "container": ".avatars",
+        "item": ".avatar",
+        "attributes": {
+          "name": [
+            {
+              "selector": "",
+              "attribute": "aria-label"
+            },
+            {
+              "selector": "",
+              "attribute": "title"
+            }
+          ],
+          "initials": {
+            "selector": "",
+            "attribute": "data-initials"
+          }
+        }
+      }
+    },
+    "text": {
+      "others": {
+        "selector": ".avatar-count",
+        "prefix": "+"
+      },
+      "caption": ".label-caption"
+    },
+    "showWhen": {
+      "others": ".avatar-count",
+      "caption": ".label-caption"
+    },
+    "attributes": {
+      "caption": {
+        "selector": ".avatars",
+        "attribute": "aria-label"
+      }
+    }
+  }
+}

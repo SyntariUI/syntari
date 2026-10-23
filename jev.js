@@ -13,16 +13,26 @@ const FILLER = new Set(['el', 'la', 'los', 'las', 'lo', 'un', 'una', 'de', 'del'
 /* Words that name a kind of part, and the components or node types they mean. */
 const KINDS = [
   [/^(tabla|table|tablas|tables|listado|detalle)$/, ['table', 'comparison-table', 'data-table', 'simple-data-table']],
-  [/^(grafico|grafica|graficos|chart|charts|graph)$/, ['chart-bars', 'line-chart', 'area-chart', 'chart-donut', 'metric-and-sparkline']],
+  [/^(grafico|grafica|graficos|chart|charts|graph)$/, ['chart-bars', 'line-chart', 'area-chart', 'chart-donut', 'heatmap', 'treemap', 'metric-and-sparkline']],
+  [/^(donut|dona|rosco|pie|tarta|quesito)$/, ['chart-donut']],
+  [/^(anillo|ring)$/, ['chart-donut', 'score']],
+  [/^(heatmap|calor|matriz|matrix)$/, ['heatmap']],
+  [/^(treemap|mosaico|tiles|teselas)$/, ['treemap']],
+  [/^(progreso|progress|avance|puntuacion|score)$/, ['progress', 'score']],
   [/^(barras|barra|bars|bar|columnas|columns|escalera|ladder)$/, ['chart-bars']],
   [/^(linea|lineas|line|evolucion|tendencia|trend)$/, ['line-chart', 'area-chart']],
   [/^(kpi|kpis|metricas|metrica|indicadores|stats|metrics|cifras|resumen)$/, ['stat-row', 'headline-metric', 'metric-strip']],
   [/^(desglose|breakdown|reparto|asignacion|allocation|composicion)$/, ['breakdown']],
   [/^(texto|parrafo|text|nota|explicacion|summary)$/, ['text-block', 'banner']],
+  [/^(badge|badges|etiqueta|etiquetas|insignia|insignias)$/, ['badge-and-status']],
+  [/^(avatar|avatares|avatars|personas|people|equipo|team|revisores|reviewers)$/, ['avatar-and-group']],
+  [/^(error|fallo|reintentar|retry)$/, ['error-and-retry']],
+  [/^(codigo|code|comando|command|snippet)$/, ['code-block']],
   [/^(seccion|section|apartado)$/, ['section']],
   [/^(aprobacion|approval|decision|confirmacion)$/, ['tool-approval', 'approval-card']],
   [/^(calculadora|calculator|simulador)$/, ['calculator']],
-  [/^(checklist|tareas|pasos)$/, ['checklist']]
+  [/^(checklist|pasos)$/, ['checklist']],
+  [/^(tareas|tasks|todo|plan)$/, ['checklist', 'agent-todo-list']]
 ];
 const TITLE_FIELDS = ['title', 'caption', 'heading', 'question', 'label', 'message'];
 const slugOf = node => typeof node?.component === 'string' ? node.component.replace(/^syntari\./, '') : node?.type ?? null;

@@ -179,7 +179,7 @@
   if(action==='help')openLayer({title:'A little help, close by.',body:`<p class="layer-description">Move between projects, people, and settings from either navigation layout.</p><dl class="syntari-shortcuts"><div><dt>Search your workspace</dt><dd>⌘ / Ctrl K</dd></div><div><dt>Move through controls</dt><dd>Tab</dd></div><div><dt>Close a menu or drawer</dt><dd>Esc</dd></div></dl><p class="hint">Changes in this preview stay in your browser.</p>`});
  });
  document.addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!e.target.closest('[data-starter-combo],.starter-popover,.record-actions'))closeFloating();if(!b)return;const d=b.dataset;
+  const b=e.target.closest('button');if(!e.target.closest('[data-starter-combo],.starter-popover,.record-actions'))closeFloating();if(!b||b.matches('[data-syntari-action]:not([data-syntari-local])'))return;const d=b.dataset;
   if(b.hasAttribute('data-simple-sort'))sortSimple(b.closest('[data-simple-table]'),d.simpleSort,b.parentElement.getAttribute('aria-sort')==='ascending');
   if(b.hasAttribute('data-simple-open'))openRecord(projects.find(r=>r.id===Number(d.simpleOpen)));
   if(b.hasAttribute('data-combo-option')){const root=b.closest('[data-starter-combo]');root.querySelector('input').dataset.justSelected='true';chooseCombo(root,d.comboOption)}

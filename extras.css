@@ -710,7 +710,7 @@
 @keyframes area-rise{from{opacity:0;transform:scaleY(.08)}to{opacity:.5;transform:scaleY(1)}}
 .area-point .chart-tooltip text{font-size:var(--type-caption)}
 @media(max-width:520px){.donut-legend{gap:4px}.donut-legend li{font-size:var(--type-caption)}.graph-svg{max-height:250px}}
-@media(prefers-reduced-motion:reduce){.chart-series[pathLength],.donut-segment,.graph-edges line,.area-fill{animation:none!important;stroke-dashoffset:0!important;stroke-dasharray:var(--donut-array,100 0)!important;opacity:1!important}}
+@media(prefers-reduced-motion:reduce){.chart-series[pathLength],.graph-edges line,.area-fill{animation:none!important;stroke-dashoffset:0!important;stroke-dasharray:var(--donut-array,100 0)!important;opacity:1!important}.donut-segment{animation:none!important;stroke-dasharray:var(--donut-array,100 0)!important}}
 /* Explain and decide. Text block, breakdown, checklist, media cards, and calculator. */
 .text-block{display:grid;gap:10px;max-width:72ch;font-size:var(--type-reading);line-height:1.6;color:var(--text)}
 .text-block p{margin:0;text-wrap:pretty}
@@ -783,3 +783,45 @@
 .calculator-input-scale{display:flex;justify-content:space-between;font-size:var(--type-caption);color:var(--muted)}
 .calculator-note{margin:0}
 @media(prefers-reduced-motion:reduce){.breakdown-segment{transition:none}}
+
+/* Chart colours for contract instances: three hues that keep their colour-vision separation and contrast in each theme, then
+   a neutral for the rest. Marks carry identity; labels and values keep the text colours and always name what they show. */
+.chart-figure{--chart-1:var(--blue-4);--chart-2:var(--orange-4);--chart-3:var(--pink-4);--chart-rest:var(--fg-3);--chart-1-soft:var(--blue-a2);--chart-2-soft:var(--orange-a2);--chart-3-soft:var(--pink-a2)}
+[data-theme="dark"] .chart-figure{--chart-1:var(--sky-4);--chart-2:var(--orange-3);--chart-1-soft:var(--sky-a2)}
+/* Donut chart: each segment is its share, starting where the ones before it end. */
+.donut-figure[data-syntari-contract] .donut-segment{--donut-array:var(--share) calc(100 - var(--share));stroke-dashoffset:calc(var(--start,0) * -1)}
+.donut-figure[data-syntari-contract] [data-syntari-index]{--series:var(--chart-1)}
+.donut-figure[data-syntari-contract] [data-syntari-index="1"]{--series:var(--chart-2)}
+.donut-figure[data-syntari-contract] [data-syntari-index="2"]{--series:var(--chart-3)}
+.donut-figure[data-syntari-contract] [data-syntari-index="3"]{--series:var(--chart-rest)}
+.donut-figure[data-syntari-contract] .donut-legend li .legend-swatch{--series:inherit;background:var(--series)}
+.donut-figure[data-syntari-contract] .donut-legend{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+/* Heatmap: a table whose cells are shaded by value, lightest to darkest in one hue. */
+.heatmap[data-matrix]{display:block;overflow-x:auto}
+.heat-table{width:100%;border-collapse:separate;border-spacing:3px;table-layout:fixed;font-size:var(--type-caption);line-height:1.2}
+.heat-table th{font-weight:400;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0}
+.heat-table thead td{width:72px;background:none}
+.heat-table thead th{text-align:center;padding-bottom:4px}
+.heat-table tbody th{text-align:left;padding-right:6px}
+.heat-table td{height:26px;padding:0 2px;border-radius:4px;background:var(--bg-3);color:var(--text);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.heat-table td[data-level="1"]{background:var(--blue-a1)}
+.heat-table td[data-level="2"]{background:var(--blue-a2)}
+.heat-table td[data-level="3"]{background:var(--blue-a3)}
+.heat-table td[data-level="4"]{background:var(--accent);color:var(--surface)}
+.heat-table td[data-level="none"]{background:none;box-shadow:inset 0 0 0 1px var(--border)}
+.heatmap[data-dense] thead th:nth-child(2n+3){color:transparent}
+/* Treemap: tiles placed by the layout; areas are values. A group keeps one colour; ungrouped tiles stay neutral. */
+.treemap[data-layout="tiles"]{display:block;position:relative;width:100%;min-width:0;aspect-ratio:2/1;min-height:180px}
+.treemap[data-layout="tiles"] .tree-tile,.treemap[data-layout="tiles"] .tree-tile:nth-child(3n){position:absolute;left:calc(var(--x) + 2px);top:calc(var(--y) + 2px);width:calc(var(--w) - 4px);height:calc(var(--h) - 4px);overflow:hidden;background:var(--bg-2)}
+.treemap[data-layout="tiles"] .tree-tile[data-tone="0"]{background:var(--chart-1-soft);box-shadow:inset 3px 0 0 var(--chart-1)}
+.treemap[data-layout="tiles"] .tree-tile[data-tone="1"]{background:var(--chart-2-soft);box-shadow:inset 3px 0 0 var(--chart-2)}
+.treemap[data-layout="tiles"] .tree-tile[data-tone="2"]{background:var(--chart-3-soft);box-shadow:inset 3px 0 0 var(--chart-3)}
+.treemap[data-layout="tiles"] .tree-tile{container-type:size}
+/* A short tile keeps its label; a tiny one keeps both words for screen readers and its tooltip only. */
+@container (max-height:38px){.tree-tile>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.tree-tile>strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+@container (max-height:15px) or (max-width:40px){.tree-tile>*{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
+.tree-legend{margin-top:12px}
+.tree-legend li b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.tree-legend .legend-swatch[data-tone="0"]{background:var(--chart-1)}
+.tree-legend .legend-swatch[data-tone="1"]{background:var(--chart-2)}
+.tree-legend .legend-swatch[data-tone="2"]{background:var(--chart-3)}
