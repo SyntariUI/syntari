@@ -32,7 +32,7 @@
   },
   "source": "components/table/",
   "name": "Table",
-  "category": "Table & list",
+  "category": "Tables",
   "purpose": "Compare records across the same few columns.",
   "description": "Compact rows with subtle filled backgrounds. Injected cells render as text.",
   "intents": [

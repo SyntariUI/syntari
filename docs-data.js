@@ -1,12 +1,20 @@
 /** Components that need the full documentation stage rather than the narrow preview column. */
 export const wideStage = /table|chart-|heatmap|treemap|network-graph|gantt|kanban|stat-row|process-ledger|transport|live-readout|feature-grid|pricing|page-footer|cta-band|chat-workspace|app-shell|masonry-grid|agent-questions/;
 export const groups = {
- 'Action':['cursor','Give people a clear next step.'], 'Form controls':['sliders','Collect a little information, thoughtfully.'],
- 'Feedback & status':['bell','Make progress and outcomes easy to understand.'], 'Navigation':['layout','Keep people oriented, wherever they go.'],
- 'Data display':['chart','Give numbers a clear, quiet shape.'], 'Content':['type','Put the useful details in the right place.'],
- 'Container':['layers','Bring related information together.'], 'Overlay':['copy','A little more context, close by.'],
- 'Table & list':['list','Make information easy to scan and act on.'], 'Chat':['chat','A place for conversation.'],
- 'Layout':['layout','Connect small components into whole products.'], 'Agents':['bot','Keep automated work understandable and in your control.']
+ 'Buttons':['cursor','Give people a clear next step.'],
+ 'Forms':['sliders','Collect a little information, thoughtfully.'],
+ 'Menus':['list','Put more actions one press away.'],
+ 'Navigation':['layout','Keep people oriented, wherever they go.'],
+ 'Overlays':['copy','A little more context, close by.'],
+ 'Feedback':['bell','Make progress and outcomes easy to understand.'],
+ 'Cards':['layers','Bring related information together.'],
+ 'Tables':['list','Make records easy to scan, sort, and compare.'],
+ 'Lists':['list','Make sequences easy to follow and act on.'],
+ 'Charts':['chart','Give numbers a clear, quiet shape.'],
+ 'Metrics':['chart','Let the numbers that matter stand on their own.'],
+ 'Content':['type','Put the useful details in the right place.'],
+ 'Media':['layers','Images and motion, used with care.'],
+ 'Agents':['bot','Keep automated work understandable and in your control.']
 };
 export const guideLinks=[['getting-started','Getting started','arrow'],['installation','Installation','terminal'],['theming','Theming','palette'],['motion','Motion & accessibility','chart'],['generative-ui','Generative UI','bot'],['ai-patterns','AI behaviour patterns','chat'],['composition','Composition','layers'],['api','Runtime API','code'],['migration','What’s new in 0.3','circlecheck']];
 const state = (id,label,description,code='')=>({id,label,description,code});

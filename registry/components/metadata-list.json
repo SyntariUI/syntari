@@ -23,7 +23,7 @@
   },
   "source": "components/metadata-list/",
   "name": "Metadata list",
-  "category": "Content",
+  "category": "Lists",
   "purpose": "Show the label and value pairs that describe one record.",
   "description": "Aligned labels and values keep record detail scannable next to the content it belongs to.",
   "intents": [

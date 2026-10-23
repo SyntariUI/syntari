@@ -17,7 +17,7 @@
   },
   "source": "components/stat-row/",
   "name": "Stat row",
-  "category": "Data display",
+  "category": "Metrics",
   "purpose": "Put the few measures that matter side by side.",
   "description": "Each measure carries its label, value, change, and the note that qualifies it.",
   "intents": [

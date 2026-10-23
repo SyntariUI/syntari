@@ -22,7 +22,7 @@
   },
   "source": "components/area-chart/",
   "name": "Area chart",
-  "category": "Data display",
+  "category": "Charts",
   "purpose": "Show one measure over time, with its scale stated.",
   "description": "A line with its area filled, a labelled axis, and gridlines. The series arrives as numbers.",
   "intents": [

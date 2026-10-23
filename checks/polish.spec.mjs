@@ -83,8 +83,8 @@ test('every default component fits its System preview in both themes at three wi
     /* Mirror System's own stage sizing so each component is measured in the frame people see. */
     const host=document.querySelector('[data-component-mount]');host.replaceChildren();
     for(const c of catalog){host.classList.remove('is-wide','is-compact');
-     if(/table|list|data|navigation/i.test(c.category)||/table|chart|navigation|calendar|chat-workspace/.test(c.slug))host.classList.add('is-wide');
-     else if(/action|form|feedback/i.test(c.category))host.classList.add('is-compact');
+     if(/tables|lists|charts|metrics|navigation/i.test(c.category)||/table|chart|navigation|calendar|chat-workspace/.test(c.slug))host.classList.add('is-wide');
+     else if(/buttons|menus|forms|feedback/i.test(c.category))host.classList.add('is-compact');
      const instance=await mount(c.slug,host);const root=instance.element;
      if(root.scrollWidth>root.clientWidth+2)fail.push({slug:c.slug,width:root.clientWidth,scroll:root.scrollWidth});
      instance.destroy();

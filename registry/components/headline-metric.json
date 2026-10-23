@@ -18,7 +18,7 @@
   },
   "source": "components/headline-metric/",
   "name": "Headline metric",
-  "category": "Data display",
+  "category": "Metrics",
   "purpose": "State the one number a screen is about.",
   "description": "A label, an oversized value, and the total it is measured against.",
   "intents": [

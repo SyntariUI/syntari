@@ -3,7 +3,7 @@
   "id": "chat-composer",
   "name": "Chat composer",
   "version": "0.3.0",
-  "category": "Chat",
+  "category": "Agents",
   "status": "authored",
   "purpose": "Show a short conversation and let the person send the next message.",
   "description": "A message list with a one-line composer. Sending reports the message to the host, which appends it.",

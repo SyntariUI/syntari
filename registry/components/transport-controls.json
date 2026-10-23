@@ -13,7 +13,7 @@
   },
   "source": "components/transport-controls/",
   "name": "Transport controls",
-  "category": "Action",
+  "category": "Buttons",
   "purpose": "Drive something that runs: play, pause, step, and a speed.",
   "description": "Controls for a running process, with the current step and frame rate stated in text.",
   "intents": [

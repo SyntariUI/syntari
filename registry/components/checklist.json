@@ -22,7 +22,7 @@
   },
   "source": "components/checklist/",
   "name": "Checklist",
-  "category": "Content",
+  "category": "Lists",
   "purpose": "Give a person steps to tick off, with progress they can trust.",
   "description": "Steps a person ticks off. Progress is counted from the boxes themselves, so it can never disagree with them.",
   "intents": [

@@ -3,7 +3,7 @@
   "id": "line-chart",
   "name": "Line chart",
   "version": "1.0.0",
-  "category": "Data display",
+  "category": "Charts",
   "status": "authored",
   "purpose": "Show how one measure moves over time, optionally against a benchmark on the same scale.",
   "description": "One or two lines on one labelled scale, with a zero line when values go negative and exact values on focus.",

@@ -20,7 +20,7 @@
   },
   "source": "components/comparison-table/",
   "name": "Comparison table",
-  "category": "Table & list",
+  "category": "Tables",
   "purpose": "Measure the same thing across options and name the advantage.",
   "description": "Rows of metrics with both values and a column that says who wins, in words.",
   "intents": [

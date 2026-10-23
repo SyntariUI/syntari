@@ -38,7 +38,7 @@
   },
   "source": "components/calculator/",
   "name": "Calculator",
-  "category": "Data display",
+  "category": "Metrics",
   "purpose": "Let a person explore how a result depends on a few inputs.",
   "description": "Sliders a person moves and results computed from them by declared formulas, with the parts of the main result shown as shares.",
   "intents": [

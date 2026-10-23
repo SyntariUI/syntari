@@ -21,7 +21,7 @@
   },
   "source": "components/live-readout/",
   "name": "Live readout",
-  "category": "Feedback & status",
+  "category": "Metrics",
   "purpose": "Show values that change while someone watches.",
   "description": "A named run with its state and the measures it is producing right now.",
   "intents": [

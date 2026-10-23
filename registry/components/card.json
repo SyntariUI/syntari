@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "status": "authored",
   "name": "Card",
-  "category": "Container",
+  "category": "Cards",
   "purpose": "Hold one record or one idea in a surface that can stand on its own.",
   "description": "A small surface with a status badge, a title, supporting copy, and one action.",
   "intents": [
