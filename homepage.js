@@ -14,28 +14,20 @@ async function loadGallery(){
   const command=document.querySelector('[data-home-command]');command.textContent='npx syntari-ui add app-shell';
   const copy=document.querySelector('[data-home-copy]');copy.disabled=false;copy.addEventListener('click',()=>copyText(command.textContent,document.querySelector('[data-home-copy-status]')));
   const catalog=await getComponents();const grid=document.querySelector('[data-home-gallery]');grid.replaceChildren();
-  // An asymmetric bento grid of actual, interactive Syntari components.
+  // Five curated live scenes: open, generous stages rather than repeated cards.
   const featured=[
-    {slug:'chart-bars',size:'hero',eyebrow:'Data visualisation',caption:'Numbers that tell a story'},
-    {slug:'expandable-dock',size:'side',eyebrow:'Navigation',caption:'Interaction at every level'},
-    {slug:'tool-approval',size:'side',eyebrow:'Agent actions',caption:'Confidence before action'},
-    {slug:'session-card',size:'third',eyebrow:'Surfaces',caption:'Small details, considered'},
-    {slug:'selectable-cards',size:'third',eyebrow:'Selection',caption:'Every choice feels clear'},
-    {slug:'metric-and-sparkline',size:'third',eyebrow:'Analytics',caption:'Clarity at a glance'},
-    {slug:'otp-input',size:'small',eyebrow:'Inputs',caption:'Purposeful feedback'},
-    {slug:'agent-activity',size:'medium',eyebrow:'Agent patterns',caption:'Every step visible'},
-    {slug:'command-palette',size:'large',eyebrow:'Productivity',caption:'Find it. Do it.'}
+    {slug:'chart-bars',size:'hero',eyebrow:'Data visualisation',caption:'Measure what matters'},
+    {slug:'session-card',size:'side',eyebrow:'Activity',caption:'A more considered surface'},
+    {slug:'expandable-dock',size:'side',eyebrow:'Navigation',caption:'Explore the interaction'},
+    {slug:'tool-approval',size:'wide',eyebrow:'Agent decisions',caption:'Control before action'},
+    {slug:'command-palette',size:'wide',eyebrow:'Productivity',caption:'Find anything, quickly'}
   ];
   const observer=new IntersectionObserver(entries=>{
     for(const entry of entries){
       if(!entry.isIntersecting)continue;
       observer.unobserve(entry.target);
       const slug=entry.target.dataset.homePreview;
-      mount(slug,entry.target,{configure:slug==='otp-input'?root=>{
-        root.querySelector('.agent-heading')?.remove();
-        const note=root.querySelector('p'),form=root.querySelector('[data-otp-form]'),group=form?.querySelector('.otp-group');
-        if(note&&form&&group){note.textContent='Use 123456';note.classList.add('home-otp-note');form.dataset.homeCompact='true';form.insertBefore(note,group);}
-      }:slug==='tool-approval'?root=>{
+      mount(slug,entry.target,{configure:slug==='tool-approval'?root=>{
         const approval=root.querySelector('[data-agent-kind="approval"]');
         approval?.querySelector('p.hint')?.remove();
         if(approval)approval.dataset.showResetPreview='false';
@@ -47,7 +39,7 @@ async function loadGallery(){
     if(!component)continue;
     const article=document.createElement('article');article.className='home-card home-card--'+item.size;
     const stage=document.createElement('div');
-    stage.className='home-card-stage';stage.dataset.homePreview=item.slug;
+    stage.className='home-card-stage';stage.dataset.homePreview=item.slug;stage.setAttribute('data-ui','');
     stage.setAttribute('role','group');stage.setAttribute('aria-label',component.name+' live preview');
     const info=document.createElement('div');info.className='home-card-info';
     const caption=document.createElement('div');caption.className='home-card-caption';
