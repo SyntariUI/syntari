@@ -349,7 +349,7 @@
 .headline-value{font-size:clamp(28px,4vw,40px);font-weight:500;letter-spacing:-1.4px;font-variant-numeric:tabular-nums;line-height:1.1}
 .headline-total{color:var(--muted);font-size:.55em;letter-spacing:0}
 .filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.filter-bar .control-trigger{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:transparent;font-size:var(--type-caption);color:var(--text)}
+.filter-bar .control-trigger{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-control);background:transparent;font-size:var(--type-caption);color:var(--text)}
 .filter-bar .control-trigger .icon{width:14px;height:14px;color:var(--muted)}
 .rank-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;width:100%}
 .rank-list li{display:grid;grid-template-columns:96px minmax(0,1fr) 48px;align-items:center;gap:12px;font-size:var(--type-caption)}
@@ -701,8 +701,8 @@
 .graph-node{cursor:grab;outline:none;touch-action:none}
 .graph-node circle{transition:fill var(--motion-fast),stroke var(--motion-fast),r var(--motion-fast)}
 .graph-node text{font-size:var(--type-label);font-weight:500;dominant-baseline:middle;pointer-events:none}
-.graph-node:hover circle,.graph-node:focus circle,.graph-node.is-dragging circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5}
-.graph-node:focus-visible circle{filter:drop-shadow(0 0 5px var(--accent))}
+.graph-node:hover circle,.graph-node:focus circle,.graph-node.is-dragging circle{fill:var(--focus-halo);stroke:var(--focus-ring);stroke-width:2.5}
+.graph-node:focus-visible circle{filter:drop-shadow(0 0 5px var(--focus-ring))}
 .graph-node.is-dragging{cursor:grabbing}
 .graph-figure .chart-legend{justify-content:center}
 .area-line{stroke-width:2.5}

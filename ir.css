@@ -8,7 +8,7 @@
 .ir-screen-title{grid-column:1/-1;font-size:var(--type-title-md);font-weight:500;letter-spacing:-.4px}
 /* Demonstration data is named on the screen itself, under the title, so illustrative figures never pass for real ones. */
 .ir-data-note{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:-12px 0 0;font-size:var(--type-caption);line-height:1.6;color:var(--muted)}
-.ir-data-badge{padding:0 8px;border:1px dashed var(--amber-a3);border-radius:999px;background:var(--amber-a1);color:var(--warning-text);font-weight:500;white-space:nowrap}
+.ir-data-badge{padding:0 8px;border:1px dashed var(--amber-a3);border-radius:var(--radius-badge);background:var(--amber-a1);color:var(--warning-text);font-weight:500;white-space:nowrap}
 /**
  * A mounted component keeps the flow it was authored for: the shared runtime stacks
  * its parts in a flex column with a gap, and some parts compensate for that gap with
@@ -76,7 +76,7 @@
 /* An unverified block says so where a person reads it, not only in diagnostics. */
 .ir-sandbox{display:grid;gap:6px;margin:0;min-width:0}
 .ir-sandbox figcaption{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;font-size:var(--type-caption);color:var(--muted)}
-.ir-sandbox-badge{padding:1px 8px;border:1px dashed currentColor;border-radius:999px;color:var(--warning-text)}
+.ir-sandbox-badge{padding:1px 8px;border:1px dashed currentColor;border-radius:var(--radius-badge);color:var(--warning-text)}
 .ir-sandbox iframe{display:block;width:100%;border:1px dashed var(--bg-a4);border-radius:12px;background:var(--surface)}
 
 /* Renderer page: one framed stage, the catalogue it draws from, and the words that explain it. */
@@ -91,8 +91,8 @@
 .ir-hero .badge{justify-self:start}
 .ir-hero h1{font-size:clamp(34px,5vw,60px);font-weight:500;letter-spacing:-2px;line-height:1.04}
 .ir-hero p{font-size:clamp(14px,1.5vw,17px);line-height:1.65;color:var(--muted);max-width:62ch}
-.ir-switch{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--border);width:max-content}
-.ir-switch button{padding:9px 22px;border-radius:999px;font-size:var(--type-label);color:var(--muted);transition:background var(--motion-fast),color var(--motion-fast)}
+.ir-switch{display:inline-flex;gap:4px;padding:4px;border-radius:var(--radius-control);background:var(--surface);border:1px solid var(--border);width:max-content}
+.ir-switch button{padding:9px 22px;border-radius:var(--radius-control);font-size:var(--type-label);color:var(--muted);transition:background var(--motion-fast),color var(--motion-fast)}
 .ir-switch button[aria-pressed=true]{background:var(--text);color:var(--surface)}
 .ir-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;margin-top:8px}
 .ir-stats div{display:grid;gap:4px}

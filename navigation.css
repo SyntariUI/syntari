@@ -37,7 +37,7 @@
 .syntari-nav-label { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .syntari-nav-count { margin-left:auto; min-width:20px; padding:0 5px; border-radius:5px; background:var(--bg-a1); color:var(--muted); font-size:var(--type-caption); text-align:center; font-variant-numeric:tabular-nums; }
 .syntari-nav-item kbd { margin-left:auto; font:var(--type-caption)/var(--type-reading) var(--font-sans); border:1px solid var(--border); border-radius:4px; padding:0 4px; white-space:nowrap; }
-.syntari-nav-create { display:flex; justify-content:center; align-items:center; gap:8px; min-height:36px; width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:999px; background:var(--surface); box-shadow:var(--shadow-soft); color:var(--text); font:var(--type-caption)/var(--type-title-sm) var(--font-sans); }
+.syntari-nav-create { display:flex; justify-content:center; align-items:center; gap:8px; min-height:36px; width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-control); background:var(--surface); box-shadow:var(--shadow-soft); color:var(--text); font:var(--type-caption)/var(--type-title-sm) var(--font-sans); }
 .syntari-nav-create .icon { width:16px; height:16px; flex-shrink:0; }
 .syntari-nav-create:hover { background:var(--nav-hover); box-shadow:var(--shadow-control-hover); }
 .syntari-nav-groups { display:flex; flex:1; flex-direction:column; gap:28px; }
