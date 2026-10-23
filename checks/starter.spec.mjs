@@ -79,6 +79,8 @@ test('starter screens save, create, onboard and navigate by command', async ({ p
   await expect(page.locator('.auth-card')).toContainText('Test Studio');
 
   await page.goto(`${origin}/preview.html?screen=projects`);
+  /* The shortcut is listened for once the workspace has initialized, which sets the title: on a slow runner the load event comes first. */
+  await expect(page).toHaveTitle('Projects — Syntari workspace');
   await page.keyboard.press('Control+k');
   await page.getByRole('combobox', { name: 'Search commands' }).fill('Account settings');
   await page.keyboard.press('Enter');
