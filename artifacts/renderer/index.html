@@ -583,7 +583,7 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
 .app.sys-shell .sys-stage>.stage .frame{padding:72px clamp(16px,5cqi,44px) 96px}
 .app.sys-shell .sys-stage>.stage[data-mode=device] .frame{margin-top:72px;margin-bottom:96px}
 .app.sys-shell .sys-stage>.alert{position:absolute;z-index:31;top:62px;left:16px;right:16px;border:1px solid var(--sys-line);border-radius:12px;background:var(--surface)}
-.app.sys-shell .sys-stage>.status{position:absolute;z-index:12;top:14px;left:14px;max-width:calc(100% - 96px);height:40px;padding:0 12px;border:1px solid var(--sys-line);border-radius:12px;background:color-mix(in srgb,var(--canvas) 76%,transparent);backdrop-filter:blur(18px) saturate(130%)}
+.app.sys-shell .sys-stage>.status{position:absolute;z-index:12;top:14px;left:14px;max-width:calc(100% - 200px);height:40px;padding:0 12px;border:1px solid var(--sys-line);border-radius:12px;background:color-mix(in srgb,var(--canvas) 76%,transparent);backdrop-filter:blur(18px) saturate(130%)}
 .app.sys-shell .sys-preview-controls .seg{display:flex;gap:3px;padding:4px;border-radius:10px;background:var(--canvas);border:1px solid var(--sys-line)}
 .app.sys-shell .sys-preview-controls .seg button{min-height:30px;border:0;border-radius:7px;background:transparent;padding:5px 9px;color:var(--muted);font-size:var(--type-caption)}
 .app.sys-shell .sys-preview-controls .seg button[aria-pressed=true]{background:var(--bg-a2);color:var(--text)}
@@ -4940,7 +4940,9 @@ async function mountSystemShell() {
   main.innerHTML = `<h1 class="sr-only">Syntari Renderer</h1>
     <section class="sys-workspace" data-workspace data-panel="none">
       <div class="sys-toolbar" aria-label="Renderer tools">
+        <button class="sys-install" type="button" data-rebuild disabled><span>Rebuild</span></button>
         <button class="sys-icon-button" type="button" data-panel-open="inspect" data-shell-tab="ir" aria-controls="inspector" aria-label="View Screen IR" aria-pressed="false">${icon('<path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/>')}</button>
+        <button class="sys-icon-button" type="button" data-workspace-focus aria-label="Focus the preview" aria-pressed="false">${icon('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>')}</button>
       </div>
       <div class="sys-stage" id="renderer-stage" data-workspace-stage tabindex="-1">
         <div class="sys-ambient" aria-hidden="true"></div>
@@ -4983,9 +4985,11 @@ async function mountSystemShell() {
   const search = rail.querySelector('[data-template-search]');
   search.addEventListener('input', () => { query = search.value; renderNav(); });
   window.addEventListener('keydown', event => { if (event.key === '/' && !event.target.closest('input,textarea,select,[contenteditable]') && !matchMedia('(max-width: 760px)').matches) { event.preventDefault(); search.focus(); } });
+  const rebuild = main.querySelector('[data-rebuild]');
+  rebuild.addEventListener('click', () => { if (current && !state.busy) chooseExample(current); });
   renderNav();
   return {
-    mark(id) { current = id; nav.querySelectorAll('[data-template-id]').forEach(button => button.setAttribute('aria-current', String(button.dataset.templateId === id))); },
+    mark(id) { current = id; rebuild.disabled = false; nav.querySelectorAll('[data-template-id]').forEach(button => button.setAttribute('aria-current', String(button.dataset.templateId === id))); },
     open() { if (workspaceEl.dataset.panel !== 'inspect') api.openPanel('inspect'); },
     close() { if (workspaceEl.dataset.panel !== 'none') api.closePanel(); }
   };
