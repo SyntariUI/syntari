@@ -589,6 +589,12 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
 .app.sys-shell .sys-preview-controls .seg button[aria-pressed=true]{background:var(--bg-a2);color:var(--text)}
 .app.sys-shell .sys-preview-controls [data-run]{display:none;min-height:38px;padding:0 14px;border:1px solid var(--sys-line);border-radius:10px;background:var(--canvas);color:var(--text);font-size:var(--type-caption)}
 .app.sys-shell .sys-stage:has(>.stage[data-busy]) [data-run]{display:inline-flex;align-items:center}
+/* With Claude on, the composer sits at the foot of the stage and the preview widths just above it; the screen scrolls clear of both. */
+.app.sys-shell[data-ai-ready] .sys-preview-controls{bottom:74px}
+.app.sys-shell[data-ai-ready] .sys-stage>.stage .frame{padding-bottom:168px}
+.app.sys-shell .sys-toolbar [data-undo][hidden]{display:none}
+.app.sys-shell[data-templates] .sys-stage>.composer{display:none}
+.app.sys-shell[data-ai-ready] .sys-search kbd{display:none}
 .app.sys-shell .sys-inspector.inspector{position:absolute;z-index:20;top:0;right:0;bottom:0;width:var(--sys-drawer);transform:translateX(100%);visibility:visible;box-shadow:none;border-left:1px solid var(--sys-line);background:color-mix(in srgb,var(--canvas) 98%,var(--surface));transition:transform .42s var(--sys-ease)}
 .app.sys-shell .sys-workspace:not([data-panel=none]) .sys-inspector.inspector{transform:none}
 .app.sys-shell .insp-close{display:grid}
@@ -4701,8 +4707,9 @@ function setBusy(busy, mode) {
 /* What the empty canvas says: who is working, or what to do next. The public page offers its templates. */
 function renderEmpty() {
   const busy = state.busy, others = workspace.screens.size, building = state.building;
-  $('[data-empty-title]').textContent = busy ? (building ? `Jev is planning “${building}”` : 'Claude is thinking') : PUBLIC ? 'Choose a template' : others ? 'New screen' : 'No screen generated';
+  $('[data-empty-title]').textContent = busy ? (building ? `Jev is planning “${building}”` : 'Claude is thinking') : PUBLIC_MODEL && state.sample ? 'Choose a template, or describe a screen' : PUBLIC ? 'Choose a template' : others ? 'New screen' : 'No screen generated';
   $('[data-empty-text]').textContent = busy ? (building ? 'Each part appears here as soon as it is complete and validated.' : 'Nothing arrives until Claude starts writing. Then each part appears here as soon as it is complete and validated.')
+    : PUBLIC_MODEL && state.sample ? 'Jev builds a template in front of you, part by part. Describe your own in the composer below and Jev and Claude build it together. Each part is validated as it arrives.'
     : PUBLIC ? 'Jev builds it in front of you, part by part. Each part is validated as it arrives, exactly as an answer from Claude would be.'
     : others ? `Describe it in the composer below. ${others === 1 ? 'Your other screen stays' : `Your ${others} other screens stay`} in this session; switch from the title at the top.` : 'Describe a task or open an example to preview a validated interface.';
   $('[data-empty-actions]').hidden = busy || PUBLIC;
@@ -4959,6 +4966,12 @@ async function mountSystemShell() {
   /* The Renderer's own parts move into the shell; their listeners move with them. */
   const sysStage = main.querySelector('.sys-stage'), controls = main.querySelector('[data-shell-controls]'), workspaceEl = main.querySelector('[data-workspace]');
   sysStage.insertBefore(stage, controls);
+  /* With Claude on, the composer docks at the foot of the stage, as on the artifact, and Undo joins the toolbar. Without
+     it the composer stays hidden: the templates-only page offers nothing to type. */
+  sysStage.insertBefore($('[data-composer]'), controls);
+  const undo = $('[data-undo]');
+  undo.classList.replace('icon-btn', 'sys-icon-button');
+  main.querySelector('.sys-toolbar').prepend(undo);
   sysStage.prepend($('[data-alert]'));
   sysStage.append($('[data-status]'));
   controls.append($('[data-viewports]'), $('[data-run]'));
@@ -4984,7 +4997,8 @@ async function mountSystemShell() {
   }
   const search = rail.querySelector('[data-template-search]');
   search.addEventListener('input', () => { query = search.value; renderNav(); });
-  window.addEventListener('keydown', event => { if (event.key === '/' && !event.target.closest('input,textarea,select,[contenteditable]') && !matchMedia('(max-width: 760px)').matches) { event.preventDefault(); search.focus(); } });
+  /* "/" finds a template, unless Claude is on: then it opens the composer, as on the artifact. */
+  window.addEventListener('keydown', event => { if (event.key === '/' && !state.sample && !event.target.closest('input,textarea,select,[contenteditable]') && !matchMedia('(max-width: 760px)').matches) { event.preventDefault(); search.focus(); } });
   const rebuild = main.querySelector('[data-rebuild]');
   rebuild.addEventListener('click', () => { if (current && !state.busy) chooseExample(current); });
   renderNav();
