@@ -114,8 +114,9 @@ kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 
 .chip{height:26px;padding:0 10px;border:1px solid var(--w-line);border-radius:8px;background:transparent;color:var(--w-muted);font-size:12px;transition:color var(--m-2),border-color var(--m-2),background var(--m-2)}
 .chip:hover{color:var(--w-text);border-color:var(--w-line-strong);background:var(--w-hover)}
 .composer-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 14px;border-top:1px solid var(--w-line)}
-.field{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--w-muted)}
-.field select{height:28px;border:1px solid var(--w-line);border-radius:7px;background:var(--w-field);padding:0 6px;font-size:12px}
+/* The composer's own labelled select. Scoped, so it never restyles a form field painted on the canvas. */
+.composer .field{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--w-muted)}
+.composer .field select{height:28px;border:1px solid var(--w-line);border-radius:7px;background:var(--w-field);padding:0 6px;font-size:12px}
 .toggle{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--w-text);cursor:pointer}
 .toggle input{width:14px;height:14px;margin:0;accent-color:var(--w-accent)}
 .toggle small{color:var(--w-faint);font-size:11.5px}

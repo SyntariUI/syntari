@@ -28,6 +28,7 @@ October 21, 2026. Change a screen without regenerating it.
   - Outside a form, two radio groups with the same name no longer act as one.
   - Range slider writes its interval in its own unit and fills each track from its own bounds; it used to assume dollars from 0 to 1,000. Text area counts against its own limit, not always 200.
 - In the Renderer, a screen Claude wrote no longer slides sideways behind the closed inspector: the browser was keeping the composer in view by scrolling a workspace that should never scroll. The closed inspector is hidden, so Tab never walks into it.
+- In the Renderer, form fields keep their labels, hints, and steppers at the start: the composer's own field style was unscoped and centred them.
 - Shares are written with one decimal in Breakdown and Donut chart: 4 of 47 reads 8.5%, not 8.5106%.
 - Ten more components render from Screen IR, so 48 do: Donut chart, Heatmap, Treemap, Progress bar, Progress ring, Badge, Avatar, Error state, Code block, and Agent todo list. The registry's own patterns already named Agent todo list for delegation and Error state for recovery, and a heatmap or a treemap used to be answered as missing although Syntari had both.
   - Donut chart takes two to four shares of one total, which must add up to 100. Its three colours keep their separation under colour-vision deficiencies and their contrast in both themes; a fourth part is drawn neutral, as the rest.
