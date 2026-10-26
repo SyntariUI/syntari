@@ -198,6 +198,8 @@ test('a screen Claude writes stays in place beside the closed inspector, and its
   const form = p.locator('.canvas form.ir-form');
   await expect(form).toHaveCount(1);
   await expect(form.locator('[data-ir-id=email] input[name=workEmail]')).toBeVisible();
+  /* A field reads as the design system draws it: its label above and at the start, never restyled by the Renderer's own chrome. */
+  expect(await form.locator('[data-ir-id=email] .field').evaluate(field => [getComputedStyle(field).flexDirection, getComputedStyle(field).alignItems])).toEqual(['column', 'normal']);
   await form.locator('[data-ir-id=role] input[value=editor]').check();
   await form.getByRole('button', { name: 'Send invite' }).click();
   await p.locator('[data-shell-tab=ir]').click();
