@@ -4,9 +4,10 @@
  * key never leaves the server.
  */
 (() => {
-  /* This is the public Renderer: its examples are templates, built in front of the person. For now it offers templates only;
-     set model to true to let it reach Claude through the site's /api/claude, which then needs the ANTHROPIC_API_KEY secret. */
-  window.syntariRenderer = { ...(window.syntariRenderer ?? {}), public: true, model: false };
+  /* This is the public Renderer: its templates are built in front of the person by Jev, and the composer reaches Claude
+     through the site's /api/claude, which holds the CLAUDE_API_KEY secret and the per-minute ceilings. Set model to false
+     to offer templates only. */
+  window.syntariRenderer = { ...(window.syntariRenderer ?? {}), public: true, model: true };
   /* The theme the person chose on System holds here too: both pages wear the same shell. */
   try { document.documentElement.dataset.theme = localStorage.getItem('syntari-theme') || 'dark'; } catch {}
   const fail = (code, message) => Object.assign(new Error(message), { code });

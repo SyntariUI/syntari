@@ -583,12 +583,18 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
 .app.sys-shell .sys-stage>.stage .frame{padding:72px clamp(16px,5cqi,44px) 96px}
 .app.sys-shell .sys-stage>.stage[data-mode=device] .frame{margin-top:72px;margin-bottom:96px}
 .app.sys-shell .sys-stage>.alert{position:absolute;z-index:31;top:62px;left:16px;right:16px;border:1px solid var(--sys-line);border-radius:12px;background:var(--surface)}
-.app.sys-shell .sys-stage>.status{position:absolute;z-index:12;top:14px;left:14px;max-width:calc(100% - 96px);height:40px;padding:0 12px;border:1px solid var(--sys-line);border-radius:12px;background:color-mix(in srgb,var(--canvas) 76%,transparent);backdrop-filter:blur(18px) saturate(130%)}
+.app.sys-shell .sys-stage>.status{position:absolute;z-index:12;top:14px;left:14px;max-width:calc(100% - 200px);height:40px;padding:0 12px;border:1px solid var(--sys-line);border-radius:12px;background:color-mix(in srgb,var(--canvas) 76%,transparent);backdrop-filter:blur(18px) saturate(130%)}
 .app.sys-shell .sys-preview-controls .seg{display:flex;gap:3px;padding:4px;border-radius:10px;background:var(--canvas);border:1px solid var(--sys-line)}
 .app.sys-shell .sys-preview-controls .seg button{min-height:30px;border:0;border-radius:7px;background:transparent;padding:5px 9px;color:var(--muted);font-size:var(--type-caption)}
 .app.sys-shell .sys-preview-controls .seg button[aria-pressed=true]{background:var(--bg-a2);color:var(--text)}
 .app.sys-shell .sys-preview-controls [data-run]{display:none;min-height:38px;padding:0 14px;border:1px solid var(--sys-line);border-radius:10px;background:var(--canvas);color:var(--text);font-size:var(--type-caption)}
 .app.sys-shell .sys-stage:has(>.stage[data-busy]) [data-run]{display:inline-flex;align-items:center}
+/* With Claude on, the composer sits at the foot of the stage and the preview widths just above it; the screen scrolls clear of both. */
+.app.sys-shell[data-ai-ready] .sys-preview-controls{bottom:74px}
+.app.sys-shell[data-ai-ready] .sys-stage>.stage .frame{padding-bottom:168px}
+.app.sys-shell .sys-toolbar [data-undo][hidden]{display:none}
+.app.sys-shell[data-templates] .sys-stage>.composer{display:none}
+.app.sys-shell[data-ai-ready] .sys-search kbd{display:none}
 .app.sys-shell .sys-inspector.inspector{position:absolute;z-index:20;top:0;right:0;bottom:0;width:var(--sys-drawer);transform:translateX(100%);visibility:visible;box-shadow:none;border-left:1px solid var(--sys-line);background:color-mix(in srgb,var(--canvas) 98%,var(--surface));transition:transform .42s var(--sys-ease)}
 .app.sys-shell .sys-workspace:not([data-panel=none]) .sys-inspector.inspector{transform:none}
 .app.sys-shell .insp-close{display:grid}
@@ -4701,8 +4707,9 @@ function setBusy(busy, mode) {
 /* What the empty canvas says: who is working, or what to do next. The public page offers its templates. */
 function renderEmpty() {
   const busy = state.busy, others = workspace.screens.size, building = state.building;
-  $('[data-empty-title]').textContent = busy ? (building ? `Jev is planning “${building}”` : 'Claude is thinking') : PUBLIC ? 'Choose a template' : others ? 'New screen' : 'No screen generated';
+  $('[data-empty-title]').textContent = busy ? (building ? `Jev is planning “${building}”` : 'Claude is thinking') : PUBLIC_MODEL && state.sample ? 'Choose a template, or describe a screen' : PUBLIC ? 'Choose a template' : others ? 'New screen' : 'No screen generated';
   $('[data-empty-text]').textContent = busy ? (building ? 'Each part appears here as soon as it is complete and validated.' : 'Nothing arrives until Claude starts writing. Then each part appears here as soon as it is complete and validated.')
+    : PUBLIC_MODEL && state.sample ? 'Jev builds a template in front of you, part by part. Describe your own in the composer below and Jev and Claude build it together. Each part is validated as it arrives.'
     : PUBLIC ? 'Jev builds it in front of you, part by part. Each part is validated as it arrives, exactly as an answer from Claude would be.'
     : others ? `Describe it in the composer below. ${others === 1 ? 'Your other screen stays' : `Your ${others} other screens stay`} in this session; switch from the title at the top.` : 'Describe a task or open an example to preview a validated interface.';
   $('[data-empty-actions]').hidden = busy || PUBLIC;
@@ -4940,7 +4947,9 @@ async function mountSystemShell() {
   main.innerHTML = `<h1 class="sr-only">Syntari Renderer</h1>
     <section class="sys-workspace" data-workspace data-panel="none">
       <div class="sys-toolbar" aria-label="Renderer tools">
+        <button class="sys-install" type="button" data-rebuild disabled><span>Rebuild</span></button>
         <button class="sys-icon-button" type="button" data-panel-open="inspect" data-shell-tab="ir" aria-controls="inspector" aria-label="View Screen IR" aria-pressed="false">${icon('<path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/>')}</button>
+        <button class="sys-icon-button" type="button" data-workspace-focus aria-label="Focus the preview" aria-pressed="false">${icon('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>')}</button>
       </div>
       <div class="sys-stage" id="renderer-stage" data-workspace-stage tabindex="-1">
         <div class="sys-ambient" aria-hidden="true"></div>
@@ -4957,6 +4966,12 @@ async function mountSystemShell() {
   /* The Renderer's own parts move into the shell; their listeners move with them. */
   const sysStage = main.querySelector('.sys-stage'), controls = main.querySelector('[data-shell-controls]'), workspaceEl = main.querySelector('[data-workspace]');
   sysStage.insertBefore(stage, controls);
+  /* With Claude on, the composer docks at the foot of the stage, as on the artifact, and Undo joins the toolbar. Without
+     it the composer stays hidden: the templates-only page offers nothing to type. */
+  sysStage.insertBefore($('[data-composer]'), controls);
+  const undo = $('[data-undo]');
+  undo.classList.replace('icon-btn', 'sys-icon-button');
+  main.querySelector('.sys-toolbar').prepend(undo);
   sysStage.prepend($('[data-alert]'));
   sysStage.append($('[data-status]'));
   controls.append($('[data-viewports]'), $('[data-run]'));
@@ -4982,10 +4997,13 @@ async function mountSystemShell() {
   }
   const search = rail.querySelector('[data-template-search]');
   search.addEventListener('input', () => { query = search.value; renderNav(); });
-  window.addEventListener('keydown', event => { if (event.key === '/' && !event.target.closest('input,textarea,select,[contenteditable]') && !matchMedia('(max-width: 760px)').matches) { event.preventDefault(); search.focus(); } });
+  /* "/" finds a template, unless Claude is on: then it opens the composer, as on the artifact. */
+  window.addEventListener('keydown', event => { if (event.key === '/' && !state.sample && !event.target.closest('input,textarea,select,[contenteditable]') && !matchMedia('(max-width: 760px)').matches) { event.preventDefault(); search.focus(); } });
+  const rebuild = main.querySelector('[data-rebuild]');
+  rebuild.addEventListener('click', () => { if (current && !state.busy) chooseExample(current); });
   renderNav();
   return {
-    mark(id) { current = id; nav.querySelectorAll('[data-template-id]').forEach(button => button.setAttribute('aria-current', String(button.dataset.templateId === id))); },
+    mark(id) { current = id; rebuild.disabled = false; nav.querySelectorAll('[data-template-id]').forEach(button => button.setAttribute('aria-current', String(button.dataset.templateId === id))); },
     open() { if (workspaceEl.dataset.panel !== 'inspect') api.openPanel('inspect'); },
     close() { if (workspaceEl.dataset.panel !== 'none') api.closePanel(); }
   };

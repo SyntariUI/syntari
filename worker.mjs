@@ -2,8 +2,8 @@ import Anthropic from '@anthropic-ai/sdk';
 
 /*
  * The site is static assets. This Worker only adds /api/claude, so the live Renderer can reach a model: the key stays
- * here as the ANTHROPIC_API_KEY secret and never reaches the page. The page decides nothing about cost: the model, the
- * token ceiling, and the size of what it may send are fixed below.
+ * here as a secret (CLAUDE_API_KEY, or ANTHROPIC_API_KEY) and never reaches the page. The page decides nothing about cost:
+ * the model, the token ceiling, the size of what it may send, and how often it may ask are fixed here.
  */
 const MODEL = 'claude-opus-5-5';
 const EFFORT = { quick: 'low', default: 'medium', complex: 'high' };
@@ -11,6 +11,7 @@ const LIMITS = { body: 400_000, messages: 16, tools: 8, maxTokens: 32000 };
 
 const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const sameSite = (origin, url) => { try { return Boolean(origin) && new URL(origin).host === url.host; } catch { return false; } };
 
 export default {
   async fetch(request, env, ctx) {
@@ -22,13 +23,19 @@ export default {
 
 async function claude(request, env, ctx, url) {
   if (request.method !== 'POST') return json(405, { error: 'POST only.' });
-  /* Only this site's pages may call it from a browser. */
-  const origin = request.headers.get('Origin');
-  if (origin && new URL(origin).host !== url.host) return json(403, { error: 'Not from this site.' });
-  /* The secret may carry the name the key has elsewhere; either one connects the model. */
-  const apiKey = env.ANTHROPIC_API_KEY ?? env.MENTIONLOOM_ANTHROPIC_API_KEY;
-  if (!apiKey) return json(503, { error: 'The model is not connected on this deployment: add the ANTHROPIC_API_KEY secret to the Worker and deploy.' });
+  /* Only this site's pages may call it. A browser always sends Origin with a POST, so a request without one is not from a
+     page here. This is no lock, since any client can write the header: the ceilings below are what bound the cost. */
+  if (!sameSite(request.headers.get('Origin'), url)) return json(403, { error: 'Not from this site.' });
+  /* The secret may carry the name the key has elsewhere; any one of them connects the model. */
+  const apiKey = env.CLAUDE_API_KEY ?? env.ANTHROPIC_API_KEY ?? env.MENTIONLOOM_ANTHROPIC_API_KEY;
+  if (!apiKey) return json(503, { error: 'The model is not connected on this deployment: add the CLAUDE_API_KEY secret to the Worker and deploy.' });
   if (env.DEMO_CODE && request.headers.get('X-Demo-Code') !== env.DEMO_CODE) return json(401, { error: 'This demo needs its access code.' });
+  /* A ceiling per visitor and one for the whole site, per minute (wrangler.toml). Cloudflare counts them per location and
+     approximately, so they bound abuse rather than meter it; a deployment without the bindings runs without them. */
+  const visitor = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  for (const [limiter, key] of [[env.CLAUDE_VISITOR_LIMIT, `visitor:${visitor}`], [env.CLAUDE_SITE_LIMIT, 'site']]) {
+    if (limiter && !(await limiter.limit({ key })).success) return json(429, { error: 'The model has had many requests from here; try again in a minute.' });
+  }
   const text = await request.text();
   if (text.length > LIMITS.body) return json(413, { error: 'The request is too large.' });
   let body;

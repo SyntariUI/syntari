@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { serveRenderer, openRenderer, prompts, screenIR } from './renderer-harness.mjs';
+import { serveRenderer, openRenderer, prompts, screenIR, ask } from './renderer-harness.mjs';
 
 /*
  * The public Renderer offers templates only, in the System shell: the rail lists the templates, the stage builds the one
@@ -25,9 +25,11 @@ test('the public page opens on its templates and builds nothing until one is cho
   await expect(p.locator('.sys-shell .sys-rail .sys-section-title')).toHaveText(/^Renderer\s*10$/);
   await expect(p.locator('[data-template-nav] .sys-nav-label')).toHaveText(['Review', 'Decide', 'Edge cases']);
   await expect(p.locator('[data-template-nav] [data-template-id]')).toHaveCount(10);
-  /* The toolbar keeps one button, the code: it opens the inspector on Screen IR, and its tabs lead to the rest. */
-  await expect(p.locator('.sys-toolbar button')).toHaveCount(1);
-  await expect(p.locator('.sys-toolbar button')).toHaveAttribute('aria-label', 'View Screen IR');
+  /* The toolbar: Rebuild, the code (the inspector on Screen IR, whose tabs lead to the rest), and focus. No info button. */
+  await expect(p.locator('.sys-toolbar button:visible')).toHaveCount(3);
+  await expect(p.locator('.sys-toolbar [data-rebuild]')).toBeDisabled();
+  await expect(p.locator('.sys-toolbar [data-shell-tab]')).toHaveAttribute('aria-label', 'View Screen IR');
+  await expect(p.locator('.sys-toolbar [data-workspace-focus]')).toHaveCount(1);
   await expect(p.locator('.sys-preview-controls [data-viewport]')).toHaveCount(4);
   await expect(p.locator('.sys-preview-controls [data-run]')).toBeHidden();
   await expect(p.locator('.sys-inspector')).toHaveAttribute('aria-hidden', 'true');
@@ -72,8 +74,8 @@ test('a template chosen again is built again without piling up copies, and its f
   await expect(p.locator('.canvas [data-ir-id=allocation]')).toContainText('$1.5M');
   const built = await screenIR(p);
   expect(built.children.map(node => node.id)).toContain('performance');
-  /* Choosing the same template again builds it again, in place: no second copy in the session. */
-  await choose(p, 'wealth');
+  /* Rebuild builds the same template again, in place: no second copy in the session. */
+  await p.locator('.sys-toolbar [data-rebuild]').click();
   await arriving(p);
   await expect(p.locator('[data-status-label]')).toHaveText(/Ready/, { timeout: 20000 });
   await expect(p.locator('[data-context-sub]')).toHaveText(/^v1 /);
@@ -145,5 +147,30 @@ test('with the inspector open, the screen fits the stage that is left, with padd
   expect(layout.statusWidth).toBeGreaterThan(200);
   expect(layout.tabsInside, 'every tab is in view, including Screen IR').toBe(true);
   expect(layout.editorSideways, 'Screen IR wraps instead of running off the drawer').toBe(false);
+  expect(errors).toEqual([]);
+});
+
+test('with Claude on, the composer docks in the shell, "/" opens it, and Undo joins the toolbar', async ({ page: p }) => {
+  const errors = await openRenderer(p, { publicPage: 'model' });
+  await expect(p.locator('.sys-stage > [data-composer]')).toBeVisible();
+  await expect(p.locator('[data-empty-title]')).toHaveText('Choose a template, or describe a screen');
+  await expect(p.locator('[data-template-grid] .template-card').first()).toBeVisible();
+  /* The preview widths sit above the composer, never under it. */
+  const composer = await p.locator('[data-composer]').boundingBox(), widths = await p.locator('.sys-preview-controls .seg').boundingBox();
+  expect(widths.y + widths.height).toBeLessThanOrEqual(composer.y);
+  await p.locator('.sys-stage').click({ position: { x: 20, y: 300 } });
+  await p.keyboard.press('/');
+  await expect(p.locator('[data-prompt]')).toBeFocused();
+  await p.keyboard.press('Escape');
+  /* A template, then a change Jev makes without a model: Undo appears in the toolbar and puts the part back. */
+  await p.locator('[data-template-grid] [data-template="renewal"]').click();
+  await expect(p.locator('[data-status-label]')).toHaveText(/Ready/, { timeout: 20000 });
+  await expect(p.locator('.canvas [data-ir-component=checklist]')).toHaveCount(1);
+  await ask(p, 'Remove the checklist');
+  await expect(p.locator('.canvas [data-ir-component=checklist]')).toHaveCount(0, { timeout: 15000 });
+  await expect(p.locator('.sys-toolbar [data-undo]')).toBeVisible();
+  await p.locator('.sys-toolbar [data-undo]').click();
+  await expect(p.locator('.canvas [data-ir-component=checklist]')).toHaveCount(1, { timeout: 15000 });
+  expect(await prompts(p)).toEqual([]);
   expect(errors).toEqual([]);
 });

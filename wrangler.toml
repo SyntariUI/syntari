@@ -8,3 +8,15 @@ directory = "./dist"
 binding = "ASSETS"
 
 [previews]
+
+# Ceilings for /api/claude, per minute and per Cloudflare location (approximate): one per visitor, one for the whole site.
+# A screen takes one to six calls, one per tool round.
+[[ratelimits]]
+name = "CLAUDE_VISITOR_LIMIT"
+namespace_id = "73101"
+simple = { limit = 20, period = 60 }
+
+[[ratelimits]]
+name = "CLAUDE_SITE_LIMIT"
+namespace_id = "73102"
+simple = { limit = 120, period = 60 }
