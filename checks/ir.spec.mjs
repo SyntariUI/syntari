@@ -140,7 +140,7 @@ test('validation refuses invented components, missing props, and values outside 
     const codesFor = async spec => (await validate(spec)).diagnostics.map(diagnostic => `${diagnostic.severity}:${diagnostic.code}`);
     return {
       unknown: await codesFor(screen({ component: 'syntari.wizard-hat', props: {} })),
-      unrenderable: await codesFor(screen({ component: 'syntari.slider', props: {} })),
+      unrenderable: await codesFor(screen({ component: 'syntari.password-field', props: {} })),
       prefix: await codesFor(screen({ component: 'banner', props: { message: 'ok' } })),
       missing: await codesFor(screen({ component: 'syntari.tool-approval', props: { title: 'Run it?' } })),
       wrongType: await codesFor(screen({ component: 'syntari.banner', props: { message: 42 } })),
