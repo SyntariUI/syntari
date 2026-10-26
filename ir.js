@@ -10,7 +10,7 @@ const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta', 'data'];
 const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
 const REGION_KEYS = ['id', 'type', 'label', 'open', 'children', 'provenance'];
-const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'children', 'provenance'];
+const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'submit', 'consequential', 'children', 'provenance'];
 const SANDBOX_KEYS = ['id', 'type', 'label', 'html', 'height', 'provenance'];
 /** An unverified block is model-written HTML the host chose to allow. It is never validated, so it is bounded and isolated instead. */
 export const SANDBOX_LIMITS = { maxHtml: 20000, minHeight: 80, maxHeight: 1200, defaultHeight: 320 };
@@ -248,7 +248,12 @@ async function checkNode(node, context, path) {
     else if (node.heading.length > 80) report('error', 'over-length', `${path}.heading`, 'Section headings stay under 80 characters.');
     if (node.layout !== undefined && typeof node.layout !== 'string') report('error', 'wrong-type', `${path}.layout`, `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
     else if (node.layout !== undefined && !IR_LAYOUTS.includes(node.layout)) report('warning', 'unknown-layout', `${path}.layout`, `"${node.layout}" is not a reference layout. The section renders as a stack.`);
-    return { section: true, group: true };
+    /* A section with a submit label is a form: its fields are sent together, as one request, when a person submits it. */
+    if (node.submit !== undefined && (typeof node.submit !== 'string' || !node.submit.trim())) report('error', 'invalid-form', `${path}.submit`, 'A form section needs a submit label that names what it does, such as "Send invite".');
+    else if (typeof node.submit === 'string' && node.submit.length > 32) report('error', 'over-length', `${path}.submit`, 'Submit labels stay under 32 characters.');
+    if (node.consequential !== undefined && typeof node.consequential !== 'boolean') report('error', 'wrong-type', `${path}.consequential`, 'consequential is true or false.');
+    else if (node.consequential !== undefined && node.submit === undefined) report('warning', 'consequential-without-submit', `${path}.consequential`, 'Only a section with a submit label sends anything, so consequential has no effect here.');
+    return { section: true, group: true, form: typeof node.submit === 'string' && Boolean(node.submit.trim()) };
   }
   if (node.type === 'sandbox') {
     for (const key of Object.keys(node)) if (!SANDBOX_KEYS.includes(key)) report('error', 'unknown-key', `${path}.${key}`, `Unverified blocks take ${SANDBOX_KEYS.join(', ')}.`);
@@ -285,6 +290,82 @@ async function checkNode(node, context, path) {
   return { slug, manifest };
 }
 
+/* ---------- Fields: what a person enters in a form section, sent to the host as one request ---------- */
+/** A field's name is the key its value is sent under. */
+export const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_.-]{0,39}$/;
+/** A field left unnamed is named after its label: "Email address" is sent as emailAddress. */
+export function fieldName(name, label) {
+  if (typeof name === 'string' && name) return name;
+  const joined = wordsOf(label).map((word, i) => i ? word[0].toUpperCase() + word.slice(1) : word).join('');
+  return (/^[a-z]/.test(joined) ? joined : `field${joined.slice(0, 1).toUpperCase()}${joined.slice(1)}`).slice(0, 40);
+}
+/** The names one field node sends: one for most fields, one per switch for a list of switches. */
+export function fieldNames(manifest, props = {}) {
+  const field = manifest?.ir?.field;
+  if (!field) return [];
+  if (field.items) return (Array.isArray(props[field.items]) ? props[field.items] : []).map(item => fieldName(item?.name, item?.label));
+  return [fieldName(props.name, props[field.from ?? 'label'])];
+}
+const isDay = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value);
+/** What a field's own props must agree on: names, options, bounds, and dates. */
+function checkField(manifest, props, path, report) {
+  const field = manifest.ir.field;
+  const at = key => `${path}.${key}`;
+  const badName = (name, where) => { if (name !== undefined && (typeof name !== 'string' || !FIELD_NAME.test(name))) report('error', 'invalid-field-name', where, 'A field name starts with a letter and uses letters, digits, dots, dashes, or underscores, up to 40 characters.'); };
+  badName(props.name, at('name'));
+  if (field.items && Array.isArray(props[field.items])) {
+    const seen = new Set();
+    props[field.items].forEach((item, i) => {
+      badName(item?.name, `${at(field.items)}[${i}].name`);
+      const name = fieldName(item?.name, item?.label);
+      if (seen.has(name)) report('error', 'duplicate-field-name', `${at(field.items)}[${i}]`, `Two switches are sent as "${name}". Give each one its own name.`);
+      seen.add(name);
+    });
+  }
+  const options = ['checkbox', 'radio', 'combo'].includes(field.control) && Array.isArray(props.options) ? props.options : null;
+  if (options) {
+    const seen = new Set();
+    options.forEach((option, i) => {
+      const value = typeof option === 'string' ? option : option?.value ?? option?.label;
+      if (seen.has(value)) report('error', 'duplicate-option', `${at('options')}[${i}]`, `"${value}" is offered twice, so a person could not tell which one they chose.`);
+      seen.add(value);
+    });
+    if (field.control === 'radio' && options.filter(option => option?.checked === true).length > 1) report('error', 'several-checked', at('options'), 'Only one option of a radio group can start checked.');
+    if (field.control === 'combo') for (const [key, chosen] of [['value', props.value === undefined ? [] : [props.value]], ['values', Array.isArray(props.values) ? props.values : []]]) {
+      chosen.forEach(value => { if (!options.includes(value)) report('error', 'no-matching-option', at(key), `"${value}" is not one of the options.`); });
+    }
+  }
+  if (typeof props.min === 'number' && typeof props.max === 'number') {
+    if (props.min >= props.max) report('error', 'invalid-range', at('max'), 'max must be greater than min.');
+    else for (const key of ['value', 'low', 'high']) if (typeof props[key] === 'number' && (props[key] < props.min || props[key] > props.max)) report('error', 'invalid-range', at(key), `${key} must sit between ${props.min} and ${props.max}.`);
+  }
+  if (typeof props.low === 'number' && typeof props.high === 'number' && props.low > props.high) report('error', 'invalid-range', at('high'), 'high cannot be below low.');
+  if (typeof props.step === 'number' && props.step <= 0) report('error', 'invalid-range', at('step'), 'step must be greater than 0.');
+  for (const key of field.control === 'date-range' ? ['start', 'end'] : []) if (props[key] !== undefined && !isDay(props[key])) report('error', 'invalid-date', at(key), 'Dates are written YYYY-MM-DD, such as 2026-09-04.');
+  if (field.control === 'date-range' && isDay(props.start) && isDay(props.end) && props.start > props.end) report('error', 'invalid-range', at('end'), 'The range ends before it starts.');
+  if (typeof props.value === 'string' && typeof props.maxLength === 'number' && props.value.length > props.maxLength) report('error', 'over-length', at('value'), `The starting text has ${props.value.length} characters; maxLength is ${props.maxLength}.`);
+}
+/**
+ * A field sends its value only from inside a form section, and inside one each name is sent once.
+ * A component that is a form of its own, such as a prompt input, cannot sit inside one: forms do not nest.
+ */
+function checkFieldPlace(manifest, node, context, path) {
+  const { report, form } = context;
+  const actions = Object.values(manifest.actions ?? {});
+  if (form && actions.some(action => action.event === 'submit')) report('error', 'nested-form', path, `${node.component} is a form of its own, so it cannot sit inside the form at ${form.path}. Move it out of the form section.`);
+  if (!manifest.ir?.field) return;
+  if (!form) {
+    if (!actions.length) report('warning', 'field-outside-form', path, 'Nothing a person enters here reaches the host. Put this field in a section with a submit label.');
+    return;
+  }
+  form.fields += 1;
+  /* A name repeated inside one node, such as two switches, is that node's own error, reported with its props. */
+  for (const name of new Set(fieldNames(manifest, resolveProps(node.props ?? {}, manifest)))) {
+    if (form.names.has(name)) report('error', 'duplicate-field-name', `${path}.props`, `"${name}" is already sent by the field at ${form.names.get(name)}. Give this field its own name.`);
+    else form.names.set(name, path);
+  }
+}
+
 /** Check props against a component contract. Shared by Screen IR nodes and mount({ props }). */
 export function checkProps(manifest, props, path, report, icons) {
   const component = `syntari.${manifest.id}`;
@@ -303,6 +384,7 @@ export function checkProps(manifest, props, path, report, icons) {
     else if (icons && !icons.includes(value)) report('warning', 'unknown-icon', at, `"${value}" is not a Syntari icon, so the component keeps its own. The registry index lists every icon name.`);
   };
   for (const key of Object.keys(manifest.ir?.icon ?? {})) badIcon(props[key], `${path}.${key}`);
+  if (manifest.ir?.field) { if (manifest.props.icon) badIcon(props.icon, `${path}.icon`); checkField(manifest, props, path, report); }
   for (const [key, parts] of Object.entries(manifest.ir?.list ?? {})) {
     const fields = [].concat(parts).flatMap(part => Object.keys(part.icon ?? {}));
     if (!fields.length || !Array.isArray(props[key])) continue;
@@ -427,13 +509,22 @@ export async function validate(spec, options = {}) {
     if (depth > limits.maxDepth) { report('error', 'over-depth-budget', path, `The spec nests deeper than ${limits.maxDepth} levels.`); return; }
     if (context.count > limits.maxNodes) { if (!context.overNodes) report('error', 'over-node-budget', path, `The spec holds more than ${limits.maxNodes} nodes.`); context.overNodes = true; return; }
     const resolved = await checkNode(node, context, path);
+    if (resolved?.manifest) checkFieldPlace(resolved.manifest, node, context, path);
     const nested = node?.children;
     /* A node that does not resolve still holds children; they count toward the budget and are checked too. */
     if (!resolved) { if (Array.isArray(nested)) for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1); return; }
-    if (nested === undefined) return;
-    if (!Array.isArray(nested)) { report('error', 'wrong-type', `${path}.children`, 'Children must be an array.'); return; }
-    if (nested.length && !resolved.group) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children, so these render as siblings. Group them in a section or a region.');
-    for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1);
+    const outer = context.form;
+    if (resolved.form) {
+      if (outer) report('error', 'nested-form', `${path}.submit`, `This form sits inside the form at ${outer.path}. A form cannot hold another: make this a plain section, or move it out.`);
+      else context.form = { path, names: new Map(), fields: 0 };
+    }
+    if (Array.isArray(nested) && nested.length && !resolved.group) report('warning', 'nested-children-unsupported', `${path}.children`, 'Components do not take children, so these render as siblings. Group them in a section or a region.');
+    if (nested !== undefined && !Array.isArray(nested)) report('error', 'wrong-type', `${path}.children`, 'Children must be an array.');
+    else if (nested !== undefined) for (const [i, child] of nested.entries()) await walk(child, `${path}.children[${i}]`, depth + 1);
+    if (context.form !== outer) {
+      if (!context.form.fields) report('warning', 'form-without-fields', path, 'This form has no fields, so submitting it sends nothing a person entered. Add fields, or make it a plain section.');
+      context.form = outer;
+    }
   }
   for (const [i, child] of children.entries()) await walk(child, `children[${i}]`, 1);
   /* A structurally valid screen can still contradict its own data: a written figure that names data must agree with it. */
@@ -453,7 +544,7 @@ export const OPS_LIMITS = { maxOperations: 20 };
 const CHANGE_KEYS = ['version', 'base', 'summary', 'operations', 'clarify', 'needs', 'unsupported'];
 const OP_KEYS = { insert: ['op', 'parent', 'after', 'before', 'node', 'reason'], replace: ['op', 'target', 'set', 'node', 'reason'], remove: ['op', 'target', 'reason'], move: ['op', 'target', 'parent', 'after', 'before', 'reason'], recompose: ['op', 'screen', 'reason'] };
 /** What `set` may change on each kind of node. A component's fields are its props, plus the reason it is on the screen. */
-const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'], data: ['measures', 'groups', 'tables', 'sources', 'mode', 'label', 'currency', 'locale', 'asOf'] };
+const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout', 'submit', 'consequential'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'], data: ['measures', 'groups', 'tables', 'sources', 'mode', 'label', 'currency', 'locale', 'asOf'] };
 /* Definitions computed from the rows may be added or changed freely; the rows and where they come from are protected data. */
 const DATA_DEFINITIONS = ['measures', 'groups'];
 const kindOfNode = node => ['section', 'region', 'sandbox'].includes(node?.type) ? node.type : 'component';
@@ -1306,6 +1397,247 @@ function paintTiles(root, binding, tiles, value, { number, percent, report, path
 }
 
 /** Write resolved props into the mounted component using the bindings its manifest declares. */
+let fieldCount = 0;
+const fieldId = () => `ir-field-${++fieldCount}`;
+const setOrRemove = (target, name, value) => value === undefined || value === '' ? target.removeAttribute(name) : target.setAttribute(name, String(value));
+const flag = (target, name, on) => on ? target.setAttribute(name, '') : target.removeAttribute(name);
+const plainNumber = value => Number(value).toLocaleString('en-US', { maximumFractionDigits: 4 });
+/** Where a unit sits around a figure: "$" before it, "%" and words after it. */
+const unitParts = unit => withUnit('\u0000', unit).split('\u0000');
+const day = (iso, year) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(year ? { year: 'numeric' } : {}), timeZone: 'UTC' });
+const dayRange = (start, end) => start.slice(0, 4) === end.slice(0, 4) ? `${day(start)} – ${day(end)}, ${end.slice(0, 4)}` : `${day(start, true)} – ${day(end, true)}`;
+/** A field's hint and error sit under it and are read with it; an error marks the controls it is about. */
+function describeField(container, described, marked, props) {
+  container.querySelectorAll(':scope > .hint:not([data-text-count]), :scope > .error').forEach(note => note.remove());
+  const ids = [container.querySelector(':scope > [data-text-count]')?.id].filter(Boolean);
+  for (const key of ['hint', 'error']) {
+    if (typeof props[key] !== 'string' || !props[key].trim()) continue;
+    const note = document.createElement('span');
+    note.className = key;
+    note.id = fieldId();
+    note.textContent = props[key];
+    container.append(note);
+    ids.push(note.id);
+  }
+  for (const target of described) setOrRemove(target, 'aria-describedby', ids.join(' '));
+  for (const target of marked) {
+    target.classList.toggle('invalid', Boolean(props.error));
+    setOrRemove(target, 'aria-invalid', props.error ? 'true' : undefined);
+  }
+}
+/** A group of controls is named by a visible label, as a fieldset is by its legend. */
+function nameGroup(root, label, role = 'group') {
+  root.querySelector(':scope > .ir-field-label')?.remove();
+  if (!label) return;
+  const heading = document.createElement('span');
+  heading.className = 'ir-field-label';
+  heading.id = fieldId();
+  heading.textContent = label;
+  root.prepend(heading);
+  root.setAttribute('role', role);
+  root.setAttribute('aria-labelledby', heading.id);
+}
+/**
+ * Paint a form control from its contract: its label, its name, its starting value, and what it says about itself.
+ * Each control keeps the markup and runtime of its documented example; the contract only fills it in.
+ */
+function paintField(root, binding, props) {
+  const label = typeof props.label === 'string' ? props.label : '';
+  const name = fieldName(props.name, props[binding.from ?? 'label']);
+  /* Radios group by name across a whole page; outside a form, a name of their own keeps two groups apart. */
+  const groupName = root.closest('form') ? name : `syntari-${crypto.randomUUID()}-${name}`;
+  if (!binding.items) root.dataset.irField = name;
+  switch (binding.control) {
+    case 'text': {
+      fillLead(root, label);
+      const input = root.querySelector('input');
+      input.type = props.type ?? 'text';
+      input.name = name;
+      input.setAttribute('aria-label', label);
+      setOrRemove(input, 'placeholder', props.placeholder);
+      setOrRemove(input, 'value', props.value);
+      setOrRemove(input, 'autocomplete', { email: 'email', tel: 'tel', url: 'url' }[input.type]);
+      input.required = props.required === true;
+      const shell = root.querySelector('.input-shell');
+      if (shell && props.icon && window.SyntariIconNames?.includes(props.icon)) setIcon(shell.querySelector('svg'), props.icon);
+      else shell?.replaceWith(input);
+      describeField(root, [input], [input], props);
+      break;
+    }
+    case 'textarea': {
+      fillLead(root, label);
+      const area = root.querySelector('textarea');
+      area.name = name;
+      area.setAttribute('aria-label', label);
+      setOrRemove(area, 'placeholder', props.placeholder);
+      area.rows = props.rows ?? 3;
+      area.required = props.required === true;
+      area.textContent = props.value ?? '';
+      const counter = root.querySelector('[data-text-count]');
+      if (typeof props.maxLength === 'number') {
+        area.maxLength = props.maxLength;
+        counter.id = fieldId();
+        counter.textContent = `${area.textContent.length} / ${props.maxLength} characters`;
+      } else { area.removeAttribute('maxlength'); counter?.remove(); }
+      describeField(root, [area], [area], props);
+      break;
+    }
+    case 'checkbox':
+    case 'radio': {
+      const template = root.querySelector('label.choice');
+      root.querySelectorAll(':scope > label.choice').forEach(item => item.remove());
+      nameGroup(root, label, binding.control === 'radio' ? 'radiogroup' : 'group');
+      const inputs = (Array.isArray(props.options) ? props.options : []).slice(0, IR_LIMITS.maxListItems).map((option, i) => {
+        const item = template.cloneNode(true);
+        const input = item.querySelector('input');
+        item.dataset.syntariIndex = String(i);
+        input.name = binding.control === 'radio' ? groupName : name;
+        input.value = String(option?.value ?? option?.label ?? '');
+        flag(input, 'checked', option?.checked === true);
+        flag(input, 'disabled', option?.disabled === true);
+        input.required = binding.control === 'radio' && props.required === true;
+        setLead(item, option?.label ?? '');
+        root.append(item);
+        return input;
+      });
+      describeField(root, [root], inputs, props);
+      break;
+    }
+    case 'switches': {
+      const template = root.querySelector('.switch-row');
+      root.querySelectorAll(':scope > .switch-row').forEach(row => row.remove());
+      nameGroup(root, label);
+      (Array.isArray(props.items) ? props.items : []).slice(0, IR_LIMITS.maxListItems).forEach((item, i) => {
+        const row = template.cloneNode(true);
+        row.dataset.syntariIndex = String(i);
+        const text = row.querySelector(':scope > div');
+        setLead(text, item?.label ?? '');
+        const description = text.querySelector('p');
+        const input = row.querySelector('input');
+        input.name = fieldName(item?.name, item?.label);
+        input.setAttribute('aria-label', item?.label ?? '');
+        input.removeAttribute('value');
+        flag(input, 'checked', item?.checked === true);
+        flag(input, 'disabled', item?.disabled === true);
+        if (item?.description) { description.textContent = item.description; description.id = fieldId(); input.setAttribute('aria-describedby', description.id); }
+        else { description.remove(); input.removeAttribute('aria-describedby'); }
+        root.append(row);
+      });
+      describeField(root, [root], [], props);
+      break;
+    }
+    case 'range': {
+      fillLead(root, label);
+      root.querySelector('.badge')?.remove();
+      const input = root.querySelector('input[type=range]');
+      const current = props.value ?? props.min;
+      input.id = fieldId();
+      input.name = name;
+      input.setAttribute('aria-label', label);
+      for (const [key, value] of [['min', props.min], ['max', props.max], ['step', props.step ?? 1], ['value', current]]) input.setAttribute(key, String(value));
+      input.value = String(current);
+      const output = root.querySelector('output');
+      output.htmlFor = input.id;
+      output.textContent = plainNumber(current);
+      const [before, after] = unitParts(props.unit);
+      output.parentElement.replaceChildren(...[before, output, after].filter(part => part !== ''));
+      const [low, high] = root.querySelectorAll('.label-caption > span');
+      if (low) low.textContent = withUnit(plainNumber(props.min), props.unit);
+      if (high) high.textContent = withUnit(plainNumber(props.max), props.unit);
+      describeField(root, [input], [input], props);
+      break;
+    }
+    case 'range-pair': {
+      const title = root.querySelector(':scope > .row > span');
+      title.textContent = label;
+      title.id = fieldId();
+      root.setAttribute('role', 'group');
+      root.setAttribute('aria-labelledby', title.id);
+      const [before, after] = unitParts(props.unit);
+      const bounds = { min: props.low ?? props.min, max: props.high ?? props.max };
+      const inputs = [...root.querySelectorAll('input[data-bound]')];
+      for (const input of inputs) {
+        const value = bounds[input.dataset.bound];
+        input.name = name;
+        input.setAttribute('aria-label', `${label}, ${input.dataset.bound === 'min' ? 'lowest' : 'highest'}`);
+        for (const [key, number] of [['min', props.min], ['max', props.max], ['step', props.step ?? 1], ['value', value]]) input.setAttribute(key, String(number));
+        input.value = String(value);
+        input.style.setProperty('--range-fill', `${tidy((value - props.min) / (props.max - props.min) * 100)}%`);
+        const echo = input.closest('label')?.querySelector('output');
+        if (echo) echo.textContent = plainNumber(value);
+      }
+      const output = root.querySelector('[data-range-output]');
+      output.dataset.prefix = before;
+      output.dataset.suffix = after;
+      output.textContent = `${before}${plainNumber(bounds.min)}${after} – ${before}${plainNumber(bounds.max)}${after}`;
+      describeField(root, [root], inputs, props);
+      break;
+    }
+    case 'number': {
+      const caption = root.querySelector(':scope > label');
+      const input = root.querySelector('input');
+      const step = props.step ?? 1, current = props.value ?? props.min;
+      caption.textContent = label;
+      input.id = fieldId();
+      caption.htmlFor = input.id;
+      input.name = name;
+      input.setAttribute('aria-label', label);
+      for (const [key, value] of [['min', props.min], ['max', props.max], ['step', step], ['value', current]]) input.setAttribute(key, String(value));
+      input.value = String(current);
+      const [down, up] = root.querySelectorAll('[data-number-step]');
+      down.dataset.numberStep = String(-step);
+      up.dataset.numberStep = String(step);
+      down.setAttribute('aria-label', `Decrease ${label}`);
+      up.setAttribute('aria-label', `Increase ${label}`);
+      down.disabled = current <= props.min;
+      up.disabled = current >= props.max;
+      describeField(root, [input], [input], props);
+      break;
+    }
+    case 'combo': {
+      const multiple = root.dataset.mode === 'multiple';
+      const input = root.querySelector('input');
+      const options = (Array.isArray(props.options) ? props.options : []).map(String);
+      const chosen = (multiple ? (Array.isArray(props.values) ? props.values : []) : props.value === undefined ? [] : [props.value]).filter(value => options.includes(value));
+      root.querySelector(':scope > label').textContent = label;
+      input.setAttribute('aria-label', label);
+      input.removeAttribute('name');
+      setOrRemove(input, 'placeholder', props.placeholder);
+      input.value = multiple ? '' : chosen[0] ?? '';
+      input.required = !multiple && props.required === true;
+      flag(root, 'data-ir-required', multiple && props.required === true);
+      root.querySelector('[data-combo-clear]')?.setAttribute('aria-label', `Clear ${label}`);
+      root.querySelector('[role=listbox]')?.setAttribute('aria-label', `${label} options`);
+      root.dataset.options = JSON.stringify(options);
+      root.dataset.selected = JSON.stringify(chosen);
+      window.SyntariCombo?.reset(root);
+      /* A choice the form refused is cleared as soon as the person changes it. */
+      for (const event of ['input', 'click']) root.addEventListener(event, () => input.setCustomValidity(''));
+      describeField(root, [input], [input], props);
+      break;
+    }
+    case 'date-range': {
+      const title = root.querySelector(':scope > span');
+      const trigger = root.querySelector('[data-date-range]');
+      const text = trigger.querySelector('span');
+      title.textContent = label;
+      title.id = fieldId();
+      text.id = fieldId();
+      trigger.dataset.start = props.start;
+      trigger.dataset.end = props.end;
+      text.textContent = dayRange(props.start, props.end);
+      trigger.setAttribute('aria-labelledby', `${title.id} ${text.id}`);
+      delete root.dataset.irField;
+      trigger.dataset.irField = name;
+      describeField(root, [trigger], [trigger], props);
+      break;
+    }
+    case 'cards':
+      root.querySelectorAll('input').forEach(input => { input.name = groupName; });
+      break;
+  }
+}
+
 export function applyContract(element, manifest, props, diagnostics, path, context = {}) {
   const ir = manifest.ir;
   const report = (severity, code, at, message) => diagnostics.push({ severity, code, path: at, message });
@@ -1495,7 +1827,10 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
           const at = typeof selector === 'object' && selector ? selector.selector : selector;
           const suffix = typeof selector === 'object' && selector?.suffixFrom && value(selector.suffixFrom) !== undefined ? String(value(selector.suffixFrom)) : typeof selector === 'object' && selector?.suffix ? selector.suffix : '';
           const joined = typeof selector === 'object' && selector?.joinField ? given(selector.joinField) : undefined;
-          const write = figure => `${number(figure)}${typeof figure === 'number' ? unitAfter(suffix) : suffix}`;
+          /* A share is read, not audited: 4 of 47 is written 8.5%, not 8.5106%. */
+          const digits = typeof selector === 'object' && Number.isInteger(selector?.digits) ? selector.digits : null;
+          const rounded = figure => typeof figure === 'number' && digits !== null ? Number(figure.toFixed(digits)) : figure;
+          const write = figure => `${number(rounded(figure))}${typeof figure === 'number' ? unitAfter(suffix) : suffix}`;
           filled(name, current => fillText(pick(item, at), `${write(current)}${joined !== undefined ? ` · ${write(joined)}` : ''}`), () => fillText(pick(item, at), ''));
         }
         for (const [name, selector] of Object.entries(part.lead ?? {})) filled(name, current => fillLead(pick(item, selector), current), () => fillLead(pick(item, selector), ''));
@@ -1539,6 +1874,7 @@ export function applyContract(element, manifest, props, diagnostics, path, conte
   }
   for (const [key, binding] of Object.entries(ir.matrix ?? {})) paintMatrix(root, binding, value(key), value, { number, percent: unitAfter('%'), report, path });
   for (const [key, binding] of Object.entries(ir.tiles ?? {})) paintTiles(root, binding, value(key), value, { number, percent: unitAfter('%'), report, path });
+  if (ir.field) paintField(root, ir.field, props);
   /* The item whose field matches the prop is the selected one, so the two can never disagree. */
   for (const [key, binding] of Object.entries(ir.select ?? {})) {
     const part = [].concat(ir.list?.[binding.list] ?? [])[0];
@@ -1569,6 +1905,44 @@ function formValues(form) {
     values[key] = key in values ? [].concat(values[key], entry) : entry;
   }
   return values;
+}
+
+/**
+ * What a person entered in a form section, typed for the host: a number as a number, a switch as true or false, a group of
+ * checkboxes as a list, a date range as its start and end. A choice that is not one of the options is refused, not sent.
+ */
+function collectForm(form) {
+  const values = {};
+  const add = (key, value) => { values[key] = key in values ? [].concat(values[key], value) : value; };
+  for (const control of form.elements) {
+    if (!control.name || control.disabled || !control.matches('input, select, textarea') || ['submit', 'button', 'reset', 'image'].includes(control.type)) continue;
+    const key = control.name.replace(/^syntari-[0-9a-f-]{36}-/, '');
+    if (control.type === 'checkbox' && !control.hasAttribute('value')) values[key] = control.checked;
+    else if (control.type === 'checkbox') values[key] = control.checked ? [].concat(values[key] ?? [], control.value) : values[key] ?? [];
+    else if (control.type === 'radio') values[key] = control.checked ? control.value : values[key] ?? null;
+    else if (control.type === 'number' || control.type === 'range') add(key, control.value === '' ? null : Number(control.value));
+    else if (control.type === 'file') { if (control.files?.[0]) add(key, control.files[0]); }
+    else add(key, control.value);
+  }
+  let invalid = null;
+  for (const widget of form.querySelectorAll('[data-ir-field]')) {
+    const key = widget.dataset.irField;
+    if (widget.matches('[data-date-range]')) { values[key] = { start: widget.dataset.start, end: widget.dataset.end }; continue; }
+    if (!widget.matches('[data-starter-combo]')) continue;
+    const input = widget.querySelector('input');
+    let options = [];
+    try { options = JSON.parse(widget.dataset.options ?? '[]'); } catch {}
+    if (widget.dataset.mode === 'multiple') {
+      values[key] = [...widget.querySelectorAll('[data-combo-remove]')].map(chip => chip.dataset.comboRemove);
+      if (widget.hasAttribute('data-ir-required') && !values[key].length) { input.setCustomValidity('Choose at least one option.'); invalid ??= input; }
+    } else {
+      const text = input.value.trim();
+      const match = options.find(option => option.toLowerCase() === text.toLowerCase());
+      values[key] = match ?? null;
+      if (text && match === undefined) { input.setCustomValidity('Choose one of the options.'); invalid ??= input; }
+    }
+  }
+  return { values, invalid };
 }
 
 /** The state a view control shows after a person used it. */
@@ -1738,8 +2112,10 @@ export async function render(spec, target, options = {}) {
       return;
     }
     if (node?.type === 'section') {
-      const section = document.createElement('section');
-      section.className = 'ir-section';
+      /* A section with a submit label is a form; one inside another form stays a section, as validation reported. */
+      const isForm = typeof node.submit === 'string' && Boolean(node.submit.trim()) && !parent.closest('form');
+      const section = document.createElement(isForm ? 'form' : 'section');
+      section.className = isForm ? 'ir-section ir-form' : 'ir-section';
       if (typeof node.id === 'string') section.dataset.irId = node.id;
       const heading = document.createElement('h3');
       heading.className = 'ir-section-heading';
@@ -1748,6 +2124,29 @@ export async function render(spec, target, options = {}) {
       body.className = 'ir-section-body';
       body.dataset.irLayout = layoutName(node.layout);
       section.append(heading, body);
+      if (isForm) {
+        heading.id = fieldId();
+        section.setAttribute('aria-labelledby', heading.id);
+        if (node.consequential === true) section.dataset.irConsequential = 'true';
+        const actions = document.createElement('div');
+        actions.className = 'ir-form-actions';
+        const submit = document.createElement('button');
+        submit.type = 'submit';
+        submit.className = 'button primary';
+        submit.textContent = node.submit;
+        actions.append(submit);
+        section.append(actions);
+        /* Submitting reports what the person entered, as one request. It never sends anything itself: the host decides. */
+        section.addEventListener('submit', event => {
+          if (event.target !== section) return;
+          event.preventDefault();
+          const { values, invalid } = collectForm(section);
+          if (invalid) { invalid.reportValidity(); return; }
+          const detail = { component: 'form', action: 'submit', ...(typeof node.id === 'string' ? { id: node.id } : {}), path, values, consequential: node.consequential === true };
+          section.dispatchEvent(new CustomEvent('syntari:action', { bubbles: true, detail }));
+          options.onActionRequest?.(detail);
+        });
+      }
       parent.append(section);
       for (const [i, child] of listed(node.children)) await paint(child, body, `${path}.children[${i}]`);
       return;

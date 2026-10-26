@@ -73,7 +73,10 @@ test('every render contract ships a sample that validates as Screen IR', async (
     if (!(manifest.props && manifest.ir)) continue;
     contracts += 1;
     assert.ok(manifest.sample?.props, `${entry.id} needs a sample`);
-    const result = await validateScreen({ type: 'screen', children: [{ id: `${entry.id}-sample`, component: `syntari.${entry.id}`, props: manifest.sample.props }] });
+    const node = { id: `${entry.id}-sample`, component: `syntari.${entry.id}`, props: manifest.sample.props };
+    /* A form control sends its value from a form section, so its sample is checked inside one. */
+    const placed = manifest.ir.field && !manifest.actions ? { type: 'section', heading: 'Sample form', submit: 'Send', children: [node] } : node;
+    const result = await validateScreen({ type: 'screen', children: [placed] });
     assert.equal(result.ok, true, `${entry.id} sample: ${JSON.stringify(result.diagnostics)}`);
     assert.deepEqual(result.diagnostics.filter(item => item.severity === 'warning'), [], `${entry.id} sample raised warnings`);
   }
@@ -126,7 +129,7 @@ test('the CLI validates a screen with the same diagnostics as the Node API', asy
   const cli = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'validate', '--spec', file, '--json'], { encoding: 'utf8' }));
   assert.deepEqual(cli.screen.diagnostics, (await validateScreen(screen)).diagnostics);
   const listed = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'list', '--json'], { encoding: 'utf8' }));
-  assert.equal(listed.components.filter(item => item.renderable).length, 48);
+  assert.equal(listed.components.filter(item => item.renderable).length, 59);
 });
 
 test('pattern screens that agents copy validate without warnings', async () => {

@@ -1,0 +1,126 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "range-slider",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Monthly budget",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "low": 200,
+      "high": 800,
+      "unit": "$"
+    }
+  },
+  "source": "components/range-slider/",
+  "name": "Range slider",
+  "category": "Forms",
+  "purpose": "Let a person set a lowest and a highest value, such as a budget or a price range.",
+  "description": "Two labelled sliders for one interval, with the interval written above them. The form sends both ends as a list: lowest, then highest.",
+  "intents": [
+    "filter",
+    "choose-a-range",
+    "fill-a-form"
+  ],
+  "variants": {
+    "unit": [
+      "$",
+      "%",
+      "words"
+    ]
+  },
+  "states": [
+    "default",
+    "focus",
+    "dragging"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "range",
+    "low-slider",
+    "high-slider"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Arrow keys"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-interval-is-always-written",
+    "the-low-end-cannot-pass-the-high-end"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "slider",
+    "checkbox",
+    "searchable-select"
+  ],
+  "avoidWhen": [
+    "only-one-value-is-needed"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the interval measures. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "min": {
+      "type": "number",
+      "required": true,
+      "description": "Lowest value a person can choose."
+    },
+    "max": {
+      "type": "number",
+      "required": true,
+      "description": "Highest value a person can choose."
+    },
+    "step": {
+      "type": "number",
+      "default": 1,
+      "description": "Distance between values a person can choose."
+    },
+    "low": {
+      "type": "number",
+      "description": "Where the low end starts. Defaults to min."
+    },
+    "high": {
+      "type": "number",
+      "description": "Where the high end starts. Defaults to max."
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "Unit written with every figure: \"$\" leads it; \"%\" and words such as \"seats\" follow it."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    }
+  },
+  "ir": {
+    "node": "[data-extra-kind=range]",
+    "field": {
+      "control": "range-pair"
+    }
+  }
+}

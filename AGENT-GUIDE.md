@@ -79,6 +79,16 @@ View controls, such as the period on Filter bar, Compare on Chart toolbar, or th
 
 Leave an optional prop out and its slot stays empty: the renderer never shows the template's example copy. Required text and labels cannot be empty strings, and every component that declares actions needs an `id`. Icon props take a name from `icons` in the registry index (also returned by `get_component`): a malformed name is an `invalid-icon` error, and a well-formed name the runtime does not ship is an `unknown-icon` warning that keeps the component's own icon.
 
+## Forms
+
+A section with a `submit` label is a form: `{ "type": "section", "heading": "Invite a teammate", "submit": "Send invite", "children": [...] }`. Its fields are the form controls in the registry: Text input, Text area, Checkbox, Radio, Switch, Slider, Range slider, Number input, Searchable select, Multi-select, Date range picker, and Selectable cards. Each field is sent under its `name` prop; left out, the name is its label in camelCase, so "Work email" is sent as `workEmail`. Submitting reports one request with every value, typed:
+
+```json
+{ "component": "form", "action": "submit", "id": "invite", "path": "children[1]", "values": { "workEmail": "ana@example.com", "role": "editor", "notify": true, "seats": 3, "labels": ["Design"], "period": { "start": "2026-09-01", "end": "2026-09-30" } }, "consequential": false }
+```
+
+A number or a slider sends a number, a range slider a list of its low and high ends, a switch `true` or `false`, a checkbox group the list of checked values, a radio group the chosen value or `null`, and a searchable select the chosen option or `null`; text that is not one of the options is refused before anything is sent. Set `"consequential": true` on the section when sending it is hard to undo. Validation reports a field outside any form (`field-outside-form`, a warning: nothing it holds reaches the host), two fields sent under one name (`duplicate-field-name`), a form inside a form or a component that is a form of its own, such as Prompt input, inside one (`nested-form`), and a form with no fields (`form-without-fields`).
+
 ## Action boundary
 
 Screen validation controls UI composition. A button or approval card is a visual affordance; it does not grant permission to run a tool. The host application must keep authentication, tool allowlists, data scope, and human approval in trusted code outside the model's Screen IR. A model-provided `approved: true` value is not evidence of human consent, and an `approve` request is consent to ask for, not authorization.

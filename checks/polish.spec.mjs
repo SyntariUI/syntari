@@ -35,7 +35,7 @@ test('folder disclosure, field containment, empty state and range keyboard regre
  await live(page).getByRole('button',{name:'Show password'}).click();
  expect(await live(page).locator('.password-control').evaluate(el=>{const r=el.getBoundingClientRect(),b=el.querySelector('button').getBoundingClientRect();return b.right<=r.right&&el.scrollWidth<=el.clientWidth})).toBe(true);
  await open(page,'range-slider');const min=live(page).getByRole('slider',{name:'Minimum budget'});await min.focus();await page.keyboard.press('End');
- await expect(min).toHaveValue('1000');await expect(live(page).getByRole('slider',{name:'Maximum budget'})).toHaveValue('1000');await expect(live(page).locator('[data-range-output]')).toHaveText('$1000 – $1000');
+ await expect(min).toHaveValue('1000');await expect(live(page).getByRole('slider',{name:'Maximum budget'})).toHaveValue('1000');await expect(live(page).locator('[data-range-output]')).toHaveText('$1,000 – $1,000');
  await expect(min).toHaveCSS('appearance','none');
 });
 

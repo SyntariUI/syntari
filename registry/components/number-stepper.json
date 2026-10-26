@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "number-stepper",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Seats",
+      "min": 1,
+      "max": 50,
+      "value": 5,
+      "hint": "Between 1 and 50 seats."
+    }
+  },
+  "source": "components/number-stepper/",
+  "name": "Number input",
+  "category": "Forms",
+  "purpose": "Ask for a small whole number, such as seats or quantity, that a person nudges up or down.",
+  "description": "A labelled number field between decrease and increase buttons. The buttons stop at the bounds; the form sends a number.",
+  "intents": [
+    "choose-a-value",
+    "count",
+    "fill-a-form"
+  ],
+  "variants": {
+    "step": [
+      "1 or more"
+    ]
+  },
+  "states": [
+    "default",
+    "focus",
+    "at-minimum",
+    "at-maximum"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "decrease",
+    "input",
+    "increase",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "spinbutton",
+    "keyboard": [
+      "Tab",
+      "Arrow keys"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "bounds-are-stated",
+    "buttons-stop-at-the-bounds"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "slider",
+    "text-input",
+    "radio"
+  ],
+  "avoidWhen": [
+    "the-range-is-large",
+    "the-value-is-not-a-count"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "min": {
+      "type": "number",
+      "required": true,
+      "description": "Lowest value a person can choose."
+    },
+    "max": {
+      "type": "number",
+      "required": true,
+      "description": "Highest value a person can choose."
+    },
+    "step": {
+      "type": "number",
+      "default": 1,
+      "description": "Distance between values a person can choose."
+    },
+    "value": {
+      "type": "number",
+      "description": "Where the count starts. Defaults to min."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": ".field",
+    "field": {
+      "control": "number"
+    }
+  }
+}

@@ -96,7 +96,7 @@ test('components with a contract document mounting with props and their actions'
  await expect(api).toContainText("import { mount } from './components/syntari/tool-approval.js';");
  await expect(api).toContainText('onActionRequest');
  await expect(api).toContainText('"approve" or "reject"');
- await page.goto('http://127.0.0.1:4398/system/?panel=api#slider');
+ await page.goto('http://127.0.0.1:4398/system/?panel=api#password-field');
  await expect(page.locator('[data-ir-api]')).toContainText('has not been authored');
  await expect(page.locator('[data-ir-api]').getByRole('heading', {name: 'Mount with props'})).toHaveCount(0);
 });

@@ -163,7 +163,10 @@
           "text": {
             "label": ".breakdown-label",
             "value": ".breakdown-value",
-            "share": ".breakdown-share"
+            "share": {
+              "selector": ".breakdown-share",
+              "digits": 1
+            }
           }
         }
       ]

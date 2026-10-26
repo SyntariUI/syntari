@@ -179,7 +179,7 @@
     },
     "section": {
       "type": "object",
-      "description": "A heading over a group of nodes that keeps its own layout. Unlike a region it never collapses; use it for the numbered parts of an answer.",
+      "description": "A heading over a group of nodes that keeps its own layout. Unlike a region it never collapses; use it for the numbered parts of an answer. With a submit label, the section is a form.",
       "required": [
         "type",
         "heading",
@@ -202,6 +202,17 @@
           "type": "string",
           "default": "stack",
           "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+        },
+        "submit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Makes the section a form: the label of its one submit button, such as \"Send invite\". Submitting sends every field inside as one action request, {component: \"form\", action: \"submit\", id, values}. Forms do not nest."
+        },
+        "consequential": {
+          "type": "boolean",
+          "default": false,
+          "description": "With submit: the request changes something that is hard to undo, so the host should confirm before it runs."
         },
         "children": {
           "$ref": "#/definitions/children"

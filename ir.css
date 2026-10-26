@@ -42,6 +42,13 @@
 .ir-section-body[data-ir-layout=row]{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .ir-section-body[data-ir-layout=grid]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 @container (min-width:560px){.ir-section-body[data-ir-layout=two-column]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/* A form section: its fields, then the one action that sends them. */
+.ir-form-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:4px}
+.ir-form-actions .button{margin:0}
+/* A group of controls reads like a field: its label above, its hint and error below. */
+[data-syntari-contract] .ir-field-label{font-size:var(--type-caption);color:var(--text)}
+[data-syntari-contract]:not(.field)>.hint{font-size:var(--type-caption);color:var(--muted)}
+[data-syntari-contract]:not(.field)>.error{font-size:var(--type-caption);color:var(--danger-text)}
 /**
  * Balanced rows: a row of equal cards never leaves one card alone. Each component keeps its own minimum card width;
  * at widths where auto-fit would wrap four cards as 3 + 1 (or five as 4 + 1), the screen picks a count that divides

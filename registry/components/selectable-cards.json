@@ -88,6 +88,11 @@
       "maxLength": 80,
       "description": "What the person is choosing."
     },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the choice is sent under inside a form section. Left out, it is the question in camelCase."
+    },
     "options": {
       "type": "array",
       "required": true,
@@ -144,6 +149,10 @@
           }
         }
       }
+    },
+    "field": {
+      "control": "cards",
+      "from": "question"
     }
   },
   "actions": {

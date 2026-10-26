@@ -1,0 +1,139 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "text-input",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Work email",
+      "type": "email",
+      "placeholder": "you@company.com",
+      "icon": "mail",
+      "required": true,
+      "hint": "The invite is sent here."
+    }
+  },
+  "source": "components/text-input/",
+  "name": "Text input",
+  "category": "Forms",
+  "purpose": "Ask for one line of text, such as a name, an email address, or a link.",
+  "description": "A labelled single-line field with an optional icon, a hint under it, and an error that is read with the field.",
+  "intents": [
+    "collect-input",
+    "fill-a-form",
+    "identify"
+  ],
+  "variants": {
+    "type": [
+      "text",
+      "email",
+      "url",
+      "tel",
+      "search"
+    ]
+  },
+  "states": [
+    "default",
+    "focus",
+    "invalid",
+    "required"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "icon",
+    "input",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "textbox",
+    "keyboard": [
+      "Tab"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-label-says-what-to-enter",
+    "a-placeholder-is-an-example-not-a-label",
+    "an-error-says-how-to-fix-it"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "text-area",
+    "checkbox",
+    "switch"
+  ],
+  "avoidWhen": [
+    "the-answer-is-one-of-a-known-set",
+    "the-text-is-a-password-or-secret"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "type": {
+      "type": "enum",
+      "values": [
+        "text",
+        "email",
+        "url",
+        "tel",
+        "search"
+      ],
+      "default": "text",
+      "description": "What kind of text: an email or a link gets the matching keyboard and autofill."
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "An example of an answer, shown until a person types. It never replaces the label."
+    },
+    "value": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Text the field starts with."
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Icon at the start of the field, such as \"mail\" or \"search\"."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "The form cannot be sent until a person fills this in."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": "label.field",
+    "field": {
+      "control": "text"
+    }
+  }
+}

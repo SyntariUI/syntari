@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { serveRenderer, openRenderer, prompts, screenIR, ask } from './renderer-harness.mjs';
+import { serveRenderer, openRenderer, prompts, screenIR, ask, script, settled } from './renderer-harness.mjs';
 
 /*
  * The public Renderer offers templates only, in the System shell: the rail lists the templates, the stage builds the one
@@ -172,5 +172,37 @@ test('with Claude on, the composer docks in the shell, "/" opens it, and Undo jo
   await p.locator('.sys-toolbar [data-undo]').click();
   await expect(p.locator('.canvas [data-ir-component=checklist]')).toHaveCount(1, { timeout: 15000 });
   expect(await prompts(p)).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test('a screen Claude writes stays in place beside the closed inspector, and its form is a real form that reports one request', async ({ page: p }) => {
+  await p.setViewportSize({ width: 1440, height: 900 });
+  const errors = await openRenderer(p, { publicPage: 'model' });
+  const screen = { type: 'screen', title: 'Invite a teammate to Atlas', children: [
+    { id: 'seats', component: 'syntari.stat-row', props: { stats: [{ label: 'Seats used', value: '18 of 20' }, { label: 'Pending invites', value: '2' }] } },
+    { id: 'invite', type: 'section', heading: 'Who to invite', submit: 'Send invite', children: [
+      { id: 'email', component: 'syntari.text-input', props: { label: 'Work email', type: 'email', value: 'ana@example.com', required: true } },
+      { id: 'role', component: 'syntari.radio', props: { label: 'Role', options: [{ label: 'Viewer', value: 'viewer', checked: true }, { label: 'Editor', value: 'editor' }] } }
+    ] }
+  ] };
+  await script(p, JSON.stringify(screen));
+  await ask(p, 'An invite form with the seats left');
+  await settled(p);
+  await expect(p.locator('[data-status-label]')).toHaveText(/Ready/);
+  /* The browser keeping the composer in view once slid the whole workspace sideways and brought the closed inspector in. */
+  expect(await p.locator('[data-workspace]').evaluate(workspace => workspace.scrollLeft)).toBe(0);
+  const rail = await p.locator('.sys-rail').boundingBox(), stage = await p.locator('.sys-stage').boundingBox();
+  expect(stage.x).toBeGreaterThanOrEqual(rail.x + rail.width - 1);
+  await expect(p.locator('.sys-inspector')).toBeHidden();
+  /* Streamed in as a section, the form is painted as the form it is, with its fields inside it. */
+  const form = p.locator('.canvas form.ir-form');
+  await expect(form).toHaveCount(1);
+  await expect(form.locator('[data-ir-id=email] input[name=workEmail]')).toBeVisible();
+  await form.locator('[data-ir-id=role] input[value=editor]').check();
+  await form.getByRole('button', { name: 'Send invite' }).click();
+  await p.locator('[data-shell-tab=ir]').click();
+  await p.locator('[data-tab=actions]').click();
+  const payload = JSON.parse(await p.locator('[data-log] li').first().locator('pre').textContent());
+  expect(payload).toMatchObject({ component: 'form', action: 'submit', id: 'invite', values: { workEmail: 'ana@example.com', role: 'editor' }, consequential: false });
   expect(errors).toEqual([]);
 });

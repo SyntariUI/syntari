@@ -1,0 +1,109 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "date-range-picker",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Reporting period",
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    }
+  },
+  "source": "components/date-range-picker/",
+  "name": "Date range picker",
+  "category": "Forms",
+  "purpose": "Let a person choose a start and an end date, such as a reporting period or a trip.",
+  "description": "A labelled button showing the range; it opens a calendar to choose both dates. The form sends the range as its start and end.",
+  "intents": [
+    "choose-dates",
+    "filter",
+    "fill-a-form"
+  ],
+  "variants": {},
+  "states": [
+    "default",
+    "open",
+    "focus"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "trigger",
+    "range",
+    "calendar",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "button",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Arrow keys",
+      "Escape"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-chosen-range-is-always-written",
+    "the-range-cannot-end-before-it-starts"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "text-input",
+    "searchable-select",
+    "chart-line"
+  ],
+  "avoidWhen": [
+    "only-one-date-is-needed"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "start": {
+      "type": "string",
+      "required": true,
+      "maxLength": 10,
+      "description": "First day of the range, written YYYY-MM-DD."
+    },
+    "end": {
+      "type": "string",
+      "required": true,
+      "maxLength": 10,
+      "description": "Last day of the range, written YYYY-MM-DD."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": ".field",
+    "field": {
+      "control": "date-range"
+    }
+  }
+}
