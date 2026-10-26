@@ -1,0 +1,134 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "searchable-select",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Assign to",
+      "options": [
+        "Alex Morgan",
+        "Jamie Chen",
+        "Sam Rivera",
+        "Robin Park",
+        "Casey Lewis"
+      ],
+      "placeholder": "Search people…"
+    }
+  },
+  "source": "components/searchable-select/",
+  "name": "Searchable select",
+  "category": "Forms",
+  "purpose": "Let a person pick one option from a list too long to show at once, by typing to narrow it.",
+  "description": "A labelled combobox that filters its options as a person types. The form sends the chosen option, and refuses text that is not one.",
+  "intents": [
+    "choose",
+    "search",
+    "fill-a-form"
+  ],
+  "variants": {
+    "options": [
+      "up to 40"
+    ]
+  },
+  "states": [
+    "default",
+    "open",
+    "focus",
+    "required"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "input",
+    "clear",
+    "options",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "combobox",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Enter",
+      "Escape"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "options-are-known",
+    "typed-text-is-not-a-choice-until-it-matches"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "multiselect",
+    "text-input",
+    "radio"
+  ],
+  "avoidWhen": [
+    "fewer-than-six-options",
+    "several-choices-may-apply"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 40,
+      "description": "The choices a person searches, in display order.",
+      "items": {
+        "type": "string",
+        "maxLength": 60
+      }
+    },
+    "value": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "The option chosen at the start. It must be one of the options."
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "A prompt to type, shown until a person does."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "The form cannot be sent until a person fills this in."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": "[data-starter-combo]",
+    "field": {
+      "control": "combo"
+    }
+  }
+}

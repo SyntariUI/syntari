@@ -1,0 +1,154 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "radio",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Who can see this project",
+      "options": [
+        {
+          "label": "Everyone in the workspace",
+          "value": "workspace"
+        },
+        {
+          "label": "Only me",
+          "value": "private",
+          "checked": true
+        },
+        {
+          "label": "People I invite",
+          "value": "invited"
+        }
+      ]
+    }
+  },
+  "source": "components/radio/",
+  "name": "Radio",
+  "category": "Forms",
+  "purpose": "Let a person pick exactly one of a few choices they can see at once.",
+  "description": "A labelled radio group. The form sends the value of the chosen option, or null when none is chosen.",
+  "intents": [
+    "choose",
+    "fill-a-form",
+    "decide"
+  ],
+  "variants": {
+    "options": [
+      "2 to 12"
+    ]
+  },
+  "states": [
+    "default",
+    "checked",
+    "disabled",
+    "focus",
+    "required"
+  ],
+  "anatomy": [
+    "root",
+    "group-label",
+    "option",
+    "dot",
+    "option-label",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "radiogroup",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-choice",
+    "options-are-mutually-exclusive",
+    "a-default-is-chosen-on-purpose"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "checkbox",
+    "text-input",
+    "selectable-cards"
+  ],
+  "avoidWhen": [
+    "more-than-seven-options",
+    "several-choices-may-apply"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What is being chosen. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "The choices, in display order. One may start checked.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60,
+            "description": "What the choice says."
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "What is sent when it is chosen. Defaults to the label."
+          },
+          "checked": {
+            "type": "boolean",
+            "default": false,
+            "description": "The choice starts selected."
+          },
+          "disabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "The choice is shown but cannot be changed."
+          }
+        }
+      }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "The form cannot be sent until a person fills this in."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": ".stack",
+    "field": {
+      "control": "radio"
+    }
+  }
+}

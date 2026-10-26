@@ -188,7 +188,8 @@
             "label": "span:not(.legend-swatch)",
             "share": {
               "selector": "b",
-              "suffix": "%"
+              "suffix": "%",
+              "digits": 1
             }
           }
         }

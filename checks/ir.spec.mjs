@@ -49,7 +49,7 @@ test('both render modes work from the registry, and the catalogue matches it', a
     await expect(page.locator('[data-ir-intent]')).not.toBeEmpty();
     await expect(page.locator('[data-ir-diagnostics] .ir-clean')).toBeVisible();
   }
-  expect(supported).toBe(48);
+  expect(supported).toBe(59);
 });
 
 test('the interactive mode responds to its own controls', async ({ page }) => {
@@ -175,7 +175,7 @@ test('the generative UI guide explains how to inspect the registry-backed catalo
   await page.goto(`${origin}/guides/generative-ui/`);
   await expect(page.locator('[data-guide-content]')).toContainText('syntari info <id> --json');
   const supported = await page.evaluate(async () => (await (await import('/ir.js')).renderableSlugs()).sort());
-  expect(supported).toHaveLength(48);
+  expect(supported).toHaveLength(59);
   await expect(page.getByRole('heading', { name: 'Agents can render, too.' })).toBeVisible();
 });
 
@@ -457,7 +457,7 @@ test('every render contract sample paints without errors, fallbacks, or demo cop
     }
     return out;
   });
-  expect(rows).toHaveLength(96);
+  expect(rows).toHaveLength(118);
   for (const row of rows) expect(row, row.slug).toEqual({ slug: row.slug, errors: [], fallback: 0, undefinedText: false, demoCopy: false });
 });
 

@@ -595,11 +595,14 @@ details.more pre{max-height:300px;overflow:auto;margin:6px 0 0;padding:10px;bord
 .app.sys-shell .sys-toolbar [data-undo][hidden]{display:none}
 .app.sys-shell[data-templates] .sys-stage>.composer{display:none}
 .app.sys-shell[data-ai-ready] .sys-search kbd{display:none}
-.app.sys-shell .sys-inspector.inspector{position:absolute;z-index:20;top:0;right:0;bottom:0;width:var(--sys-drawer);transform:translateX(100%);visibility:visible;box-shadow:none;border-left:1px solid var(--sys-line);background:color-mix(in srgb,var(--canvas) 98%,var(--surface));transition:transform .42s var(--sys-ease)}
-.app.sys-shell .sys-workspace:not([data-panel=none]) .sys-inspector.inspector{transform:none}
+.app.sys-shell .sys-inspector.inspector{position:absolute;z-index:20;top:0;right:0;bottom:0;width:var(--sys-drawer);transform:translateX(100%);visibility:hidden;box-shadow:none;border-left:1px solid var(--sys-line);background:color-mix(in srgb,var(--canvas) 98%,var(--surface));transition:transform .42s var(--sys-ease),visibility 0s linear .42s}
+/* Closed, the inspector is hidden once it has slid out, so Tab never walks into a panel no one can see. */
+.app.sys-shell .sys-workspace:not([data-panel=none]) .sys-inspector.inspector{transform:none;visibility:visible;transition:transform .42s var(--sys-ease),visibility 0s}
 .app.sys-shell .insp-close{display:grid}
 /* The inspector takes a share of the workspace, not of the window, so the stage keeps most of the room on a narrower screen. */
 .app.sys-shell .sys-workspace{--sys-drawer:clamp(320px,40%,480px)}
+/* The workspace and its stage are frames, never scrollers: clip, unlike hidden, cannot be scrolled by the browser keeping a focused field in view, which slid the whole screen sideways and brought the closed inspector in. */
+.app.sys-shell .sys-workspace,.app.sys-shell .sys-stage{overflow:clip}
 /* In that narrower drawer every view stays reachable and readable: the tabs wrap instead of scrolling out of sight, and Screen IR wraps its long lines, keeping their indentation. */
 .app.sys-shell .sys-inspector .tabs{flex-wrap:wrap;overflow:visible}
 .app.sys-shell .sys-inspector textarea.ir-edit{white-space:pre-wrap;overflow-wrap:anywhere}
@@ -1040,7 +1043,8 @@ meta.outline entries: {"node":<registry name>} for a component, {"section":<its 
 Section, a heading over a group with its own layout; it never collapses: {"id":<string>,"type":"section","heading":<string, at most 80 chars>,"layout":<layout>,"children":[<node>, ...]}
 layout: "stack" (one column), "row", "grid", or "two-column" (two columns, filled left, right, left…).
 Component node: {"id":<string>,"component":"syntari.<name>","props":{...},"provenance":{"reason":<string>}}
-Region, closed detail the person may skip: {"id":<string>,"type":"region","label":<string, at most 60 chars>,"open":false,"children":[<node>, ...]}${blocks}
+Region, closed detail the person may skip: {"id":<string>,"type":"region","label":<string, at most 60 chars>,"open":false,"children":[<node>, ...]}
+Form, a section whose fields are sent together as one request: a section with "submit":<its button label, at most 32 chars, such as "Send invite">, and "consequential":true when sending it is hard to undo. Fields (text-input, text-area, checkbox, radio, switch, slider, range-slider, number-stepper, searchable-select, multiselect, date-range-picker, selectable-cards) go inside a form, each with a "name" its value is sent under, unique in the form. Forms never nest, and a prompt-input or chat-composer is a form of its own that never goes inside one.${blocks}
 
 ${DATA_RULES}
 
@@ -1050,7 +1054,7 @@ ARCHETYPES (composition strategies inside a pattern, not templates)
 - decision-and-approval: what needs deciding and why, the affected records with their evidence beside them, then one tool-approval or approval-card that names exactly what will happen.
 - analytics-overview: the change that matters first (stat-row, headline-metric, or metric-strip), the trend or split that explains it, a text-block on why.
 - data-exploration: filter-bar for scope, a table of records, breakdown or source-list for what a total is made of, secondary cuts in regions.
-- form-and-configuration: the choices (selectable-cards, calculator), their consequences in a text-block, one commit control.
+- form-and-configuration: one form section holding the fields in the order a person answers them, with its submit label naming the result; a text-block for consequences, a calculator for "what if".
 - monitoring: live-readout for the current state, a line or area chart for the recent window, activity-list or process-ledger for what happened.
 - investigation: the symptom first (banner or live-readout), the timeline, raw evidence such as file-diff in a region, then the decision.
 - review-and-comparison: comparison-table for two options, media-cards to introduce kinds, a calculator for "what if", selectable-cards for the choice.
@@ -1382,7 +1386,7 @@ function nameOf(entry) {
   const slug = slugOf(entry);
   return slug ? (reg.entries.get(slug)?.name ?? slug) : 'Invalid node';
 }
-const kindOf = entry => entry.node?.type === 'section' ? 'Section' : entry.node?.type === 'region' ? 'Region' : entry.sandbox ? 'Unverified block' : null;
+const kindOf = entry => entry.node?.type === 'section' ? (typeof entry.node.submit === 'string' ? 'Form' : 'Section') : entry.node?.type === 'region' ? 'Region' : entry.sandbox ? 'Unverified block' : null;
 const entryAt = path => path === '' ? null : state.nodes.find(entry => entry.path === path);
 
 /* ---------- Paint: validate, render, then explain ---------- */
@@ -3113,7 +3117,10 @@ async function finishRun(run, result) {
   /* What streamed must be the answer as a whole. Text around the JSON, or a part the parts-so-far check rejected that the whole
      screen accepts, means the streamed canvas could differ, so the screen is painted again from the whole answer. */
   const children = spec && typeof spec === 'object' && spec.type === 'screen' && Array.isArray(spec.children) ? spec.children : null;
-  const consistent = children !== null && same(compactDraft(b.draft).children, children)
+  /* A form section streams in as a section; only the whole screen paints it as the form it is. */
+  const hasForm = list => (Array.isArray(list) ? list : []).some(node => (node?.type === 'section' && typeof node.submit === 'string') || hasForm(node?.children));
+  const forms = hasForm(children);
+  const consistent = children !== null && !forms && same(compactDraft(b.draft).children, children)
     && ![...b.records.values()].some(record => record.kind === 'slot' && record.state === 'rejected' && !errorAt(record.path))
     && ![...b.records.values()].some(record => record.kind === 'slot' && 'node' in record && !['rendered', 'rejected'].includes(record.state));
   /* The host gives every node its id and says where the figures come from before the screen becomes a version. */
@@ -3126,7 +3133,8 @@ async function finishRun(run, result) {
   setBusy(false);
   if (!consistent) {
     mounted.destroy();
-    logActivity(run, 'The streamed screen did not match the whole answer, so it was painted again from the whole answer', { tone: 'warn' });
+    if (forms && children !== null) logActivity(run, 'The screen holds a form, so it was painted once more from the whole answer, with its fields inside the form');
+    else logActivity(run, 'The streamed screen did not match the whole answer, so it was painted again from the whole answer', { tone: 'warn' });
     await paint(prepared, source, notes);
   } else {
     /* Reconcile: the whole-screen check is authoritative. A node it rejects comes down, even if it painted. */
@@ -3239,7 +3247,7 @@ FORMAT
 {"version":"syntari-ops-1","base":<the CURRENT SCREEN version, copied exactly>,"summary":<what changes, in the request's language, under 120 characters>,"operations":[<operation>, ...]}
 Operations apply in order. Each one names its scope by node id:
 - Add a node: {"op":"insert","parent":<id of a section or region, or "screen">,"after":<id of a node directly inside that parent>,"node":<the new node>,"reason":<why>}. Use "before" instead of "after" to place it first; leave both out to add it at the end of the parent.
-- Change fields of one node: {"op":"replace","target":<id>,"set":{<field>:<new value>},"reason":<why>}. Fields: "props.<prop>" on a component (the whole value of that prop), "heading" or "layout" on a section, "label" or "open" on a region. The screen title: {"op":"replace","target":"screen","set":{"title":<new title>}}.
+- Change fields of one node: {"op":"replace","target":<id>,"set":{<field>:<new value>},"reason":<why>}. Fields: "props.<prop>" on a component (the whole value of that prop), "heading", "layout", "submit", or "consequential" on a section, "label" or "open" on a region. The screen title: {"op":"replace","target":"screen","set":{"title":<new title>}}.
 - Move a node, unchanged: {"op":"move","target":<id>,"parent":<id or "screen">,"after"|"before":<id of a node in that parent>,"reason":<why>}.
 - Remove a node and everything inside it: {"op":"remove","target":<id>,"reason":<why>}.
 - Define a measure or a group a new part needs: {"op":"replace","target":"data","set":{"measures.<name>":<measure>,"groups.<name>":<group>},"reason":<why>}. Rows, sources, and the mode are the person's data: never change them unless the request explicitly asks.
@@ -3373,7 +3381,7 @@ ${request}`;
 
 FORMAT
 {"version":"syntari-ops-1","base":"${version.fingerprint}","summary":<what changes, in the request's language, under 120 characters>,"operations":[<operation>, ...]}
-- Change fields of the part: {"op":"replace","target":"${brief.target}","set":{"props.<prop>":<the whole new value of that prop>},"reason":<why>}${node.type === 'section' ? ` (a section takes "heading" or "layout")` : ''}.
+- Change fields of the part: {"op":"replace","target":"${brief.target}","set":{"props.<prop>":<the whole new value of that prop>},"reason":<why>}${node.type === 'section' ? ` (a section takes "heading", "layout", "submit", or "consequential")` : ''}.
 - Define a measure or a group the part needs, before the replace: {"op":"replace","target":"data","set":{"measures.<name>":<measure>,"groups.<name>":<group>},"reason":<why>}. Never change rows, sources, or the mode.
 - Move the part, unchanged, only if the request asks where it goes: {"op":"move","target":"${brief.target}","after"|"before":<an id from the outline>,"reason":<why>}.
 - Remove the whole part only if the request asks for the whole part: {"op":"remove","target":"${brief.target}","reason":<why>}.
@@ -4047,6 +4055,9 @@ async function paintEffect(b, record, spec) {
   const node = found.node;
   /* A section's heading or a region's label changes in place: the parts inside are not touched. */
   if (effect.fields && (node.type === 'section' || node.type === 'region')) {
+    /* A form keeps its own submit button and request, so a section that becomes or stops being one, or changes either, is painted again. */
+    const formOf = section => typeof section.submit === 'string' && Boolean(section.submit.trim());
+    if (node.type === 'section' && (original.tagName === 'FORM' || formOf(node)) && !(original.tagName === 'FORM' && formOf(node) && original.querySelector(':scope > .ir-form-actions > [type=submit]')?.textContent === node.submit && (original.dataset.irConsequential === 'true') === (node.consequential === true))) { b.inconsistent = true; return; }
     if (node.type === 'section') {
       const heading = original.querySelector(':scope > .ir-section-heading'), body = original.querySelector(':scope > .ir-section-body');
       const old = [heading.textContent, body.dataset.irLayout];

@@ -469,6 +469,40 @@
             },
             "additionalProperties": false
           }
+        },
+        "field": {
+          "type": "object",
+          "description": "A form control. It names what the control sends, under the name prop or, left out, its label in camelCase; writes its label, starting value, and bounds; and ties its hint and error to it. It sends its value only from inside a section with a submit label.",
+          "required": [
+            "control"
+          ],
+          "properties": {
+            "control": {
+              "enum": [
+                "text",
+                "textarea",
+                "checkbox",
+                "radio",
+                "switches",
+                "range",
+                "range-pair",
+                "number",
+                "combo",
+                "date-range",
+                "cards"
+              ],
+              "description": "Which control the markup is."
+            },
+            "from": {
+              "type": "string",
+              "description": "Prop the name is taken from when the name prop is left out. Defaults to label."
+            },
+            "items": {
+              "type": "string",
+              "description": "For a list of switches: the array prop whose items are each a control with its own name."
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -779,6 +813,12 @@
               "suffix": {
                 "type": "string",
                 "description": "Text written after the value, such as \"%\". A number is written in the screen's locale."
+              },
+              "digits": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4,
+                "description": "Most decimals a number is written with, such as 1 for a share: 8.5106 is written 8.5."
               }
             },
             "additionalProperties": false
@@ -975,7 +1015,7 @@
               },
               "nameFrom": {
                 "type": "string",
-                "description": "Prop that names this series in each point\u2019s reading."
+                "description": "Prop that names this series in each point’s reading."
               }
             },
             "additionalProperties": false
@@ -999,7 +1039,7 @@
         },
         "markerBox": {
           "type": "string",
-          "description": "Shape behind a marker\u2019s text, sized to fit it."
+          "description": "Shape behind a marker’s text, sized to fit it."
         }
       },
       "additionalProperties": false,

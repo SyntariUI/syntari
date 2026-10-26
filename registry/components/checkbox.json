@@ -1,0 +1,143 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "checkbox",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Notify me about",
+      "options": [
+        {
+          "label": "Mentions",
+          "checked": true
+        },
+        {
+          "label": "Comments on my work"
+        },
+        {
+          "label": "Weekly summary"
+        }
+      ]
+    }
+  },
+  "source": "components/checkbox/",
+  "name": "Checkbox",
+  "category": "Forms",
+  "purpose": "Let a person pick any number of independent choices from a short list.",
+  "description": "A labelled group of checkboxes. The form sends the values of every checked box as a list, empty when none is checked.",
+  "intents": [
+    "choose-several",
+    "fill-a-form",
+    "configure"
+  ],
+  "variants": {
+    "options": [
+      "1 to 12"
+    ]
+  },
+  "states": [
+    "default",
+    "checked",
+    "disabled",
+    "focus"
+  ],
+  "anatomy": [
+    "root",
+    "group-label",
+    "option",
+    "box",
+    "option-label",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "group",
+    "keyboard": [
+      "Tab",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "choices-are-independent",
+    "the-group-label-says-what-the-choices-are-for"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "radio",
+    "switch",
+    "text-input"
+  ],
+  "avoidWhen": [
+    "only-one-choice-may-be-picked",
+    "a-choice-applies-at-once"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the choices are for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "The choices, in display order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60,
+            "description": "What the choice says."
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "What is sent when it is chosen. Defaults to the label."
+          },
+          "checked": {
+            "type": "boolean",
+            "default": false,
+            "description": "The choice starts selected."
+          },
+          "disabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "The choice is shown but cannot be changed."
+          }
+        }
+      }
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": ".stack",
+    "field": {
+      "control": "checkbox"
+    }
+  }
+}

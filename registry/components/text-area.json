@@ -1,0 +1,127 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "text-area",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "What should the reviewer know?",
+      "placeholder": "Context, links, or open questions",
+      "maxLength": 280,
+      "rows": 4
+    }
+  },
+  "source": "components/text-area/",
+  "name": "Text area",
+  "category": "Forms",
+  "purpose": "Ask for a few sentences, such as a description, a reason, or a note.",
+  "description": "A labelled multiline field. With a length limit it counts characters as a person types, and the browser enforces the limit.",
+  "intents": [
+    "collect-input",
+    "fill-a-form",
+    "explain"
+  ],
+  "variants": {
+    "rows": [
+      "2 to 12"
+    ]
+  },
+  "states": [
+    "default",
+    "focus",
+    "invalid",
+    "required"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "textarea",
+    "counter",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "textbox",
+    "keyboard": [
+      "Tab"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-label-says-what-to-enter",
+    "a-limit-is-shown-before-it-is-reached"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "text-input",
+    "radio",
+    "checkbox"
+  ],
+  "avoidWhen": [
+    "the-answer-fits-on-one-line"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "An example of an answer, shown until a person types."
+    },
+    "value": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Text the field starts with."
+    },
+    "rows": {
+      "type": "number",
+      "minimum": 2,
+      "maximum": 12,
+      "default": 3,
+      "description": "Visible lines."
+    },
+    "maxLength": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5000,
+      "description": "Most characters a person can enter. Set, it is counted under the field."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "The form cannot be sent until a person fills this in."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": "label.field",
+    "field": {
+      "control": "textarea"
+    }
+  }
+}

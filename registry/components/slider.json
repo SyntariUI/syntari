@@ -1,0 +1,126 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "slider",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Monthly events",
+      "min": 1000,
+      "max": 50000,
+      "step": 1000,
+      "value": 10000
+    }
+  },
+  "source": "components/slider/",
+  "name": "Slider",
+  "category": "Forms",
+  "purpose": "Let a person pick one value from a range when the exact number matters less than where it sits.",
+  "description": "A labelled slider with its value written above it and the range written under it.",
+  "intents": [
+    "choose-a-value",
+    "estimate",
+    "fill-a-form"
+  ],
+  "variants": {
+    "unit": [
+      "$",
+      "%",
+      "words"
+    ]
+  },
+  "states": [
+    "default",
+    "focus",
+    "dragging"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "value",
+    "track",
+    "thumb",
+    "range-labels",
+    "hint"
+  ],
+  "accessibility": {
+    "role": "slider",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Home",
+      "End"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-value-is-always-written",
+    "the-range-is-shown",
+    "steps-match-what-the-value-means"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "range-slider",
+    "number-stepper",
+    "calculator"
+  ],
+  "avoidWhen": [
+    "the-exact-number-matters",
+    "the-range-has-more-than-a-few-hundred-steps"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "min": {
+      "type": "number",
+      "required": true,
+      "description": "Lowest value a person can choose."
+    },
+    "max": {
+      "type": "number",
+      "required": true,
+      "description": "Highest value a person can choose."
+    },
+    "step": {
+      "type": "number",
+      "default": 1,
+      "description": "Distance between values a person can choose."
+    },
+    "value": {
+      "type": "number",
+      "description": "Where the slider starts. Defaults to min."
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "Unit written with every figure: \"$\" leads it; \"%\" and words such as \"seats\" follow it."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    }
+  },
+  "ir": {
+    "node": "label.field",
+    "field": {
+      "control": "range"
+    }
+  }
+}

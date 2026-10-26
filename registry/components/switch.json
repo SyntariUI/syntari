@@ -1,0 +1,136 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "switch",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Notifications",
+      "items": [
+        {
+          "label": "Email notifications",
+          "description": "The important things, in your inbox.",
+          "checked": true
+        },
+        {
+          "label": "Weekly digest",
+          "description": "A short recap every Monday."
+        }
+      ]
+    }
+  },
+  "source": "components/switch/",
+  "name": "Switch",
+  "category": "Forms",
+  "purpose": "Show settings a person turns on or off, each with what it does.",
+  "description": "A list of switches. Each is a setting of its own: the form sends each one under its own name, as true or false.",
+  "intents": [
+    "configure",
+    "fill-a-form",
+    "set-preferences"
+  ],
+  "variants": {
+    "items": [
+      "1 to 12"
+    ]
+  },
+  "states": [
+    "on",
+    "off",
+    "disabled",
+    "focus"
+  ],
+  "anatomy": [
+    "root",
+    "group-label",
+    "row",
+    "label",
+    "description",
+    "switch"
+  ],
+  "accessibility": {
+    "role": "switch",
+    "keyboard": [
+      "Tab",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "the-label-names-the-setting-not-the-state",
+    "each-switch-is-one-setting"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "checkbox",
+    "text-input",
+    "card"
+  ],
+  "avoidWhen": [
+    "the-choice-needs-a-confirmation",
+    "options-are-mutually-exclusive"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Heading for the group, such as \"Notifications\"."
+    },
+    "items": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "One switch per setting, in display order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60,
+            "description": "The setting, such as \"Weekly digest\". With no name, it is also the key the switch is sent under."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "What turning it on does."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "The key this switch is sent under. Left out, it is the label in camelCase."
+          },
+          "checked": {
+            "type": "boolean",
+            "default": false,
+            "description": "The switch starts on."
+          },
+          "disabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "The switch is shown but cannot be changed."
+          }
+        }
+      }
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    }
+  },
+  "ir": {
+    "node": ".stack",
+    "field": {
+      "control": "switches",
+      "items": "items"
+    }
+  }
+}

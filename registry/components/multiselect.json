@@ -1,0 +1,141 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "multiselect",
+  "version": "1.0.0",
+  "status": "authored",
+  "sample": {
+    "props": {
+      "label": "Labels",
+      "options": [
+        "Design",
+        "Research",
+        "Engineering",
+        "Marketing",
+        "Operations"
+      ],
+      "values": [
+        "Design"
+      ],
+      "placeholder": "Find a label…"
+    }
+  },
+  "source": "components/multiselect/",
+  "name": "Multi-select",
+  "category": "Forms",
+  "purpose": "Let a person pick several options from a searchable list and see what they picked.",
+  "description": "A labelled combobox whose choices become removable chips. The form sends the chosen options as a list.",
+  "intents": [
+    "choose-several",
+    "tag",
+    "fill-a-form"
+  ],
+  "variants": {
+    "options": [
+      "up to 40"
+    ]
+  },
+  "states": [
+    "default",
+    "open",
+    "focus",
+    "required"
+  ],
+  "anatomy": [
+    "root",
+    "label",
+    "input",
+    "options",
+    "chips",
+    "hint",
+    "error"
+  ],
+  "accessibility": {
+    "role": "combobox",
+    "keyboard": [
+      "Tab",
+      "Arrow keys",
+      "Enter",
+      "Escape"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "options-are-known",
+    "chosen-values-stay-visible"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "searchable-select",
+    "checkbox",
+    "text-input"
+  ],
+  "avoidWhen": [
+    "fewer-than-six-options",
+    "only-one-choice-may-be-picked"
+  ],
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "What the field asks for. It names the control and, with no name prop, the key its value is sent under."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The key the value is sent under, such as \"email\". Left out, it is the label in camelCase: \"Work email\" is sent as workEmail."
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "maxItems": 40,
+      "description": "The choices a person searches, in display order.",
+      "items": {
+        "type": "string",
+        "maxLength": 60
+      }
+    },
+    "values": {
+      "type": "array",
+      "maxItems": 40,
+      "description": "Options chosen at the start. Each must be one of the options.",
+      "items": {
+        "type": "string",
+        "maxLength": 60
+      }
+    },
+    "placeholder": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "A prompt to type, shown until a person does."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "The form cannot be sent until a person chooses at least one option."
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "Help that stays under the field and is read with it, such as a format or a limit."
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "A problem with the value, shown under the field and announced with it. It marks the field invalid."
+    }
+  },
+  "ir": {
+    "node": "[data-starter-combo]",
+    "field": {
+      "control": "combo"
+    }
+  }
+}

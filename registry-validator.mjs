@@ -90,6 +90,18 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
       if (manifest.props?.[key]?.items?.fields?.value?.type !== 'number') problems.push(`tiles for ${entry.id}.${key} need items with a number value`);
       if (binding.name !== undefined && !(binding.name in (manifest.props ?? {}))) problems.push(`tiles.name for ${entry.id}.${key} must name a prop`);
     }
+    /* A form control is named by a prop and needs what its control writes: a label, bounds, options, or dates. */
+    const field = manifest.ir?.field;
+    if (field) {
+      const props = manifest.props ?? {};
+      if (field.items) { if (props[field.items]?.items?.fields?.label?.type !== 'string') problems.push(`field.items for ${entry.id} must name a list whose items have a label`); }
+      else {
+        if (props.name?.type !== 'string') problems.push(`field for ${entry.id} needs a name prop`);
+        if (props[field.from ?? 'label']?.type !== 'string') problems.push(`field for ${entry.id} needs a ${field.from ?? 'label'} prop to name it`);
+      }
+      const needs = { range: ['min', 'max'], 'range-pair': ['min', 'max'], number: ['min', 'max'], combo: ['options'], checkbox: ['options'], radio: ['options'], 'date-range': ['start', 'end'] }[field.control] ?? [];
+      for (const key of needs) if (!props[key]?.required) problems.push(`field ${field.control} for ${entry.id} needs a required ${key} prop`);
+    }
     /* A field that follows another names an enum beside it, maps only that enum's values, and maps an icon field to icons the runtime ships. */
     for (const [key, prop] of Object.entries(manifest.props ?? {})) {
       if (prop.defaultFrom) problems.push(`defaultFrom for ${entry.id}.${key} is only read for fields of list items`);
@@ -107,7 +119,8 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     }
     if (manifest.props && manifest.ir) {
       for (const [binding, value] of Object.entries(manifest.ir)) {
-        if (binding === 'node' || binding === 'remove') continue;
+        /* A field binding names its control and the props it reads; those are checked with the field above. */
+        if (binding === 'node' || binding === 'remove' || binding === 'field') continue;
         /* A computing contract maps its roles to props and its slots to selectors, so only the roles name props. */
         if (binding === 'compute') {
           for (const role of ['inputs', 'outputs', 'parts']) if (value[role] !== undefined && manifest.props[value[role]]?.type !== 'array') problems.push(`compute.${role} for ${entry.id} must name an array prop`);
