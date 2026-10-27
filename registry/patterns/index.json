@@ -263,6 +263,160 @@
         "review"
       ],
       "preview": "https://syntariui.giovanitier.com/renderer/"
+    },
+    {
+      "id": "task-triage",
+      "name": "Task triage",
+      "type": "composition",
+      "archetype": "task-triage",
+      "description": "Resolve pending work in the order that matters.",
+      "status": "authored",
+      "dependencies": [
+        "banner",
+        "table",
+        "button",
+        "metadata-list",
+        "activity-list"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Build a customer support dashboard for our agents."
+      ],
+      "installable": false,
+      "screenMode": "support-queue",
+      "antiExample": "support-queue-baseline",
+      "differences": [
+        "Baseline: the agent’s screen leads with the team’s satisfaction and volume; their own tickets are “recent”, in no order a reply depends on.",
+        "Intent-aware: breaches first, then the agent’s tickets by time to target, with the customer and last messages of the selected ticket beside them."
+      ],
+      "preview": "https://syntariui.giovanitier.com/renderer/v2/?scenario=support-queue"
+    },
+    {
+      "id": "record-workspace",
+      "name": "Record workspace",
+      "type": "composition",
+      "archetype": "record-workspace",
+      "description": "Work on one client, account, project, or shipment: where it stands and what it needs next.",
+      "status": "authored",
+      "dependencies": [
+        "banner",
+        "metadata-list",
+        "checklist",
+        "value-diff",
+        "tool-approval",
+        "table",
+        "activity-list",
+        "process-ledger"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Show shipment SHP-20931 for the operations team."
+      ],
+      "installable": false,
+      "screenMode": "shipment-record",
+      "antiExample": "shipment-record-baseline",
+      "differences": [
+        "Baseline: four measures and a calm info banner come before the hold; documents are three equal cards; the reroute is approved without its cost or new date.",
+        "Intent-aware: the hold and its cause lead, then what to do, then what rerouting changes beside the decision. The route sits beside it; documents and events wait."
+      ],
+      "preview": "https://syntariui.giovanitier.com/renderer/v2/?scenario=shipment-record"
+    },
+    {
+      "id": "evidence-review",
+      "name": "Evidence review",
+      "type": "composition",
+      "archetype": "evidence-review",
+      "description": "Check values against their source, settle each difference, and confirm what will be saved.",
+      "status": "authored",
+      "dependencies": [
+        "value-diff",
+        "tool-approval",
+        "metadata-list",
+        "source-excerpt"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Audit the Rhine Freight invoice for April against the rate card."
+      ],
+      "installable": false,
+      "screenMode": "freight-invoice",
+      "antiExample": "freight-invoice-baseline",
+      "differences": [
+        "Baseline: the comparison table can only say which side has the advantage; “some charges” and “change the amount” name nothing; the invoice is its metadata in a region.",
+        "Intent-aware: each disputed line against the invoice text, a choice per charge, and the exact payment that results beside the approval."
+      ],
+      "preview": "https://syntariui.giovanitier.com/renderer/v2/?scenario=freight-invoice"
+    },
+    {
+      "id": "comparison-workspace",
+      "name": "Comparison workspace",
+      "type": "composition",
+      "archetype": "comparison-workspace",
+      "description": "Choose between alternatives on the measures that matter.",
+      "status": "authored",
+      "dependencies": [
+        "table",
+        "radio",
+        "metadata-list"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Compare the three carrier quotes for the Lyon lane."
+      ],
+      "installable": false,
+      "screenMode": "carrier-quotes",
+      "antiExample": "carrier-quotes-baseline",
+      "differences": [
+        "Baseline: each option in its own card with its own Choose button and the award again in an approval card; prices are drawn, but transit and reliability are buried in sentences.",
+        "Intent-aware: one table on shared columns, then one choice that names each tradeoff, as a form that asks the host to confirm."
+      ],
+      "preview": "https://syntariui.giovanitier.com/renderer/v2/?scenario=carrier-quotes"
+    },
+    {
+      "id": "configuration-workspace",
+      "name": "Configuration workspace",
+      "type": "composition",
+      "archetype": "configuration-workspace",
+      "description": "Set how something behaves, with frequent settings first and advanced ones out of the way.",
+      "status": "authored",
+      "dependencies": [
+        "number-stepper",
+        "radio",
+        "searchable-select",
+        "switch"
+      ],
+      "tokens": [
+        "color.surface.raised",
+        "color.text.primary"
+      ],
+      "files": [],
+      "examples": [
+        "Settings for response targets and ticket routing."
+      ],
+      "installable": false,
+      "screenMode": "support-settings",
+      "antiExample": "support-settings-baseline",
+      "differences": [
+        "Baseline: assignment choices as cards, targets and rarely changed automation in one long form, one save for all.",
+        "Intent-aware: targets and routing as two groups with their own saves; automation one step away."
+      ],
+      "preview": "https://syntariui.giovanitier.com/renderer/v2/?scenario=support-settings"
     }
   ]
 }

@@ -53,6 +53,19 @@ export function checkCompositionPolicy(policy, componentIds) {
   return problems;
 }
 
+const planChecks = new Map();
+/** Check a composition plan (syntari-plan-1) against plan.schema.json, with paths under meta.plan. */
+export async function validatePlanSchema(plan, registryDir) {
+  if (!planChecks.has(registryDir)) planChecks.set(registryDir, new Ajv({ allErrors: true, strict: false }).compile(await readJson(join(registryDir, 'schema/plan.schema.json'))));
+  const check = planChecks.get(registryDir);
+  const valid = check(plan);
+  const details = valid ? [] : check.errors.map(error => {
+    const extra = error.params?.additionalProperty ? ` ("${error.params.additionalProperty}")` : error.params?.allowedValues ? ` (${error.params.allowedValues.join(', ')})` : '';
+    return { path: `meta.plan${irPath(error.instancePath) === 'spec' ? '' : `.${irPath(error.instancePath)}`}`.replace('.[', '['), message: `${error.message}${extra}` };
+  });
+  return { valid, details };
+}
+
 export async function validateRegistry(registryDir, kitDir, packageVersion) {
   const problems = [];
   const index = await readJson(join(registryDir, 'index.json'));
@@ -206,6 +219,13 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
         for (const child of screen.children ?? []) visit(child);
         for (const component of used) if (!pattern.dependencies?.includes(component)) problems.push(`Unlisted Screen IR dependency for ${pattern.id}: ${component}`);
       }
+    }
+    /* An archetype pattern names an archetype the policy defines, and its anti-pattern screen exists and is valid Screen IR. */
+    if (pattern.archetype && !compositionPolicy?.archetypes?.[pattern.archetype]) problems.push(`Pattern ${pattern.id} names archetype ${pattern.archetype}, which the composition policy does not define`);
+    if (pattern.antiExample) {
+      const anti = screens[pattern.antiExample];
+      if (!anti) problems.push(`Missing anti-pattern Screen IR for ${pattern.id}: ${pattern.antiExample}`);
+      else { const check = await validateScreenSchema(anti, registryDir); if (!check.valid) problems.push(...check.problems.map(problem => `${pattern.id} anti-pattern Screen IR ${problem}`)); }
     }
     if (pattern.installable) for (const file of pattern.files ?? []) {
       if (!safeId(pattern.id) || !/^[a-z0-9-]+\.(js|css)$/.test(file) || !await exists(join(kitDir, 'patterns', file))) problems.push(`Missing packaged pattern file: ${pattern.id}/${file}`);

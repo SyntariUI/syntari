@@ -130,7 +130,8 @@ export function planScreen(brief, policy, { renderable = null } = {}) {
   if (b.job.mode && ['resolve', 'decide', 'review'].includes(b.job.mode) && !b.decisions.length) questions.push('Which decisions does the person make on this screen?');
   const status = b.job.mode && b.information.length ? 'ready' : 'needs-context';
   const mode = b.job.mode ?? cues.modes[0]?.id ?? 'review';
-  const subject = b.subject ?? cues.subjects[0]?.id ?? null;
+  /* A cue orders a provisional plan only: once the brief states the job, words in the request carry no weight. */
+  const subject = b.subject ?? (status === 'ready' ? null : cues.subjects[0]?.id ?? null);
   const kinds = new Set(b.information.map(item => item.kind).filter(Boolean));
   const decisive = new Set(b.information.filter(item => item.kind && (item.neededFor.length || item.exception === true || item.priority === 'primary')).map(item => item.kind));
   const ranking = rankArchetypes({ mode, subject, kinds, decisive }, policy);

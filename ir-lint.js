@@ -109,11 +109,29 @@ export function lintComposition(spec, { policy, plan: given = null } = {}) {
   }
 
   /* ---------- Task prominence and fit: the job decides the components, not their availability ---------- */
-  const taskScreen = plan ? TASK_MODES.includes(plan.mode) || TASK_ARCHETYPES.includes(plan.archetype) : false;
+  /* The plan says what to avoid for this job; the archetype and mode are read too, for plans written before avoid existed. */
+  const avoids = id => Array.isArray(plan?.avoid) && plan.avoid.some(item => item?.id === id);
+  const taskScreen = plan ? avoids('kpi-grid') || TASK_MODES.includes(plan.mode) || TASK_ARCHETYPES.includes(plan.archetype) : false;
   const decisiveKpi = new Set(items.filter(item => item.kind === 'aggregate-metric' && (item.priority === 'primary' || (Array.isArray(item.neededFor) && item.neededFor.length))).flatMap(item => Array.isArray(item.nodes) ? item.nodes : []));
   const kpis = components.filter(entry => KPI.includes(slugOf(entry.node.component)) && !closedRegion(entry));
   if (taskScreen) for (const entry of kpis) if (!decisiveKpi.has(entry.node.id)) add('kpi-grid-on-task-screen', entry, `${nameOf(entry)} puts headline measures on a screen whose job is to ${plan.mode}${archetype ? ` (${archetype.label.toLowerCase()})` : ''}; no decision here depends on them.`, 'Remove the block, or move the measures to a closed region of totals; if a decision depends on one, name it in the plan.');
   if (!plan && kpis.length && kpis[0].order === 0 && components.some(entry => DECISIONS.includes(slugOf(entry.node.component)))) add('kpi-grid-on-task-screen', kpis[0], `${nameOf(kpis[0])} opens a screen that asks for a decision, so measures come before the work.`, 'Lead with the decision and what it depends on; declare a plan to check this against the job.', { severity: 'suggestion' });
+
+  /* Boxes per item where the plan says to avoid them: a task, a setting, or an option each in its own card. */
+  if (avoids('card-per-item') || avoids('card-per-setting') || avoids('separate-option-pages')) {
+    const boxed = components.filter(entry => ['card', 'approval-card', 'selectable-cards'].includes(slugOf(entry.node.component)) && !closedRegion(entry));
+    const counted = boxed.reduce((sum, entry) => sum + (slugOf(entry.node.component) === 'selectable-cards' ? (entry.node.props?.options?.length ?? 0) : 1), 0);
+    const flagged = new Set(findings.filter(item => item.rule === 'card-as-grouping').flatMap(item => item.nodes ?? []));
+    if (counted >= 2 && !boxed.every(entry => flagged.has(entry.node.id))) {
+      const what = avoids('card-per-setting') ? 'setting' : avoids('separate-option-pages') ? 'option' : 'item';
+      add('card-per-item', boxed[0], `${counted} ${what}s each sit in their own card, which the plan for this ${archetype?.label.toLowerCase() ?? 'screen'} avoids: ${plan.avoid.find(item => ['card-per-item', 'card-per-setting', 'separate-option-pages'].includes(item.id)).reason}`, what === 'setting' ? 'Use the form control itself: radios, switches, a select. Keep cards for objects people act on alone.' : 'Show them as rows that share columns, with one action for the selected one.', { nodes: boxed.map(entry => entry.node.id).filter(Boolean) });
+    }
+  }
+  /* Every setting at once where the plan says to group them and reveal the rare ones. */
+  if (avoids('everything-at-once')) for (const entry of entries.filter(item => item.node.type === 'section' && typeof item.node.submit === 'string')) {
+    const controls = components.filter(item => item.ancestors.includes(entry)).reduce((sum, item) => sum + (slugOf(item.node.component) === 'switch' ? (item.node.props?.items?.length ?? 1) : 1), 0);
+    if (controls >= 7 && !closedRegion(entry)) add('everything-at-once', entry, `${nameOf(entry)} puts ${controls} settings in one form, all visible.`, 'Group settings by what they control, each group with its own save, and move the rarely changed ones into a closed region.');
+  }
 
   /* A queue a person works through needs an order to act on: a due date, an age, a priority. */
   const queueNodes = new Set(items.filter(item => item.kind === 'pending-item').flatMap(item => Array.isArray(item.nodes) ? item.nodes : []));
@@ -135,7 +153,9 @@ export function lintComposition(spec, { policy, plan: given = null } = {}) {
     const scope = entry.ancestors.at(-1)?.path ?? 'screen';
     parents.set(scope, [...(parents.get(scope) ?? []), entry]);
   }
-  for (const group of parents.values()) if (group.length >= 2) add('competing-primary-actions', group[1], `${group.map(nameOf).join(' and ')} each ask for a decision in the same part of the screen, so neither leads.`, 'Keep one decision per part; put the others in the rows they belong to, or in their own parts.', { nodes: group.map(entry => entry.node.id).filter(Boolean) });
+  /* Two approvals compete, and so do an approval and a form; forms that each save their own group of settings do not. */
+  const approvals = group => group.filter(entry => DECISIONS.includes(slugOf(entry.node.component))).length;
+  for (const group of parents.values()) if (approvals(group) >= 2 || (approvals(group) >= 1 && group.length >= 2)) add('competing-primary-actions', group[1], `${group.map(nameOf).join(' and ')} each ask for a decision in the same part of the screen, so neither leads.`, 'Keep one decision per part; put the others in the rows they belong to, or in their own parts.', { nodes: group.map(entry => entry.node.id).filter(Boolean) });
   const cardsWithAction = new Map();
   for (const entry of components) if (['card', 'approval-card'].includes(slugOf(entry.node.component)) && (entry.node.props?.action || slugOf(entry.node.component) === 'approval-card')) {
     const scope = entry.ancestors.at(-1)?.path ?? 'screen';
@@ -179,6 +199,8 @@ export function lintComposition(spec, { policy, plan: given = null } = {}) {
       const named = [...new Set(labels.filter(label => label.split(' ').length >= 2 && body.includes(label)))];
       if (repeated.length >= 2 || named.length >= 3) add('restated-content', entry, `This text repeats ${repeated.length >= 2 ? `${repeated.length} figures (${repeated.slice(0, 3).join(', ')})` : `${named.length} labels`} already shown beside it.`, 'Say what the figures mean or what to do about them, or remove the text.');
     }
+    /* A summary of change that names no value: the reader learns that something changed, not what. */
+    if (slug === 'text-block' && typeof props.body === 'string' && figuresIn(props.body).length < 2 && (/^\s*what changed\b/i.test(props.body) || /\b(several|some|various|multiple|a number of)\b[^.]{0,40}\b(values?|figures?|changes?|parts?|items?|fields?)\b/i.test(props.body))) add('vague-change-summary', entry, 'This text says that values change without naming one.', 'Show each value before and after (value-diff), or name the change in the sentence.');
     if (slug === 'banner' && ['info', 'success', 'neutral', undefined].includes(props.tone) && entry.order <= 1) {
       const exception = items.some(item => item.disclosure === 'on-exception' && (item.nodes ?? []).includes(entry.node.id));
       if (!exception) add('banner-without-exception', entry, `${nameOf(entry)} leads the screen with a message that is not an exception.`, 'Put the status in the heading or a badge; keep banners for what is wrong or about to be.');

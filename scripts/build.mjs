@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 import { scopeCss, ROOT_TYPOGRAPHY } from './scope-css.mjs';
 import { modes } from '../screen-recipes.js';
+import { scenarios, screenFor } from '../benchmarks/index.js';
 import { buildLlms } from './llms.mjs';
 
 const kobbeTracker = `  <script
@@ -55,7 +56,16 @@ await cp('registry','kit/runtime/registry',{recursive:true});
 execFileSync(process.execPath,['scripts/generate-registry.mjs','--skeleton','all'],{
   stdio:'inherit',env:{...process.env,SYNTARI_REGISTRY_OUTPUT:resolve('kit/runtime/registry')}
 });
-await writeFile('kit/runtime/registry/patterns/screens.json',JSON.stringify(Object.fromEntries(Object.entries(modes).map(([id,mode])=>[id,mode.spec])),null,2)+'\n');
+/* Archetype patterns show a complete example and the anti-pattern beside it: the intent-aware and baseline screens of a benchmark scenario. */
+const compositionPolicy=JSON.parse(await readFile('registry/composition-policy.json','utf8'));
+const archetypeScreens={};
+for(const pattern of JSON.parse(await readFile('registry/patterns/index.json','utf8')).patterns.filter(item=>item.archetype)){
+  const scenario=scenarios.find(item=>item.id===pattern.screenMode);
+  if(!scenario)throw new Error(`Pattern ${pattern.id} names scenario ${pattern.screenMode}, which the benchmarks do not have.`);
+  archetypeScreens[pattern.screenMode]=screenFor(scenario,'intent',compositionPolicy);
+  archetypeScreens[pattern.antiExample]=screenFor(scenario,'baseline',compositionPolicy);
+}
+await writeFile('kit/runtime/registry/patterns/screens.json',JSON.stringify({...Object.fromEntries(Object.entries(modes).map(([id,mode])=>[id,mode.spec])),...archetypeScreens},null,2)+'\n');
 await writeFile('kit/catalog.json',JSON.stringify(components.map(({html,...c})=>c),null,2));
 for(const c of components){
  const module=`import { mount as mountPattern } from './runtime/syntari.js';\n\nexport function mount(target, options = {}) {\n  return mountPattern('${c.slug}', target, options);\n}\n\nexport { prepare, setTheme } from './runtime/syntari.js';\n`;

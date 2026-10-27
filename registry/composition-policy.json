@@ -676,7 +676,8 @@
         ],
         "acceptable": [
           "metadata-list",
-          "text-block"
+          "text-block",
+          "progress"
         ]
       },
       "trend": {
@@ -688,6 +689,11 @@
         "label": "Parts of a whole",
         "means": "Shares of one total.",
         "role": "composition"
+      },
+      "category-comparison": {
+        "label": "Measures per category",
+        "means": "Two measures for each category, such as actual against target.",
+        "role": "category-comparison"
       },
       "records": {
         "label": "Records",
@@ -1076,6 +1082,7 @@
             "records",
             "trend",
             "breakdown",
+            "category-comparison",
             "aggregate-metric",
             "explanation"
           ],
@@ -1097,8 +1104,8 @@
         {
           "id": "main-with-context",
           "layout": "split",
-          "when": "Outstanding work is the main column and the profile sits beside it.",
-          "aside": "identity"
+          "aside": "context",
+          "when": "Identity and what needs doing lead the main column; working context sits beside it."
         },
         {
           "id": "sectioned",
@@ -1452,7 +1459,8 @@
           "disclosure": "visible",
           "kinds": [
             "trend",
-            "breakdown"
+            "breakdown",
+            "category-comparison"
           ],
           "holds": "How the main measure moves or splits."
         },
@@ -1513,8 +1521,10 @@
         "explanation",
         "trend",
         "breakdown",
+        "category-comparison",
         "records",
-        "aggregate-metric"
+        "aggregate-metric",
+        "impact"
       ],
       "requires": [
         "explanation"
@@ -1543,11 +1553,23 @@
           "priority": "supporting",
           "disclosure": "visible",
           "kinds": [
+            "category-comparison",
             "trend",
             "breakdown",
             "records"
           ],
           "holds": "The analysis that supports the finding."
+        },
+        {
+          "id": "action",
+          "label": "What acting on it changes",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "impact",
+            "decision"
+          ],
+          "holds": "The consequences of acting on the finding, and the one decision."
         },
         {
           "id": "detail",
@@ -1556,7 +1578,8 @@
           "disclosure": "collapsed",
           "kinds": [
             "records",
-            "source-document"
+            "source-document",
+            "history"
           ],
           "holds": "Provenance and full records."
         }
@@ -1612,12 +1635,22 @@
       "competing-primary-actions": {
         "severity": "warning",
         "category": "action-clarity",
-        "means": "More than one primary decision on one screen part."
+        "means": "More than one approval in one screen part, or an approval beside a form that also decides. Separate settings forms, each saving its own group, do not compete."
       },
       "kpi-grid-on-task-screen": {
         "severity": "warning",
         "category": "component-fit",
         "means": "Headline measure blocks on a screen whose job is to resolve, review, or configure, without a decision that depends on them."
+      },
+      "card-per-item": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "Tasks, settings, or options each in their own card, where the plan's archetype avoids it."
+      },
+      "everything-at-once": {
+        "severity": "warning",
+        "category": "disclosure",
+        "means": "Seven or more settings visible in one form, where the plan groups settings and reveals rare ones."
       },
       "archetype-mismatch": {
         "severity": "warning",
@@ -1653,6 +1686,11 @@
         "severity": "warning",
         "category": "content-economy",
         "means": "Explanatory text repeats figures or labels already shown beside it."
+      },
+      "vague-change-summary": {
+        "severity": "warning",
+        "category": "content-economy",
+        "means": "Text says that values change without naming any of them."
       },
       "repeated-label": {
         "severity": "warning",
