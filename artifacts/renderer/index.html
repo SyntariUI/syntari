@@ -975,7 +975,7 @@ function describeContract(manifest) {
   if (g) {
     text += `  use when: ${g.useWhen.join(' ')}\n`;
     text += `  not when: ${g.avoidWhen.map(item => `${item.text}${item.instead && renderable?.has(item.instead) ? ` Use syntari.${item.instead}.` : ''}`).join(' ')}\n`;
-    text += `  mistakes: ${g.donts.map(item => item.text).join(' ')}\n`;
+    text += `  don't: ${g.donts.map(item => `${item.title} (${item.description.replace(/\.$/, '')})`).join('; ')}\n`;
   } else {
     if (manifest.intents?.length) text += `  use for: ${words(manifest.intents)}\n`;
     if (manifest.avoidWhen?.length) text += `  avoid when: ${words(manifest.avoidWhen)}\n`;

@@ -97,30 +97,30 @@
     ],
     "dos": [
       {
-        "text": "Confirm the result in a few words, in the past tense: Changes saved, Invite sent.",
-        "why": "People glance at it; it has to be read in under two seconds."
+        "title": "Past tense, few words",
+        "description": "Changes saved: read in under two seconds."
       },
       {
-        "text": "Show it only once the action has actually succeeded.",
-        "why": "A toast that confirms something that then fails breaks trust."
+        "title": "Only after success",
+        "description": "Confirming something that then fails breaks trust."
       },
       {
-        "text": "Keep what the toast says available elsewhere on the page.",
-        "why": "It disappears on its own, so people who missed it must still be able to find the result."
+        "title": "Repeat it on the page",
+        "description": "It disappears, so the result must be findable later."
       }
     ],
     "donts": [
       {
-        "text": "Don’t use a toast for errors or warnings.",
-        "why": "It vanishes before people can act, and an error belongs next to what caused it."
+        "title": "Errors in a toast",
+        "description": "It vanishes before people can act; errors belong in place."
       },
       {
-        "text": "Don’t put links or buttons in a toast.",
-        "why": "It disappears on a timer, often before keyboard and screen reader users can reach it."
+        "title": "Actions in a toast",
+        "description": "It times out before keyboard users can reach the button."
       },
       {
-        "text": "Don’t show a toast for every small change.",
-        "why": "Frequent toasts become noise and teach people to ignore them."
+        "title": "A toast for everything",
+        "description": "Constant toasts become noise people learn to ignore."
       }
     ],
     "content": [

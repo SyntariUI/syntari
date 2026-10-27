@@ -776,27 +776,27 @@
         "dos": {
           "type": "array",
           "minItems": 2,
-          "maxItems": 6,
-          "description": "Good practice, each with the reason.",
+          "maxItems": 5,
+          "description": "Good practice: a short title and why, in one sentence.",
           "items": {
             "type": "object",
             "required": [
-              "text",
-              "why"
+              "title",
+              "description"
             ],
             "additionalProperties": false,
             "properties": {
-              "text": {
+              "title": {
                 "type": "string",
-                "minLength": 8,
-                "maxLength": 240,
-                "description": "What to do."
+                "minLength": 3,
+                "maxLength": 40,
+                "description": "A few words naming the practice, such as \"One primary per region\"."
               },
-              "why": {
+              "description": {
                 "type": "string",
                 "minLength": 8,
-                "maxLength": 240,
-                "description": "Why it matters to the person using the interface."
+                "maxLength": 100,
+                "description": "One short sentence: why it matters to the person using the interface."
               }
             }
           }
@@ -804,27 +804,27 @@
         "donts": {
           "type": "array",
           "minItems": 2,
-          "maxItems": 6,
-          "description": "Common mistakes, each with the reason.",
+          "maxItems": 5,
+          "description": "Common mistakes: a short title naming the mistake and why it hurts, in one sentence.",
           "items": {
             "type": "object",
             "required": [
-              "text",
-              "why"
+              "title",
+              "description"
             ],
             "additionalProperties": false,
             "properties": {
-              "text": {
+              "title": {
                 "type": "string",
-                "minLength": 8,
-                "maxLength": 240,
-                "description": "What not to do."
+                "minLength": 3,
+                "maxLength": 40,
+                "description": "A few words naming the mistake, such as \"One primary per region\"."
               },
-              "why": {
+              "description": {
                 "type": "string",
                 "minLength": 8,
-                "maxLength": 240,
-                "description": "What goes wrong for the person using the interface."
+                "maxLength": 100,
+                "description": "One short sentence: why it matters to the person using the interface."
               }
             }
           }

@@ -145,38 +145,38 @@
     ],
     "dos": [
       {
-        "text": "Keep a visible label above every field.",
-        "why": "A placeholder disappears as soon as people type, and with it what the field asked for."
+        "title": "Visible label above",
+        "description": "A placeholder vanishes as people type, and the question with it."
       },
       {
-        "text": "Choose the matching type: email, url, tel, or search.",
-        "why": "Phones show the right keyboard, and browsers can fill the value in."
+        "title": "Matching type",
+        "description": "Email, url, and tel bring the right keyboard and autofill."
       },
       {
-        "text": "Write the error next to the field, saying how to fix the value.",
-        "why": "“Invalid input” tells people something is wrong but not what to do about it."
+        "title": "Errors that say how",
+        "description": "Say how to fix the value, right under the field."
       },
       {
-        "text": "Ask only for what you need, and mark it required.",
-        "why": "Every extra field is one more reason to abandon the form."
+        "title": "Ask only what you need",
+        "description": "Every extra field is one more reason to give up on the form."
       }
     ],
     "donts": [
       {
-        "text": "Don’t use the placeholder as the label.",
-        "why": "It vanishes while typing, is often too faint to read, and is not reliably announced."
+        "title": "Placeholder as label",
+        "description": "It disappears, is often too faint, and isn’t reliably announced."
       },
       {
-        "text": "Don’t show an error while the person is still typing.",
-        "why": "It scolds people for something they were about to fix. Check when they leave the field or submit."
+        "title": "Errors while typing",
+        "description": "Check when people leave the field or submit, not mid-word."
       },
       {
-        "text": "Don’t rely on red alone to show an error.",
-        "why": "About one man in twelve cannot tell red from green; the words carry the meaning."
+        "title": "Red as the only signal",
+        "description": "One man in twelve can’t tell red from green; words carry it."
       },
       {
-        "text": "Don’t ask for the same information twice, such as confirming an email address.",
-        "why": "It doubles the work and the chances of a typo; show what they typed instead."
+        "title": "Asking twice",
+        "description": "Confirm-email fields double the work and the typos."
       }
     ],
     "content": [

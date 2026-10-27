@@ -62,10 +62,10 @@ States:
 ${g.states.map(state => `- ${state.label}: ${state.description} (${state.how})`).join('\n')}
 
 Do:
-${g.dos.map(rule => `- ${rule.text} ${rule.why}`).join('\n')}
+${g.dos.map(rule => `- ${rule.title}: ${rule.description}`).join('\n')}
 
 Don’t:
-${g.donts.map(rule => `- ${rule.text} ${rule.why}`).join('\n')}${g.content?.length ? `\n\nWriting:\n${g.content.map(text => `- ${text}`).join('\n')}` : ''}
+${g.donts.map(rule => `- ${rule.title}: ${rule.description}`).join('\n')}${g.content?.length ? `\n\nWriting:\n${g.content.map(text => `- ${text}`).join('\n')}` : ''}
 
 Accessibility:
 ${[...g.accessibility.keyboard.map(key => `- ${key.keys}: ${key.action}`), ...g.accessibility.notes.map(text => `- ${text}`)].join('\n')}`;
