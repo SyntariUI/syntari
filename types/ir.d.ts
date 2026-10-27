@@ -1,7 +1,9 @@
 /** Types for syntari-ui/runtime/ir.js, the Screen IR validator and renderer for the browser. */
 import type { ActionRequest, ApplyOperationsOptions, ApplyOperationsResult, DataFieldRole, DataFieldType, DataFormat, Diagnostic, Screen, ScreenChange, ScreenChild, DataTable, ScreenDataBlock, ScreenDifference, Severity, ValidationResult } from '../agent.js';
 
-export const IR_LAYOUTS: readonly ['stack', 'row', 'grid', 'two-column'];
+export const IR_LAYOUTS: readonly ['stack', 'row', 'grid', 'two-column', 'split'];
+export const IR_EMPHASIS: readonly ['primary', 'supporting', 'reference'];
+export const IR_SURFACES: readonly ['none', 'inset', 'panel'];
 export const IR_LIMITS: { readonly maxDepth: number; readonly maxNodes: number; readonly maxChildren: number; readonly maxListItems: number };
 
 type Limits = Partial<typeof IR_LIMITS>;

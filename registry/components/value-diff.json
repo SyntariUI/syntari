@@ -1,0 +1,390 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "value-diff",
+  "version": "1.0.0",
+  "status": "authored",
+  "name": "Value diff",
+  "category": "Tables",
+  "purpose": "Show each value that differs between a record and its source, and which one will be saved.",
+  "description": "Rows of a field, the value the record holds, the value the source states, and where in the source it was read; optionally a choice of which value to save.",
+  "intents": [
+    "reconcile",
+    "compare values",
+    "review extraction",
+    "show consequences",
+    "before and after",
+    "discrepancy"
+  ],
+  "variants": {
+    "density": [
+      "default"
+    ]
+  },
+  "states": [
+    "default",
+    "choosable",
+    "kept",
+    "conflict",
+    "matched"
+  ],
+  "anatomy": [
+    "root",
+    "caption",
+    "field",
+    "source-reference",
+    "from-value",
+    "to-value",
+    "choice"
+  ],
+  "accessibility": {
+    "role": "table",
+    "keyboard": [
+      "Tab",
+      "Enter",
+      "Space"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-row-per-field",
+    "values-in-their-own-units",
+    "source-reference-per-row"
+  ],
+  "tokens": [
+    "--surface",
+    "--border",
+    "--text",
+    "--muted",
+    "--accent",
+    "--accent-soft",
+    "--amber-a1",
+    "--warning-text"
+  ],
+  "compatibleWith": [
+    "source-excerpt",
+    "tool-approval",
+    "metadata-list"
+  ],
+  "avoidWhen": [
+    "the-values-do-not-differ",
+    "options-are-compared-on-many-measures"
+  ],
+  "props": {
+    "caption": {
+      "type": "string",
+      "maxLength": 90,
+      "default": "Values that differ",
+      "description": "What is compared, such as Statement against the household record."
+    },
+    "fromLabel": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "The column of current values, such as In the record or Before."
+    },
+    "toLabel": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "The column of new values, such as On the statement or After saving."
+    },
+    "choosable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Let the reviewer choose, per row, which value to save. Without it the rows only show the change, as for consequences."
+    },
+    "useLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Use new",
+      "description": "The choice that saves the new value, such as Use statement."
+    },
+    "keepLabel": {
+      "type": "string",
+      "maxLength": 24,
+      "default": "Keep current",
+      "description": "The choice that keeps the current value, such as Keep record."
+    },
+    "rows": {
+      "type": "array",
+      "required": true,
+      "maxItems": 12,
+      "description": "One row per field.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "field": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40
+          },
+          "from": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40,
+            "description": "The current value, with its unit; — when there is none."
+          },
+          "to": {
+            "type": "string",
+            "required": true,
+            "maxLength": 40,
+            "description": "The new value, with its unit."
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Where in the source the value was read, such as Page 2 · line 14. It becomes a button that shows the line."
+          },
+          "status": {
+            "type": "enum",
+            "values": [
+              "changed",
+              "conflict",
+              "matched"
+            ],
+            "default": "changed",
+            "description": "conflict: the sources disagree and a person must decide; matched: listed for completeness."
+          },
+          "ref": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "The reference the matching source-excerpt line carries, so pointing at either marks both."
+          },
+          "keep": {
+            "type": "boolean",
+            "default": false,
+            "description": "With choosable: the current value is kept instead of the new one."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".value-diff",
+    "text": {
+      "caption": ".value-diff caption",
+      "fromLabel": ".value-diff-from-head",
+      "toLabel": ".value-diff-to-head",
+      "useLabel": "tbody tr:first-child [data-choice=to]",
+      "keepLabel": "tbody tr:first-child [data-choice=from]"
+    },
+    "attributes": {
+      "choosable": {
+        "selector": "",
+        "attribute": "data-choosable"
+      }
+    },
+    "list": {
+      "rows": {
+        "container": "tbody",
+        "item": "tr",
+        "text": {
+          "field": ".value-diff-field",
+          "from": "del",
+          "to": "ins",
+          "note": ".value-diff-source"
+        },
+        "attributes": {
+          "status": {
+            "selector": "",
+            "attribute": "data-status"
+          },
+          "ref": {
+            "selector": "",
+            "attribute": "data-evidence-ref"
+          },
+          "keep": [
+            {
+              "selector": "[data-choice=from]",
+              "attribute": "aria-pressed"
+            },
+            {
+              "selector": "[data-choice=to]",
+              "attribute": "aria-pressed",
+              "invert": true
+            }
+          ]
+        },
+        "class": {
+          "keep": "is-kept"
+        }
+      }
+    }
+  },
+  "actions": {
+    "choose": {
+      "selector": ".value-diff-choice [data-choice]",
+      "local": true,
+      "description": "The reviewer chose which value to save for one row. index names the row and values.value is to (the new value) or from (the current one); the host keeps the choice and saves nothing until the decision is confirmed."
+    }
+  },
+  "sample": {
+    "props": {
+      "caption": "Statement against the household record",
+      "fromLabel": "In the record",
+      "toLabel": "On the statement",
+      "choosable": true,
+      "useLabel": "Use statement",
+      "keepLabel": "Keep record",
+      "rows": [
+        {
+          "field": "Cash and sweep",
+          "from": "€42,180.00",
+          "to": "€38,940.55",
+          "note": "Page 2 · line 14",
+          "ref": "cash"
+        },
+        {
+          "field": "Municipal bond fund",
+          "from": "1,200 units",
+          "to": "1,250 units",
+          "note": "Page 3 · line 6",
+          "ref": "muni"
+        },
+        {
+          "field": "Advisory fee rate",
+          "from": "0.85%",
+          "to": "0.90%",
+          "note": "Page 1 · line 22",
+          "status": "conflict",
+          "ref": "fee",
+          "keep": true
+        }
+      ]
+    }
+  },
+  "guidance": {
+    "summary": "Shows each value that differs between a record and its source, side by side, and which value will be saved.",
+    "useWhen": [
+      "Values were read from a document, by a person or by software, and someone confirms them before they are saved.",
+      "A decision changes figures downstream and people should see each one before and after.",
+      "Two sources disagree on a value and a person must choose one."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Options are compared on several measures to choose one of them.",
+        "instead": "comparison-table"
+      },
+      {
+        "text": "Every value agrees; say so in a sentence and list them in a closed region.",
+        "instead": "metadata-list"
+      },
+      {
+        "text": "The change is to code or text, line by line.",
+        "instead": "file-diff"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "Each row shows the field, the current value struck through, and the new value.",
+        "how": "rows"
+      },
+      {
+        "id": "choosable",
+        "label": "Choosable",
+        "description": "Each row offers the two values to save; the new one is chosen until the reviewer changes it.",
+        "how": "choosable: true"
+      },
+      {
+        "id": "kept",
+        "label": "Kept",
+        "description": "The reviewer kept the current value: it reads as saved and the new one is struck through.",
+        "how": "keep: true, or choose Keep."
+      },
+      {
+        "id": "conflict",
+        "label": "Conflict",
+        "description": "A mark at the start of the row says a person must decide between the values.",
+        "how": "status: conflict"
+      },
+      {
+        "id": "matched",
+        "label": "Matched",
+        "description": "The value agrees; the row is listed for completeness, without a choice.",
+        "how": "status: matched"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Units in every value",
+        "description": "€38,940.55, not 38940.55: a reviewer compares what they will save."
+      },
+      {
+        "title": "A source reference per row",
+        "description": "Page and line let a person check the value without searching."
+      },
+      {
+        "title": "Differences only",
+        "description": "Matching values go in a closed region, so the differences lead."
+      }
+    ],
+    "donts": [
+      {
+        "title": "A paragraph about the change",
+        "description": "Prose hides the two values a reviewer needs side by side."
+      },
+      {
+        "title": "Colour as the only signal",
+        "description": "The struck and inserted values say which is which in any theme."
+      },
+      {
+        "title": "Saving from a row",
+        "description": "Rows choose; one decision below them saves, naming what changes."
+      }
+    ],
+    "content": [
+      "Field names match the record's labels, so a reviewer finds them there too.",
+      "Column labels name the sources: In the record, On the statement; or Before, After saving for consequences."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves to each row's source reference and choice."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Shows the source line, or chooses the value to save."
+        }
+      ],
+      "notes": [
+        "It is a table with row and column headers, and keeps those roles when its rows stack on a narrow screen.",
+        "The current value is a del element and the new one an ins element, so the change is announced as well as drawn.",
+        "Each choice is a pressed or unpressed button inside a group named Value to save."
+      ]
+    },
+    "composition": {
+      "surface": "record",
+      "defaultVisible": "Every value that differs; matching values in a closed region.",
+      "density": "Up to twelve rows; past that, group by section of the source.",
+      "contentLength": "Values under 40 characters with their units.",
+      "redundantWith": [
+        {
+          "component": "text-block",
+          "reason": "A paragraph describing the same differences."
+        },
+        {
+          "component": "comparison-table",
+          "reason": "The same values compared twice."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "evidence-review",
+          "record-workspace"
+        ],
+        "avoid": [
+          "monitoring-dashboard"
+        ]
+      },
+      "mistakes": [
+        "Matching values listed first.",
+        "Consequences described in prose instead of before and after."
+      ],
+      "responsive": "Rows stack as field, change, source, and choice; roles keep it a table."
+    }
+  },
+  "source": "components/value-diff/"
+}

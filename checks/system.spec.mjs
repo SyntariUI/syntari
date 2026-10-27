@@ -12,7 +12,7 @@ test('System preserves the live component while inspecting contracts, code and i
  await expect(page.locator('[data-preview-skeleton]')).toHaveCount(0);
  const preview=page.locator('[data-component-mount] > [data-syntari-component]');
  await expect(preview).toHaveAttribute('data-syntari-component','button');
- await expect(page.locator('[data-component-count]')).toHaveText('137');
+ await expect(page.locator('[data-component-count]')).toHaveText('139');
  expect(await page.locator('.sys-workspace').evaluate(el=>el.getBoundingClientRect().width/innerWidth)).toBeGreaterThan(.75);
  const initial=await preview.elementHandle();
  await page.getByRole('button',{name:'Inspect component'}).click();
@@ -168,7 +168,7 @@ test('a documented component says when to use it, when not and what instead, its
  await expect(page.locator('[data-inspector-title]')).toHaveText('Toast');
  await expect(guide.locator('[data-guide="accessibility"]')).toContainText('Takes no focus and needs no keys.');
  /* A component without guidance keeps the panel it had. */
- await page.goto('http://127.0.0.1:4398/system/?panel=info#banner');
+ await page.goto('http://127.0.0.1:4398/system/?panel=info#checklist');
  await expect(page.locator('[data-rules]')).not.toBeEmpty();
  await expect(page.locator('[data-guidance]')).toBeHidden();
  await expect(page.locator('[data-accessibility-block]')).toBeVisible();

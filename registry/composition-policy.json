@@ -1,7 +1,7 @@
 {
   "$id": "https://syntariui.giovanitier.com/registry/composition-policy.json",
   "version": "0.4.0",
-  "description": "When each visualization is the right choice, and how screens are organised. Validation reads it to tell a valid screen from a good one: a misleading choice is an error, everything else is advice.",
+  "description": "What belongs on a screen and how it is organised. The job a person is doing chooses an archetype; the archetype orders information by priority and disclosure; each kind of data chooses its visualization. Validation reads it to tell a valid screen from a good one: a misleading or unsafe choice is an error, everything else is advice.",
   "patterns": {
     "report": {
       "label": "Report",
@@ -559,5 +559,1387 @@
         "grafico solar"
       ]
     }
-  ]
+  ],
+  "jobs": {
+    "resolve": {
+      "label": "Resolve pending work",
+      "means": "Work through items that wait on this person, in the order that matters, and clear them."
+    },
+    "decide": {
+      "label": "Decide",
+      "means": "Choose between options or approve a change, with the evidence that decides it."
+    },
+    "review": {
+      "label": "Review",
+      "means": "Check work someone or something else produced, and accept, correct, or return it."
+    },
+    "investigate": {
+      "label": "Investigate",
+      "means": "Find out why something happened by following evidence across records."
+    },
+    "monitor": {
+      "label": "Monitor",
+      "means": "Watch how something is doing over time and notice when it changes."
+    },
+    "create": {
+      "label": "Create",
+      "means": "Make something new: a record, a plan, a message."
+    },
+    "configure": {
+      "label": "Configure",
+      "means": "Set how something behaves, rarely, and with confidence about the effect."
+    }
+  },
+  "information": {
+    "priorities": {
+      "primary": "Needed for the immediate task or decision. Visible by default, first in reading order, with the strongest emphasis on the screen.",
+      "supporting": "Helps a person understand or complete the task. Visible near the item it supports, or revealed on selection; quieter than primary.",
+      "reference": "Useful occasionally, never needed first. Collapsed, in a detail view, or one navigation step away."
+    },
+    "disclosures": {
+      "visible": "Shown by default.",
+      "collapsed": "In a closed region a person opens: the label says what is inside and how much.",
+      "on-selection": "Shown for the item a person selected, beside or below it, instead of for every item at once.",
+      "on-exception": "Shown only when something is wrong; when it is, it is visible and never collapsed.",
+      "elsewhere": "Reachable through navigation, an inspector, a drawer, or a detail view; not drawn on this screen."
+    },
+    "rules": [
+      "Information a decision depends on is never collapsed or elsewhere.",
+      "An exception that is present is visible; a disclosure that waits on an exception is closed when there is none.",
+      "Reference information never sits before primary information in reading order.",
+      "Disclosure follows task importance and interaction context, not a maximum word count."
+    ],
+    "kinds": {
+      "pending-item": {
+        "label": "Pending work",
+        "means": "An approval, ticket, exception, or task waiting on someone.",
+        "recommended": [
+          "table",
+          "checklist"
+        ],
+        "acceptable": [
+          "activity-list",
+          "approval-card"
+        ],
+        "avoid": {
+          "card": "One card per task turns a queue into a wall of equal boxes and repeats every label.",
+          "stat-row": "A count of pending work is not the work; show the items."
+        }
+      },
+      "entity-profile": {
+        "label": "What the screen is about",
+        "means": "The client, account, shipment, or project, with the few attributes that orient a person.",
+        "recommended": [
+          "metadata-list"
+        ],
+        "acceptable": [
+          "text-block",
+          "badge-and-status"
+        ],
+        "avoid": {
+          "stat-row": "Attributes are facts to read, not measures to compare.",
+          "card": "The subject of the page is the page; a card around it adds a boundary with nothing outside it."
+        }
+      },
+      "status": {
+        "label": "Status",
+        "means": "The state of an item, as a word.",
+        "recommended": [
+          "badge-and-status"
+        ],
+        "acceptable": [
+          "metadata-list",
+          "table"
+        ],
+        "avoid": {
+          "banner": "A banner is for an exception; a normal status written as a banner competes with the task."
+        }
+      },
+      "exception": {
+        "label": "Exception",
+        "means": "Something wrong that needs attention now.",
+        "recommended": [
+          "banner"
+        ],
+        "acceptable": [
+          "error-and-retry",
+          "badge-and-status"
+        ]
+      },
+      "aggregate-metric": {
+        "label": "Aggregate measure",
+        "means": "A total, rate, or count across many records.",
+        "recommended": [
+          "stat-row",
+          "metric-strip",
+          "headline-metric"
+        ],
+        "acceptable": [
+          "metadata-list",
+          "text-block",
+          "progress"
+        ]
+      },
+      "trend": {
+        "label": "Change over time",
+        "means": "One measure, or a measure and its benchmark, over time.",
+        "role": "time-series"
+      },
+      "breakdown": {
+        "label": "Parts of a whole",
+        "means": "Shares of one total.",
+        "role": "composition"
+      },
+      "category-comparison": {
+        "label": "Measures per category",
+        "means": "Two measures for each category, such as actual against target.",
+        "role": "category-comparison"
+      },
+      "records": {
+        "label": "Records",
+        "means": "Rows a person scans, compares, or sorts.",
+        "role": "records"
+      },
+      "source-document": {
+        "label": "Source document",
+        "means": "The statement, invoice, contract, or message a value was read from.",
+        "recommended": [
+          "source-excerpt"
+        ],
+        "acceptable": [
+          "citations",
+          "source-list"
+        ]
+      },
+      "extracted-value": {
+        "label": "Extracted value",
+        "means": "A value read from a source, next to what the record holds.",
+        "recommended": [
+          "value-diff"
+        ],
+        "acceptable": [
+          "table",
+          "metadata-list"
+        ]
+      },
+      "discrepancy": {
+        "label": "Discrepancy",
+        "means": "A value that differs between the source and the record.",
+        "recommended": [
+          "value-diff"
+        ],
+        "acceptable": [
+          "table"
+        ],
+        "avoid": {
+          "text-block": "A paragraph about a difference hides the two values; show them side by side."
+        }
+      },
+      "impact": {
+        "label": "Consequence",
+        "means": "What a decision changes downstream: a figure, a plan, a person notified.",
+        "recommended": [
+          "value-diff"
+        ],
+        "acceptable": [
+          "metadata-list",
+          "checklist"
+        ],
+        "avoid": {
+          "text-block": "A general summary of what changed is not a consequence; name the value before and after."
+        }
+      },
+      "alternative": {
+        "label": "Alternatives",
+        "means": "Options compared on the same measures to choose one.",
+        "recommended": [
+          "comparison-table",
+          "selectable-cards"
+        ],
+        "acceptable": [
+          "table",
+          "chart-bars"
+        ]
+      },
+      "setting": {
+        "label": "Setting",
+        "means": "A preference that changes how something behaves.",
+        "recommended": [
+          "switch",
+          "radio",
+          "searchable-select",
+          "text-input",
+          "number-stepper"
+        ],
+        "acceptable": [
+          "checkbox",
+          "slider",
+          "selectable-cards"
+        ],
+        "avoid": {
+          "card": "A bordered card per option makes every setting look equally important."
+        }
+      },
+      "history": {
+        "label": "History",
+        "means": "What happened before, newest first.",
+        "recommended": [
+          "activity-list"
+        ],
+        "acceptable": [
+          "table",
+          "process-ledger"
+        ]
+      },
+      "explanation": {
+        "label": "Explanation",
+        "means": "Why something is so, or what a person should know before acting.",
+        "recommended": [
+          "text-block"
+        ],
+        "acceptable": [
+          "banner"
+        ]
+      },
+      "decision": {
+        "label": "Decision",
+        "means": "The action that resolves the task.",
+        "recommended": [
+          "tool-approval",
+          "approval-card",
+          "button"
+        ],
+        "acceptable": [
+          "selectable-cards"
+        ]
+      }
+    }
+  },
+  "surfaces": {
+    "description": "A boundary around content says it is a separate thing. Each surface has a reason; adding one without the reason adds chrome, not structure.",
+    "kinds": {
+      "card": {
+        "means": "A self-contained object that can be read, moved, opened, or acted on alone.",
+        "reason": "The content stands on its own, among peers a person chooses between."
+      },
+      "section": {
+        "means": "A titled part of the page. Space and a heading separate it; it has no border.",
+        "reason": "Content belongs to one topic of the page."
+      },
+      "record": {
+        "means": "One row of a list or table. Alignment separates records; at most a hairline.",
+        "reason": "Content is one of many items of the same kind."
+      },
+      "inset": {
+        "means": "A quieter background inside a section that groups secondary content.",
+        "reason": "Content is subordinate to what surrounds it, but belongs together."
+      },
+      "panel": {
+        "means": "A contextual area beside the main content: the source, the selected item, an inspector.",
+        "reason": "Content is a different context the person consults while working on the main one."
+      },
+      "disclosure": {
+        "means": "A labelled region a person opens and closes.",
+        "reason": "Content is useful occasionally and the label says what it holds."
+      }
+    },
+    "components": {
+      "card": [
+        "card",
+        "approval-card",
+        "tool-approval",
+        "stat-row",
+        "media-cards",
+        "selectable-cards",
+        "live-readout",
+        "metric-strip",
+        "agent-message",
+        "empty-state"
+      ],
+      "record": [
+        "table",
+        "activity-list",
+        "checklist",
+        "metadata-list",
+        "comparison-table",
+        "value-diff",
+        "process-ledger",
+        "source-list",
+        "agent-todo-list"
+      ],
+      "panel": [
+        "source-excerpt"
+      ],
+      "inset": [
+        "banner",
+        "code-block",
+        "tool-result"
+      ],
+      "none": [
+        "text-block",
+        "button",
+        "badge-and-status",
+        "filter-bar",
+        "chart-toolbar",
+        "headline-metric",
+        "line-chart",
+        "area-chart",
+        "chart-bars",
+        "breakdown",
+        "chart-donut",
+        "treemap",
+        "heatmap",
+        "citations",
+        "progress",
+        "score"
+      ]
+    },
+    "rules": [
+      "A boundary needs a reason: an independent object, a different context, a form, or a disclosure.",
+      "A card inside a panel or another card repeats a boundary; nest a record or plain content instead, unless the inner card is an object a person acts on alone.",
+      "Grouping facts that belong together is the job of a section, an inset, or a list; not of one card per fact."
+    ]
+  },
+  "dividers": {
+    "description": "A divider marks a boundary between things of different kinds. Space, alignment, type, and background separate things of the same kind.",
+    "rules": [
+      "Separation is a property of the layout: sections separate with space and a heading, records with alignment, panels with their own background.",
+      "Several closed regions in a row each draw a boundary; group what they hold into one region, or let a section hold what people always need.",
+      "A divider never stands in for space between items of the same kind."
+    ]
+  },
+  "archetypes": {
+    "task-triage": {
+      "label": "Task triage",
+      "goal": "Resolve pending work in the order that matters.",
+      "jobs": [
+        "resolve",
+        "review",
+        "decide"
+      ],
+      "subjects": [
+        "queue"
+      ],
+      "signals": [
+        "pending-item",
+        "status",
+        "decision"
+      ],
+      "requires": [
+        "pending-item"
+      ],
+      "useWhen": [
+        "People open the screen to clear what waits on them: approvals, tickets, exceptions, follow-ups.",
+        "Items differ in urgency, owner, and next action."
+      ],
+      "contraindications": [
+        "Nothing waits on the person; they only watch measures move (use monitoring-dashboard).",
+        "There is one item, not a queue (use record-workspace or evidence-review)."
+      ],
+      "zones": [
+        {
+          "id": "attention",
+          "label": "Needs attention",
+          "priority": "primary",
+          "disclosure": "on-exception",
+          "kinds": [
+            "exception"
+          ],
+          "holds": "Only what is overdue or blocked, stated once."
+        },
+        {
+          "id": "queue",
+          "label": "Queue",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "pending-item",
+            "status",
+            "decision"
+          ],
+          "holds": "Pending items, most urgent first, each with what is needed, who owns it, and when it is due."
+        },
+        {
+          "id": "selected",
+          "label": "Selected item",
+          "priority": "supporting",
+          "disclosure": "on-selection",
+          "kinds": [
+            "entity-profile",
+            "explanation",
+            "history"
+          ],
+          "holds": "The context of the item a person is working on."
+        },
+        {
+          "id": "aggregates",
+          "label": "Totals",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "aggregate-metric",
+            "trend",
+            "breakdown"
+          ],
+          "holds": "Counts and trends, for when a person steps back."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "queue-with-detail",
+          "layout": "split",
+          "when": "Items need context before acting on them, on a wide screen.",
+          "aside": "selected"
+        },
+        {
+          "id": "queue-only",
+          "layout": "stack",
+          "when": "Each item can be acted on from its row."
+        }
+      ],
+      "responsive": "On a narrow screen the queue comes first and the selected item follows it; totals stay collapsed.",
+      "states": [
+        "all clear: say there is nothing waiting and when it was last checked",
+        "overdue: the attention zone opens",
+        "loading: keep the queue shape"
+      ],
+      "avoid": [
+        {
+          "id": "kpi-grid",
+          "reason": "Counts of work compete with the work; nobody resolves a number."
+        },
+        {
+          "id": "card-per-item",
+          "reason": "A card per task repeats labels and hides the order of urgency."
+        },
+        {
+          "id": "status-banner",
+          "reason": "A banner that restates the queue length is chrome, not an exception."
+        }
+      ],
+      "legacyPattern": "workspace"
+    },
+    "record-workspace": {
+      "label": "Record workspace",
+      "goal": "Work on one client, account, project, or shipment: where it stands and what it needs next.",
+      "jobs": [
+        "review",
+        "decide",
+        "create",
+        "resolve"
+      ],
+      "subjects": [
+        "entity"
+      ],
+      "signals": [
+        "entity-profile",
+        "pending-item",
+        "history",
+        "decision",
+        "status"
+      ],
+      "requires": [
+        "entity-profile"
+      ],
+      "useWhen": [
+        "The screen is about one entity and the person returns to it to move it forward.",
+        "Outstanding decisions on the entity matter more than its full history."
+      ],
+      "contraindications": [
+        "The person compares many entities at once (use task-triage or a records table).",
+        "The work is checking a document against the record (use evidence-review)."
+      ],
+      "zones": [
+        {
+          "id": "identity",
+          "label": "Who and where it stands",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "entity-profile",
+            "status"
+          ],
+          "holds": "Name, current stage, owner, and the two or three attributes that orient a person."
+        },
+        {
+          "id": "outstanding",
+          "label": "What needs doing",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "pending-item",
+            "decision",
+            "exception"
+          ],
+          "holds": "Open decisions and next steps on this record."
+        },
+        {
+          "id": "context",
+          "label": "Working context",
+          "priority": "supporting",
+          "disclosure": "visible",
+          "kinds": [
+            "records",
+            "trend",
+            "breakdown",
+            "category-comparison",
+            "aggregate-metric",
+            "explanation"
+          ],
+          "holds": "What a person needs while working on the outstanding items."
+        },
+        {
+          "id": "history",
+          "label": "History and details",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "history",
+            "records"
+          ],
+          "holds": "Activity, documents, and attributes looked up occasionally."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "main-with-context",
+          "layout": "split",
+          "aside": "context",
+          "when": "Identity and what needs doing lead the main column; working context sits beside it."
+        },
+        {
+          "id": "sectioned",
+          "layout": "stack",
+          "when": "There is little outstanding work; sections in priority order."
+        }
+      ],
+      "responsive": "On a narrow screen identity comes first, then what needs doing; context and history follow.",
+      "states": [
+        "nothing outstanding: say so under the identity, and lead with context",
+        "blocked: the blocking item leads what needs doing"
+      ],
+      "avoid": [
+        {
+          "id": "kpi-grid",
+          "reason": "A record is read, not monitored; attributes are not headline measures."
+        },
+        {
+          "id": "everything-expanded",
+          "reason": "Showing every attribute and the whole history at once buries what needs doing."
+        }
+      ],
+      "legacyPattern": "workspace"
+    },
+    "evidence-review": {
+      "label": "Evidence review",
+      "goal": "Check values against their source, settle each difference, and confirm what will be saved.",
+      "jobs": [
+        "review",
+        "decide",
+        "investigate"
+      ],
+      "subjects": [
+        "documents"
+      ],
+      "signals": [
+        "source-document",
+        "extracted-value",
+        "discrepancy",
+        "impact",
+        "decision"
+      ],
+      "requires": [
+        "source-document"
+      ],
+      "useWhen": [
+        "Values were read from documents, by people or software, and someone must confirm them.",
+        "A wrong value has consequences downstream, so the person needs to see them before saving."
+      ],
+      "contraindications": [
+        "There is no source to check against (use record-workspace).",
+        "The decision is between alternatives, not about the truth of a value (use comparison-workspace)."
+      ],
+      "zones": [
+        {
+          "id": "source",
+          "label": "Source",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "source-document"
+          ],
+          "holds": "The document itself, at the place each value comes from."
+        },
+        {
+          "id": "differences",
+          "label": "Differences",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "discrepancy",
+            "extracted-value"
+          ],
+          "holds": "Each value that differs: what the record holds, what the source says, and what will be saved."
+        },
+        {
+          "id": "impact",
+          "label": "What saving changes",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "impact"
+          ],
+          "holds": "The specific values and plans that change downstream."
+        },
+        {
+          "id": "confirm",
+          "label": "Confirm",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "decision"
+          ],
+          "holds": "One decision that names exactly what will be saved."
+        },
+        {
+          "id": "matched",
+          "label": "Matched values",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "extracted-value",
+            "records",
+            "history"
+          ],
+          "holds": "Values that agree, for completeness."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "source-beside-values",
+          "layout": "split",
+          "when": "A wide screen: the source stays in view while values are checked.",
+          "aside": "source"
+        },
+        {
+          "id": "values-then-source",
+          "layout": "stack",
+          "when": "A narrow screen: each difference names its place in the source."
+        }
+      ],
+      "responsive": "On a narrow screen differences come first and the source follows, each difference naming the page and line it comes from.",
+      "states": [
+        "no differences: say every value matches and offer to confirm",
+        "unresolved: confirmation names what is still open",
+        "saved: show the saved values, not the form"
+      ],
+      "avoid": [
+        {
+          "id": "generic-change-summary",
+          "reason": "A paragraph about what changed hides the two values; show them side by side."
+        },
+        {
+          "id": "matched-values-first",
+          "reason": "Values that agree push the differences out of view."
+        },
+        {
+          "id": "decision-without-impact",
+          "reason": "Confirming without seeing the consequences is not an informed decision."
+        }
+      ],
+      "legacyPattern": "transaction"
+    },
+    "comparison-workspace": {
+      "label": "Comparison workspace",
+      "goal": "Choose between alternatives on the measures that matter.",
+      "jobs": [
+        "decide",
+        "review"
+      ],
+      "subjects": [
+        "alternatives"
+      ],
+      "signals": [
+        "alternative",
+        "decision",
+        "trend"
+      ],
+      "requires": [
+        "alternative"
+      ],
+      "useWhen": [
+        "Two to four options are compared on the same measures, and one will be chosen.",
+        "Tradeoffs matter more than any single figure."
+      ],
+      "contraindications": [
+        "There is only one option to approve (use evidence-review or an approval).",
+        "More than a handful of options: rank them in a table first."
+      ],
+      "zones": [
+        {
+          "id": "differences",
+          "label": "How they differ",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "alternative"
+          ],
+          "holds": "The measures that differ, on shared scales, with the better value named in words."
+        },
+        {
+          "id": "choice",
+          "label": "Choice",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "decision"
+          ],
+          "holds": "Choose one, naming what follows."
+        },
+        {
+          "id": "shared",
+          "label": "What they share",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "records",
+            "explanation"
+          ],
+          "holds": "Measures that do not differ, for completeness."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "side-by-side",
+          "layout": "stack",
+          "when": "One comparison table, then the choice."
+        },
+        {
+          "id": "options-as-choices",
+          "layout": "stack",
+          "when": "Each option is chosen as a card with its key differences."
+        }
+      ],
+      "responsive": "On a narrow screen options keep a shared scale; the table scrolls horizontally rather than stacking options apart.",
+      "states": [
+        "tie: say which measure decides it",
+        "chosen: show the choice and what follows"
+      ],
+      "avoid": [
+        {
+          "id": "separate-option-pages",
+          "reason": "Options on separate cards with different measures cannot be compared."
+        },
+        {
+          "id": "kpi-grid",
+          "reason": "Headline numbers per option repeat what the comparison shows."
+        }
+      ],
+      "legacyPattern": "comparison"
+    },
+    "configuration-workspace": {
+      "label": "Configuration workspace",
+      "goal": "Set how something behaves, with frequent settings first and advanced ones out of the way.",
+      "jobs": [
+        "configure"
+      ],
+      "subjects": [
+        "settings"
+      ],
+      "signals": [
+        "setting"
+      ],
+      "requires": [
+        "setting"
+      ],
+      "useWhen": [
+        "People change preferences that affect behaviour, mostly rarely.",
+        "Settings group into a few mental models: who, when, what, how much."
+      ],
+      "contraindications": [
+        "A one-off choice inside a task (put the control in the task)."
+      ],
+      "zones": [
+        {
+          "id": "common",
+          "label": "Common settings",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "setting"
+          ],
+          "holds": "The settings most people change, grouped by what they control, with good defaults."
+        },
+        {
+          "id": "advanced",
+          "label": "Advanced",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "setting"
+          ],
+          "holds": "Settings few people change, revealed when relevant."
+        },
+        {
+          "id": "danger",
+          "label": "Irreversible",
+          "priority": "supporting",
+          "disclosure": "visible",
+          "kinds": [
+            "decision"
+          ],
+          "holds": "Destructive actions, separate and confirmed."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "grouped-form",
+          "layout": "stack",
+          "when": "One form per group, each with its own save."
+        }
+      ],
+      "responsive": "Groups stack; labels stay above controls on a narrow screen.",
+      "states": [
+        "unsaved changes: name them by the save button",
+        "saved: confirm in place"
+      ],
+      "avoid": [
+        {
+          "id": "card-per-setting",
+          "reason": "A bordered card per option makes every setting look equally important and doubles the scroll."
+        },
+        {
+          "id": "everything-at-once",
+          "reason": "All settings at once hide the few that matter."
+        }
+      ],
+      "legacyPattern": "transaction"
+    },
+    "monitoring-dashboard": {
+      "label": "Monitoring dashboard",
+      "goal": "See how something is doing over time and notice when it changes.",
+      "jobs": [
+        "monitor",
+        "investigate"
+      ],
+      "subjects": [
+        "metrics",
+        "stream"
+      ],
+      "signals": [
+        "aggregate-metric",
+        "trend",
+        "breakdown",
+        "records"
+      ],
+      "requires": [
+        "aggregate-metric"
+      ],
+      "useWhen": [
+        "People return regularly to see how measures move, and act only when one changes."
+      ],
+      "contraindications": [
+        "People open it to resolve work; the measures are a by-product (use task-triage)."
+      ],
+      "zones": [
+        {
+          "id": "summary",
+          "label": "Headline measures",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "aggregate-metric"
+          ],
+          "holds": "Two to four measures, each with its comparison."
+        },
+        {
+          "id": "analysis",
+          "label": "Principal analysis",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "trend",
+            "breakdown",
+            "category-comparison"
+          ],
+          "holds": "How the main measure moves or splits."
+        },
+        {
+          "id": "details",
+          "label": "Records",
+          "priority": "supporting",
+          "disclosure": "visible",
+          "kinds": [
+            "records"
+          ],
+          "holds": "The records behind the numbers."
+        },
+        {
+          "id": "sources",
+          "label": "Sources",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "source-document",
+            "explanation"
+          ],
+          "holds": "Where the numbers come from."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "summary-analysis-details",
+          "layout": "stack",
+          "when": "The reference order for a dashboard."
+        }
+      ],
+      "responsive": "Measures wrap two by two on a narrow screen; charts keep their labels.",
+      "states": [
+        "no data for the period",
+        "partial data: say which sources are missing"
+      ],
+      "avoid": [
+        {
+          "id": "many-metric-blocks",
+          "reason": "More than one block of headline numbers competes for attention."
+        }
+      ],
+      "legacyPattern": "dashboard"
+    },
+    "analytical-report": {
+      "label": "Analytical report",
+      "goal": "Read a finding, the evidence behind it, and act on it.",
+      "jobs": [
+        "investigate",
+        "review",
+        "decide"
+      ],
+      "subjects": [
+        "metrics"
+      ],
+      "signals": [
+        "explanation",
+        "trend",
+        "breakdown",
+        "category-comparison",
+        "records",
+        "aggregate-metric",
+        "impact"
+      ],
+      "requires": [
+        "explanation"
+      ],
+      "useWhen": [
+        "A conclusion has to be trusted before someone acts on it."
+      ],
+      "contraindications": [
+        "The reader needs to act on many items (use task-triage)."
+      ],
+      "zones": [
+        {
+          "id": "finding",
+          "label": "Finding",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "explanation",
+            "aggregate-metric"
+          ],
+          "holds": "The conclusion in a sentence, with its key figure."
+        },
+        {
+          "id": "evidence",
+          "label": "Evidence",
+          "priority": "supporting",
+          "disclosure": "visible",
+          "kinds": [
+            "category-comparison",
+            "trend",
+            "breakdown",
+            "records"
+          ],
+          "holds": "The analysis that supports the finding."
+        },
+        {
+          "id": "action",
+          "label": "What acting on it changes",
+          "priority": "primary",
+          "disclosure": "visible",
+          "kinds": [
+            "impact",
+            "decision"
+          ],
+          "holds": "The consequences of acting on the finding, and the one decision."
+        },
+        {
+          "id": "detail",
+          "label": "Detail",
+          "priority": "reference",
+          "disclosure": "collapsed",
+          "kinds": [
+            "records",
+            "source-document",
+            "history"
+          ],
+          "holds": "Provenance and full records."
+        }
+      ],
+      "layouts": [
+        {
+          "id": "finding-evidence-detail",
+          "layout": "stack",
+          "when": "A report reads from the conclusion down."
+        }
+      ],
+      "responsive": "Sections stack in reading order.",
+      "states": [
+        "inconclusive: say what evidence is missing"
+      ],
+      "avoid": [
+        {
+          "id": "evidence-before-finding",
+          "reason": "A reader should not assemble the conclusion from charts."
+        }
+      ],
+      "legacyPattern": "report"
+    }
+  },
+  "lint": {
+    "description": "Rules the composition linter applies. Errors are invalid or unsafe compositions; warnings are probable problems in hierarchy, grouping, redundancy, or disclosure; suggestions are improvements where several good answers exist. Every rule is deterministic: it reads the screen, the plan, and the registry, never a model.",
+    "rules": {
+      "plan-invalid": {
+        "severity": "error",
+        "category": "contract",
+        "means": "The composition plan does not match plan.schema.json."
+      },
+      "plan-unknown-node": {
+        "severity": "error",
+        "category": "contract",
+        "means": "The plan names a node the screen does not have."
+      },
+      "hidden-decision-input": {
+        "severity": "error",
+        "category": "disclosure",
+        "means": "Information the plan marks as primary sits in a closed region, so a person decides without it."
+      },
+      "hidden-exception": {
+        "severity": "error",
+        "category": "disclosure",
+        "means": "An exception that is present is collapsed."
+      },
+      "decision-without-impact": {
+        "severity": "warning",
+        "category": "action-clarity",
+        "means": "A consequential decision on an evidence review shows no consequences before it is confirmed."
+      },
+      "competing-primary-actions": {
+        "severity": "warning",
+        "category": "action-clarity",
+        "means": "More than one approval in one screen part, or an approval beside a form that also decides. Separate settings forms, each saving its own group, do not compete."
+      },
+      "kpi-grid-on-task-screen": {
+        "severity": "warning",
+        "category": "component-fit",
+        "means": "Headline measure blocks on a screen whose job is to resolve, review, or configure, without a decision that depends on them."
+      },
+      "card-per-item": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "Tasks, settings, or options each in their own card, where the plan's archetype avoids it."
+      },
+      "everything-at-once": {
+        "severity": "warning",
+        "category": "disclosure",
+        "means": "Seven or more settings visible in one form, where the plan groups settings and reveals rare ones."
+      },
+      "archetype-mismatch": {
+        "severity": "warning",
+        "category": "archetype",
+        "means": "The archetype the plan declares does not serve the job it declares."
+      },
+      "priority-order": {
+        "severity": "warning",
+        "category": "information-architecture",
+        "means": "Reference or supporting information comes before primary information."
+      },
+      "competing-emphasis": {
+        "severity": "warning",
+        "category": "hierarchy",
+        "means": "More parts claim primary emphasis than a person can scan first."
+      },
+      "nested-surface": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "A card-like component inside a panel, inset, or card repeats a boundary."
+      },
+      "card-as-grouping": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "Several cards each hold one fact that a list or table would group."
+      },
+      "unranked-queue": {
+        "severity": "warning",
+        "category": "task-prominence",
+        "means": "A queue of pending work gives no order, due date, or priority to act on."
+      },
+      "restated-content": {
+        "severity": "warning",
+        "category": "content-economy",
+        "means": "Explanatory text repeats figures or labels already shown beside it."
+      },
+      "vague-change-summary": {
+        "severity": "warning",
+        "category": "content-economy",
+        "means": "Text says that values change without naming any of them."
+      },
+      "repeated-label": {
+        "severity": "warning",
+        "category": "content-economy",
+        "means": "A heading repeats the title of the only part under it."
+      },
+      "banner-without-exception": {
+        "severity": "suggestion",
+        "category": "content-economy",
+        "means": "A banner states something that is not an exception."
+      },
+      "stacked-disclosures": {
+        "severity": "suggestion",
+        "category": "surface-economy",
+        "means": "Several closed regions in a row, each with its own boundary."
+      },
+      "divider-as-spacing": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "Dividers between things of the same kind, standing in for space. Source markup only: Screen IR separates by layout."
+      },
+      "supporting-expanded": {
+        "severity": "suggestion",
+        "category": "disclosure",
+        "means": "Reference information is open by default."
+      },
+      "dense-record": {
+        "severity": "suggestion",
+        "category": "content-economy",
+        "means": "A compact record carries more attributes than a person scans."
+      },
+      "action-per-card": {
+        "severity": "suggestion",
+        "category": "action-clarity",
+        "means": "Each of several cards carries its own button, so no action leads."
+      },
+      "missing-plan": {
+        "severity": "suggestion",
+        "category": "archetype",
+        "means": "No composition plan: the screen cannot be checked against the job it serves."
+      }
+    },
+    "criteria": [
+      {
+        "id": "task-prominence",
+        "label": "Task prominence",
+        "means": "The work a person came to do is first and strongest."
+      },
+      {
+        "id": "information-architecture",
+        "label": "Information architecture",
+        "means": "Information is ordered by priority: primary, then supporting, then reference."
+      },
+      {
+        "id": "disclosure",
+        "label": "Progressive disclosure",
+        "means": "Reference is one step away; what a decision needs is never hidden."
+      },
+      {
+        "id": "content-economy",
+        "label": "Content economy",
+        "means": "Each fact appears once; text explains instead of restating."
+      },
+      {
+        "id": "component-fit",
+        "label": "Component appropriateness",
+        "means": "Components are chosen for the job, not because they are available."
+      },
+      {
+        "id": "surface-economy",
+        "label": "Surface economy",
+        "means": "Every boundary has a reason; grouping uses space and lists before boxes."
+      },
+      {
+        "id": "hierarchy",
+        "label": "Structural grouping",
+        "means": "Emphasis and grouping make one reading order obvious."
+      },
+      {
+        "id": "action-clarity",
+        "label": "Action clarity",
+        "means": "One primary action per part, naming what will happen, with its consequences in view."
+      },
+      {
+        "id": "archetype",
+        "label": "Fit to the job",
+        "means": "The composition archetype serves the job the plan declares."
+      },
+      {
+        "id": "contract",
+        "label": "Plan contract",
+        "means": "The plan is valid and names nodes that exist."
+      },
+      {
+        "id": "responsive",
+        "label": "Responsive behaviour",
+        "means": "Checked in a rendered review: deterministic rules cannot see layout at each width.",
+        "rendered": true
+      },
+      {
+        "id": "accessibility",
+        "label": "Accessibility",
+        "means": "Component contracts check names and roles; contrast and focus order need a rendered review.",
+        "rendered": true
+      }
+    ]
+  },
+  "cues": {
+    "description": "Words that hint at a job, a subject, or a term in a request. They only raise questions and order a provisional plan: a word is not an intent, so a plan that rests on cues alone has status needs-context.",
+    "modes": {
+      "resolve": [
+        "pending",
+        "queue",
+        "inbox",
+        "triage",
+        "to do",
+        "todo",
+        "overdue",
+        "backlog",
+        "follow up",
+        "follow-up",
+        "work queue",
+        "tickets",
+        "waiting on",
+        "outstanding",
+        "escalation"
+      ],
+      "decide": [
+        "choose",
+        "decide",
+        "decision",
+        "approve",
+        "approval",
+        "pick",
+        "which option",
+        "sign off"
+      ],
+      "review": [
+        "review",
+        "check",
+        "verify",
+        "reconcile",
+        "reconciliation",
+        "audit",
+        "confirm",
+        "validate"
+      ],
+      "investigate": [
+        "why",
+        "investigate",
+        "root cause",
+        "diagnose",
+        "drill down",
+        "incident"
+      ],
+      "monitor": [
+        "monitor",
+        "track",
+        "trend",
+        "over time",
+        "kpi",
+        "metrics",
+        "analytics",
+        "performance",
+        "health"
+      ],
+      "create": [
+        "create",
+        "new",
+        "draft",
+        "compose",
+        "write",
+        "build a plan"
+      ],
+      "configure": [
+        "settings",
+        "preferences",
+        "configure",
+        "set up",
+        "setup",
+        "permissions",
+        "notifications",
+        "firm settings"
+      ]
+    },
+    "subjects": {
+      "queue": [
+        "queue",
+        "inbox",
+        "tickets",
+        "tasks",
+        "work",
+        "approvals",
+        "exceptions",
+        "backlog"
+      ],
+      "entity": [
+        "client",
+        "account",
+        "household",
+        "customer",
+        "project",
+        "shipment",
+        "record",
+        "profile",
+        "order",
+        "patient",
+        "case"
+      ],
+      "documents": [
+        "statement",
+        "invoice",
+        "document",
+        "extraction",
+        "receipt",
+        "contract",
+        "bill of lading",
+        "source"
+      ],
+      "alternatives": [
+        "compare",
+        "comparison",
+        "versus",
+        " vs ",
+        "options",
+        "scenarios",
+        "quotes",
+        "alternatives"
+      ],
+      "settings": [
+        "settings",
+        "preferences",
+        "configuration",
+        "permissions"
+      ],
+      "metrics": [
+        "metrics",
+        "kpi",
+        "analytics",
+        "revenue",
+        "conversion",
+        "traffic"
+      ]
+    },
+    "terms": {
+      "dashboard": "“Dashboard” names a place people open, not a layout. The job decides whether it is a monitoring dashboard, a work queue, or a record.",
+      "overview": "An overview is a summary of something; the job decides what summary serves it.",
+      "home": "A home screen serves whatever people most often come to do first.",
+      "portal": "A portal is a place; the job decides its layout."
+    }
+  }
 }

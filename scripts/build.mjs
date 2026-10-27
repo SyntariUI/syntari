@@ -5,6 +5,8 @@ import { dirname, join, resolve } from 'node:path';
 import { catalog } from './catalog.mjs';
 import { scopeCss, ROOT_TYPOGRAPHY } from './scope-css.mjs';
 import { modes } from '../screen-recipes.js';
+import { scenarios, screenFor } from '../benchmarks/index.js';
+import { compositionRules } from '../composition-rules.mjs';
 import { buildLlms } from './llms.mjs';
 
 const kobbeTracker = `  <script
@@ -29,7 +31,7 @@ async function injectKobbeTracking(file) {
 
 const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
 /* The public Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
-const kobbeIgnoredPaths = new Set(['dist/renderer/index.html']);
+const kobbeIgnoredPaths = new Set(['dist/renderer/index.html', 'dist/renderer/v2/frame.html']);
 
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -42,7 +44,7 @@ async function injectKobbeTrackingTree(dir) {
 }
 
 const components=await catalog();
-const runtime=['syntari.js','search.js','support.html','ir.js','ir-data.js','ir-compose.js','jev.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
+const runtime=['syntari.js','search.js','support.html','ir.js','ir-data.js','ir-compose.js','ir-plan.js','ir-lint.js','jev.js','ir.css','screen-recipes.js','tokens.css','styles.css','motion.css','numbers.css','controls.css','app.js','motion.js','numbers.js','controls.js','starter.js','starter.css','navigation.js','navigation.css','agents.js','agents.css','extras.js','extras.css'];
 const systemPage=await readFile('system/index.html','utf8');
 await rm('kit',{recursive:true,force:true});
 await mkdir('kit/runtime',{recursive:true});await mkdir('kit/components',{recursive:true});await mkdir('kit/patterns',{recursive:true});await cp('patterns','kit/patterns',{recursive:true});
@@ -55,7 +57,18 @@ await cp('registry','kit/runtime/registry',{recursive:true});
 execFileSync(process.execPath,['scripts/generate-registry.mjs','--skeleton','all'],{
   stdio:'inherit',env:{...process.env,SYNTARI_REGISTRY_OUTPUT:resolve('kit/runtime/registry')}
 });
-await writeFile('kit/runtime/registry/patterns/screens.json',JSON.stringify(Object.fromEntries(Object.entries(modes).map(([id,mode])=>[id,mode.spec])),null,2)+'\n');
+/* Archetype patterns show a complete example and the anti-pattern beside it: the intent-aware and baseline screens of a benchmark scenario. */
+const compositionPolicy=JSON.parse(await readFile('registry/composition-policy.json','utf8'));
+const archetypeScreens={};
+for(const pattern of JSON.parse(await readFile('registry/patterns/index.json','utf8')).patterns.filter(item=>item.archetype)){
+  const scenario=scenarios.find(item=>item.id===pattern.screenMode);
+  if(!scenario)throw new Error(`Pattern ${pattern.id} names scenario ${pattern.screenMode}, which the benchmarks do not have.`);
+  archetypeScreens[pattern.screenMode]=screenFor(scenario,'intent',compositionPolicy);
+  archetypeScreens[pattern.antiExample]=screenFor(scenario,'baseline',compositionPolicy);
+}
+await writeFile('kit/runtime/registry/patterns/screens.json',JSON.stringify({...Object.fromEntries(Object.entries(modes).map(([id,mode])=>[id,mode.spec])),...archetypeScreens},null,2)+'\n');
+/* Every installation carries the composition rules its agent should read, generated from the same policy the renderer applies. */
+await writeFile('kit/runtime/COMPOSITION.md',compositionRules(compositionPolicy,JSON.parse(await readFile('package.json','utf8')).version)+'\n');
 await writeFile('kit/catalog.json',JSON.stringify(components.map(({html,...c})=>c),null,2));
 for(const c of components){
  const module=`import { mount as mountPattern } from './runtime/syntari.js';\n\nexport function mount(target, options = {}) {\n  return mountPattern('${c.slug}', target, options);\n}\n\nexport { prepare, setTheme } from './runtime/syntari.js';\n`;
@@ -77,6 +90,12 @@ await mkdir('dist/renderer',{recursive:true});
 await writeFile('dist/renderer/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
 await copyFile('artifacts/renderer/live.js','dist/renderer/live.js');
 await cp('kit/runtime','dist/renderer/runtime',{recursive:true});
+/* The composition lab at /renderer/v2/: benchmark scenarios before and after intent-aware planning, beside the production Renderer. */
+await mkdir('dist/renderer/v2',{recursive:true});
+await copyFile('renderer-v2.html','dist/renderer/v2/index.html');
+await copyFile('renderer-v2-frame.html','dist/renderer/v2/frame.html');
+for(const file of ['renderer-v2.js','renderer-v2.css','renderer-v2-frame.js'])await copyFile(file,'dist/'+file);
+await cp('benchmarks','dist/benchmarks',{recursive:true});
 /* The intent workspace that /renderer/ used to serve. */
 await mkdir('dist/renderer/workspace',{recursive:true});
 await copyFile('renderer.html','dist/renderer/workspace/index.html');

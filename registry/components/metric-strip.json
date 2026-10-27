@@ -171,5 +171,103 @@
       "local": true,
       "description": "The person chose the measure to chart. index says which; the host charts it."
     }
+  },
+  "guidance": {
+    "summary": "A row of measures where choosing one makes it the focus of the analysis below.",
+    "useWhen": [
+      "One chart shows one measure at a time, and people switch which measure it shows.",
+      "The measures are alternatives views of the same subject, such as rate, volume, and conversion."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The measures are independent headlines, not alternatives to chart.",
+        "instead": "stat-row"
+      },
+      {
+        "text": "The screen's job is to resolve or review work.",
+        "instead": "table"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "A strip of measures; the active one is marked and pressed.",
+        "how": "items, one with active: true"
+      },
+      {
+        "id": "selected",
+        "label": "Selected",
+        "description": "Choosing another measure makes it active and reports it to the host.",
+        "how": "Press a measure."
+      }
+    ],
+    "dos": [
+      {
+        "title": "One active measure",
+        "description": "The strip says which measure the chart below is showing."
+      },
+      {
+        "title": "Meaning under each value",
+        "description": "of sampled answers, distinct sources: what the number counts."
+      }
+    ],
+    "donts": [
+      {
+        "title": "A strip with nothing to drive",
+        "description": "Without a chart that follows it, it is a stat row that looks clickable."
+      },
+      {
+        "title": "Beside another metrics block",
+        "description": "Two rows of headline numbers compete."
+      }
+    ],
+    "content": [
+      "Labels name the measure, not the chart."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves between measures."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Makes the focused measure active."
+        }
+      ],
+      "notes": [
+        "Each measure is a toggle button; the active one is pressed.",
+        "Changes are written with their sign, not only a colour."
+      ]
+    },
+    "composition": {
+      "surface": "card",
+      "defaultVisible": "Every measure with its value, change, and meaning.",
+      "density": "Up to six measures; past four they wrap.",
+      "contentLength": "Labels under 20 characters.",
+      "redundantWith": [
+        {
+          "component": "stat-row",
+          "reason": "Two blocks of headline measures."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "monitoring-dashboard"
+        ],
+        "avoid": [
+          "task-triage",
+          "record-workspace",
+          "evidence-review",
+          "configuration-workspace"
+        ]
+      },
+      "mistakes": [
+        "A strip above no chart.",
+        "Measures that are not alternatives."
+      ],
+      "responsive": "Measures wrap two by two; the active one stays visible."
+    }
   }
 }

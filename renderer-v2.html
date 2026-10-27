@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Syntari composition lab: the same request, data, and tasks composed before and after intent-aware planning, with the plan and findings behind each screen.">
+  <title>Syntari — Composition lab</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/renderer-v2.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('syntari-theme')||'light'}catch{}</script>
+</head>
+<body class="lab-page">
+  <a class="lab-skip" href="#lab-canvas">Skip to the rendered screen</a>
+  <header class="lab-bar">
+    <a class="lab-brand" href="/" aria-label="Syntari home"><span class="brand-mark" aria-hidden="true"></span><span>Syntari</span></a>
+    <span class="lab-title">Composition lab <span class="lab-tag">Preview</span></span>
+    <label class="lab-field lab-scenario"><span class="sr-only">Scenario</span><select data-lab-scenario></select></label>
+    <div class="lab-segmented" role="group" aria-label="Condition" data-lab-condition>
+      <button type="button" value="baseline">Baseline</button>
+      <button type="button" value="intent">Intent-aware</button>
+      <button type="button" value="compare">Side by side</button>
+    </div>
+    <div class="lab-segmented" role="group" aria-label="Viewport" data-lab-viewport>
+      <button type="button" value="desktop">Desktop</button>
+      <button type="button" value="mobile">Mobile</button>
+    </div>
+    <button type="button" class="lab-icon-button" data-lab-theme aria-label="Switch theme">◐</button>
+    <button type="button" class="lab-icon-button lab-inspect-toggle" data-lab-inspect aria-expanded="true" aria-controls="lab-inspector">Inspect</button>
+  </header>
+  <div class="lab-shell" data-lab-shell>
+    <main class="lab-stage" id="lab-canvas" tabindex="-1" aria-label="Rendered screens">
+      <p class="lab-request"><span>Request</span> <q data-lab-request></q></p>
+      <div class="lab-frames" data-lab-frames></div>
+    </main>
+    <aside class="lab-inspector" id="lab-inspector" aria-label="Composition inspector" data-lab-inspector>
+      <div class="lab-tabs" role="tablist" aria-label="Inspector">
+        <button type="button" role="tab" id="tab-plan" aria-controls="panel-plan" data-tab="plan">Plan</button>
+        <button type="button" role="tab" id="tab-findings" aria-controls="panel-findings" data-tab="findings">Findings</button>
+        <button type="button" role="tab" id="tab-changes" aria-controls="panel-changes" data-tab="changes">Changes</button>
+        <button type="button" role="tab" id="tab-ir" aria-controls="panel-ir" data-tab="ir">IR</button>
+      </div>
+      <section class="lab-panel" role="tabpanel" id="panel-plan" aria-labelledby="tab-plan" data-panel="plan"></section>
+      <section class="lab-panel" role="tabpanel" id="panel-findings" aria-labelledby="tab-findings" data-panel="findings" hidden></section>
+      <section class="lab-panel" role="tabpanel" id="panel-changes" aria-labelledby="tab-changes" data-panel="changes" hidden></section>
+      <section class="lab-panel" role="tabpanel" id="panel-ir" aria-labelledby="tab-ir" data-panel="ir" hidden></section>
+    </aside>
+  </div>
+  <p class="sr-only" role="status" data-lab-status></p>
+  <script type="module" src="/renderer-v2.js"></script>
+</body>
+</html>

@@ -121,5 +121,101 @@
         }
       }
     }
+  },
+  "guidance": {
+    "summary": "Explains in words what the components around it show, or what a person should know before acting.",
+    "useWhen": [
+      "A finding needs a sentence of interpretation that no figure states: why it moved, what it means, what to do.",
+      "Steps a person follows in order."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The text would restate figures or labels shown beside it; let the component speak.",
+        "instead": "metadata-list"
+      },
+      {
+        "text": "Records with attributes belong in rows.",
+        "instead": "table"
+      },
+      {
+        "text": "A difference between two values: show both values.",
+        "instead": "value-diff"
+      },
+      {
+        "text": "An exception that needs attention now.",
+        "instead": "banner"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "A paragraph, with optional steps or points and small print.",
+        "how": "body, items, note"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Meaning, not the numbers again",
+        "description": "Say why a figure matters; the figure is already on screen."
+      },
+      {
+        "title": "One idea per block",
+        "description": "A second idea is a second block, or it is not needed."
+      }
+    ],
+    "donts": [
+      {
+        "title": "Restating adjacent data",
+        "description": "People read the same facts twice and trust neither."
+      },
+      {
+        "title": "Explaining the interface",
+        "description": "If a part needs a paragraph to be understood, change the part."
+      },
+      {
+        "title": "A generic change summary",
+        "description": "“Several values were updated” hides the values; show them."
+      }
+    ],
+    "content": [
+      "Lead with the conclusion, then the reason.",
+      "Write for the decision on the screen, not for completeness."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "Plain text in a paragraph; steps are an ordered list when order matters.",
+        "Small print stays readable: it is muted, not tiny."
+      ]
+    },
+    "composition": {
+      "surface": "none",
+      "defaultVisible": "The paragraph and its steps; small print below.",
+      "density": "In a dense screen, at most one short paragraph per section; longer explanation moves to a closed region.",
+      "contentLength": "One to three sentences on a task screen; up to 600 characters in a report.",
+      "redundantWith": [
+        {
+          "component": "banner",
+          "reason": "A banner and a paragraph saying the same thing compete."
+        },
+        {
+          "component": "metadata-list",
+          "reason": "Prose that lists attributes repeats the list."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "analytical-report"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "A paragraph that repeats the figures beside it.",
+        "An introduction that explains what the screen is for.",
+        "Long explanation open by default on a task screen."
+      ],
+      "responsive": "Lines stay under 72 characters; the block reflows."
+    }
   }
 }

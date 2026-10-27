@@ -1,8 +1,8 @@
 # Syntari
 
-A design system for people and agents. 137 components, a machine-readable registry, and a renderer that validates what agents compose.
+A design system for people and agents. 139 components, a machine-readable registry, and a renderer that validates what agents compose.
 
-People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. One contract configures both: 59 components can be rendered from Screen IR or mounted with props, and the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
+People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. One contract configures both: 61 components can be rendered from Screen IR or mounted with props, and the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
 
 ## Install in an agent project
 
@@ -35,6 +35,10 @@ claude mcp add syntari -- npx -y syntari-ui mcp
 ```
 
 Other clients use the same command, for example `{ "command": "npx", "args": ["-y", "syntari-ui", "mcp"] }`. Models without tools can read [llms.txt](https://syntariui.giovanitier.com/llms.txt) and [llms-full.txt](https://syntariui.giovanitier.com/llms-full.txt).
+
+## Plan before composing
+
+Valid components do not decide what belongs on a screen. Before choosing any, an agent writes a brief (who uses the screen, the job, the decisions, the information each decision needs) and calls `plan_screen` (`npx syntari plan --brief brief.json`). The plan names the archetype, such as a task triage instead of a dashboard when the job is to clear pending work, what is primary, what waits one step away, and what to avoid. `assess_composition` then checks the screen against it with named, deterministic rules. Projects that write their own markup get the same rules in `runtime/COMPOSITION.md` and `npx syntari lint-markup`. See [AGENT-GUIDE.md](AGENT-GUIDE.md#plan-before-composing), [INTENT-AWARE-COMPOSITION.md](INTENT-AWARE-COMPOSITION.md), and the composition lab at `/renderer/v2/`.
 
 ## Mount with props
 

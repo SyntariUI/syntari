@@ -65,7 +65,8 @@ async function start() {
   const responses = await Promise.all([fetch('/registry/patterns/index.json'),fetch('/registry/patterns/screens.json')]);
   if (responses.some(response => !response.ok)) throw new Error('Pattern registry unavailable. Reload to try again.');
   const [index,loadedScreens] = await Promise.all(responses.map(response => response.json()));
-  patterns = index.patterns.filter(pattern => pattern.screenMode && loadedScreens[pattern.screenMode]); screens = loadedScreens;
+  /* Archetype patterns are composed from a plan and shown in the composition lab (/renderer/v2/); this workspace keeps its keyword examples. */
+  patterns = index.patterns.filter(pattern => pattern.screenMode && loadedScreens[pattern.screenMode] && !pattern.archetype); screens = loadedScreens;
   if (!patterns.length) throw new Error('No renderable patterns are available.');
   $('[data-intent-examples]').replaceChildren(...patterns.map(pattern => {
     const button = document.createElement('button'); button.type = 'button'; button.className = 'renderer-nav-item';

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://syntariui.giovanitier.com/registry/schema/visual-review.schema.json",
+  "title": "Syntari rendered screen review",
+  "description": "What a visual review adapter returns for a rendered screen: observations against the composition criteria, each tied to a criterion, with the region of the screenshot it is about. It is a judgment, not validation: Syntari labels it as such and never merges it into diagnostics.",
+  "type": "object",
+  "required": ["observations"],
+  "properties": {
+    "source": { "type": "string", "maxLength": 80, "description": "Who reviewed: a model name, a person, a tool." },
+    "observations": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "required": ["criterion", "kind", "observation"],
+        "properties": {
+          "criterion": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "A criterion id from lint.criteria in composition-policy.json, such as responsive or surface-economy." },
+          "kind": { "enum": ["concern", "suggestion", "strength"] },
+          "observation": { "type": "string", "minLength": 8, "maxLength": 300 },
+          "node": { "type": "string", "maxLength": 64, "description": "The node id it is about, when the adapter can tell." },
+          "region": {
+            "type": "object",
+            "required": ["x", "y", "width", "height"],
+            "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "width": { "type": "number" }, "height": { "type": "number" } },
+            "additionalProperties": false,
+            "description": "Where in the screenshot, in CSS pixels."
+          },
+          "suggestion": { "type": "string", "maxLength": 300 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

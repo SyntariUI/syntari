@@ -46,6 +46,8 @@
   "process-ledger": "Resolve Match the intent 0.3ms",
   "transport-controls": "Play Step Reset Speed 8 fps",
   "live-readout": "Render run Running Generation 27 Nodes 1,204",
+  "value-diff": "Values that differ Field In the record On the statement Cash and sweep Page 2 · line 14 €42,180.00 €38,940.55 Municipal bond fund Page 3 · line 6 1,200 units 1,250 units Advisory fee rate Page 1 · line 22 0.85% 0.90%",
+  "source-excerpt": "Northgate Securities · March 2026 statement Opening balance €1,204,330.18 Cash and sweep Differs €38,940.55 Municipal bond fund Differs 1,250 units Closing balance €1,212,861.40",
   "area-chart": "Mention rate 55% 50% 45% 40% D1 · 40% D2 · 55% D1 D2",
   "line-chart": "Return against benchmark 6% 4% 2% 0% -2% Jan · 0% · 0% Feb · 1.2% · 0.9% Mar · 0.6% · 0.8% Apr · -0.8% · -0.3% May · 0.4% · 0.2% Jun · 1.9% · 1.1% Jul · 2.6% · 1.8% Aug · 2.1% · 1.6% Sep · 3.4% · 2.5% Jan Mar May Jul Sep Actual",
   "chart-toolbar": "",

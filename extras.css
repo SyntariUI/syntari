@@ -825,3 +825,54 @@
 .tree-legend .legend-swatch[data-tone="0"]{background:var(--chart-1)}
 .tree-legend .legend-swatch[data-tone="1"]{background:var(--chart-2)}
 .tree-legend .legend-swatch[data-tone="2"]{background:var(--chart-3)}
+/* Value diff: the record, the source, and the value that will be saved. Changes read as struck and inserted values, not colour alone. */
+.value-diff-scroll{margin:0}
+.value-diff{width:100%;border-collapse:collapse;font-size:var(--type-label);text-align:left;font-variant-numeric:tabular-nums}
+.value-diff caption{caption-side:top;text-align:left;padding:0 0 10px;font-size:var(--type-caption);color:var(--muted)}
+.value-diff th,.value-diff td{padding:12px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.value-diff thead th{padding-top:0;color:var(--muted);font-weight:400;font-size:var(--type-caption);white-space:nowrap}
+.value-diff tbody tr:last-child>*{border-bottom:0}
+.value-diff tbody th{font-weight:500;color:var(--text);min-width:132px}
+.value-diff-field{display:block}
+.value-diff-source{display:inline-flex;margin:3px 0 0;padding:0;border:0;background:none;color:var(--muted);font:inherit;font-size:var(--type-caption);font-weight:400;cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px}
+.value-diff-source:hover{color:var(--text)}
+.value-diff-source:empty{display:none}
+.value-diff del{color:var(--muted);text-decoration-thickness:1px}
+.value-diff ins{text-decoration:none;color:var(--text);font-weight:500}
+.value-diff-row{box-shadow:inset 2px 0 0 transparent}
+.value-diff-row[data-status=conflict]{box-shadow:inset 2px 0 0 var(--warning-text)}
+.value-diff-row[data-status=matched] del{text-decoration:none;color:var(--text)}
+.value-diff-row[data-status=matched] .value-diff-to,.value-diff-row[data-status=matched] .value-diff-choice>*{visibility:hidden}
+.value-diff-row.is-kept del{text-decoration:none;color:var(--text);font-weight:500}
+.value-diff-row.is-kept ins{text-decoration:line-through;color:var(--muted);font-weight:400}
+.value-diff:not([data-choosable]) .value-diff-choice,.value-diff:not([data-choosable]) .value-diff-choice-head{display:none}
+.value-diff-choice>span{display:inline-flex;padding:2px;border-radius:var(--radius-control);background:var(--subtle);white-space:nowrap}
+.value-diff-choice button{min-height:28px;padding:0 10px;border:0;border-radius:calc(var(--radius-control) - 2px);background:none;color:var(--muted);font:inherit;font-size:var(--type-caption);cursor:pointer}
+.value-diff-choice button[aria-pressed=true]{background:var(--surface);color:var(--text);box-shadow:var(--shadow-soft)}
+.value-diff-choice button:focus-visible,.value-diff-source:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+/* Narrow: each row reads as field, change, source, and choice, one under the other; the roles keep it a table for assistive technology. */
+@container (max-width:480px){
+  .value-diff,.value-diff caption,.value-diff tbody,.value-diff tr,.value-diff th,.value-diff td{display:block}
+  .value-diff thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .value-diff tbody tr{display:grid;grid-template-columns:auto 1fr;column-gap:10px;padding:12px 0 12px 10px;border-bottom:1px solid var(--border)}
+  .value-diff tbody tr:last-child{border-bottom:0}
+  .value-diff tbody tr>*{border:0;padding:0}
+  .value-diff tbody th{grid-column:1/-1;min-width:0;margin-bottom:6px}
+  .value-diff-from::after{content:'→';margin-left:10px;color:var(--muted)}
+  .value-diff-choice{grid-column:1/-1;margin-top:10px}
+}
+/* Source excerpt: the document as a person would read it, with the lines that differ marked in words as well as tone. */
+.source-excerpt{margin:0;display:grid;gap:12px;padding:16px 18px;border-radius:var(--radius-card);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:var(--type-label)}
+.source-excerpt figcaption{display:grid;gap:2px}
+.source-excerpt-title{font-weight:500}
+.source-excerpt-meta{font-size:var(--type-caption);color:var(--muted)}
+.source-excerpt-meta:empty{display:none}
+.source-excerpt-lines{list-style:none;margin:0;padding:0;display:grid;font-variant-numeric:tabular-nums}
+.source-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;gap:10px;padding:7px 8px;margin:0 -8px;border-radius:6px;scroll-margin:24px}
+.source-line+.source-line{border-top:1px dashed var(--border)}
+.source-line-label{color:var(--muted)}
+.source-line-value{font-family:var(--font-mono);font-size:var(--type-caption);color:var(--text);text-align:right}
+.source-line-flag{display:none;padding:0 6px;border-radius:var(--radius-badge);background:var(--amber-a1);color:var(--warning-text);font-size:var(--type-caption)}
+.source-line.is-flagged .source-line-flag{display:inline-block}
+.source-line.is-flagged .source-line-label{color:var(--text)}
+.source-line.is-linked,.value-diff-row.is-linked{background:var(--accent-soft)}

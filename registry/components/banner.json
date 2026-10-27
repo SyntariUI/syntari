@@ -25,7 +25,9 @@
   "variants": {
     "sentiment": [
       "success",
-      "info"
+      "info",
+      "warning",
+      "danger"
     ],
     "placement": [
       "inline"
@@ -85,10 +87,12 @@
       "type": "enum",
       "values": [
         "success",
-        "info"
+        "info",
+        "warning",
+        "danger"
       ],
       "default": "success",
-      "description": "Sentiment colour. The text still carries the meaning."
+      "description": "success and info report an outcome; warning and danger an exception. The message still says which."
     },
     "icon": {
       "type": "string",
@@ -112,9 +116,103 @@
       "tone": {
         "values": {
           "success": "",
-          "info": "info"
+          "info": "info",
+          "warning": "warning",
+          "danger": "danger"
         }
       }
+    }
+  },
+  "guidance": {
+    "summary": "Reports an exception or an outcome inside the current context: something wrong, at risk, or just completed.",
+    "useWhen": [
+      "Something is wrong or about to be, and the person should know before anything else on the screen.",
+      "An action finished and the person needs to know its outcome in place."
+    ],
+    "avoidWhen": [
+      {
+        "text": "A normal status: put it in a badge beside the item.",
+        "instead": "badge-and-status"
+      },
+      {
+        "text": "The person must decide before continuing.",
+        "instead": "dialog"
+      },
+      {
+        "text": "An explanation of the screen.",
+        "instead": "text-block"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "An icon, a message, and a detail, in the tone of what happened: success, info, warning, or danger.",
+        "how": "message, detail, tone"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Exceptions lead",
+        "description": "A banner that is present is the first thing people read."
+      },
+      {
+        "title": "The message says what to do",
+        "description": "Two overdue reviews: open the oldest first."
+      }
+    ],
+    "donts": [
+      {
+        "title": "Restating the queue",
+        "description": "“You have 6 items” is the list's job, not an exception."
+      },
+      {
+        "title": "A banner on every screen",
+        "description": "When there is always a banner, none is noticed."
+      },
+      {
+        "title": "Tone as the only signal",
+        "description": "The message says it is a warning in words."
+      }
+    ],
+    "content": [
+      "The message is a sentence of under 90 characters; the detail says what to do."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "A polite status: it is announced without moving focus.",
+        "Tone is shown by colour and stated in the message."
+      ]
+    },
+    "composition": {
+      "surface": "inset",
+      "defaultVisible": "Only while the exception is present.",
+      "density": "At most one per screen part.",
+      "contentLength": "A message under 90 characters and a detail under 160.",
+      "redundantWith": [
+        {
+          "component": "text-block",
+          "reason": "A paragraph saying the same thing."
+        },
+        {
+          "component": "badge-and-status",
+          "reason": "A normal status written twice."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "task-triage",
+          "record-workspace",
+          "evidence-review"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "An info banner that restates the screen's purpose.",
+        "A success banner that stays after the moment passed."
+      ],
+      "responsive": "The detail wraps under the message."
     }
   }
 }

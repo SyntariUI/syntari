@@ -1,0 +1,259 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "source-excerpt",
+  "version": "1.0.0",
+  "status": "authored",
+  "name": "Source excerpt",
+  "category": "Content",
+  "purpose": "Show the lines of a source document that values were read from, with the lines that differ marked.",
+  "description": "A titled excerpt of a statement, invoice, or form: its lines and values, with the lines that differ from the record marked and linked to their rows elsewhere on the screen.",
+  "intents": [
+    "show source",
+    "evidence",
+    "statement",
+    "invoice",
+    "document",
+    "provenance",
+    "reconcile"
+  ],
+  "variants": {
+    "density": [
+      "default"
+    ]
+  },
+  "states": [
+    "default",
+    "flagged",
+    "linked"
+  ],
+  "anatomy": [
+    "root",
+    "title",
+    "meta",
+    "line",
+    "label",
+    "value",
+    "flag"
+  ],
+  "accessibility": {
+    "role": "figure",
+    "keyboard": [],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "lines-as-written-in-the-source",
+    "mark-what-differs"
+  ],
+  "tokens": [
+    "--surface",
+    "--border",
+    "--text",
+    "--muted",
+    "--accent",
+    "--accent-soft",
+    "--amber-a1",
+    "--warning-text",
+    "--font-mono"
+  ],
+  "compatibleWith": [
+    "value-diff",
+    "citations",
+    "metadata-list"
+  ],
+  "avoidWhen": [
+    "there-is-no-source-document",
+    "the-source-is-long-prose"
+  ],
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80,
+      "description": "The document, as people name it: Northgate Securities · March 2026 statement."
+    },
+    "meta": {
+      "type": "string",
+      "maxLength": 90,
+      "description": "Where in the document: account, page, section."
+    },
+    "lines": {
+      "type": "array",
+      "required": true,
+      "maxItems": 24,
+      "description": "The lines, in the document's order.",
+      "items": {
+        "type": "object",
+        "fields": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "maxLength": 60
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "As written in the source, with its unit."
+          },
+          "ref": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "The reference a value-diff row carries for this line."
+          },
+          "flagged": {
+            "type": "boolean",
+            "default": false,
+            "description": "The line differs from the record: marked in words and tone."
+          }
+        }
+      }
+    }
+  },
+  "ir": {
+    "node": ".source-excerpt",
+    "text": {
+      "title": ".source-excerpt-title",
+      "meta": ".source-excerpt-meta"
+    },
+    "list": {
+      "lines": {
+        "container": ".source-excerpt-lines",
+        "item": ".source-line",
+        "text": {
+          "label": ".source-line-label",
+          "value": ".source-line-value"
+        },
+        "attributes": {
+          "ref": {
+            "selector": "",
+            "attribute": "data-evidence-ref"
+          }
+        },
+        "class": {
+          "flagged": "is-flagged"
+        }
+      }
+    }
+  },
+  "sample": {
+    "props": {
+      "title": "Northgate Securities · March 2026 statement",
+      "meta": "Account ••4471 · page 2 of 6",
+      "lines": [
+        {
+          "label": "Opening balance",
+          "value": "€1,204,330.18"
+        },
+        {
+          "label": "Cash and sweep",
+          "value": "€38,940.55",
+          "ref": "cash",
+          "flagged": true
+        },
+        {
+          "label": "Municipal bond fund",
+          "value": "1,250 units",
+          "ref": "muni",
+          "flagged": true
+        },
+        {
+          "label": "Closing balance",
+          "value": "€1,212,861.40"
+        }
+      ]
+    }
+  },
+  "guidance": {
+    "summary": "Shows the lines of a source document beside the values read from it, so evidence sits next to what it proves.",
+    "useWhen": [
+      "People confirm values extracted from a statement, invoice, or form, and need the source in view.",
+      "An audit or review needs the exact place a figure comes from, not a link to the whole document."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The source is a list of references to open, not lines to read.",
+        "instead": "citations"
+      },
+      {
+        "text": "The evidence is prose that explains a finding.",
+        "instead": "text-block"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "The document's lines, as written, with their values aligned.",
+        "how": "lines"
+      },
+      {
+        "id": "flagged",
+        "label": "Flagged",
+        "description": "A line that differs from the record carries a Differs mark.",
+        "how": "flagged: true"
+      },
+      {
+        "id": "linked",
+        "label": "Linked",
+        "description": "Pointing at a value-diff row with the same reference marks the line.",
+        "how": "ref, matched by a value-diff row"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Lines as the source writes them",
+        "description": "Reviewers compare against the paper; reworded lines break the check."
+      },
+      {
+        "title": "Only the lines that matter",
+        "description": "The lines values come from, and the totals that frame them."
+      }
+    ],
+    "donts": [
+      {
+        "title": "A card around it in a panel",
+        "description": "It already draws its own page; a second box adds nothing."
+      },
+      {
+        "title": "Marking by colour alone",
+        "description": "The Differs mark says it in words, in any theme."
+      }
+    ],
+    "content": [
+      "The title names the issuer, the document, and its period."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "A figure with a caption: the title names it, and the lines are an ordered list.",
+        "Flagged lines carry the word Differs, not only a tone.",
+        "Lines are not focusable; the value-diff row's source reference brings a line into view and marks it."
+      ]
+    },
+    "composition": {
+      "surface": "panel",
+      "defaultVisible": "The lines values come from and the totals around them.",
+      "density": "Up to 24 lines; the full document opens elsewhere.",
+      "contentLength": "Lines as written in the source.",
+      "redundantWith": [
+        {
+          "component": "citations",
+          "reason": "Links to the document beside its excerpt."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "evidence-review"
+        ],
+        "avoid": [
+          "monitoring-dashboard"
+        ]
+      },
+      "mistakes": [
+        "Wrapping it in a panel or a card: it is already one.",
+        "Reworded lines."
+      ],
+      "responsive": "It follows the differences on a narrow screen."
+    }
+  },
+  "source": "components/source-excerpt/"
+}

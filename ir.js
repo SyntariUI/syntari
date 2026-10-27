@@ -1,16 +1,20 @@
 /** Syntari UI IR: validate an agent-authored screen spec, then render it with Syntari components. */
 import { mount } from './syntari.js';
 import { buildDataModel, resolveProps as resolveDataProps, hasBindings, checkConsistency, dataFigures, inferTables, normalLabel } from './ir-data.js';
+import { planProblems, PLAN_VERSION } from './ir-plan.js';
 export { buildDataModel, formatData, parseFigure, bucketOf, dayRange, inferTables, isBinding, hasBindings, DATA_LIMITS, FIELD_TYPES, FIELD_ROLES, DATA_FORMATS } from './ir-data.js';
 const base = new URL('.', import.meta.url);
-export const IR_LAYOUTS = ['stack', 'row', 'grid', 'two-column'];
+export const IR_LAYOUTS = ['stack', 'row', 'grid', 'two-column', 'split'];
+/** How much a section asks for attention, and the boundary it draws. Both are optional: a section without them is a plain, supporting part. */
+export const IR_EMPHASIS = ['primary', 'supporting', 'reference'];
+export const IR_SURFACES = ['none', 'inset', 'panel'];
 export const IR_LIMITS = { maxDepth: 8, maxNodes: 120, maxChildren: 40, maxListItems: 40 };
 const ID_PATTERN = /^syntari\.[a-z0-9]+(-[a-z0-9]+)*$/;
 /** The keys Screen IR defines. Anything else is reported, as the published schema reports it. */
 const SCREEN_KEYS = ['version', 'type', 'layout', 'title', 'children', 'meta', 'data'];
 const NODE_KEYS = ['id', 'component', 'slot', 'props', 'children', 'provenance'];
 const REGION_KEYS = ['id', 'type', 'label', 'open', 'children', 'provenance'];
-const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'submit', 'consequential', 'children', 'provenance'];
+const SECTION_KEYS = ['id', 'type', 'heading', 'layout', 'emphasis', 'surface', 'submit', 'consequential', 'children', 'provenance'];
 const SANDBOX_KEYS = ['id', 'type', 'label', 'html', 'height', 'provenance'];
 /** An unverified block is model-written HTML the host chose to allow. It is never validated, so it is bounded and isolated instead. */
 export const SANDBOX_LIMITS = { maxHtml: 20000, minHeight: 80, maxHeight: 1200, defaultHeight: 320 };
@@ -248,6 +252,12 @@ async function checkNode(node, context, path) {
     else if (node.heading.length > 80) report('error', 'over-length', `${path}.heading`, 'Section headings stay under 80 characters.');
     if (node.layout !== undefined && typeof node.layout !== 'string') report('error', 'wrong-type', `${path}.layout`, `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
     else if (node.layout !== undefined && !IR_LAYOUTS.includes(node.layout)) report('warning', 'unknown-layout', `${path}.layout`, `"${node.layout}" is not a reference layout. The section renders as a stack.`);
+    if (node.layout === 'split' && Array.isArray(node.children) && node.children.length !== 2) report('warning', 'split-shape', `${path}.layout`, `A split holds two parts, the main one and the one beside it; this one holds ${node.children.length}. Group them in two sections.`);
+    for (const [key, values, fallback] of [['emphasis', IR_EMPHASIS, 'supporting'], ['surface', IR_SURFACES, 'none']]) {
+      if (node[key] === undefined) continue;
+      if (typeof node[key] !== 'string') report('error', 'wrong-type', `${path}.${key}`, `${key} is one of ${values.join(', ')}.`);
+      else if (!values.includes(node[key])) report('warning', `unknown-${key}`, `${path}.${key}`, `"${node[key]}" is not a ${key}; it is one of ${values.join(', ')}. The section renders as ${fallback}.`);
+    }
     /* A section with a submit label is a form: its fields are sent together, as one request, when a person submits it. */
     if (node.submit !== undefined && (typeof node.submit !== 'string' || !node.submit.trim())) report('error', 'invalid-form', `${path}.submit`, 'A form section needs a submit label that names what it does, such as "Send invite".');
     else if (typeof node.submit === 'string' && node.submit.length > 32) report('error', 'over-length', `${path}.submit`, 'Submit labels stay under 32 characters.');
@@ -500,6 +510,7 @@ export async function validate(spec, options = {}) {
   if (spec.type === 'screen' && spec.meta !== undefined && typeOf(spec.meta) !== 'object') report('error', 'wrong-type', 'meta', 'Screen meta is an object.');
   if (spec.type === 'screen' && spec.layout !== undefined && typeof spec.layout !== 'string') report('error', 'wrong-type', 'layout', `Layout is one of ${IR_LAYOUTS.join(', ')}.`);
   else if (spec.type === 'screen' && spec.layout !== undefined && !IR_LAYOUTS.includes(spec.layout)) report('warning', 'unknown-layout', 'layout', `"${spec.layout}" is not a reference layout. The screen renders as a stack.`);
+  if (spec.type === 'screen' && spec.layout === 'split' && Array.isArray(spec.children) && spec.children.length !== 2) report('warning', 'split-shape', 'layout', `A split screen holds two parts, the main one and the one beside it; this one holds ${spec.children.length}. Group them in two sections.`);
   if (!Array.isArray(screen.children)) report('error', 'wrong-type', 'children', 'Screen children must be an array.');
   const children = Array.isArray(screen.children) ? screen.children : [];
   if (children.length > limits.maxChildren) report('error', 'over-node-budget', 'children', `${children.length} top-level nodes were supplied; the limit is ${limits.maxChildren}.`);
@@ -531,11 +542,21 @@ export async function validate(spec, options = {}) {
   /* Past the budgets the walk stopped early, so the screen-wide checks would read an unbounded tree: they wait for a valid one. */
   const bounded = !diagnostics.some(d => d.code === 'over-depth-budget' || d.code === 'over-node-budget');
   if (spec.type === 'screen' && bounded) checkConsistency(spec, context.model, report);
+  /* A versioned composition plan is a contract: it must be valid and name nodes the screen has. A legacy plan is read as before. */
+  if (spec.type === 'screen' && bounded && spec.meta?.plan?.version === PLAN_VERSION) checkPlan(spec.meta.plan, context.ids, reg.policy, report);
   if (spec.type === 'screen' && bounded && options.semantics !== false && reg.policy) {
     const { checkSemantics } = await import('./ir-compose.js');
     checkSemantics(spec, screen, { model: context.model, bindings: context.bindings, policy: reg.policy, report });
   }
   return { ok: !diagnostics.some(d => d.severity === 'error'), diagnostics, screen, data: context.model, bindings: context.bindings };
+}
+
+function checkPlan(plan, ids, policy, report) {
+  for (const problem of planProblems(plan, policy)) report('error', 'plan-invalid', problem.path, problem.message);
+  (Array.isArray(plan.informationPriority) ? plan.informationPriority : []).forEach((item, i) => {
+    for (const id of Array.isArray(item?.nodes) ? item.nodes : []) if (typeof id === 'string' && !ids.has(id)) report('error', 'plan-unknown-node', `meta.plan.informationPriority[${i}].nodes`, `The plan's “${item.label}” names node “${id}”, which is not on this screen.`);
+  });
+  for (const action of [plan.actions?.primary, ...(Array.isArray(plan.actions?.secondary) ? plan.actions.secondary : [])]) if (typeof action?.node === 'string' && !ids.has(action.node)) report('error', 'plan-unknown-node', 'meta.plan.actions', `The plan's action “${action.label}” names node “${action.node}”, which is not on this screen.`);
 }
 
 /* ---------- Iteration: a model proposes operations against one version of a screen; the runtime applies them ---------- */
@@ -544,7 +565,7 @@ export const OPS_LIMITS = { maxOperations: 20 };
 const CHANGE_KEYS = ['version', 'base', 'summary', 'operations', 'clarify', 'needs', 'unsupported'];
 const OP_KEYS = { insert: ['op', 'parent', 'after', 'before', 'node', 'reason'], replace: ['op', 'target', 'set', 'node', 'reason'], remove: ['op', 'target', 'reason'], move: ['op', 'target', 'parent', 'after', 'before', 'reason'], recompose: ['op', 'screen', 'reason'] };
 /** What `set` may change on each kind of node. A component's fields are its props, plus the reason it is on the screen. */
-const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout', 'submit', 'consequential'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'], data: ['measures', 'groups', 'tables', 'sources', 'mode', 'label', 'currency', 'locale', 'asOf'] };
+const SETTABLE = { screen: ['title', 'layout'], section: ['heading', 'layout', 'emphasis', 'surface', 'submit', 'consequential'], region: ['label', 'open'], sandbox: ['label', 'html', 'height'], component: ['props', 'provenance.reason'], data: ['measures', 'groups', 'tables', 'sources', 'mode', 'label', 'currency', 'locale', 'asOf'] };
 /* Definitions computed from the rows may be added or changed freely; the rows and where they come from are protected data. */
 const DATA_DEFINITIONS = ['measures', 'groups'];
 const kindOfNode = node => ['section', 'region', 'sandbox'].includes(node?.type) ? node.type : 'component';
@@ -2068,6 +2089,22 @@ export function dataNote(meta, screenData) {
   note.append(badge, document.createTextNode(typeof data.label === 'string' && data.label.trim() ? data.label.trim().slice(0, 140) : 'Illustrative values, not from your systems.'));
   return note;
 }
+/**
+ * Evidence and its source name the same reference: a value that differs and the line of the statement it was read from.
+ * Pointing at or focusing either marks every part of the screen with that reference, so a person checks one against the
+ * other without searching. It changes emphasis only, never content or state.
+ */
+function linkEvidence(root) {
+  const mark = (event, on) => {
+    const ref = event.target.closest?.('[data-evidence-ref]')?.dataset.evidenceRef;
+    if (!ref || !root.contains(event.target)) return;
+    for (const node of root.querySelectorAll('[data-evidence-ref]')) if (node.dataset.evidenceRef === ref) node.classList.toggle('is-linked', on);
+  };
+  root.addEventListener('pointerover', event => mark(event, true));
+  root.addEventListener('pointerout', event => mark(event, false));
+  root.addEventListener('focusin', event => mark(event, true));
+  root.addEventListener('focusout', event => mark(event, false));
+}
 const errorFor = (diagnostics, path) => diagnostics.find(d => d.severity === 'error' && (d.path === path || d.path.startsWith(`${path}.`)));
 
 /**
@@ -2123,6 +2160,8 @@ export async function render(spec, target, options = {}) {
       const body = document.createElement('div');
       body.className = 'ir-section-body';
       body.dataset.irLayout = layoutName(node.layout);
+      if (IR_EMPHASIS.includes(node.emphasis)) section.dataset.irEmphasis = node.emphasis;
+      if (IR_SURFACES.includes(node.surface) && node.surface !== 'none') section.dataset.irSurface = node.surface;
       section.append(heading, body);
       if (isForm) {
         heading.id = fieldId();
@@ -2181,6 +2220,7 @@ export async function render(spec, target, options = {}) {
   }
 
   for (const [i, child] of listed(screen?.children)) await paint(child, root, `children[${i}]`);
+  linkEvidence(root);
   if (diagnostics.some(d => d.severity === 'error')) root.dataset.irStatus = 'partial';
   host.replaceChildren(root);
   options.onDiagnostics?.(diagnostics);
@@ -2191,4 +2231,4 @@ export async function render(spec, target, options = {}) {
   };
 }
 
-if (typeof window !== 'undefined') window.SyntariIR = { validate, validateProps, render, registry, resolveProps, renderableSlugs, applyOperations, assignIds, versionOf, diffScreens, findNode, layouts: IR_LAYOUTS, limits: IR_LIMITS };
+if (typeof window !== 'undefined') window.SyntariIR = { validate, validateProps, render, registry, resolveProps, renderableSlugs, applyOperations, assignIds, versionOf, diffScreens, findNode, layouts: IR_LAYOUTS, emphasis: IR_EMPHASIS, surfaces: IR_SURFACES, limits: IR_LIMITS };

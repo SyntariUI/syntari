@@ -5024,6 +5024,86 @@
       "preview": "https://syntariui.giovanitier.com/components/page-footer/"
     },
     {
+      "id": "value-diff",
+      "name": "Value diff",
+      "category": "Tables",
+      "version": "0.4.0",
+      "description": "Each value that differs between the record and its source, side by side, with the value that will be saved. Pointing at a row marks its place in the source.",
+      "aliases": [
+        "diff",
+        "reconciliation",
+        "before and after",
+        "discrepancy",
+        "changes",
+        "compare values"
+      ],
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/value-diff/",
+      "manifest": "components/value-diff.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/value-diff.js",
+        "kit/components/value-diff.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/value-diff/"
+    },
+    {
+      "id": "source-excerpt",
+      "name": "Source excerpt",
+      "category": "Content",
+      "version": "0.4.0",
+      "description": "The lines of a source document a set of values was read from, with the lines that differ from the record marked, so evidence sits beside what it proves.",
+      "aliases": [
+        "source",
+        "statement",
+        "document excerpt",
+        "evidence",
+        "provenance",
+        "invoice lines"
+      ],
+      "tokens": [
+        "--radius-control",
+        "--surface",
+        "--text",
+        "--border",
+        "--accent"
+      ],
+      "source": "components/source-excerpt/",
+      "manifest": "components/source-excerpt.json",
+      "status": "authored",
+      "renderable": true,
+      "dependencies": [],
+      "examples": {
+        "good": [],
+        "bad": [],
+        "boundary": []
+      },
+      "files": [
+        "kit/components/source-excerpt.js",
+        "kit/components/source-excerpt.html",
+        "kit/runtime/syntari.js",
+        "kit/runtime/tokens.css",
+        "kit/runtime/styles.css"
+      ],
+      "preview": "https://syntariui.giovanitier.com/components/source-excerpt/"
+    },
+    {
       "id": "area-chart",
       "name": "Area chart",
       "category": "Charts",

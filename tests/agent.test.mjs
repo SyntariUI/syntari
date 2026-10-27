@@ -129,7 +129,7 @@ test('the CLI validates a screen with the same diagnostics as the Node API', asy
   const cli = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'validate', '--spec', file, '--json'], { encoding: 'utf8' }));
   assert.deepEqual(cli.screen.diagnostics, (await validateScreen(screen)).diagnostics);
   const listed = JSON.parse(execFileSync(process.execPath, ['cli.mjs', 'list', '--json'], { encoding: 'utf8' }));
-  assert.equal(listed.components.filter(item => item.renderable).length, 59);
+  assert.equal(listed.components.filter(item => item.renderable).length, 61);
 });
 
 test('pattern screens that agents copy validate without warnings', async () => {
