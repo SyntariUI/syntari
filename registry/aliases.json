@@ -992,5 +992,21 @@
     "picker wheel",
     "ios picker",
     "drum picker"
+  ],
+  "value-diff": [
+    "diff",
+    "reconciliation",
+    "before and after",
+    "discrepancy",
+    "changes",
+    "compare values"
+  ],
+  "source-excerpt": [
+    "source",
+    "statement",
+    "document excerpt",
+    "evidence",
+    "provenance",
+    "invoice lines"
   ]
 }

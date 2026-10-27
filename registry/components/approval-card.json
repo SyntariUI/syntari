@@ -141,5 +141,115 @@
       "summary": ".agent-surface > p",
       "hint": ".agent-surface > p.hint"
     }
+  },
+  "guidance": {
+    "summary": "Summarizes one finished piece of work and asks a person to approve it or send it back.",
+    "useWhen": [
+      "An agent or a colleague produced something reviewable, and one person decides on it.",
+      "The decision is about one item, with its summary in view."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Many items wait for decisions: list them as rows with one action each.",
+        "instead": "table"
+      },
+      {
+        "text": "An agent asks to run a consequential operation.",
+        "instead": "tool-approval"
+      },
+      {
+        "text": "Values must be checked against a source first.",
+        "instead": "value-diff"
+      }
+    ],
+    "states": [
+      {
+        "id": "pending",
+        "label": "Pending",
+        "description": "The summary and both decisions are available.",
+        "how": "Default."
+      },
+      {
+        "id": "approved",
+        "label": "Approved",
+        "description": "The host re-renders with the outcome after the person approved.",
+        "how": "The host confirms approve."
+      },
+      {
+        "id": "declined",
+        "label": "Declined",
+        "description": "The host re-renders with the outcome after the person sent it back.",
+        "how": "The host confirms reject."
+      }
+    ],
+    "dos": [
+      {
+        "title": "One decision per screen part",
+        "description": "Several cards each asking to approve leave no order."
+      },
+      {
+        "title": "Labels that name the outcome",
+        "description": "Approve plan, Send back: people know what follows."
+      }
+    ],
+    "donts": [
+      {
+        "title": "A grid of approval cards",
+        "description": "Equal boxes hide which decision is most urgent."
+      },
+      {
+        "title": "Approving without the evidence",
+        "description": "The summary must hold what the decision depends on."
+      }
+    ],
+    "content": [
+      "The title names the work; the summary says what changes if it is approved."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves between the two decisions."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Requests the focused decision."
+        }
+      ],
+      "notes": [
+        "A group named by its title; each decision is a button.",
+        "A decision is a request; the host confirms before anything runs."
+      ]
+    },
+    "composition": {
+      "surface": "card",
+      "defaultVisible": "Title, summary, detail, and both decisions.",
+      "density": "One per screen part; a queue of approvals is a table.",
+      "contentLength": "A summary under 160 characters.",
+      "redundantWith": [
+        {
+          "component": "tool-approval",
+          "reason": "Two decisions about the same work."
+        },
+        {
+          "component": "banner",
+          "reason": "A banner announcing the approval the card already asks for."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "record-workspace",
+          "evidence-review"
+        ],
+        "avoid": [
+          "configuration-workspace"
+        ]
+      },
+      "mistakes": [
+        "Three approval cards side by side.",
+        "An approval card inside a card or panel."
+      ],
+      "responsive": "Decisions stack under the summary on a narrow screen."
+    }
   }
 }

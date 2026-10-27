@@ -130,5 +130,107 @@
         }
       }
     }
+  },
+  "guidance": {
+    "summary": "Puts the two to four measures a recurring view depends on side by side, each with its comparison.",
+    "useWhen": [
+      "People return to a view to see how a few measures moved, and act when one changes.",
+      "A decision on the screen depends on a total or a rate, and that dependency is stated."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The screen's job is to resolve pending work: show the items, not counts of them.",
+        "instead": "table"
+      },
+      {
+        "text": "Attributes of one record are facts to read, not measures.",
+        "instead": "metadata-list"
+      },
+      {
+        "text": "Measures that need a shared scale.",
+        "instead": "chart-bars"
+      },
+      {
+        "text": "One measure that leads a report.",
+        "instead": "headline-metric"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "A row of stat cards: label, value, change, and the note that explains it.",
+        "how": "stats"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Two to four measures",
+        "description": "More than four and none of them leads."
+      },
+      {
+        "title": "A comparison on every value",
+        "description": "A figure means little without what it is measured against."
+      }
+    ],
+    "donts": [
+      {
+        "title": "KPIs on a task screen",
+        "description": "Counts of work compete with the work; nobody resolves a number."
+      },
+      {
+        "title": "Repeating a table's totals",
+        "description": "The same figure twice makes people check which is right."
+      },
+      {
+        "title": "A stat row inside a card",
+        "description": "Each stat already has its own surface."
+      }
+    ],
+    "content": [
+      "Labels are short nouns; units sit with the value.",
+      "Notes say what the value is measured against: since last week, of 40."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "A group of stat cards; each reads label, value, change, and note in order.",
+        "The change carries its sign in text, not only a colour."
+      ]
+    },
+    "composition": {
+      "surface": "card",
+      "defaultVisible": "Every stat: label, value, change, and note.",
+      "density": "Stat cards wrap in balanced rows; in a dense screen prefer a metric strip or a metadata list.",
+      "contentLength": "Values under 12 characters; notes under 24.",
+      "redundantWith": [
+        {
+          "component": "metric-strip",
+          "reason": "Two blocks of headline measures compete for the first look."
+        },
+        {
+          "component": "headline-metric",
+          "reason": "The same measures twice."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "monitoring-dashboard",
+          "analytical-report"
+        ],
+        "avoid": [
+          "task-triage",
+          "record-workspace",
+          "evidence-review",
+          "configuration-workspace"
+        ]
+      },
+      "mistakes": [
+        "Four KPI cards leading a screen whose job is to resolve work.",
+        "Measures without a comparison.",
+        "A second block of headline numbers."
+      ],
+      "responsive": "Two by two on a narrow screen; a lone last card spans the row."
+    }
   }
 }

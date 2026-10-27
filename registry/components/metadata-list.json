@@ -104,5 +104,92 @@
         }
       }
     }
+  },
+  "guidance": {
+    "summary": "Shows the label and value pairs that describe one record: who, what, when, and where it stands.",
+    "useWhen": [
+      "A person needs to orient themselves on a record before acting: its owner, stage, and key attributes.",
+      "A consequence or a context is a handful of named facts."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Many records with the same attributes.",
+        "instead": "table"
+      },
+      {
+        "text": "Values that differ between a record and its source.",
+        "instead": "value-diff"
+      },
+      {
+        "text": "Measures people compare over time.",
+        "instead": "stat-row"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "Label and value pairs, labels muted and values aligned.",
+        "how": "items"
+      }
+    ],
+    "dos": [
+      {
+        "title": "The few pairs that orient",
+        "description": "Three to six pairs a person reads before acting."
+      },
+      {
+        "title": "Labels as the record names them",
+        "description": "People find the same field elsewhere by its label."
+      }
+    ],
+    "donts": [
+      {
+        "title": "Every attribute at once",
+        "description": "The pair that matters drowns among the ones that do not."
+      },
+      {
+        "title": "A card per pair",
+        "description": "Boxes around facts repeat what alignment already groups."
+      }
+    ],
+    "content": [
+      "Values are short: a name, a date, a stage."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "A description list: each label is a term and each value its description."
+      ]
+    },
+    "composition": {
+      "surface": "record",
+      "defaultVisible": "The pairs that orient a person; the rest in a closed region.",
+      "density": "Compact by nature; past six pairs, move the rest to a region or detail view.",
+      "contentLength": "Labels under 24 characters; values under 60.",
+      "redundantWith": [
+        {
+          "component": "card",
+          "reason": "A card per attribute repeats the list's grouping."
+        },
+        {
+          "component": "text-block",
+          "reason": "Prose restating the pairs."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "record-workspace",
+          "task-triage",
+          "evidence-review"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "Ten or more pairs open by default.",
+        "Pairs that repeat the heading above them."
+      ],
+      "responsive": "Labels sit above values on a narrow screen."
+    }
   }
 }

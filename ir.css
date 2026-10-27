@@ -153,9 +153,9 @@
  * Split: the main part and the part a person consults beside it (the source, the selected item, the record's profile).
  * Side by side on a wide screen, the aside sticking in view; one after the other on a narrow one, main part first.
  */
-.ir-screen[data-ir-layout=split]{grid-template-columns:minmax(0,1fr)}
+.ir-screen[data-ir-layout=split]{grid-template-columns:minmax(0,1fr);align-items:start}
 @media(min-width:960px){.ir-screen[data-ir-layout=split]{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);column-gap:32px}.ir-screen[data-ir-layout=split]>:nth-child(n+2):last-child{position:sticky;top:16px}}
-.ir-section-body[data-ir-layout=split]{grid-template-columns:minmax(0,1fr)}
+.ir-section-body[data-ir-layout=split]{grid-template-columns:minmax(0,1fr);align-items:start}
 @container (min-width:720px){.ir-section-body[data-ir-layout=split]{grid-template-columns:minmax(0,1.65fr) minmax(240px,1fr);column-gap:28px}}
 /* Emphasis follows priority: the task leads with a larger heading; reference steps back to a quiet label. */
 .ir-section[data-ir-emphasis=primary]>.ir-section-heading{font-size:var(--type-title-md);letter-spacing:-.3px}

@@ -227,5 +227,139 @@
       "scope": "billing-production · write access"
     }
   },
-  "source": "components/tool-approval/"
+  "source": "components/tool-approval/",
+  "guidance": {
+    "summary": "Asks a person for explicit consent before an agent or a system runs something consequential.",
+    "useWhen": [
+      "An action is hard to undo, external, or costly, and a person must authorize it.",
+      "The scope of the action, such as which data or environment, must be read before deciding."
+    ],
+    "avoidWhen": [
+      {
+        "text": "A low-risk, reversible action: a button is enough.",
+        "instead": "button"
+      },
+      {
+        "text": "Work to review, not an operation to authorize.",
+        "instead": "approval-card"
+      },
+      {
+        "text": "A form whose submission is the decision: mark the section consequential."
+      }
+    ],
+    "states": [
+      {
+        "id": "idle",
+        "label": "Idle",
+        "description": "The request is described; nothing is asked yet.",
+        "how": "Before the agent asks."
+      },
+      {
+        "id": "pending",
+        "label": "Pending",
+        "description": "Both decisions are available, with the scope in view.",
+        "how": "Default when rendered."
+      },
+      {
+        "id": "approved",
+        "label": "Approved",
+        "description": "The host re-renders with the outcome after the person approved.",
+        "how": "The host confirms approve."
+      },
+      {
+        "id": "rejected",
+        "label": "Rejected",
+        "description": "The host re-renders with the outcome after the person declined.",
+        "how": "The host confirms reject."
+      },
+      {
+        "id": "expired",
+        "label": "Expired",
+        "description": "The request timed out; the agent must ask again.",
+        "how": "The host re-renders after a timeout."
+      },
+      {
+        "id": "blocked",
+        "label": "Blocked",
+        "description": "Policy forbids the action; it cannot be approved here.",
+        "how": "The host re-renders with the reason."
+      }
+    ],
+    "dos": [
+      {
+        "title": "Name exactly what will happen",
+        "description": "Save 3 corrections to the household record, not Continue."
+      },
+      {
+        "title": "Consequences beside it",
+        "description": "People approve what they can see changing."
+      },
+      {
+        "title": "The last thing in its part",
+        "description": "Evidence first, then the decision it informs."
+      }
+    ],
+    "donts": [
+      {
+        "title": "Two approvals in one part",
+        "description": "Neither leads, and people approve the wrong one."
+      },
+      {
+        "title": "Approval as authorization",
+        "description": "The host checks scope and consent; the click is a request."
+      }
+    ],
+    "content": [
+      "The question is one sentence; the scope names the data and the environment."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves between the decisions."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Requests the focused decision."
+        },
+        {
+          "keys": "Escape",
+          "action": "Leaves the request pending."
+        }
+      ],
+      "notes": [
+        "A region named by its title; the outcome is announced politely.",
+        "Focus is not trapped: people can read the evidence before deciding."
+      ]
+    },
+    "composition": {
+      "surface": "card",
+      "defaultVisible": "The question, the scope, and both decisions.",
+      "density": "One per screen part.",
+      "contentLength": "A question under 120 characters; a scope under 90.",
+      "redundantWith": [
+        {
+          "component": "approval-card",
+          "reason": "Two decisions about one change."
+        },
+        {
+          "component": "banner",
+          "reason": "A banner announcing that approval is needed."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "evidence-review",
+          "record-workspace"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "A decision above the evidence that informs it.",
+        "Approve labels that do not say what runs.",
+        "An approval with no consequences in view."
+      ],
+      "responsive": "Decisions stack full width on a narrow screen."
+    }
+  }
 }

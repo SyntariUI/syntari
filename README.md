@@ -1,8 +1,8 @@
 # Syntari
 
-A design system for people and agents. 137 components, a machine-readable registry, and a renderer that validates what agents compose.
+A design system for people and agents. 139 components, a machine-readable registry, and a renderer that validates what agents compose.
 
-People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. One contract configures both: 59 components can be rendered from Screen IR or mounted with props, and the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
+People install the components as editable HTML, CSS, and JavaScript. Agents read the same registry, describe a screen as Screen IR, and validate it before anything renders. One contract configures both: 61 components can be rendered from Screen IR or mounted with props, and the others are documented in the registry and installable as source. Explore them at [syntariui.giovanitier.com](https://syntariui.giovanitier.com/).
 
 ## Install in an agent project
 

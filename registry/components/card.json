@@ -136,5 +136,110 @@
       "action": "Open pack"
     }
   },
-  "source": "components/card/"
+  "source": "components/card/",
+  "guidance": {
+    "summary": "Holds one object a person can read, open, or act on alone, among peers they choose between.",
+    "useWhen": [
+      "Each item is an independent object, such as a document or a project, that people open or act on one at a time.",
+      "Items are browsed as peers, and each needs a title, a short description, and one action."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Items of the same kind are scanned or compared: rows group them without a box each.",
+        "instead": "table"
+      },
+      {
+        "text": "One record's attributes: label and value pairs say it in less space.",
+        "instead": "metadata-list"
+      },
+      {
+        "text": "Pending work with owners and due dates.",
+        "instead": "checklist"
+      },
+      {
+        "text": "A single fact or figure: a box adds a boundary around one word."
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "A surface with a mark, a title, an optional badge and body, and one optional action.",
+        "how": "title, body, badge, action"
+      }
+    ],
+    "dos": [
+      {
+        "title": "One action per card",
+        "description": "The card is the object; a second button splits what clicking means."
+      },
+      {
+        "title": "A title that names the object",
+        "description": "People choose between cards by their titles."
+      }
+    ],
+    "donts": [
+      {
+        "title": "Cards as grouping",
+        "description": "A box per fact repeats borders and labels; a list groups them."
+      },
+      {
+        "title": "Cards inside panels",
+        "description": "Two boundaries around one item read as clutter, not structure."
+      },
+      {
+        "title": "A card per task in a queue",
+        "description": "Equal boxes hide which task is most urgent."
+      }
+    ],
+    "content": [
+      "Titles are noun phrases, under six words.",
+      "The body is one sentence; detail belongs to what the card opens."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves to the card's action."
+        },
+        {
+          "keys": "Enter",
+          "action": "Runs the action."
+        }
+      ],
+      "notes": [
+        "The card is a group named by its title.",
+        "Its action names the object, such as Open pack, not just Open."
+      ]
+    },
+    "composition": {
+      "surface": "card",
+      "defaultVisible": "Title, badge, one sentence, and the action.",
+      "density": "In a dense screen, cards become rows of a table or list; a grid of cards wastes the space between boxes.",
+      "contentLength": "A title under 60 characters and a body under 120.",
+      "redundantWith": [
+        {
+          "component": "metadata-list",
+          "reason": "A card per attribute repeats what one list says."
+        },
+        {
+          "component": "stat-row",
+          "reason": "A card around a figure duplicates the stat card's own surface."
+        }
+      ],
+      "archetypes": {
+        "fits": [],
+        "avoid": [
+          "task-triage",
+          "configuration-workspace"
+        ]
+      },
+      "mistakes": [
+        "Three or more cards each holding one fact.",
+        "A card inside a panel or another card.",
+        "Every card with its own button, so no action leads."
+      ],
+      "responsive": "Cards wrap to one column; keep each card's action reachable without horizontal scrolling."
+    }
+  }
 }

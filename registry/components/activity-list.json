@@ -123,5 +123,82 @@
         }
       }
     }
+  },
+  "guidance": {
+    "summary": "Shows what happened, newest first, with who did it and when, so people trust the current state.",
+    "useWhen": [
+      "People check what happened on a record before acting on it.",
+      "An audit needs the order of events and who caused each."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Work still waiting on someone is not history.",
+        "instead": "checklist"
+      },
+      {
+        "text": "Events people sort or filter.",
+        "instead": "table"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "Events with an icon, a title, a detail, and a time, newest first.",
+        "how": "items"
+      }
+    ],
+    "dos": [
+      {
+        "title": "Newest first",
+        "description": "People look for what changed most recently."
+      },
+      {
+        "title": "A time on every event",
+        "description": "Order without time cannot be trusted."
+      }
+    ],
+    "donts": [
+      {
+        "title": "History open on a task screen",
+        "description": "Past events push the pending work down; keep them a click away."
+      },
+      {
+        "title": "Pending work as activity",
+        "description": "Work that waits on someone needs an owner and a due date."
+      }
+    ],
+    "content": [
+      "Titles say what happened in the past tense: Statement uploaded."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "A list; new events are announced politely when they arrive."
+      ]
+    },
+    "composition": {
+      "surface": "record",
+      "defaultVisible": "The latest events; older ones in a closed region or detail view.",
+      "density": "Five to eight events; the full log lives elsewhere.",
+      "contentLength": "Titles under 60 characters; details under 120.",
+      "redundantWith": [
+        {
+          "component": "table",
+          "reason": "The same events as rows and as a list."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "record-workspace"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "Recent activity open by default above the pending work.",
+        "Events without times."
+      ],
+      "responsive": "Times move under the title on a narrow screen."
+    }
   }
 }

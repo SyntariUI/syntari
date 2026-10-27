@@ -151,9 +151,9 @@ export function lintComposition(spec, { policy, plan: given = null } = {}) {
   /* ---------- Surfaces and dividers: every boundary has a reason ---------- */
   for (const entry of components) {
     const surface = surfaceOf(entry.node.component, policy);
-    if (surface !== 'card') continue;
+    if (!['card', 'panel'].includes(surface)) continue;
     const around = boundariesAround(entry);
-    if (around.length) add('nested-surface', entry, `${nameOf(entry)} draws a card inside ${around[0].kind === 'disclosure' ? nameOf(around[0].entry) : `the ${around[0].kind} ${nameOf(around[0].entry)}`}: two boundaries around one piece of content.`, 'Show the content as plain content or a record inside the surface, or drop the outer boundary.');
+    if (around.length) add('nested-surface', entry, `${nameOf(entry)} draws a ${surface} inside ${around[0].kind === 'disclosure' ? nameOf(around[0].entry) : `the ${around[0].kind} ${nameOf(around[0].entry)}`}: two boundaries around one piece of content.`, 'Show the content as plain content or a record inside the surface, or drop the outer boundary.');
   }
   const siblingsOf = new Map();
   for (const entry of components) if (slugOf(entry.node.component) === 'card') { const scope = entry.ancestors.at(-1)?.path ?? 'screen'; siblingsOf.set(scope, [...(siblingsOf.get(scope) ?? []), entry]); }

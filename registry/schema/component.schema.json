@@ -882,6 +882,101 @@
               }
             }
           }
+        },
+        "composition": {
+          "type": "object",
+          "description": "How the component behaves in a composition, for agents choosing between components: the boundary it draws, what is visible by default, how it behaves in dense screens, which components it is redundant with, which archetypes it fits, and the common mistakes. The surface must match surfaces.components in composition-policy.json.",
+          "required": [
+            "surface",
+            "defaultVisible",
+            "density",
+            "redundantWith",
+            "archetypes",
+            "mistakes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "surface": {
+              "enum": [
+                "card",
+                "record",
+                "panel",
+                "inset",
+                "none"
+              ]
+            },
+            "defaultVisible": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200
+            },
+            "density": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200
+            },
+            "contentLength": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "redundantWith": {
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "required": [
+                  "component",
+                  "reason"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "component": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 160
+                  }
+                }
+              }
+            },
+            "archetypes": {
+              "type": "object",
+              "required": [
+                "fits",
+                "avoid"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "fits": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "avoid": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "mistakes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "maxLength": 160
+              }
+            },
+            "responsive": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
         }
       },
       "additionalProperties": false

@@ -191,6 +191,35 @@
         "The caption names the table; it may be visually hidden, but it must be there.",
         "A sorted column sets aria-sort, so the order is announced."
       ]
+    },
+    "composition": {
+      "surface": "record",
+      "defaultVisible": "Every row the task needs; sorting past six rows.",
+      "density": "The densest way to show records; keep columns to what the task orders and decides by.",
+      "contentLength": "Cells under 40 characters; no sentences.",
+      "redundantWith": [
+        {
+          "component": "card",
+          "reason": "A card per row repeats every column label."
+        },
+        {
+          "component": "stat-row",
+          "reason": "Totals repeated above the rows they sum."
+        }
+      ],
+      "archetypes": {
+        "fits": [
+          "task-triage",
+          "record-workspace",
+          "monitoring-dashboard"
+        ],
+        "avoid": []
+      },
+      "mistakes": [
+        "A queue with no due, priority, or status column.",
+        "Five or more columns in a side panel."
+      ],
+      "responsive": "It scrolls horizontally inside its region; the first column names each row."
     }
   },
   "props": {

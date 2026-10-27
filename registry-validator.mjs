@@ -24,6 +24,35 @@ export async function validateScreenSchema(spec, registryDir) {
   return { valid, details, problems: details.map(item => `${item.path}: ${item.message}`) };
 }
 
+/** The composition policy refers to itself and to the registry: every kind, archetype zone, and component it names must exist. */
+export function checkCompositionPolicy(policy, componentIds) {
+  const problems = [];
+  const kinds = policy.information?.kinds ?? {};
+  const known = id => componentIds.has(id);
+  for (const [id, kind] of Object.entries(kinds)) {
+    if (kind.role && !policy.roles?.[kind.role]) problems.push(`information kind ${id} names role ${kind.role}, which the policy does not define`);
+    for (const component of [...(kind.recommended ?? []), ...(kind.acceptable ?? []), ...Object.keys(kind.avoid ?? {})]) if (!known(component)) problems.push(`information kind ${id} names ${component}, which is not a registry component`);
+  }
+  for (const [kind, list] of Object.entries(policy.surfaces?.components ?? {})) {
+    if (!policy.surfaces?.kinds?.[kind] && kind !== 'none') problems.push(`surfaces.components.${kind} is not a surface kind`);
+    for (const component of list) if (!known(component)) problems.push(`surfaces.components.${kind} names ${component}, which is not a registry component`);
+  }
+  const surfaced = Object.values(policy.surfaces?.components ?? {}).flat();
+  if (new Set(surfaced).size !== surfaced.length) problems.push('surfaces.components lists a component under two surfaces');
+  for (const [id, archetype] of Object.entries(policy.archetypes ?? {})) {
+    for (const job of archetype.jobs ?? []) if (!policy.jobs?.[job]) problems.push(`archetype ${id} serves ${job}, which is not a job`);
+    for (const kind of [...(archetype.requires ?? []), ...(archetype.signals ?? []), ...(archetype.zones ?? []).flatMap(zone => zone.kinds)]) if (!kinds[kind]) problems.push(`archetype ${id} names ${kind}, which is not a kind of information`);
+    for (const zone of archetype.zones ?? []) {
+      if (!['primary', 'supporting', 'reference'].includes(zone.priority)) problems.push(`archetype ${id} zone ${zone.id} has priority ${zone.priority}`);
+      if (!Object.keys(policy.information?.disclosures ?? {}).includes(zone.disclosure)) problems.push(`archetype ${id} zone ${zone.id} has disclosure ${zone.disclosure}`);
+    }
+    for (const layout of archetype.layouts ?? []) if (layout.aside && !(archetype.zones ?? []).some(zone => zone.id === layout.aside)) problems.push(`archetype ${id} layout ${layout.id} sets aside on ${layout.aside}, which is not one of its zones`);
+    if (archetype.legacyPattern && !policy.patterns?.[archetype.legacyPattern]) problems.push(`archetype ${id} maps to pattern ${archetype.legacyPattern}, which the policy does not define`);
+  }
+  for (const [id, rule] of Object.entries(policy.lint?.rules ?? {})) if (!['error', 'warning', 'suggestion'].includes(rule.severity)) problems.push(`lint rule ${id} has severity ${rule.severity}`);
+  return problems;
+}
+
 export async function validateRegistry(registryDir, kitDir, packageVersion) {
   const problems = [];
   const index = await readJson(join(registryDir, 'index.json'));
@@ -34,6 +63,7 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
   const componentSchema = await readJson(join(registryDir, 'schema/component.schema.json'));
   const patternSchema = await readJson(join(registryDir, 'schema/patterns.schema.json'));
   const runtimeTokens = await readFile(join(kitDir, 'runtime/tokens.css'), 'utf8');
+  const compositionPolicy = await exists(join(registryDir, 'composition-policy.json')) ? await readJson(join(registryDir, 'composition-policy.json')) : null;
   const checkComponent = new Ajv({ allErrors: true, strict: false }).compile(componentSchema);
   const checkPatterns = new Ajv2020({ allErrors: true, strict: false }).compile(patternSchema);
   if (!checkPatterns(patterns)) problems.push(...checkPatterns.errors.map(error => `Pattern registry ${error.instancePath || '/'}: ${error.message}`));
@@ -102,6 +132,14 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
       for (const item of [...(guidance.dos ?? []), ...(guidance.donts ?? [])]) if (/^(Do|Don[’']t|Never|Avoid)\b/.test(item.title)) problems.push(`guidance rule titles for ${entry.id} name the practice, not the verdict: ${item.title}`);
       const titles = [...(guidance.dos ?? []), ...(guidance.donts ?? [])].map(item => item.title);
       if (new Set(titles).size !== titles.length) problems.push(`guidance for ${entry.id} repeats a rule title`);
+      /* Composition guidance agrees with the policy: the surface it names, the archetypes it fits, the components it repeats. */
+      const composition = guidance.composition;
+      if (composition && compositionPolicy) {
+        const surface = Object.entries(compositionPolicy.surfaces?.components ?? {}).find(([, list]) => list.includes(entry.id))?.[0] ?? 'none';
+        if (composition.surface !== surface) problems.push(`guidance.composition.surface for ${entry.id} is ${composition.surface}; the composition policy says ${surface}`);
+        for (const id of [...(composition.archetypes?.fits ?? []), ...(composition.archetypes?.avoid ?? [])]) if (!compositionPolicy.archetypes?.[id]) problems.push(`guidance.composition for ${entry.id} names ${id}, which is not an archetype`);
+        for (const item of composition.redundantWith ?? []) if (!ids.has(item.component) || item.component === entry.id) problems.push(`guidance.composition.redundantWith for ${entry.id} names ${item.component}, which is not another registry component`);
+      }
     }
     /* A form control is named by a prop and needs what its control writes: a label, bounds, options, or dates. */
     const field = manifest.ir?.field;
@@ -174,5 +212,7 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
     }
   }
   for (const [name, token] of Object.entries(semantic.tokens ?? {})) if (!(token.primitive in primitive.values)) problems.push(`Unknown primitive for ${name}: ${token.primitive}`);
+  if (compositionPolicy) problems.push(...checkCompositionPolicy(compositionPolicy, ids));
+  if (!await exists(join(registryDir, 'schema/plan.schema.json'))) problems.push('Missing composition plan schema: schema/plan.schema.json');
   return { valid: problems.length === 0, version: index.version, componentCount: ids.size, patternCount: patternIds.size, problems };
 }

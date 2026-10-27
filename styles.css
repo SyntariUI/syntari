@@ -134,3 +134,6 @@ header.site-topbar .site-actions .icon-button:hover{color:var(--text)}
 .ring.tone-neutral circle{stroke:var(--blue-a1)}.ring.tone-neutral circle:last-child{stroke:var(--accent)}
 .ring.tone-warning circle{stroke:var(--amber-a1)}.ring.tone-warning circle:last-child{stroke:var(--amber-4)}
 .ring.tone-critical circle{stroke:var(--red-a1)}.ring.tone-critical circle:last-child{stroke:var(--red-4)}
+/* Banner tones for exceptions: something needs attention now, or something went wrong. The message still says so in words. */
+.banner.warning{color:var(--warning-text);background:var(--amber-a1)}
+.banner.danger{color:var(--danger-text);background:var(--red-a1)}
