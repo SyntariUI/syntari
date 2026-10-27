@@ -392,7 +392,7 @@ export const wealth = [
             node('impact', 'value-diff', { caption: 'With the two statement values and the contract fee kept', fromLabel: 'Now', toLabel: 'After saving', rows: [
               { field: 'Household net worth', from: '€3,124,400', to: '€3,124,080' },
               { field: 'Cash reserve goal', from: '7.1 months covered', to: '6.5 months covered' },
-              { field: 'Fee rate', from: '0.85%', to: '0.85%, flagged to operations' }
+              { field: 'Operations queue', from: 'No open flags', to: 'Fee rate flagged for review' }
             ] })
           ]),
           node('save', 'tool-approval', { title: 'Save two corrections?', question: 'Update cash and the bond fund from the statement, keep the contract fee rate, and flag it to operations.', scope: 'Lindqvist household record · balances and goals', approveLabel: 'Save corrections', rejectLabel: 'Not yet' }),

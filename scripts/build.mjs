@@ -31,7 +31,7 @@ async function injectKobbeTracking(file) {
 
 const kobbeIgnoredDirs = new Set(['.git', 'node_modules', 'dist', 'kit', 'downloads']);
 /* The public Renderer is a whole application with its own chrome: marking its root would apply the runtime's styles to it. */
-const kobbeIgnoredPaths = new Set(['dist/renderer/index.html']);
+const kobbeIgnoredPaths = new Set(['dist/renderer/index.html', 'dist/renderer/v2/frame.html']);
 
 async function injectKobbeTrackingTree(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -90,6 +90,12 @@ await mkdir('dist/renderer',{recursive:true});
 await writeFile('dist/renderer/index.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="live.js"></script></head><body>\n${await readFile('artifacts/renderer/index.html','utf8')}\n</body></html>\n`);
 await copyFile('artifacts/renderer/live.js','dist/renderer/live.js');
 await cp('kit/runtime','dist/renderer/runtime',{recursive:true});
+/* The composition lab at /renderer/v2/: benchmark scenarios before and after intent-aware planning, beside the production Renderer. */
+await mkdir('dist/renderer/v2',{recursive:true});
+await copyFile('renderer-v2.html','dist/renderer/v2/index.html');
+await copyFile('renderer-v2-frame.html','dist/renderer/v2/frame.html');
+for(const file of ['renderer-v2.js','renderer-v2.css','renderer-v2-frame.js'])await copyFile(file,'dist/'+file);
+await cp('benchmarks','dist/benchmarks',{recursive:true});
 /* The intent workspace that /renderer/ used to serve. */
 await mkdir('dist/renderer/workspace',{recursive:true});
 await copyFile('renderer.html','dist/renderer/workspace/index.html');
