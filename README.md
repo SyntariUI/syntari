@@ -36,6 +36,10 @@ claude mcp add syntari -- npx -y syntari-ui mcp
 
 Other clients use the same command, for example `{ "command": "npx", "args": ["-y", "syntari-ui", "mcp"] }`. Models without tools can read [llms.txt](https://syntariui.giovanitier.com/llms.txt) and [llms-full.txt](https://syntariui.giovanitier.com/llms-full.txt).
 
+## Plan before composing
+
+Valid components do not decide what belongs on a screen. Before choosing any, an agent writes a brief (who uses the screen, the job, the decisions, the information each decision needs) and calls `plan_screen` (`npx syntari plan --brief brief.json`). The plan names the archetype, such as a task triage instead of a dashboard when the job is to clear pending work, what is primary, what waits one step away, and what to avoid. `assess_composition` then checks the screen against it with named, deterministic rules. Projects that write their own markup get the same rules in `runtime/COMPOSITION.md` and `npx syntari lint-markup`. See [AGENT-GUIDE.md](AGENT-GUIDE.md#plan-before-composing), [INTENT-AWARE-COMPOSITION.md](INTENT-AWARE-COMPOSITION.md), and the composition lab at `/renderer/v2/`.
+
 ## Mount with props
 
 ```js

@@ -168,7 +168,7 @@ test('a documented component says when to use it, when not and what instead, its
  await expect(page.locator('[data-inspector-title]')).toHaveText('Toast');
  await expect(guide.locator('[data-guide="accessibility"]')).toContainText('Takes no focus and needs no keys.');
  /* A component without guidance keeps the panel it had. */
- await page.goto('http://127.0.0.1:4398/system/?panel=info#banner');
+ await page.goto('http://127.0.0.1:4398/system/?panel=info#checklist');
  await expect(page.locator('[data-rules]')).not.toBeEmpty();
  await expect(page.locator('[data-guidance]')).toBeHidden();
  await expect(page.locator('[data-accessibility-block]')).toBeVisible();
