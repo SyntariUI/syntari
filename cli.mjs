@@ -20,6 +20,10 @@ const usage = `Syntari UI
   syntari registry [<component>|policy] [--json]
   syntari patterns [--json]
   syntari add <component...> [--dir <path>] [--json]
+  syntari plan --brief <brief.json> [--json]          Plan a screen before choosing components
+  syntari assess --spec <screen.json> [--plan <plan.json>] [--json]
+  syntari lint-markup <file...> [--plan <plan.json>] [--json]   Check hand-written HTML or JSX
+  syntari rules                Composition rules for a project's agent instructions
   syntari mcp                 Read-only MCP server over stdio for agents
 
 Use npm install syntari-ui for the CLI and trusted component runtime.`;
@@ -64,10 +68,12 @@ function fail(message, code = 'SYNTARI_ERROR') {
 function safeId(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 }
-function parseOptions(argv, { allowSpec = false } = {}) {
+function parseOptions(argv, { allowSpec = false, allowPlan = false, allowBrief = false } = {}) {
   const values = [];
   let dir;
   let spec;
+  let plan;
+  let brief;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--dir') {
       dir = argv[++i];
@@ -75,11 +81,20 @@ function parseOptions(argv, { allowSpec = false } = {}) {
     } else if (argv[i] === '--spec' && allowSpec) {
       spec = argv[++i];
       if (!spec) fail('--spec requires a JSON file.', 'INVALID_ARGUMENT');
+    } else if (argv[i] === '--plan' && allowPlan) {
+      plan = argv[++i];
+      if (!plan) fail('--plan requires a JSON file.', 'INVALID_ARGUMENT');
+    } else if (argv[i] === '--brief' && allowBrief) {
+      brief = argv[++i];
+      if (!brief) fail('--brief requires a JSON file.', 'INVALID_ARGUMENT');
     } else if (argv[i].startsWith('-')) fail(`Unknown option: ${argv[i]}`, 'INVALID_ARGUMENT');
     else values.push(argv[i]);
   }
-  return { values, dir, spec };
+  return { values, dir, spec, plan, brief };
 }
+/** A plan file holds a plan, or plan_screen's whole result: either way the plan is what is checked against. */
+const planIn = value => value?.plan?.version ? value.plan : value;
+const findingLine = item => `${item.severity.padEnd(10)} ${item.rule}${item.line ? ` (line ${item.line})` : item.node ? ` (${item.node})` : ''}: ${item.message}\n           ${item.fix}`;
 async function componentDetails(id, registry, catalog, patternIndex) {
   const entry = (registry.components ?? []).find((item) => item.id === id);
   const pattern = (patternIndex.patterns ?? []).find((item) => item.id === id);
@@ -224,6 +239,42 @@ async function main() {
     }
     return emit(jsonOutput ? result : `Registry valid: ${result.componentCount} components, ${result.patternCount} patterns (Syntari ${result.version}).`);
   }
+  if (command === 'plan') {
+    const { brief } = parseOptions(rest, { allowBrief: true });
+    if (!brief) fail('Use syntari plan --brief <brief.json>.', 'INVALID_ARGUMENT');
+    const { planScreen } = await import('./agent.mjs');
+    const result = await planScreen(await readJson(resolve(brief)));
+    if (jsonOutput) return emit(result);
+    const { plan } = result;
+    return emit([`${plan.archetype} · ${plan.mode} · layout ${plan.layoutStrategy.layout}${result.status === 'needs-context' ? ' · needs context' : ''}`, plan.designRationale, '',
+      ...plan.informationPriority.map(item => `  ${item.priority.padEnd(10)} ${item.disclosure.padEnd(12)} ${item.label}`), '',
+      ...plan.avoid.map(item => `  avoid ${item.id}: ${item.reason}`),
+      ...(plan.openQuestions ?? []).map(question => `  ask: ${question}`)].join('\n'));
+  }
+  if (command === 'assess') {
+    const { spec, plan } = parseOptions(rest, { allowSpec: true, allowPlan: true });
+    if (!spec) fail('Use syntari assess --spec <screen.json> [--plan <plan.json>].', 'INVALID_ARGUMENT');
+    const { assessScreen } = await import('./agent.mjs');
+    const result = await assessScreen(await readJson(resolve(spec)), { plan: plan ? planIn(await readJson(resolve(plan))) : null });
+    if (result.assessment.quality.gate === 'fail') process.exitCode = 1;
+    if (jsonOutput) return emit(result);
+    return emit([`Quality gate: ${result.assessment.quality.gate} · ${result.assessment.quality.counts.errors} errors, ${result.assessment.quality.counts.warnings} warnings, ${result.assessment.quality.counts.suggestions} suggestions`, ...result.assessment.findings.map(findingLine)].join('\n'));
+  }
+  if (command === 'lint-markup') {
+    const { values: files, plan } = parseOptions(rest, { allowPlan: true });
+    if (!files.length) fail('Use syntari lint-markup <file...> [--plan <plan.json>].', 'INVALID_ARGUMENT');
+    const { lintMarkup } = await import('./agent.mjs');
+    const planned = plan ? planIn(await readJson(resolve(plan))) : null;
+    const results = [];
+    for (const file of files) results.push(await lintMarkup(await readFile(resolve(file), 'utf8'), { plan: planned, file }));
+    if (results.some(result => result.findings.some(item => item.severity === 'error'))) process.exitCode = 1;
+    if (jsonOutput) return emit({ mode: 'source', results });
+    return emit([...results.flatMap(result => [`${result.file}: ${result.findings.length} findings`, ...result.findings.map(findingLine)]), '', results[0].limits].join('\n'));
+  }
+  if (command === 'rules') {
+    const { getCompositionRules } = await import('./agent.mjs');
+    return emit(jsonOutput ? { markdown: await getCompositionRules() } : await getCompositionRules());
+  }
   if (command === 'add') {
     const { values: names, dir } = parseOptions(rest);
     const output = dir ?? './components/syntari';
@@ -260,7 +311,7 @@ async function main() {
         await cp(source, join(target, file), { errorOnExist: true, force: false });
       }
     }
-    return emit(jsonOutput ? { ok: true, version: pkg.version, components: names, directory: target } : `Added ${names.join(', ')} to ${target}.`);
+    return emit(jsonOutput ? { ok: true, version: pkg.version, components: names, directory: target, compositionRules: join(target, 'runtime', 'COMPOSITION.md') } : `Added ${names.join(', ')} to ${target}.\nAgents composing with them: read ${join(target, 'runtime', 'COMPOSITION.md')}, or run syntari rules.`);
   }
   fail(`Unknown command: ${command}.\n\n${usage}`, 'INVALID_COMMAND');
 }

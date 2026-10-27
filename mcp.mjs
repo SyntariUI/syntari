@@ -5,16 +5,17 @@
  */
 import { createInterface } from 'node:readline';
 import { readFile } from 'node:fs/promises';
-import { listComponents, listPatterns, getPattern, getAgentPolicy, getComponent, searchRegistry, validateScreen, applyScreenOperations, assignIds, versionOf, assessScreen, getCompositionPolicy } from './agent.mjs';
+import { listComponents, listPatterns, getPattern, getAgentPolicy, getComponent, searchRegistry, validateScreen, applyScreenOperations, assignIds, versionOf, assessScreen, getCompositionPolicy, planScreen, getCompositionGuidance, lintMarkup } from './agent.mjs';
 
 const SUPPORTED_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
 const pkg = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'));
 
-const INSTRUCTIONS = `Syntari is a design system for people and agents. To build a screen:
-1. Find components with search_components or list_components (renderable: true means it has a contract).
-2. Read get_component for the contract: props, actions, rules, a valid sample, and the icon names icon props accept.
-3. Compose Screen IR (see get_pattern for complete examples) and give interactive nodes an id.
-4. Call validate_screen and repair every error before showing the screen.
+const INSTRUCTIONS = `Syntari is a design system for people and agents. Decide what belongs on the screen before choosing components:
+1. Write a brief from what you know of the user and the request: who uses the screen, the job they come to do (resolve, decide, review, investigate, monitor, create, or configure), the decisions they make, each piece of information with its kind and the decisions it informs, and the actions. Call plan_screen with it. The plan names the archetype (a dashboard only when the job is to monitor), the priority and disclosure of each piece of information, the layout, candidate components, and what to avoid. If its status is needs-context, ask the person its openQuestions instead of guessing.
+2. Read get_composition_guidance for the archetype and get_pattern for its example and anti-pattern; get_component for each candidate's contract: props, actions, guidance, a valid sample, and the icon names icon props accept.
+3. Compose Screen IR from the plan's zones, in order, giving interactive nodes an id. Put the plan in meta.plan and add to each piece of information the ids of the nodes that show it.
+4. Call validate_screen and repair every error, then assess_composition: fix its error and warning findings (its repair field is a change for apply_operations when a fix is safe) before showing the screen. Findings are deterministic rules; they are not taste.
+If you write HTML or JSX with installed components instead of Screen IR, nothing validates your markup: follow the same plan, and call lint_markup on what you wrote.
 Put the figures a screen shows in its "data" block (tables, measures, groups) and bind props to them with {"$data": ...}: the runtime computes every bound figure from the rows, and validation refuses a written figure that contradicts them.
 Choose each visualization by the kind of data it shows (get_composition_policy), then call assess_composition: it reads the screen as the policy does and names redundant, misleading, or badly ordered parts. Name a visualization the registry does not have instead of imitating it.
 To change a screen that already exists, never regenerate it: call prepare_screen once for its ids and version, propose insert, replace, move, and remove operations by node id (or one recompose for a request to rework the whole screen, which keeps its data and every record), and call apply_operations. Keep the last valid screen when it refuses the change.
@@ -98,9 +99,31 @@ const tools = {
   },
   assess_composition: {
     title: 'Assess a screen\'s composition',
-    description: 'Read a Screen IR spec as the composition policy does: the pattern it reads as, each part\'s kind of data and how its component fits it, and advice on redundancy, hierarchy, density, and readability; for screen data, which visualization fits each table, measure, and group. Advice is a judgment; validation decides what renders.',
-    inputSchema: object({ screen: { type: 'object', description: 'A Screen IR object.' }, sandbox: { type: 'boolean', description: 'True only when the host allows unverified blocks.' } }, ['screen']),
-    async run({ screen, sandbox }) { return assessScreen(screen, { sandbox: sandbox === true }); }
+    description: 'Read a Screen IR spec as the composition policy does. findings: deterministic rules against the screen\'s plan (meta.plan, or plan for a screen without one), each with rule, severity (error: unsafe or invalid, such as information a decision needs hidden in a closed region; warning: probable hierarchy, grouping, redundancy, or disclosure problems; suggestion), node, message, fix, and autofix. quality: a verdict per criterion and a gate (fail, review, pass), never a score; responsive layout and contrast are marked as needing a rendered review. repair: a change for apply_operations holding only the safe fixes. Also the pattern it reads as, each part\'s kind of data and fit, and which visualization fits each table, measure, and group.',
+    inputSchema: object({ screen: { type: 'object', description: 'A Screen IR object.' }, plan: { type: 'object', description: 'A syntari-plan-1 plan from plan_screen, for a screen whose meta.plan has none.' }, sandbox: { type: 'boolean', description: 'True only when the host allows unverified blocks.' } }, ['screen']),
+    async run({ screen, plan, sandbox }) { return assessScreen(screen, { sandbox: sandbox === true, plan }); }
+  },
+  plan_screen: {
+    title: 'Plan a screen before composing it',
+    description: 'Turn a brief into a composition plan (syntari-plan-1), deterministically. Brief: { request?, user: { role, frequency? }, job: { primary, mode: resolve | decide | review | investigate | monitor | create | configure }, decisions: [string], subject?: queue | entity | documents | alternatives | settings | metrics, information: [{ id?, label, kind, neededFor?: [decision], frequency?: always | often | rare, exception?: boolean, priority?, disclosure? }], actions: [{ label, kind: primary | secondary | destructive, consequential? }] }. Kinds are listed in get_composition_guidance (information.kinds), such as pending-item, entity-profile, exception, aggregate-metric, source-document, discrepancy, impact, alternative, setting, history. The plan names the archetype and the alternatives considered, each piece of information\'s priority (primary, supporting, reference) and disclosure (visible, collapsed, on-selection, on-exception, elsewhere), zones in order, the layout, candidate components, what to avoid, and a rationale. Words in request only raise questions: without job.mode and information the status is needs-context and openQuestions says what to ask.',
+    inputSchema: object({ brief: { type: 'object', description: 'The brief, written from what you know of the user and the request.' } }, ['brief']),
+    async run({ brief }) { return planScreen(brief); }
+  },
+  get_composition_guidance: {
+    title: 'Get composition guidance',
+    description: 'What the composition policy says before components are chosen: the jobs, the archetypes (one in full when named), kinds of information with their components, priority and disclosure rules, surfaces and dividers, the lint rules and quality criteria, the archetype patterns with their examples and anti-patterns, and the composition guidance of the components named (surface, default visibility, density, redundancy, archetypes, mistakes).',
+    inputSchema: object({ archetype: { ...id, description: 'An archetype id, such as task-triage or evidence-review.' }, components: { type: 'array', description: 'Component ids to include guidance for, such as ["card", "stat-row"].' } }),
+    async run({ archetype, components }) {
+      const result = await getCompositionGuidance({ archetype, components: Array.isArray(components) ? components.filter(item => typeof item === 'string').slice(0, 12) : [] });
+      if (!result) throw new ToolError(`"${archetype}" is not an archetype. Call get_composition_guidance without one to list them.`);
+      return result;
+    }
+  },
+  lint_markup: {
+    title: 'Check hand-written markup',
+    description: 'For projects that install Syntari components and write HTML or JSX themselves, where Screen IR validation does not apply. Reads the markup as text (tags, classes, nesting) and reports nested surfaces, cards standing in for lists, dividers used as spacing, competing primary buttons, banners that are not exceptions, and, with a plan, headline measures on a screen whose plan avoids them. It cannot see layout, runtime styles, or conditional rendering, and passing it is not validation.',
+    inputSchema: object({ markup: { type: 'string', minLength: 1, maxLength: 200000, description: 'HTML or JSX source.' }, plan: { type: 'object', description: 'The plan from plan_screen, to check against the job.' }, file: { type: 'string', maxLength: 200, description: 'A name to report findings under.' } }, ['markup']),
+    async run({ markup, plan, file }) { return lintMarkup(markup, { plan, file }); }
   },
   get_composition_policy: {
     title: 'Get the composition policy',

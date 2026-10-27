@@ -1707,6 +1707,11 @@
         "category": "surface-economy",
         "means": "Several closed regions in a row, each with its own boundary."
       },
+      "divider-as-spacing": {
+        "severity": "warning",
+        "category": "surface-economy",
+        "means": "Dividers between things of the same kind, standing in for space. Source markup only: Screen IR separates by layout."
+      },
       "supporting-expanded": {
         "severity": "suggestion",
         "category": "disclosure",

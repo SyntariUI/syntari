@@ -22,6 +22,7 @@ const text = (value, max) => typeof value === 'string' ? value.trim().slice(0, m
 const list = value => Array.isArray(value) ? value : [];
 const slug = value => normalLabel(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || 'item';
 const sentence = value => value.endsWith('.') ? value : `${value}.`;
+const article = label => `${/^[aeiou]/i.test(label) ? 'an' : 'a'} ${label.toLowerCase()}`;
 
 /** Words in a request that hint at a job, a subject, or a term such as "dashboard". Each cue names the word it rests on. */
 export function requestCues(request, policy) {
@@ -178,14 +179,14 @@ export function planScreen(brief, policy, { renderable = null } = {}) {
     ...(informationPriority.some(item => item.priority === 'reference') ? ['Reference information opens in place, labelled with what it holds.'] : [])
   ].map(item => item.slice(0, 200)).slice(0, 10);
 
-  const terminology = cues.terms.filter(({ term }) => term !== 'dashboard' || chosen.id !== 'monitoring-dashboard').map(({ term, note }) => `${note} Here it is a ${archetype.label.toLowerCase()}.`.slice(0, 240));
+  const terminology = cues.terms.filter(({ term }) => term !== 'dashboard' || chosen.id !== 'monitoring-dashboard').map(({ term, note }) => `${note} Here it is ${article(archetype.label)}.`.slice(0, 240));
   const alternativesConsidered = ranking.filter(item => item.id !== chosen.id).slice(0, 4).map(item => ({ archetype: item.id, reason: item.reason.slice(0, 240) }));
   const primaryLabels = informationPriority.filter(item => item.priority === 'primary').map(item => item.label.toLowerCase());
   const referenceLabels = informationPriority.filter(item => item.priority === 'reference').map(item => item.label.toLowerCase());
   const role = b.user.role || 'The person';
   const designRationale = [
     sentence(`${role} opens this screen to ${b.job.primary ? b.job.primary.replace(/^to\s+/i, '') : policy.jobs?.[mode]?.means?.toLowerCase() ?? mode}`),
-    `The job is to ${mode}, so it is a ${archetype.label.toLowerCase()}: ${archetype.goal.charAt(0).toLowerCase()}${archetype.goal.slice(1)}`,
+    `The job is to ${mode}, so it is ${article(archetype.label)}: ${archetype.goal.charAt(0).toLowerCase()}${archetype.goal.slice(1)}`,
     primaryLabels.length ? sentence(`First and strongest: ${primaryLabels.slice(0, 4).join(', ')}`) : '',
     referenceLabels.length ? sentence(`One step away: ${referenceLabels.slice(0, 4).join(', ')}`) : ''
   ].filter(Boolean).join(' ').slice(0, 600);

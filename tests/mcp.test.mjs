@@ -17,7 +17,7 @@ test('MCP server negotiates with the official client and lists read-only tools',
     assert.equal(client.getServerVersion().name, 'syntari');
     assert.match(client.getInstructions(), /validate_screen/);
     const { tools } = await client.listTools();
-    assert.deepEqual(tools.map(tool => tool.name).sort(), ['apply_operations', 'assess_composition', 'get_agent_policy', 'get_component', 'get_composition_policy', 'get_pattern', 'list_components', 'list_patterns', 'prepare_screen', 'search_components', 'validate_screen']);
+    assert.deepEqual(tools.map(tool => tool.name).sort(), ['apply_operations', 'assess_composition', 'get_agent_policy', 'get_component', 'get_composition_guidance', 'get_composition_policy', 'get_pattern', 'lint_markup', 'list_components', 'list_patterns', 'plan_screen', 'prepare_screen', 'search_components', 'validate_screen']);
     for (const tool of tools) assert.equal(tool.annotations.readOnlyHint, true, `${tool.name} must be read-only`);
   } finally { await client.close(); }
 });

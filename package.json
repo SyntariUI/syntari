@@ -48,6 +48,8 @@
     "agent.d.ts",
     "mcp.mjs",
     "registry-validator.mjs",
+    "composition-rules.mjs",
+    "markup-lint.mjs",
     "kit/",
     "README.md",
     "LICENSE",

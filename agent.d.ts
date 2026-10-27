@@ -47,10 +47,19 @@ export interface ScreenSection {
   id?: string;
   type: 'section';
   heading: string;
-  layout?: 'stack' | 'row' | 'grid' | 'two-column';
+  layout?: ScreenLayout;
+  /** primary for the task itself, supporting (the default), or reference. */
+  emphasis?: 'primary' | 'supporting' | 'reference';
+  /** none (the default), inset, or panel. A boundary needs a reason. */
+  surface?: 'none' | 'inset' | 'panel';
+  /** Makes the section a form, with this label on its one submit button. */
+  submit?: string;
+  consequential?: boolean;
   children: ScreenChild[];
   provenance?: Provenance;
 }
+/** split holds two parts: the main one and the one beside it on a wide screen, after it on a narrow one. */
+export type ScreenLayout = 'stack' | 'row' | 'grid' | 'two-column' | 'split';
 
 /**
  * Unverified static HTML. Rejected unless the host allows unverified blocks; when allowed it renders in an
@@ -72,7 +81,7 @@ export type ScreenChild = ScreenNode | ScreenRegion | ScreenSection | ScreenSand
 export interface Screen {
   version?: 'syntari-ir-1';
   type: 'screen';
-  layout?: 'stack' | 'row' | 'grid' | 'two-column';
+  layout?: ScreenLayout;
   title?: string;
   children: ScreenChild[];
   meta?: Record<string, unknown>;
@@ -410,11 +419,89 @@ export interface CompositionAssessment {
   criteria: { id: string; label: string; means: string; verdict: 'meets' | 'review' | 'concern'; signals: CompositionSignal[] }[];
   signals: CompositionSignal[];
   summary: { parts: number; visualizations: number; concerns: number; reviews: number };
+  /** Deterministic composition findings against the screen's plan. */
+  findings: CompositionFinding[];
+  quality: QualityGate;
+  /** The safe repairs as one change for applyScreenOperations, or null. */
+  repair: ScreenChange | null;
+}
+export interface CompositionFinding {
+  rule: string;
+  severity: 'error' | 'warning' | 'suggestion';
+  category: string;
+  node: string | null;
+  path: string;
+  message: string;
+  fix: string;
+  /** True when the repair only changes disclosure or emphasis, never data. */
+  autofix: boolean;
+  repair?: ScreenOperation;
+  nodes?: string[];
+  /** Markup findings name a line instead of a node. */
+  line?: number | null;
+  file?: string | null;
+}
+export interface QualityGate {
+  gate: 'pass' | 'review' | 'fail';
+  criteria: { id: string; label: string; means: string; verdict: 'meets' | 'meets-with-suggestions' | 'review' | 'concern' | 'not-checked'; findings: string[] }[];
+  counts: { errors: number; warnings: number; suggestions: number; validationErrors: number };
+  basis: string;
+}
+export type PlanMode = 'resolve' | 'decide' | 'review' | 'investigate' | 'monitor' | 'create' | 'configure';
+export type InformationPriority = 'primary' | 'supporting' | 'reference';
+export type Disclosure = 'visible' | 'collapsed' | 'on-selection' | 'on-exception' | 'elsewhere';
+/** What a model knows of the user and the request, in the form plan_screen reads. */
+export interface ScreenBrief {
+  request?: string;
+  user?: { role?: string; expertise?: string; frequency?: string };
+  job?: { primary?: string; mode?: PlanMode };
+  decisions?: string[];
+  subject?: 'queue' | 'entity' | 'documents' | 'alternatives' | 'settings' | 'metrics';
+  information?: { id?: string; label: string; kind?: string; neededFor?: string[]; frequency?: 'always' | 'often' | 'rare'; exception?: boolean; priority?: InformationPriority; disclosure?: Disclosure }[];
+  actions?: { label: string; kind?: 'primary' | 'secondary' | 'destructive'; consequential?: boolean }[];
+  constraints?: { layout?: ScreenLayout; density?: string };
+}
+/** A composition plan, version syntari-plan-1 (registry/schema/plan.schema.json). */
+export interface CompositionPlan {
+  version: 'syntari-plan-1';
+  status?: 'ready' | 'needs-context';
+  userRole: string;
+  primaryJob: string;
+  mode: PlanMode;
+  userDecisions?: string[];
+  archetype: string;
+  informationPriority: { id: string; label: string; kind?: string; priority: InformationPriority; disclosure: Disclosure; exception?: boolean; neededFor?: string[]; zone?: string; nodes?: string[]; reason?: string }[];
+  zones?: { id: string; label?: string; priority: InformationPriority; disclosure: Disclosure; information?: string[]; components?: string[]; holds?: string }[];
+  disclosureStrategy?: string;
+  layoutStrategy?: { id?: string; layout: ScreenLayout; reason?: string; mobile?: string };
+  interactionRequirements?: string[];
+  actions?: { primary?: { label: string; node?: string; consequential?: boolean }; secondary?: { label: string; node?: string; consequential?: boolean }[] };
+  componentCandidates?: { component: string; for: string; fit?: 'recommended' | 'acceptable'; reason?: string }[];
+  avoid?: { id: string; reason: string }[];
+  alternativesConsidered?: { archetype: string; reason: string }[];
+  designRationale?: string;
+  terminology?: string[];
+  openQuestions?: string[];
+  pattern?: string;
+  purpose?: string;
+  rationale?: string;
 }
 export interface DataProfileEntry { ref: string; label: string; role: DataRole; use: string[]; also: string[]; avoid: string[]; missing: string | null; detail: string }
 /** Which visualization fits which kind of data, and the order each kind of screen follows. */
 export function getCompositionPolicy(): Promise<CompositionPolicy>;
 /** Validation plus the composition assessment and, for screen data, a profile of what each table, measure, and group holds. */
-export function assessScreen(spec: Screen | unknown, options?: { sandbox?: boolean }): Promise<{ ok: boolean; diagnostics: Diagnostic[]; assessment: CompositionAssessment; data: DataProfileEntry[] }>;
+export function assessScreen(spec: Screen | unknown, options?: { sandbox?: boolean; plan?: CompositionPlan | null }): Promise<{ ok: boolean; diagnostics: Diagnostic[]; assessment: CompositionAssessment; data: DataProfileEntry[] }>;
+/** A composition plan for a brief, by the policy's rules. status needs-context means the brief left out the job or the information. */
+export function planScreen(brief: ScreenBrief | unknown, options?: { renderableOnly?: boolean }): Promise<{ plan: CompositionPlan; status: 'ready' | 'needs-context'; cues: { basis: string; modes: { id: string; words: string[] }[]; subjects: { id: string; words: string[] }[]; terms: { term: string; note: string }[] }; problems: { path: string; message: string }[] }>;
+/** Jobs, archetypes, kinds of information, surfaces, dividers, lint rules, archetype patterns, and the named components' composition guidance. Null for an unknown archetype. */
+export function getCompositionGuidance(options?: { archetype?: string; components?: string[] }): Promise<Record<string, unknown> | null>;
+/** Apply the safe repairs an assessment found, through applyScreenOperations. */
+export function repairScreen(spec: Screen, options?: ApplyOperationsOptions & { plan?: CompositionPlan | null }): Promise<(ApplyOperationsResult & { change?: ScreenChange; addressed?: CompositionFinding[] }) | { ok: true; spec: Screen; unchanged: true; findings: CompositionFinding[] }>;
+/** A rendered review by a host-supplied adapter, checked against visual-review.schema.json and labelled a judgment. */
+export function assessRenderedScreen(input: { screenshot?: unknown; viewport?: { width: number; height: number } | null; spec?: Screen | null }, options?: { adapter?: (input: Record<string, unknown>) => Promise<unknown> }): Promise<Record<string, unknown>>;
+/** Check hand-written HTML or JSX that uses installed components. It reads markup as text; passing it is not validation. */
+export function lintMarkup(markup: string, options?: { plan?: CompositionPlan | null; file?: string | null }): Promise<{ mode: 'source'; file: string | null; deterministic: true; components: string[]; findings: CompositionFinding[]; limits: string }>;
+/** The composition rules as Markdown, generated from the policy, for a project's agent instructions. */
+export function getCompositionRules(): Promise<string>;
 /** A request for a visualization Syntari does not have, such as a scatter plot, with the closest components that exist. */
 export function unsupportedRequest(text: string, policy: CompositionPolicy): { role: DataRole; label: string; missing: string; closest: string[]; matched: string } | null;

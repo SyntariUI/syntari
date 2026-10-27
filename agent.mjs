@@ -7,6 +7,8 @@ import { validateScreenSchema, validatePlanSchema } from './registry-validator.m
 import { assessComposition, profileData } from './kit/runtime/ir-compose.js';
 import { planScreen as planRuntime, PLAN_VERSION } from './kit/runtime/ir-plan.js';
 import { repairChange } from './kit/runtime/ir-lint.js';
+import { lintMarkup as lintMarkupSource, componentClasses } from './markup-lint.mjs';
+import { compositionRules } from './composition-rules.mjs';
 import { matchScore } from './kit/runtime/search.js';
 
 const registryDir = fileURLToPath(new URL('./kit/runtime/registry/', import.meta.url));
@@ -209,4 +211,19 @@ async function validateVisualReview(value) {
  */
 export async function applyScreenOperations(spec, change, options = {}) {
   return applyRuntime(spec, change, { ...options, sandbox: options.sandbox === true, registry: await nodeRegistry() });
+}
+
+/**
+ * Check markup an agent wrote with installed components (HTML or JSX) against the composition policy, and a plan when
+ * given. For projects that do not render through Screen IR: it reads the markup as text and says what it cannot see.
+ */
+export async function lintMarkup(markup, { plan = null, file = null } = {}) {
+  const manifests = [];
+  for (const entry of (await listComponents()).filter(item => item.renderable)) manifests.push(await readJson(`components/${entry.id}.json`));
+  return lintMarkupSource(markup, { policy: await getCompositionPolicy(), classes: componentClasses(manifests), plan, file });
+}
+
+/** The composition rules as Markdown, for a project's agent instructions: generated from the policy, never hand-copied. */
+export async function getCompositionRules() {
+  return compositionRules(await getCompositionPolicy(), (await readJson('index.json')).version);
 }

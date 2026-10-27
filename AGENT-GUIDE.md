@@ -1,13 +1,62 @@
 # Syntari agent integration
 
-Use Syntari as a bounded interface renderer. Retrieve its current contracts before composing a screen.
+Use Syntari as a bounded interface renderer. Retrieve its current contracts, and decide what belongs on the screen before choosing a single component.
 
 1. Discover components and patterns. From a terminal, run `syntari list --json`, `syntari patterns --json`, and `syntari info <id> --json`. From an MCP client, connect `npx -y syntari-ui mcp` and use `search_components`, `list_components`, `get_component`, and `get_pattern`. Models without tools can read [llms.txt](https://syntariui.giovanitier.com/llms.txt) and [llms-full.txt](https://syntariui.giovanitier.com/llms-full.txt).
    Read `syntari registry policy --json` or the MCP tool `get_agent_policy` for the machine-readable rendering and action boundary.
-2. Choose a pattern and components that fit the user's intent. Use only component ids declared by the registry. Prefer components marked `renderable`: they declare `props`, `ir`, `actions`, and a valid `sample`. Other components are documented but cannot render from Screen IR yet.
-3. Produce JSON that matches `registry/schema/sui.schema.json`. Keep values inside each manifest's prop types, enum values, ranges, and list limits. Give every node that a person can act on a unique `id`. Structure an answer in sections (`{ "type": "section", "heading", "layout"?, "children" }`): the finding, the evidence, then the decision. Put skippable evidence and provenance in labelled regions. Explain numbers with Text block and Breakdown, let people explore with Calculator, whose formulas are arithmetic only, and never write an image URL: Media cards name image ids the host supplies.
-4. Run `syntari validate --spec screen.json --json`, call `validateScreen(spec)` from `syntari-ui`, or use the MCP tool `validate_screen`. Repair every error before presenting the screen. Preserve warnings in the decision trace.
-5. Render with `render(spec, target, { onActionRequest, assets })` from the installed browser runtime. Show the intent, selected pattern, candidate components, decision, Screen IR, validation results, and rendered interface so a person can inspect why the screen looks as it does.
+2. Plan the screen (see [Plan before composing](#plan-before-composing)): write a brief, call `plan_screen` (`syntari plan --brief brief.json`, `planScreen(brief)` in Node), and compose from the plan it returns. The plan decides the archetype, what is primary, what waits one step away, and what to avoid; components come after.
+3. Choose components that fit the plan's zones. Use only component ids declared by the registry. Prefer components marked `renderable`: they declare `props`, `ir`, `actions`, and a valid `sample`. Other components are documented but cannot render from Screen IR yet.
+4. Produce JSON that matches `registry/schema/sui.schema.json`. Keep values inside each manifest's prop types, enum values, ranges, and list limits. Give every node that a person can act on a unique `id`. Group the parts of a screen in sections (`{ "type": "section", "heading", "layout"?, "emphasis"?, "surface"?, "children" }`) in the plan's order. Put reference information in labelled regions. Explain numbers with Text block and Breakdown, let people explore with Calculator, whose formulas are arithmetic only, and never write an image URL: Media cards name image ids the host supplies.
+5. Run `syntari validate --spec screen.json --json`, call `validateScreen(spec)` from `syntari-ui`, or use the MCP tool `validate_screen`. Repair every error before presenting the screen. Then run `assess_composition` (`syntari assess`, `assessScreen`) and fix its error and warning findings. Preserve the rest in the decision trace.
+6. Render with `render(spec, target, { onActionRequest, assets })` from the installed browser runtime. Show the intent, the plan, the Screen IR, validation and composition findings, and the rendered interface so a person can inspect why the screen looks as it does.
+
+## Plan before composing
+
+A screen that validates can still serve the wrong job: four headline measures above a queue of overdue approvals, every setting at once in bordered cards, a paragraph saying “several values changed” beside a button that saves them. Valid components do not decide what belongs on the screen. The plan does.
+
+1. Write a brief from what you know of the person and the request. The words of the request are not the job: “dashboard” names a place, and the job decides whether it is a monitoring dashboard, a work queue, or a record.
+
+```json
+{ "request": "Build a financial advisor dashboard",
+  "user": { "role": "Financial advisor", "frequency": "daily" },
+  "job": { "primary": "clear the client items waiting on them, most urgent first", "mode": "resolve" },
+  "decisions": ["Which client item to handle first"],
+  "information": [
+    { "id": "overdue", "label": "Overdue client items", "kind": "exception", "exception": true },
+    { "id": "queue", "label": "Client items waiting on the advisor", "kind": "pending-item", "neededFor": ["choose which item to handle first"] },
+    { "id": "book", "label": "Book of business totals", "kind": "aggregate-metric", "frequency": "rare" } ],
+  "actions": [{ "label": "Open the most urgent item", "kind": "primary" }] }
+```
+
+   `mode` is one of `resolve`, `decide`, `review`, `investigate`, `monitor`, `create`, `configure`. Each piece of information has a `kind` from `get_composition_guidance` (`information.kinds`): `pending-item`, `entity-profile`, `status`, `exception`, `aggregate-metric`, `trend`, `breakdown`, `category-comparison`, `records`, `source-document`, `extracted-value`, `discrepancy`, `impact`, `alternative`, `setting`, `history`, `explanation`, `decision`. Say which decisions it informs with `neededFor`, how often it is needed with `frequency`, and whether an exception is present now with `exception`.
+2. `plan_screen` turns the brief into a plan (`registry/schema/plan.schema.json`, version `syntari-plan-1`), by rules, the same way every time: the archetype and the alternatives it considered, each piece of information's priority (`primary`, `supporting`, `reference`) and disclosure (`visible`, `collapsed`, `on-selection`, `on-exception`, `elsewhere`), the zones in order, the layout, candidate components, what to avoid, and a rationale. Without a job and information its status is `needs-context`: ask the person its `openQuestions` instead of guessing.
+3. The archetypes are `task-triage` (resolve pending work), `record-workspace` (work on one client, account, or shipment), `evidence-review` (check values against their source and confirm what is saved), `comparison-workspace` (choose between alternatives), `configuration-workspace` (settings, grouped, with the rare ones out of the way), `monitoring-dashboard`, and `analytical-report`. `get_pattern` returns each with a complete example, the anti-pattern for the same job, and what differs between them.
+4. Compose from the zones. Put the plan in `meta.plan` and add to each piece of information the ids of the nodes that show it (`"nodes": ["queue-table"]`), and to the primary action its `node`. Validation then holds the screen to the plan: a plan that is invalid or names a node the screen does not have is an error (`plan-invalid`, `plan-unknown-node`). A `meta.plan` without a version is a legacy plan and is read as before.
+
+Layout, emphasis, and surfaces follow the plan:
+
+- `"layout": "split"` holds two parts: the main one, and the one a person consults beside it (the source, the selected item, the working context). On a narrow screen the aside follows the main part.
+- A section's `emphasis` is `primary` for the task itself, `supporting` (the default), or `reference`. Two parts can lead a screen; more and none does.
+- A section's `surface` is `none` (the default: space and the heading separate it), `inset`, or `panel`. A boundary needs a reason: an independent object, a different context, a form, or a disclosure. A card inside a panel, or three cards standing in for a list, repeats boundaries; separation is a property of the layout, not of a divider between every pair of things.
+
+`assess_composition` (`syntari assess --spec screen.json`, `assessScreen(spec)`) reads the screen against its plan and returns `findings`, each with a `rule`, a `severity`, the `node`, a `message`, a `fix`, and whether it is safe to apply automatically:
+
+- **error**: unsafe or invalid. Information a decision needs in a closed region (`hidden-decision-input`), an exception that is present but collapsed (`hidden-exception`).
+- **warning**: a probable problem in hierarchy, grouping, redundancy, or disclosure. Headline measures on a task screen (`kpi-grid-on-task-screen`), cards per item or per setting, reference before primary (`priority-order`), nested surfaces, text restating the figures beside it, a summary of change that names no value, a queue with no order to act on, competing primary actions, a decision without its consequences.
+- **suggestion**: one improvement among several good answers.
+
+Each rule is deterministic and listed in `lint.rules` of the composition policy; none of them is a model's opinion. `quality` adds the findings up to a verdict per criterion and a gate (`fail`, `review`, `pass`); it is never a score. Responsive layout and contrast need a rendered review, and say so. `repair` is a change for `apply_operations` holding the safe fixes only (opening a region that hides a decision input, closing one that shows reference), so existing data and records stay protected; `repairScreen(spec)` applies it in Node.
+
+A rendered review is optional and separate: `assessRenderedScreen({ screenshot, viewport, spec }, { adapter })` hands a screenshot to an adapter the host supplies, such as a vision model, checks its answer against `registry/schema/visual-review.schema.json`, and labels it a judgment. It never becomes a diagnostic.
+
+## Two ways to build with Syntari
+
+**Screen IR, rendered by Syntari.** The runtime validates the schema, every component contract, the data, and the plan before anything paints, and assessment checks the composition against the plan. This guide's steps apply in full.
+
+**Components installed as source.** `syntari add` copies components into a project, and an agent writes HTML, JavaScript, or React around them. Nothing validates that markup: Screen IR checks cannot see it, and Syntari does not claim they do. Use the same plan, and:
+
+- read `runtime/COMPOSITION.md` in the installation, or run `syntari rules`: the archetypes, priority and disclosure rules, surfaces, and lint rules as Markdown, generated from the same policy. Point your project's agent instructions at it once, instead of pasting a prompt every time;
+- run `syntari lint-markup <files> --plan plan.json`, or the MCP tool `lint_markup`, on what you wrote. It reads markup as text and reports nested surfaces, cards standing in for lists, dividers used as spacing, competing primary buttons, banners that are not exceptions, and, with a plan, headline measures the plan avoids. It cannot see layout, runtime styles, or conditional rendering; passing it is not validation.
 
 ## Screen data
 
@@ -35,7 +84,7 @@ A screen that shows numbers states them once, in `data`, and binds every figure 
 
 `registry/composition-policy.json` (MCP `get_composition_policy`, `getCompositionPolicy()` in Node) says which visualization fits which kind of data, and the order each kind of screen follows: a report, a dashboard, a transaction workflow, a workspace. Time series take a line or area chart; parts of a whole take a breakdown; ordered buckets take ordered bars; risk contribution is compared with weight, not shown as a second allocation; records take a sortable table.
 
-- Declare the decision in `meta.plan`: `{ pattern, purpose, questions, groups, alternatives, rationale, limits }`. It is shown to the person as the decision trace; it is not private reasoning.
+- Declare the decision in `meta.plan`: the plan from `plan_screen` (see [Plan before composing](#plan-before-composing)), which also carries `pattern`, `purpose`, and `rationale` for the checks below. A legacy plan, `{ pattern, purpose, questions, groups, alternatives, rationale, limits }`, is still read. It is shown to the person as the decision trace; it is not private reasoning.
 - Validation separates hard errors from advice. A visualization that misrepresents its data (a pie chart of a time series, a risk chart that repeats the allocation, `misleading-visualization`, `relabeled-data`) is an error. Order, repetition, density, and weak fits (`summary-not-first`, `repeated-metric`, `redundant-visualization`, `weak-visualization`) are advice: they are inspectable, and they are not presented as objective.
 - `assessScreen(spec)` or the MCP tool `assess_composition` returns the pattern, each part's data role and fit, seven criteria with a verdict, and a profile of the screen data that lists the visualizations each table, measure, and group supports.
 - When a request names a visualization Syntari does not have, such as a scatter plot or a map, answer `unsupported: [{ visualization, reason, closest }]` instead of imitating it with another component.
