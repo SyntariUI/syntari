@@ -40,14 +40,15 @@ export function renderGuidance(manifest,nameOf=slug=>slug){
  /* How a state comes about is code when it names a prop or a call, such as disabled: true; otherwise it is a sentence. */
  const how=text=>/^[a-z][\w.]*: |\(\)/i.test(text)?`<code>${esc(text)}</code>`:`<span class="sys-guide-how"><span>How:</span> ${esc(text)}</span>`;
  const states=g.states.map(state=>`<div><dt>${esc(state.label)}</dt><dd><p>${esc(state.description)}</p>${how(state.how)}</dd></div>`).join('');
- const rule=(kind,label,item)=>`<li class="sys-guide-rule" data-kind="${kind}"><span class="sr-only">${label}: </span><p>${esc(item.text)}</p><small>${esc(item.why)}</small></li>`;
+ /* A do is a check and a don't a cross, in green and red: the shape says it without the colour, and screen readers hear the word. */
+ const mark={do:'<path d="m9 12 2 2 4-4"/>',dont:'<path d="m15 9-6 6"/><path d="m9 9 6 6"/>'};
+ const rule=(kind,label,item)=>`<li class="sys-guide-rule" data-kind="${kind}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/>${mark[kind]}</svg><strong><span class="sr-only">${label}: </span>${esc(item.title)}</strong><p>${esc(item.description)}</p></li>`;
  const keys=g.accessibility.keyboard.length?`<dl class="sys-guide-keys">${g.accessibility.keyboard.map(key=>`<div><dt>${key.keys.split(/ (and|or) /).map(part=>/^(and|or)$/.test(part)?` ${part} `:`<kbd>${esc(part)}</kbd>`).join('')}</dt><dd>${esc(key.action)}</dd></div>`).join('')}</dl>`:'<p class="sys-guide-note">Takes no focus and needs no keys.</p>';
  box.innerHTML=[
   block('When to use',list(g.useWhen),' data-guide="use"'),
   block('When not to use',`<ul class="sys-guide-list sys-guide-avoid">${avoid}</ul>`,' data-guide="avoid"'),
   block('States',`<dl class="sys-guide-states">${states}</dl>`,' data-guide="states"'),
-  block('Do',`<ul class="sys-guide-rules">${g.dos.map(item=>rule('do','Do',item)).join('')}</ul>`,' data-guide="do"'),
-  block('Don’t',`<ul class="sys-guide-rules">${g.donts.map(item=>rule('dont','Don’t',item)).join('')}</ul>`,' data-guide="dont"'),
+  block('Do and don’t',`<ul class="sys-guide-rules" data-guide="do">${g.dos.map(item=>rule('do','Do',item)).join('')}</ul><ul class="sys-guide-rules" data-guide="dont">${g.donts.map(item=>rule('dont','Don’t',item)).join('')}</ul>`,' data-guide="rules"'),
   g.content?.length?block('Writing',list(g.content),' data-guide="content"'):'',
   block('Accessibility',`${keys}${list(g.accessibility.notes)}`,' data-guide="accessibility"')
  ].join('');

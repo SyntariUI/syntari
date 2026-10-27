@@ -178,38 +178,38 @@
     ],
     "dos": [
       {
-        "text": "Use one primary button per region, for the action most people take next.",
-        "why": "One filled button tells people where to go; two compete and slow the choice."
+        "title": "One primary per region",
+        "description": "A single filled button shows the way forward; two compete."
       },
       {
-        "text": "Start the label with a verb that names the result: Save changes, Send invite, Delete project.",
-        "why": "People know what will happen before they press, without reading around the button."
+        "title": "Verb-first labels",
+        "description": "Save changes, Send invite: people know the result before they press."
       },
       {
-        "text": "Set consequential on a button that deletes, sends, or pays, and confirm it in a Confirmation dialog.",
-        "why": "An action that cannot be undone deserves a second, explicit decision."
+        "title": "Confirm the irreversible",
+        "description": "Mark delete, send, and pay as consequential, and confirm them."
       },
       {
-        "text": "Put the primary button last in a row of buttons, with Cancel before it.",
-        "why": "The same order on every screen lets people act without searching."
+        "title": "Primary goes last",
+        "description": "Cancel first, then the action, in the same order on every screen."
       }
     ],
     "donts": [
       {
-        "text": "Don’t use a button to move to another page.",
-        "why": "Screen readers announce it as a button, and people cannot open it in a new tab or copy its address."
+        "title": "Buttons that navigate",
+        "description": "Going to another page is a link, so it can open in a new tab."
       },
       {
-        "text": "Don’t disable a button without saying why.",
-        "why": "A disabled button cannot be focused and gives no feedback, so people are left guessing what is missing."
+        "title": "Disabled with no reason",
+        "description": "It can’t be focused, so people never learn what is missing."
       },
       {
-        "text": "Don’t write vague labels such as OK, Yes, Submit, or Click here.",
-        "why": "Read on their own, as screen readers often list them, they do not say what will happen."
+        "title": "Vague labels",
+        "description": "OK, Submit, or Click here don’t say what will happen."
       },
       {
-        "text": "Don’t use danger for actions that are merely important.",
-        "why": "When red marks everything, it stops warning about what cannot be undone."
+        "title": "Danger for emphasis",
+        "description": "Red that marks everything stops warning about what is permanent."
       }
     ],
     "content": [

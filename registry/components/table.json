@@ -137,38 +137,38 @@
     ],
     "dos": [
       {
-        "text": "Give every table a caption that says what its rows are.",
-        "why": "Screen reader users hear the caption first; it is how they know what the table is about."
+        "title": "A caption that names it",
+        "description": "Screen reader users hear it first; it says what the rows are."
       },
       {
-        "text": "Put units in the column header and keep each cell to its value.",
-        "why": "Short cells line up and can be compared at a glance."
+        "title": "Units in the header",
+        "description": "Cells hold only values, so they stay short and line up."
       },
       {
-        "text": "Make the table sortable once it has more than six rows.",
-        "why": "Past a screenful, people look for the largest value or a particular record rather than reading in order."
+        "title": "Sortable past six rows",
+        "description": "Beyond a screenful, people look for a value instead of reading."
       },
       {
-        "text": "When it is not sortable, order rows by what matters most, such as the largest value first.",
-        "why": "The first rows get most of the attention."
+        "title": "Most important first",
+        "description": "When it isn’t sortable, the first rows get most of the attention."
       }
     ],
     "donts": [
       {
-        "text": "Don’t use a table to lay out a page.",
-        "why": "Screen readers announce rows and columns that are not data."
+        "title": "Tables for layout",
+        "description": "Screen readers announce rows and columns that aren’t data."
       },
       {
-        "text": "Don’t put sentences or paragraphs in cells.",
-        "why": "Rows grow uneven and the columns stop being scannable; put the detail in a region or a detail view."
+        "title": "Sentences in cells",
+        "description": "Rows turn uneven; move the detail to a region or detail view."
       },
       {
-        "text": "Don’t use colour alone to say a value is good or bad.",
-        "why": "Write the sign or a word too, such as +24% or Down 6%."
+        "title": "Colour as the verdict",
+        "description": "Write the sign or a word too: +24%, Down 6%."
       },
       {
-        "text": "Don’t add a column that is the same in every row.",
-        "why": "It costs width and attention and says nothing; say it once in the caption."
+        "title": "Columns that never change",
+        "description": "A value shared by every row belongs in the caption."
       }
     ],
     "content": [

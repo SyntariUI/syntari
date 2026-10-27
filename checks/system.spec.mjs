@@ -153,10 +153,14 @@ test('a documented component says when to use it, when not and what instead, its
  await expect(page.locator('[data-description]')).toHaveText(/^A modal window for one short, focused task/);
  await expect(page.locator('[data-contract-status]')).toHaveText('Documented');
  await expect(guide.locator('[data-guide="states"] dt')).toHaveText(['Closed', 'Open', 'Invalid', 'Dismissed']);
+ await expect(guide.locator('[data-guide="rules"] h3')).toHaveText('Do and don’t');
  await expect(guide.locator('[data-guide="do"] li')).toHaveCount(4);
- /* A don't reads as one even out of its section, and its colour is never the only sign. */
- for (const text of await guide.locator('[data-guide="dont"] li p').allTextContents()) expect(text).toMatch(/^Don’t /);
- await expect(guide.locator('[data-guide="dont"] li').first()).toContainText('Don’t:');
+ /* A do is a check and a don't a cross: the shape tells them apart without colour, and screen readers hear the word. */
+ await expect(guide.locator('[data-guide="do"] li').first().locator('svg path')).toHaveAttribute('d', 'm9 12 2 2 4-4');
+ await expect(guide.locator('[data-guide="dont"] li').first().locator('svg path')).toHaveCount(2);
+ await expect(guide.locator('[data-guide="dont"] li strong').first()).toHaveText('Don’t: Unrequested dialogs');
+ await expect(guide.locator('[data-guide="dont"] li p').first()).toHaveText('They interrupt work and get dismissed unread.');
+ expect(await guide.locator('[data-guide="dont"] li svg').first().evaluate(svg => getComputedStyle(svg).stroke)).not.toBe(await guide.locator('[data-guide="do"] li svg').first().evaluate(svg => getComputedStyle(svg).stroke));
  await expect(guide.locator('[data-guide="accessibility"] kbd').first()).toHaveText('Tab');
  await expect(page.locator('[data-accessibility-block]')).toBeHidden();
  /* Each alternative opens that component's own guidance. */

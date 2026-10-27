@@ -121,38 +121,38 @@
     ],
     "dos": [
       {
-        "text": "Title the dialog with the task, and repeat its verb on the primary button: Create a project, then Create project.",
-        "why": "People confirm the thing they started, not a generic OK."
+        "title": "Title and button agree",
+        "description": "Create a project, then Create project: people confirm what they started."
       },
       {
-        "text": "Keep it to one task and a few fields.",
-        "why": "A dialog covers the page; the longer it gets, the more people lose their place."
+        "title": "One short task",
+        "description": "The longer a dialog gets, the more people lose their place."
       },
       {
-        "text": "Always offer a way out: Cancel, the close button, and Escape.",
-        "why": "A window people cannot leave feels like a trap."
+        "title": "Always a way out",
+        "description": "Cancel, the close button, and Escape all leave without saving."
       },
       {
-        "text": "Return focus to the button that opened it when it closes.",
-        "why": "Keyboard and screen reader users carry on from where they were."
+        "title": "Focus goes back",
+        "description": "On close, focus returns to the button that opened it."
       }
     ],
     "donts": [
       {
-        "text": "Don’t open a dialog that nobody asked for.",
-        "why": "Unrequested windows interrupt work and get dismissed unread."
+        "title": "Unrequested dialogs",
+        "description": "They interrupt work and get dismissed unread."
       },
       {
-        "text": "Don’t open a dialog on top of another dialog.",
-        "why": "With two layers, it is unclear what Cancel will close."
+        "title": "Dialogs on dialogs",
+        "description": "With two layers, it is unclear what Cancel will close."
       },
       {
-        "text": "Don’t close it on a click outside while it holds what someone typed.",
-        "why": "One stray click should not throw away their work."
+        "title": "Closing on outside click",
+        "description": "One stray click shouldn’t throw away what someone typed."
       },
       {
-        "text": "Don’t put a page’s main content or navigation in a dialog.",
-        "why": "Content inside a dialog cannot be linked to, bookmarked, or found again."
+        "title": "Page content in a dialog",
+        "description": "It can’t be linked to, bookmarked, or found again."
       }
     ],
     "content": [

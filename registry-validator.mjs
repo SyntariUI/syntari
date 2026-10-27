@@ -98,8 +98,10 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
       const stateIds = (guidance.states ?? []).map(state => state.id);
       if (new Set(stateIds).size !== stateIds.length) problems.push(`guidance.states for ${entry.id} repeats a state id`);
       if (JSON.stringify(stateIds) !== JSON.stringify(manifest.states ?? [])) problems.push(`states for ${entry.id} must list the guidance states, in order: ${stateIds.join(', ')}`);
-      for (const item of guidance.donts ?? []) if (!/^Don[’']t /.test(item.text)) problems.push(`guidance.donts for ${entry.id} must start with "Don’t": ${item.text}`);
-      for (const item of guidance.dos ?? []) if (/^(Don[’']t|Never|Avoid) /.test(item.text)) problems.push(`guidance.dos for ${entry.id} reads as a don’t: ${item.text}`);
+      /* The icon says do or don't, so a title names the practice or the mistake and never repeats the verdict. */
+      for (const item of [...(guidance.dos ?? []), ...(guidance.donts ?? [])]) if (/^(Do|Don[’']t|Never|Avoid)\b/.test(item.title)) problems.push(`guidance rule titles for ${entry.id} name the practice, not the verdict: ${item.title}`);
+      const titles = [...(guidance.dos ?? []), ...(guidance.donts ?? [])].map(item => item.title);
+      if (new Set(titles).size !== titles.length) problems.push(`guidance for ${entry.id} repeats a rule title`);
     }
     /* A form control is named by a prop and needs what its control writes: a label, bounds, options, or dates. */
     const field = manifest.ir?.field;

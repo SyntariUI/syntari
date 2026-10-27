@@ -193,13 +193,14 @@ button,input{font:inherit}
 .sys-guide-states dd{margin:4px 0 0}
 .sys-guide-states dd p{margin:0 0 6px;font-size:var(--type-caption);line-height:1.55;color:var(--muted)}
 .sys-guide-states code,.sys-guide-keys kbd{display:inline-block;padding:3px 6px;border:1px solid var(--sys-line);border-radius:6px;font:var(--type-caption)/1.35 var(--font-mono);color:var(--text);background:color-mix(in srgb,var(--surface) 70%,transparent)}
-/* A do and a don't are told apart by their label and its colour, never by colour alone. */
-.sys-guide-rules{display:grid;gap:10px;margin:0;padding:0;list-style:none}
-.sys-guide-rule{padding:11px 13px 12px;border:1px solid var(--sys-line);border-left:3px solid var(--rule-tone);border-radius:10px}
+.sys-guide-rules{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.sys-guide-rules+.sys-guide-rules{margin-top:18px}
+.sys-guide-rule{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:10px}
 .sys-guide-rule[data-kind=do]{--rule-tone:var(--success-text)}
 .sys-guide-rule[data-kind=dont]{--rule-tone:var(--danger-text)}
-.sys-guide-rule p{margin:0;font-size:var(--type-body);line-height:1.5;color:var(--text)}
-.sys-guide-rule small{display:block;margin-top:5px;font-size:var(--type-caption);line-height:1.5;color:var(--muted)}
+.sys-guide-rule svg{grid-row:span 2;width:18px;height:18px;margin-top:1px;fill:none;stroke:var(--rule-tone);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sys-guide-rule strong{font-size:var(--type-body);font-weight:500;line-height:1.4;color:var(--text)}
+.sys-guide-rule p{margin:2px 0 0;font-size:var(--type-caption);line-height:1.5;color:var(--muted)}
 .sys-guide-keys{display:grid;gap:8px;margin:0 0 14px}
 .sys-guide-keys div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:12px;align-items:baseline}
 .sys-guide-keys dt{font-size:var(--type-caption);color:var(--muted)}
