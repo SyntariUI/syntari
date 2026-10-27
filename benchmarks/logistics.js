@@ -34,6 +34,7 @@ export const logistics = [
     },
     baseline: {
       derivation: 'The policy’s monitoring pattern (“the current state of a live system and what changed recently”: state, recent, history). Measures of the shipment’s state, a banner for the hold, a card per document a person opens, the route, and the decision as an approval card.',
+      nodes: { shipment: ['state'], hold: ['hold'], actions: ['doc-invoice'], route: ['route'], documents: ['doc-packing', 'doc-lading'], events: ['events'] },
       spec: screen('Shipment SHP-20931', 'stack', [
         node('state', 'stat-row', { stats: [{ label: 'Promised delivery', value: '14 May', note: 'to Lyon' }, { label: 'Days in transit', value: '23', note: 'of 26 planned' }, { label: 'Customs', value: 'Held', badge: 'Since Tue', tone: 'danger', note: 'Hamburg' }, { label: 'Lines', value: '14', note: 'on the invoice' }] }),
         node('hold', 'banner', { tone: 'info', icon: 'info', message: 'This shipment is held at customs', detail: 'Hamburg customs is reviewing the commercial invoice.' }),
@@ -96,6 +97,7 @@ export const logistics = [
     },
     baseline: {
       derivation: 'The Release review screen and the transaction pattern: an outcome banner, headline measures, the comparison, a text block on what the numbers mean, the approval card, and evidence in regions.',
+      nodes: { invoice: ['invoice-meta'], disputed: ['compare'], agreed: ['agreed-list'] },
       spec: screen('Rhine Freight · April invoice', 'stack', [
         node('outcome', 'banner', { tone: 'info', icon: 'info', message: 'Invoice checked against the rate card', detail: 'Some charges differ from the agreed rates.' }),
         node('stats', 'stat-row', { stats: [{ label: 'Charges', value: '14', note: 'on 3 pages' }, { label: 'Agreed', value: '11', note: 'match the rate card' }, { label: 'Disputed', value: '3', badge: 'Review', tone: 'warning', note: 'differ' }, { label: 'Invoiced', value: '€18,420', note: 'due 30 May' }] }),
@@ -153,6 +155,7 @@ export const logistics = [
     },
     baseline: {
       derivation: 'The policy’s comparison pattern (options, differences, choice): a card per option with its own action, the quotes as records, and an approval card for the award. A bar chart of prices was the first choice; validation refused it (bar values are percentages), so the prices went into a table.',
+      nodes: { quotes: ['quote-rhine', 'quote-alpen', 'quote-loire', 'prices'] },
       spec: screen('Hamburg to Lyon · carrier quotes', 'stack', [
         section('options', 'Quotes', [
           node('quote-rhine', 'card', { title: 'Rhine Freight', body: '€2,140 a container, 3 days, 96% on time.', badge: 'Incumbent', badgeTone: 'accent', action: 'Choose', mark: 'file' }),

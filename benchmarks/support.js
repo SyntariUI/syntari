@@ -30,6 +30,7 @@ export const support = [
     },
     baseline: {
       derivation: 'The request says “dashboard”: Analytics overview and the policy’s dashboard pattern. Headline measures, the principal analysis (tickets over time), then the records.',
+      nodes: { tickets: ['tickets'], breaches: ['measures'], team: ['headline'] },
       spec: screen('Support dashboard', 'stack', [
         node('scope', 'filter-bar', { period: 'Today', periods: [{ label: 'Today', value: 'today' }, { label: 'This week', value: 'week' }], filtersLabel: 'Queues', settingsLabel: 'View' }),
         node('headline', 'headline-metric', { metrics: [{ label: 'Open tickets', value: '128', delta: '9.4%', direction: 'up' }, { label: 'First response', value: '2h 14m', delta: '12m', direction: 'down' }] }),
@@ -90,6 +91,7 @@ export const support = [
     },
     baseline: {
       derivation: 'No settings pattern exists; the registry’s decision role recommends Selectable cards, and a form section sends every field at once. Every setting is visible in one form.',
+      nodes: { targets: ['urgent', 'high', 'normal'], routing: ['assignment', 'escalation'], automation: ['rules'] },
       spec: screen('Support settings', 'stack', [
         node('note', 'banner', { tone: 'info', icon: 'info', message: 'Changes apply to every queue', detail: 'Agents see new targets on their next ticket.' }),
         section('form', 'Settings', [

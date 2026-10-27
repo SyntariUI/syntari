@@ -14,15 +14,17 @@ export const scenarios = [...wealth, ...support, ...logistics];
 export const products = [...new Set(scenarios.map(item => item.product))];
 
 /**
- * The plan for a scenario's brief, with the intent-aware screen's node ids for each piece of information and the primary
- * action. With nodes: false, the plan alone: what a baseline screen, which has no mapping, is checked against.
+ * The plan for a scenario's brief, with the node ids that show each piece of information on one of its screens:
+ * nodes 'intent' (the default) for the intent-aware screen, 'baseline' for the baseline, read the same way so every
+ * rule applies to both, or false for the plan alone. The primary action is named only on the screen composed from it.
  */
-export function planFor(scenario, policy, { nodes: withNodes = true, ...options } = {}) {
+export function planFor(scenario, policy, { nodes: on = 'intent', ...options } = {}) {
   const { plan, status, cues } = planScreen(scenario.brief, policy, options);
-  if (!withNodes) return { plan, status, cues };
-  const nodes = scenario.intent?.nodes ?? {};
-  const informationPriority = plan.informationPriority.map(item => nodes[item.id] ? { ...item, nodes: nodes[item.id] } : item);
-  const actions = plan.actions?.primary && scenario.intent?.actionNode ? { ...plan.actions, primary: { ...plan.actions.primary, node: scenario.intent.actionNode } } : plan.actions;
+  if (!on) return { plan, status, cues };
+  const condition = on === 'baseline' ? scenario.baseline : scenario.intent;
+  const nodes = condition?.nodes ?? {};
+  const informationPriority = plan.informationPriority.map(item => nodes[item.id]?.length ? { ...item, nodes: nodes[item.id] } : item);
+  const actions = plan.actions?.primary && condition?.actionNode ? { ...plan.actions, primary: { ...plan.actions.primary, node: condition.actionNode } } : plan.actions;
   return { plan: { ...plan, informationPriority, actions }, status, cues };
 }
 

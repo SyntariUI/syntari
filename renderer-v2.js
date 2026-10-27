@@ -43,11 +43,11 @@ function stepsOf(condition) {
 }
 const current = condition => stepsOf(condition).at(-1).spec;
 
-/** Validation and the composition assessment for one condition. The baseline has no plan of its own: it is read against the plan for the same brief. */
+/** Validation and the composition assessment for one condition. The baseline has no plan of its own: it is read against the plan for the same brief, with its own nodes mapped. */
 async function evaluate(condition) {
   const spec = current(condition);
   const checked = await validate(spec);
-  const plan = condition === 'baseline' ? planFor(scenario(), policy, { nodes: false }).plan : null;
+  const plan = condition === 'baseline' ? planFor(scenario(), policy, { nodes: 'baseline' }).plan : null;
   const assessment = assessComposition(spec, { policy, resolved: checked.screen, model: checked.data, diagnostics: checked.diagnostics, plan, base: versionOf(spec) });
   return { condition, spec, checked, assessment };
 }
@@ -163,7 +163,7 @@ function paintChanges(results) {
     h('table', { class: 'lab-table' }, h('caption', { class: 'sr-only', text: 'Findings for each condition' }),
       h('thead', {}, h('tr', {}, ['', 'Errors', 'Warnings', 'Suggestions', 'Gate'].map(text => h('th', { scope: 'col', text })))),
       h('tbody', {}, both.map(result => h('tr', {}, h('th', { scope: 'row', text: CONDITIONS[result.condition] }), h('td', { text: String(count(result, 'error') + result.checked.diagnostics.filter(item => item.severity === 'error').length) }), h('td', { text: String(count(result, 'warning')) }), h('td', { text: String(count(result, 'suggestion')) }), h('td', {}, h('span', { class: `lab-gate is-${result.assessment.quality.gate}`, text: result.assessment.quality.gate })))))),
-    h('p', { class: 'lab-note', text: 'Counts of named rules, not a quality score. The baseline is read against the plan for the same brief, without node ids, so rules that need them do not apply to it.' }),
+    h('p', { class: 'lab-note', text: 'Counts of named rules, not a quality score. Both screens are read against the plan for the same brief; for the baseline, which was not composed from a plan, the nodes that show each piece of information were mapped by reading it.' }),
     heading('How the baseline was composed'),
     h('p', { class: 'lab-body', text: s.baseline.derivation }),
     heading('What differs'),
@@ -173,7 +173,7 @@ function paintChanges(results) {
     ...['baseline', 'intent'].map(condition => {
       const steps = stepsOf(condition);
       return h('div', { class: 'lab-iterations' }, h('p', { class: 'lab-subheading', text: CONDITIONS[condition] }),
-        h('ol', { class: 'lab-list' }, steps.map((step, i) => h('li', {}, h('strong', { text: i === 0 ? 'Composed' : `Repair ${i}` }), ` · ${step.label}`, step.diff?.length ? h('ul', {}, step.diff.map(item => h('li', { class: 'lab-mono', text: `${item.kind} ${item.id ?? item.path ?? ''}${item.fields ? ` (${item.fields.join(', ')})` : ''}` }))) : null))));
+        h('ol', { class: 'lab-list' }, steps.map((step, i) => h('li', {}, h('strong', { text: i === 0 ? 'Composed' : `Repair ${i}` }), ` · ${step.label}`, step.diff?.length ? h('ul', {}, step.diff.map(item => h('li', { class: 'lab-mono', text: `${item.change} ${item.kind} ${item.id ?? item.path ?? ''}${item.fields ? `: ${item.fields.join(', ')}` : ''}` }))) : null))));
     }),
     heading('Actions requested'),
     actions.length ? h('ul', { class: 'lab-list' }, actions.slice(0, 8).map(item => h('li', { class: 'lab-mono', text: `${item.detail.component} · ${item.detail.action}${item.detail.index !== undefined ? ` · row ${item.detail.index + 1}` : ''}${item.detail.values ? ` · ${JSON.stringify(item.detail.values)}` : ''}` }))) : h('p', { class: 'lab-body', text: 'None yet. Requests from the screen are listed here; the lab performs none of them.' })

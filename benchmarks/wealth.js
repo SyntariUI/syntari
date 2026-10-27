@@ -39,6 +39,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The request says “dashboard”: the Renderer’s pattern match and search_components both lead to Analytics overview, and the composition policy’s dashboard pattern orders headline measures, one principal analysis, then records. The advisor’s pending items are records, so they go last; sources go in a closed region, as the agent guide asks.',
+      nodes: { queue: ['pending-table'], overdue: ['measures'], book: ['headline'] },
       spec: screen('Advisor dashboard', 'stack', [
         node('scope', 'filter-bar', { period: 'This quarter', periods: [{ label: 'This month', value: 'month' }, { label: 'This quarter', value: 'quarter' }, { label: 'This year', value: 'year' }], filtersLabel: 'Households', settingsLabel: 'View' }),
         node('headline', 'headline-metric', { metrics: [{ label: 'Assets under management', value: '€184.2M', delta: '2.1%', direction: 'up' }, { label: 'Households', value: '42', delta: '1', direction: 'up' }] }),
@@ -119,6 +120,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The composition policy’s workspace pattern (“records a person scans, filters, and works through”): scope, records, detail. Each task is a record that can be opened, so the registry’s Card (“hold one record or one idea”) shows the tasks a person acts on, with the full list as a table below.',
+      nodes: { tasks: ['task-okoro', 'task-haddad', 'task-lindqvist', 'task-table'], done: ['done-list'] },
       spec: screen('Work queue', 'stack', [
         node('scope', 'filter-bar', { period: 'All open', periods: [{ label: 'All open', value: 'open' }, { label: 'Due this week', value: 'week' }, { label: 'Overdue', value: 'overdue' }], filtersLabel: 'Households', settingsLabel: 'Columns' }),
         node('summary', 'stat-row', { stats: [{ label: 'Open tasks', value: '11', note: 'across 9 households' }, { label: 'Due this week', value: '6', note: 'of 11 open' }, { label: 'Overdue', value: '2', badge: '+1', tone: 'danger', note: 'since Monday' }] }),
@@ -185,6 +187,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'A record with many facets: the agent guide asks for sections (finding, evidence, decision) and labelled regions for skippable detail; Card holds “one record or one idea”, Stat row the measures that matter. The household’s figures lead, each facet gets its own card or region.',
+      nodes: { profile: ['stats'], 'open-items': ['card-plan', 'card-statement', 'card-beneficiary'], allocation: ['allocation'], goals: ['goal-bars'], accounts: ['accounts-table'], history: ['history-list'] },
       spec: screen('Lindqvist household', 'stack', [
         node('summary-banner', 'banner', { tone: 'info', icon: 'info', message: 'Annual review today at 10:30', detail: 'This page brings together everything about the Lindqvist household.' }),
         node('stats', 'stat-row', { stats: [{ label: 'Total assets', value: '€3.12M', badge: '+4.2%', tone: 'success', note: 'since last review' }, { label: 'Accounts', value: '5', note: 'at 2 custodians' }, { label: 'Risk profile', value: 'Balanced', note: 'reviewed 2025' }, { label: 'Open items', value: '3', note: 'before the review' }] }),
@@ -248,6 +251,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The composition policy’s transaction pattern (“a consequential change a person reviews and authorizes: what will happen, the evidence, then one decision”) and the Approval review screen: a banner, the evidence, then the approval card.',
+      nodes: { plans: ['plan-compare'], why: ['summary'], assumptions: ['assumption-list'] },
       spec: screen('Okoro retirement plan update', 'stack', [
         node('status', 'banner', { tone: 'info', icon: 'info', message: 'Approval needed', detail: 'Dana Ruiz has prepared a plan update and is waiting for your decision.' }),
         node('plan-stats', 'stat-row', { stats: [{ label: 'Retirement age', value: '64', badge: '+2 years', tone: 'warning', note: 'was 62' }, { label: 'Chance of success', value: '88%', badge: '+17 pp', tone: 'success', note: 'was 71%' }, { label: 'Monthly saving', value: '€1,850', badge: '−€550', tone: 'success', note: 'was €2,400' }] }),
@@ -308,6 +312,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The composition policy’s dashboard pattern for a portfolio: headline measures, one principal analysis (allocation as parts of a whole takes a breakdown), supporting comparisons, then positions; the decision as an approval card.',
+      nodes: { finding: ['advice'], allocation: ['allocation'], performance: ['performance'], holdings: ['holdings-table'] },
       spec: screen('Brennan-Díaz portfolio', 'stack', [
         node('stats', 'stat-row', { stats: [{ label: 'Portfolio value', value: '€1.80M', badge: '+6.4%', tone: 'success', note: 'this year' }, { label: 'Return', value: '+6.4%', badge: '+0.9 pp', tone: 'success', note: 'against the benchmark' }, { label: 'Equity drift', value: '+7 pp', badge: 'Above band', tone: 'danger', note: 'band is ±5 pp' }, { label: 'Positions', value: '9', note: 'in 2 accounts' }] }),
         node('allocation', 'breakdown', { title: 'Allocation', total: '€1.80M', segments: [{ label: 'Equities', value: '€1.21M', share: 67 }, { label: 'Bonds', value: '€0.45M', share: 25 }, { label: 'Cash', value: '€0.14M', share: 8 }] }),
@@ -365,6 +370,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The Release review screen (“a report someone has to trust before they act on it”) and the transaction pattern: a banner with the outcome, headline measures, the comparison, a text block that says what the numbers mean, the decision, and the evidence in labelled regions.',
+      nodes: { statement: ['source-lines'], differences: ['compare'], matched: ['matched-list'], extraction: ['log-list'] },
       spec: screen('Lindqvist statement · March', 'stack', [
         node('status', 'banner', { tone: 'info', icon: 'info', message: 'Statement processed', detail: 'The March statement from Northgate was read and compared with the household record.' }),
         node('stats', 'stat-row', { stats: [{ label: 'Values read', value: '17', note: 'from 3 pages' }, { label: 'Matching', value: '14', note: 'of 17' }, { label: 'Different', value: '3', badge: 'Review', tone: 'warning', note: 'need a decision' }] }),
@@ -436,6 +442,7 @@ export const wealth = [
     },
     baseline: {
       derivation: 'The composition policy has no settings pattern; the transaction pattern lists form-and-configuration, and the registry’s decision role recommends Selectable cards. One form holds every setting, choices as option cards, with a banner explaining the scope.',
+      nodes: { communication: ['toggles', 'meeting'], reviews: ['cadence', 'threshold'], advanced: ['retention'] },
       spec: screen('Firm settings', 'stack', [
         node('scope-note', 'banner', { tone: 'info', icon: 'info', message: 'These settings apply to every advisor', detail: 'Changes take effect for all households after you save.' }),
         section('settings', 'Settings', [
