@@ -39,6 +39,37 @@ export async function buildLlms(registryDir) {
   const agentGuide = await readFile(new URL('../AGENT-GUIDE.md', import.meta.url), 'utf8');
   const contracts = [];
   for (const entry of index.components.filter(item => item.renderable)) contracts.push(await readJson(join(registryDir, entry.manifest)));
+  /* Guidance is read the same way by people in System and by agents here: when to use, when not, states, and what to do. */
+  const guided = [];
+  for (const entry of index.components.filter(item => item.status === 'authored')) {
+    const manifest = await readJson(join(registryDir, entry.manifest));
+    if (manifest.guidance) guided.push(manifest);
+  }
+  const nameOf = id => index.components.find(item => item.id === id)?.name ?? id;
+  const guidanceText = guided.map(item => {
+    const g = item.guidance;
+    return `### ${item.name} (\`syntari.${item.id}\`)
+
+${g.summary}
+
+Use when:
+${g.useWhen.map(text => `- ${text}`).join('\n')}
+
+Do not use when:
+${g.avoidWhen.map(entry => `- ${entry.text}${entry.instead ? ` Use ${nameOf(entry.instead)} (\`syntari.${entry.instead}\`).` : ''}`).join('\n')}
+
+States:
+${g.states.map(state => `- ${state.label}: ${state.description} (${state.how})`).join('\n')}
+
+Do:
+${g.dos.map(rule => `- ${rule.text} ${rule.why}`).join('\n')}
+
+Don’t:
+${g.donts.map(rule => `- ${rule.text} ${rule.why}`).join('\n')}${g.content?.length ? `\n\nWriting:\n${g.content.map(text => `- ${text}`).join('\n')}` : ''}
+
+Accessibility:
+${[...g.accessibility.keyboard.map(key => `- ${key.keys}: ${key.action}`), ...g.accessibility.notes.map(text => `- ${text}`)].join('\n')}`;
+  }).join('\n\n');
 
   const intro = `# Syntari
 
@@ -81,7 +112,7 @@ ${contracts.map(item => `- [${item.name}](${site}/registry/components/${item.id}
 
 ${item.purpose}
 
-${item.avoidWhen?.length ? `Avoid when: ${item.avoidWhen.join(', ')}.\n\n` : ''}Props:
+${item.guidance ? `Use when: ${item.guidance.useWhen.join(' ')}\n\nDo not use when: ${item.guidance.avoidWhen.map(entry => `${entry.text}${entry.instead ? ` Use \`syntari.${entry.instead}\`.` : ''}`).join(' ')}\n\n` : item.avoidWhen?.length ? `Avoid when: ${item.avoidWhen.join(', ')}.\n\n` : ''}Props:
 ${Object.entries(item.props).map(([name, prop]) => describeProp(name, prop)).join('\n')}
 ${actions.length ? `\nActions (fire \`syntari:action\` and \`onActionRequest\`; nothing runs until the host decides):\n${actions.map(([name, action]) => `- \`${name}\`${actionNote(action)}: ${action.description ?? ''}`).join('\n')}\n` : ''}
 Valid sample:
@@ -114,6 +145,6 @@ ${compositions}
 ## Render contracts
 
 ${contractText}
-`;
+${guided.length ? `\n## Component guidance\n\nWhen to use each component, when not and what to use instead, its states, and what to do and not do. ${guided.length} of ${index.components.length} components are documented this way so far.\n\n${guidanceText}\n` : ''}`;
   return { short, full };
 }

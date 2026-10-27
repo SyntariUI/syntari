@@ -90,6 +90,17 @@ export async function validateRegistry(registryDir, kitDir, packageVersion) {
       if (manifest.props?.[key]?.items?.fields?.value?.type !== 'number') problems.push(`tiles for ${entry.id}.${key} need items with a number value`);
       if (binding.name !== undefined && !(binding.name in (manifest.props ?? {}))) problems.push(`tiles.name for ${entry.id}.${key} must name a prop`);
     }
+    /* Guidance is read by people and agents alike: every alternative it names must exist, and its states are the manifest's states. */
+    const guidance = manifest.guidance;
+    if (guidance) {
+      const ids = new Set(index.components.map(item => item.id));
+      for (const item of guidance.avoidWhen ?? []) if (item.instead !== undefined && (!ids.has(item.instead) || item.instead === entry.id)) problems.push(`guidance.avoidWhen for ${entry.id} names ${item.instead}, which is not another registry component`);
+      const stateIds = (guidance.states ?? []).map(state => state.id);
+      if (new Set(stateIds).size !== stateIds.length) problems.push(`guidance.states for ${entry.id} repeats a state id`);
+      if (JSON.stringify(stateIds) !== JSON.stringify(manifest.states ?? [])) problems.push(`states for ${entry.id} must list the guidance states, in order: ${stateIds.join(', ')}`);
+      for (const item of guidance.donts ?? []) if (!/^Don[’']t /.test(item.text)) problems.push(`guidance.donts for ${entry.id} must start with "Don’t": ${item.text}`);
+      for (const item of guidance.dos ?? []) if (/^(Don[’']t|Never|Avoid) /.test(item.text)) problems.push(`guidance.dos for ${entry.id} reads as a don’t: ${item.text}`);
+    }
     /* A form control is named by a prop and needs what its control writes: a label, bounds, options, or dates. */
     const field = manifest.ir?.field;
     if (field) {

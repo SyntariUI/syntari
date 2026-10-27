@@ -1,6 +1,6 @@
 import { initialize, getComponents, mount, searchItems } from '../syntari.js';
 import { statesFor, groups as categoryGroups } from '../docs-data.js';
-import {initReference,renderReference,manifestReference,codeSource,renderGuide} from './reference.js';
+import {initReference,renderReference,manifestReference,renderGuidance,codeSource,renderGuide} from './reference.js';
 import { initWorkspace, copyText } from '../workspace.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -42,8 +42,10 @@ async function inspector(component, token) {
   $('[data-registry-id]').textContent = component.slug;
   $('[data-contract-status]').textContent = 'Loading…';
   $('[data-rules]').textContent = 'Loading the component contract…';
+  $('[data-rules]').hidden = false;
   $('[data-ir-support]').textContent = '';
   $('[data-tokens]').replaceChildren();
+  renderGuidance(null);
   $('[data-manifest-link]').href = `/registry/components/${component.slug}.json`;
   renderReference(component,registry.version,stateId);
   $('[data-copy-status]').textContent = '';
@@ -57,7 +59,11 @@ async function inspector(component, token) {
     if (token !== swapToken) return;
     const manifest = manifests.get(component.slug);
     manifestReference(manifest);
-    $('[data-contract-status]').textContent = manifest.status === 'authored' ? 'Authored contract' : 'Catalog metadata';
+    renderGuidance(manifest, id => catalog.find(c => c.slug === id)?.name ?? id);
+    $('[data-contract-status]').textContent = manifest.ir ? 'Screen IR contract' : manifest.guidance ? 'Documented' : manifest.status === 'authored' ? 'Authored contract' : 'Catalog metadata';
+    /* Guidance says what the rules say, in sentences, so the rules give way to it, and its summary leads the panel. */
+    if (manifest.guidance) $('[data-description]').textContent = manifest.guidance.summary;
+    $('[data-rules]').hidden = Boolean(manifest.guidance);
     $('[data-rules]').textContent = manifest.rules?.length ? manifest.rules.join(' · ') : 'Use the editable source and implementation guide for this component.';
     $('[data-ir-support]').textContent = manifest.ir ? 'Screen IR supported. Props are checked against the authored contract.' : 'Available as editable source. A Screen IR contract has not been authored yet.';
     $('[data-tokens]').innerHTML = (manifest.tokens || component.tokens || []).map(token => `<span class="sys-token">${esc(token)}</span>`).join('');

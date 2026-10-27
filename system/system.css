@@ -180,6 +180,33 @@ button,input{font:inherit}
 .sys-info-row strong i{width:5px;height:5px;border-radius:50%;background:var(--success-text)}
 .sys-token-list{display:flex;flex-wrap:wrap;gap:6px}
 .sys-token{padding:6px 7px;border:1px solid var(--sys-line);border-radius:7px;color:var(--muted);font:var(--type-caption)/1 var(--font-mono)}
+.sys-guidance{display:grid}
+.sys-guide-block h3{margin:0 0 12px;font-size:var(--type-caption);font-weight:400;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-2)}
+.sys-guide-list{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.sys-guide-list li{position:relative;padding-left:16px;font-size:var(--type-body);line-height:1.55;color:var(--text)}
+.sys-guide-list li::before{content:"";position:absolute;left:2px;top:.68em;width:5px;height:5px;border-radius:50%;background:var(--fg-3)}
+.sys-guide-alt{display:flex;width:max-content;margin-top:5px;font-size:var(--type-caption);color:var(--accent-text);text-decoration:none}
+.sys-guide-alt::after{content:"→";margin-left:4px}
+.sys-guide-alt:hover{text-decoration:underline;text-underline-offset:3px}
+.sys-guide-states{display:grid;gap:14px;margin:0}
+.sys-guide-states dt{font-size:var(--type-body);font-weight:500;color:var(--text)}
+.sys-guide-states dd{margin:4px 0 0}
+.sys-guide-states dd p{margin:0 0 6px;font-size:var(--type-caption);line-height:1.55;color:var(--muted)}
+.sys-guide-states code,.sys-guide-keys kbd{display:inline-block;padding:3px 6px;border:1px solid var(--sys-line);border-radius:6px;font:var(--type-caption)/1.35 var(--font-mono);color:var(--text);background:color-mix(in srgb,var(--surface) 70%,transparent)}
+/* A do and a don't are told apart by their label and its colour, never by colour alone. */
+.sys-guide-rules{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.sys-guide-rule{padding:11px 13px 12px;border:1px solid var(--sys-line);border-left:3px solid var(--rule-tone);border-radius:10px}
+.sys-guide-rule[data-kind=do]{--rule-tone:var(--success-text)}
+.sys-guide-rule[data-kind=dont]{--rule-tone:var(--danger-text)}
+.sys-guide-rule p{margin:0;font-size:var(--type-body);line-height:1.5;color:var(--text)}
+.sys-guide-rule small{display:block;margin-top:5px;font-size:var(--type-caption);line-height:1.5;color:var(--muted)}
+.sys-guide-keys{display:grid;gap:8px;margin:0 0 14px}
+.sys-guide-keys div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:12px;align-items:baseline}
+.sys-guide-keys dt{font-size:var(--type-caption);color:var(--muted)}
+.sys-guide-keys dd{margin:0;font-size:var(--type-caption);line-height:1.5;color:var(--text)}
+.sys-guide-how{display:block;font-size:var(--type-caption);line-height:1.5;color:var(--fg-2)}
+.sys-guide-how>span{color:var(--muted)}
+.sys-guide-note{margin:0 0 12px;font-size:var(--type-caption);color:var(--muted)}
 
 .sys-code-panel{min-height:0;flex:1;display:grid;grid-template-rows:auto minmax(0,1fr)}
 .sys-code-toolbar{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 18px;border-bottom:1px solid var(--sys-line);font-size:var(--type-caption);color:var(--fg-2)}

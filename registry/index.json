@@ -989,7 +989,7 @@
       ],
       "source": "components/dialog/",
       "manifest": "components/dialog.json",
-      "status": "generated",
+      "status": "authored",
       "renderable": false,
       "dependencies": [],
       "examples": {
@@ -1028,7 +1028,7 @@
       ],
       "source": "components/toast/",
       "manifest": "components/toast.json",
-      "status": "generated",
+      "status": "authored",
       "renderable": false,
       "dependencies": [],
       "examples": {

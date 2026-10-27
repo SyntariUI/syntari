@@ -1,0 +1,185 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "dialog",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/dialog/",
+  "name": "Dialog",
+  "category": "Overlays",
+  "purpose": "A modal window for one short, focused task, such as naming a new project, that a person finishes or cancels before returning to the page.",
+  "description": "A focused modal for a single task. Native dialog manages focus containment and Escape. The form validates before confirming.",
+  "intents": [
+    "focus-on-one-task",
+    "create",
+    "edit"
+  ],
+  "variants": {},
+  "states": [
+    "closed",
+    "open",
+    "invalid",
+    "dismissed"
+  ],
+  "anatomy": [
+    "backdrop",
+    "dialog",
+    "title",
+    "close-button",
+    "description",
+    "fields",
+    "footer",
+    "cancel",
+    "primary-action"
+  ],
+  "accessibility": {
+    "role": "dialog",
+    "keyboard": [
+      "Tab",
+      "Shift+Tab",
+      "Escape",
+      "Enter"
+    ],
+    "accessibleNameRequired": true
+  },
+  "rules": [
+    "one-task-per-dialog",
+    "title-and-primary-button-share-the-verb",
+    "always-offer-a-way-out",
+    "focus-returns-to-the-trigger"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "button",
+    "text-input",
+    "confirmation-dialog"
+  ],
+  "avoidWhen": [
+    "confirming-a-destructive-action",
+    "long-tasks",
+    "reporting-what-happened"
+  ],
+  "guidance": {
+    "summary": "A modal window for one short, focused task, such as naming a new project, that a person finishes or cancels before returning to the page.",
+    "useWhen": [
+      "A short task needs the person’s full attention and only a few fields.",
+      "The page behind should stay exactly where it was while the task is done."
+    ],
+    "avoidWhen": [
+      {
+        "text": "Confirming an action that deletes, sends, or pays.",
+        "instead": "confirmation-dialog"
+      },
+      {
+        "text": "The task is long, or people need to look at the page while doing it.",
+        "instead": "side-drawer"
+      },
+      {
+        "text": "Telling people that something happened.",
+        "instead": "toast"
+      },
+      {
+        "text": "Showing a few options next to the control that opened them.",
+        "instead": "popover"
+      },
+      {
+        "text": "A warning or information people can read where they are.",
+        "instead": "banner"
+      }
+    ],
+    "states": [
+      {
+        "id": "closed",
+        "label": "Closed",
+        "description": "Only the button that opens it is visible.",
+        "how": "Before the trigger is pressed."
+      },
+      {
+        "id": "open",
+        "label": "Open",
+        "description": "The dialog sits over a dimmed page. Focus moves into it and stays there.",
+        "how": "Press the trigger; the dialog opens with showModal()."
+      },
+      {
+        "id": "invalid",
+        "label": "Invalid",
+        "description": "Submitting a missing or wrong value keeps the dialog open and names the problem at the field.",
+        "how": "Submit with a required field empty."
+      },
+      {
+        "id": "dismissed",
+        "label": "Dismissed",
+        "description": "Escape, Cancel, or the close button closes it without saving, and focus returns to the trigger.",
+        "how": "Escape, Cancel, or the close button."
+      }
+    ],
+    "dos": [
+      {
+        "text": "Title the dialog with the task, and repeat its verb on the primary button: Create a project, then Create project.",
+        "why": "People confirm the thing they started, not a generic OK."
+      },
+      {
+        "text": "Keep it to one task and a few fields.",
+        "why": "A dialog covers the page; the longer it gets, the more people lose their place."
+      },
+      {
+        "text": "Always offer a way out: Cancel, the close button, and Escape.",
+        "why": "A window people cannot leave feels like a trap."
+      },
+      {
+        "text": "Return focus to the button that opened it when it closes.",
+        "why": "Keyboard and screen reader users carry on from where they were."
+      }
+    ],
+    "donts": [
+      {
+        "text": "Don’t open a dialog that nobody asked for.",
+        "why": "Unrequested windows interrupt work and get dismissed unread."
+      },
+      {
+        "text": "Don’t open a dialog on top of another dialog.",
+        "why": "With two layers, it is unclear what Cancel will close."
+      },
+      {
+        "text": "Don’t close it on a click outside while it holds what someone typed.",
+        "why": "One stray click should not throw away their work."
+      },
+      {
+        "text": "Don’t put a page’s main content or navigation in a dialog.",
+        "why": "Content inside a dialog cannot be linked to, bookmarked, or found again."
+      }
+    ],
+    "content": [
+      "Title: the task in sentence case, such as Create a project.",
+      "Primary button: the same verb and its object, such as Create project. The other button is Cancel.",
+      "Add one short sentence under the title only when the task needs context."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab and Shift+Tab",
+          "action": "Move between the controls inside the dialog."
+        },
+        {
+          "keys": "Escape",
+          "action": "Closes the dialog without saving."
+        },
+        {
+          "keys": "Enter",
+          "action": "Submits the dialog’s form."
+        }
+      ],
+      "notes": [
+        "A native dialog element opened with showModal(): the page behind becomes inert and focus stays inside.",
+        "aria-labelledby points to the title, so the dialog is announced by its name.",
+        "The close button has its own accessible name, Close dialog."
+      ]
+    }
+  }
+}

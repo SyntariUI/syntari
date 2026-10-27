@@ -969,12 +969,20 @@ function typeText(descriptor) {
 function words(list) { return list.map(item => String(item).replace(/-/g, ' ')).join('; '); }
 /* Each contract carries the registry's own guidance: purpose, when to use it, when not to, what it pairs with, and its rules. */
 function describeContract(manifest) {
-  let text = `syntari.${manifest.id} — ${manifest.purpose ?? ''} ${manifest.description ?? ''}`.trim() + '\n';
-  if (manifest.intents?.length) text += `  use for: ${words(manifest.intents)}\n`;
-  if (manifest.avoidWhen?.length) text += `  avoid when: ${words(manifest.avoidWhen)}\n`;
+  /* Guidance, where a component has it, says in sentences what the slugs only name: when to use it, when not and what instead, and the mistakes to avoid. */
+  const g = manifest.guidance;
+  let text = `syntari.${manifest.id} — ${g ? g.summary : `${manifest.purpose ?? ''} ${manifest.description ?? ''}`.trim()}`.trim() + '\n';
+  if (g) {
+    text += `  use when: ${g.useWhen.join(' ')}\n`;
+    text += `  not when: ${g.avoidWhen.map(item => `${item.text}${item.instead && renderable?.has(item.instead) ? ` Use syntari.${item.instead}.` : ''}`).join(' ')}\n`;
+    text += `  mistakes: ${g.donts.map(item => item.text).join(' ')}\n`;
+  } else {
+    if (manifest.intents?.length) text += `  use for: ${words(manifest.intents)}\n`;
+    if (manifest.avoidWhen?.length) text += `  avoid when: ${words(manifest.avoidWhen)}\n`;
+  }
   const pairs = (manifest.compatibleWith ?? []).filter(slug => renderable?.has(slug));
   if (pairs.length) text += `  pairs with: ${pairs.join(', ')}\n`;
-  if (manifest.rules?.length) text += `  rules: ${words(manifest.rules)}\n`;
+  if (!g && manifest.rules?.length) text += `  rules: ${words(manifest.rules)}\n`;
   if (manifest.accessibility?.accessibleNameRequired) text += '  needs an accessible name: always set its title, caption, or label\n';
   for (const [key, descriptor] of Object.entries(manifest.props)) text += `  ${key}${descriptor.required ? '*' : ''}: ${typeText(descriptor)}${descriptor.default !== undefined ? ` = ${JSON.stringify(descriptor.default)}` : ''}${descriptor.description ? ` — ${descriptor.description}` : ''}\n`;
   const actions = Object.entries(manifest.actions ?? {});
