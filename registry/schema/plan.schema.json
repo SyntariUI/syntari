@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://syntariui.giovanitier.com/registry/schema/plan.schema.json",
+  "title": "Syntari composition plan",
+  "description": "A composition plan, version syntari-plan-1: who uses the screen, the job it serves, the decisions it supports, what information is primary, supporting, or reference and how each is disclosed, the archetype and layout chosen, and the alternatives considered. plan_screen returns one; a screen carries it in meta.plan, and assessment checks the screen against it. It is a public decision summary, not private reasoning. A meta.plan without a version is a legacy plan and is read as before.",
+  "definitions": {
+    "nodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    },
+    "priority": {
+      "enum": ["primary", "supporting", "reference"]
+    },
+    "disclosure": {
+      "enum": ["visible", "collapsed", "on-selection", "on-exception", "elsewhere"]
+    },
+    "information": {
+      "type": "object",
+      "required": ["id", "label", "priority", "disclosure"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "kind": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "One of the information kinds in composition-policy.json." },
+        "priority": { "$ref": "#/definitions/priority" },
+        "disclosure": { "$ref": "#/definitions/disclosure" },
+        "where": { "enum": ["navigation", "inspector", "drawer", "detail-view"], "description": "With disclosure elsewhere: where a person finds it." },
+        "exception": { "type": "boolean", "description": "With disclosure on-exception: whether the exception is present now." },
+        "neededFor": { "type": "array", "items": { "type": "string", "maxLength": 160 }, "description": "The decisions this information informs." },
+        "zone": { "type": "string" },
+        "nodes": { "type": "array", "maxItems": 12, "items": { "$ref": "#/definitions/nodeId" }, "description": "The screen nodes that show this information, once composed." },
+        "reason": { "type": "string", "maxLength": 240 }
+      },
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "node": { "$ref": "#/definitions/nodeId" },
+        "consequential": { "type": "boolean" },
+        "reason": { "type": "string", "maxLength": 240 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": ["version", "userRole", "primaryJob", "mode", "archetype", "informationPriority"],
+  "properties": {
+    "version": { "const": "syntari-plan-1" },
+    "status": { "enum": ["ready", "needs-context"] },
+    "userRole": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "primaryJob": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "mode": { "enum": ["resolve", "decide", "review", "investigate", "monitor", "create", "configure"] },
+    "userDecisions": { "type": "array", "maxItems": 8, "items": { "type": "string", "maxLength": 160 } },
+    "archetype": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "informationPriority": { "type": "array", "minItems": 1, "maxItems": 24, "items": { "$ref": "#/definitions/information" } },
+    "zones": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["id", "priority", "disclosure"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string", "maxLength": 80 },
+          "priority": { "$ref": "#/definitions/priority" },
+          "disclosure": { "$ref": "#/definitions/disclosure" },
+          "information": { "type": "array", "items": { "type": "string" } },
+          "components": { "type": "array", "items": { "type": "string" } },
+          "holds": { "type": "string", "maxLength": 240 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "disclosureStrategy": { "type": "string", "maxLength": 400 },
+    "layoutStrategy": {
+      "type": "object",
+      "required": ["layout"],
+      "properties": {
+        "id": { "type": "string" },
+        "layout": { "enum": ["stack", "row", "grid", "two-column", "split"] },
+        "reason": { "type": "string", "maxLength": 240 },
+        "mobile": { "type": "string", "maxLength": 240 }
+      },
+      "additionalProperties": false
+    },
+    "interactionRequirements": { "type": "array", "maxItems": 10, "items": { "type": "string", "maxLength": 200 } },
+    "actions": {
+      "type": "object",
+      "properties": {
+        "primary": { "$ref": "#/definitions/action" },
+        "secondary": { "type": "array", "maxItems": 6, "items": { "$ref": "#/definitions/action" } }
+      },
+      "additionalProperties": false
+    },
+    "componentCandidates": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "required": ["component", "for"],
+        "properties": {
+          "component": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "for": { "type": "string" },
+          "fit": { "enum": ["recommended", "acceptable"] },
+          "reason": { "type": "string", "maxLength": 240 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "avoid": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["id", "reason"],
+        "properties": { "id": { "type": "string" }, "reason": { "type": "string", "maxLength": 240 } },
+        "additionalProperties": false
+      }
+    },
+    "alternativesConsidered": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["archetype", "reason"],
+        "properties": {
+          "archetype": { "type": "string" },
+          "reason": { "type": "string", "maxLength": 240 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "designRationale": { "type": "string", "maxLength": 600 },
+    "terminology": { "type": "array", "maxItems": 4, "items": { "type": "string", "maxLength": 240 } },
+    "openQuestions": { "type": "array", "maxItems": 6, "items": { "type": "string", "maxLength": 200 } },
+    "pattern": { "type": "string", "description": "Legacy: the composition-policy pattern whose zone order assessment applies. plan_screen sets it from the archetype." },
+    "purpose": { "type": "string" },
+    "questions": { "type": "array", "items": { "type": "string" } },
+    "groups": {},
+    "alternatives": {},
+    "rationale": { "type": "string" },
+    "limits": {}
+  },
+  "additionalProperties": false
+}

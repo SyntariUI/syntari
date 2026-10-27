@@ -149,3 +149,26 @@
 [data-syntari-component="table"]{overflow-x:auto;overscroll-behavior-x:contain}
 [data-syntari-component="table"] .table{min-width:max-content}
 [data-syntari-component="table"] .table td,[data-syntari-component="table"] .table th{white-space:nowrap}
+/**
+ * Split: the main part and the part a person consults beside it (the source, the selected item, the record's profile).
+ * Side by side on a wide screen, the aside sticking in view; one after the other on a narrow one, main part first.
+ */
+.ir-screen[data-ir-layout=split]{grid-template-columns:minmax(0,1fr)}
+@media(min-width:960px){.ir-screen[data-ir-layout=split]{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);column-gap:32px}.ir-screen[data-ir-layout=split]>:nth-child(n+2):last-child{position:sticky;top:16px}}
+.ir-section-body[data-ir-layout=split]{grid-template-columns:minmax(0,1fr)}
+@container (min-width:720px){.ir-section-body[data-ir-layout=split]{grid-template-columns:minmax(0,1.65fr) minmax(240px,1fr);column-gap:28px}}
+/* Emphasis follows priority: the task leads with a larger heading; reference steps back to a quiet label. */
+.ir-section[data-ir-emphasis=primary]>.ir-section-heading{font-size:var(--type-title-md);letter-spacing:-.3px}
+.ir-section[data-ir-emphasis=reference]>.ir-section-heading{font-size:var(--type-label);font-weight:500;letter-spacing:0;color:var(--muted)}
+.ir-section[data-ir-emphasis=reference]{gap:8px}
+/* Surfaces: a boundary only where it means something. An inset is a quieter ground; a panel is a different context. */
+.ir-section[data-ir-surface=inset]{padding:16px;border-radius:var(--radius-card);background:var(--subtle)}
+.ir-section[data-ir-surface=panel]{padding:18px;border-radius:var(--radius-card);background:var(--background-subtle);box-shadow:inset 0 0 0 1px var(--border)}
+/* A region inside a surface is a disclosure, not a second box: a line above it is enough. */
+.ir-section[data-ir-surface] .ir-region,.ir-region .ir-region{border:0;border-top:1px solid var(--border);border-radius:0;background:transparent}
+.ir-section[data-ir-surface] .ir-region>summary,.ir-region .ir-region>summary{padding-inline:0}
+.ir-section[data-ir-surface] .ir-region-body,.ir-region .ir-region-body{padding-inline:0}
+/* Evidence and its source: pointing at either marks both. */
+.ir-screen [data-evidence-ref]{transition:background-color var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast) var(--ease-out)}
+.ir-screen [data-evidence-ref].is-linked{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+@media(prefers-reduced-motion:reduce){.ir-screen [data-evidence-ref]{transition:none}}

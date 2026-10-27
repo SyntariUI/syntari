@@ -10,6 +10,7 @@
  *     measurement, and never stops anything from painting.
  */
 import { buildDataModel, parseFigure, normalLabel, isBinding, parseRef, dayRange } from './ir-data.js';
+import { lintComposition, qualityGate, repairChange } from './ir-lint.js';
 
 const slugOf = component => String(component ?? '').replace(/^syntari\./, '');
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -203,9 +204,11 @@ const kpiItems = node => { const props = isObject(node.props) ? node.props : {};
  * Advice on how well a screen is composed, as a person reviewing it would give it. Each criterion reads "meets", "review",
  * or "concern" with the signals behind it. These are judgments under the registry's policy, not measurements; only
  * validation decides what renders.
- *   assessComposition(spec, { policy, resolved?, model?, diagnostics? })
+ *   assessComposition(spec, { policy, resolved?, model?, diagnostics?, plan?, base? })
+ * It also returns the composition findings of lintComposition() against the screen's plan (meta.plan, or options.plan for
+ * a screen without one), the quality gate they add up to, and the safe repairs as one change against options.base.
  */
-export function assessComposition(spec, { policy, resolved = null, model = undefined, diagnostics = [] } = {}) {
+export function assessComposition(spec, { policy, resolved = null, model = undefined, diagnostics = [], plan: given = null, base = null } = {}) {
   const data = model === undefined ? buildDataModel(spec?.data) : model;
   const shown = resolved ?? spec;
   const entries = nodesOf(spec);
@@ -329,9 +332,16 @@ export function assessComposition(spec, { policy, resolved = null, model = undef
     const verdict = own.some(item => item.severity === 'error') ? 'concern' : own.length ? 'review' : 'meets';
     return { id, label, means, verdict, signals: own };
   });
+  /* Composition findings: the plan's information architecture, surfaces, actions, and content, plus the redundancy advice above. */
+  const findings = lintComposition(spec, { policy, plan: given });
+  const REDUNDANCY = ['redundant-visualization', 'repeated-metric', 'repeated-summary', 'monotone-composition', 'too-many-metric-blocks'];
+  for (const item of signals.filter(signal => REDUNDANCY.includes(signal.code))) findings.push({ rule: item.code, severity: 'warning', category: 'content-economy', node: item.ids[0] ?? null, path: '', message: item.message, fix: 'Keep one presentation of each fact, or give each a different question to answer.', autofix: false, nodes: item.ids });
+  const quality = qualityGate(findings, diagnostics, policy);
   return {
     pattern, declared: declared ?? null, inferred,
     plan: isObject(spec?.meta?.plan) ? spec.meta.plan : null,
+    findings, quality,
+    repair: base ? repairChange(findings, base) : null,
     parts: parts.map(({ node, ...part }) => part),
     criteria, signals,
     summary: { parts: components.length, visualizations: visual.length, concerns: criteria.filter(c => c.verdict === 'concern').length, reviews: criteria.filter(c => c.verdict === 'review').length }

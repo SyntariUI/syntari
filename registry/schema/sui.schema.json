@@ -139,7 +139,7 @@
         "layout": {
           "type": "string",
           "default": "stack",
-          "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+          "description": "One of stack, row, grid, two-column, or split. A split screen holds two parts: the main one, and the one beside it on a wide screen and after it on a narrow one. An unknown layout produces a warning and renders as stack."
         },
         "title": {
           "type": "string"
@@ -201,7 +201,15 @@
         "layout": {
           "type": "string",
           "default": "stack",
-          "description": "One of stack, row, grid, or two-column. An unknown layout produces a warning and renders as stack."
+          "description": "One of stack, row, grid, two-column, or split. A split holds two parts: the main one, and the one beside it on a wide screen and after it on a narrow one. An unknown layout produces a warning and renders as stack."
+        },
+        "emphasis": {
+          "type": "string",
+          "description": "How much the section asks for attention: primary (the task a person came to do), supporting (the default), or reference (looked up occasionally, quieter). An unknown value produces a warning."
+        },
+        "surface": {
+          "type": "string",
+          "description": "The boundary the section draws: none (the default; space and the heading separate it), inset (a quieter background for subordinate content), or panel (a contextual area beside the main content). A boundary needs a reason: see surfaces in composition-policy.json. An unknown value produces a warning."
         },
         "submit": {
           "type": "string",
