@@ -35,6 +35,8 @@
   "states": [
     "default",
     "focus",
+    "filled",
+    "hint",
     "invalid",
     "required"
   ],
@@ -75,6 +77,131 @@
     "the-answer-is-one-of-a-known-set",
     "the-text-is-a-password-or-secret"
   ],
+  "guidance": {
+    "summary": "Collects one line of free text that a person types, such as a name, an email address, or a link.",
+    "useWhen": [
+      "The answer is short and open: a name, a title, an email address, a link, or a phone number.",
+      "It sits in a form, with its label above it, and is sent when the form is submitted."
+    ],
+    "avoidWhen": [
+      {
+        "text": "There are two to seven options a person should see at once.",
+        "instead": "radio"
+      },
+      {
+        "text": "The answer is one of a long, known list of options.",
+        "instead": "searchable-select"
+      },
+      {
+        "text": "The answer runs to several sentences.",
+        "instead": "text-area"
+      },
+      {
+        "text": "The text is a password or another secret.",
+        "instead": "password-field"
+      },
+      {
+        "text": "The value is a small number a person nudges up or down.",
+        "instead": "number-stepper"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Empty",
+        "description": "Shows its label and, when it helps, an example as a placeholder.",
+        "how": "label and placeholder"
+      },
+      {
+        "id": "focus",
+        "label": "Focus",
+        "description": "A focus ring shows where typing goes.",
+        "how": "Tab to the field, or click it."
+      },
+      {
+        "id": "filled",
+        "label": "Filled",
+        "description": "Holds what the person typed, or the value the form started with.",
+        "how": "value"
+      },
+      {
+        "id": "hint",
+        "label": "With a hint",
+        "description": "Help stays under the field, such as a format or why it is asked, and is read with it.",
+        "how": "hint"
+      },
+      {
+        "id": "invalid",
+        "label": "Invalid",
+        "description": "The value cannot be used: the field is outlined, and the error under it says how to fix it.",
+        "how": "error, set by the host after checking the value"
+      },
+      {
+        "id": "required",
+        "label": "Required",
+        "description": "The form cannot be sent until the field is filled; the browser names the field that is missing.",
+        "how": "required: true"
+      }
+    ],
+    "dos": [
+      {
+        "text": "Keep a visible label above every field.",
+        "why": "A placeholder disappears as soon as people type, and with it what the field asked for."
+      },
+      {
+        "text": "Choose the matching type: email, url, tel, or search.",
+        "why": "Phones show the right keyboard, and browsers can fill the value in."
+      },
+      {
+        "text": "Write the error next to the field, saying how to fix the value.",
+        "why": "“Invalid input” tells people something is wrong but not what to do about it."
+      },
+      {
+        "text": "Ask only for what you need, and mark it required.",
+        "why": "Every extra field is one more reason to abandon the form."
+      }
+    ],
+    "donts": [
+      {
+        "text": "Don’t use the placeholder as the label.",
+        "why": "It vanishes while typing, is often too faint to read, and is not reliably announced."
+      },
+      {
+        "text": "Don’t show an error while the person is still typing.",
+        "why": "It scolds people for something they were about to fix. Check when they leave the field or submit."
+      },
+      {
+        "text": "Don’t rely on red alone to show an error.",
+        "why": "About one man in twelve cannot tell red from green; the words carry the meaning."
+      },
+      {
+        "text": "Don’t ask for the same information twice, such as confirming an email address.",
+        "why": "It doubles the work and the chances of a typo; show what they typed instead."
+      }
+    ],
+    "content": [
+      "Labels are short nouns in sentence case: Work email, not Please enter your email.",
+      "Placeholders are examples, not instructions: name@company.com.",
+      "Errors say what to do: Enter an email address with an @, such as name@company.com."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves focus to the field."
+        },
+        {
+          "keys": "Enter",
+          "action": "Submits the form the field belongs to."
+        }
+      ],
+      "notes": [
+        "The label names the field; the hint and the error are tied to it with aria-describedby, so they are read with it.",
+        "An error sets aria-invalid, so assistive technology reports the field as invalid.",
+        "Set autocomplete to email, url, or tel so browsers and password managers can fill the value; a field rendered from Screen IR sets it from its type."
+      ]
+    }
+  },
   "props": {
     "label": {
       "type": "string",

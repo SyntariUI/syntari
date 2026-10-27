@@ -1,0 +1,138 @@
+{
+  "$schema": "../schema/component.schema.json",
+  "id": "toast",
+  "version": "1.0.0",
+  "status": "authored",
+  "source": "components/toast/",
+  "name": "Toast",
+  "category": "Feedback",
+  "purpose": "A brief message confirming that an action finished, such as Changes saved, which disappears on its own.",
+  "description": "Transient confirmation after an action. The message is announced through a live status region without moving focus.",
+  "intents": [
+    "confirm-success",
+    "report-completion"
+  ],
+  "variants": {},
+  "states": [
+    "hidden",
+    "visible",
+    "replaced"
+  ],
+  "anatomy": [
+    "live-region",
+    "icon",
+    "message"
+  ],
+  "accessibility": {
+    "role": "status",
+    "keyboard": [],
+    "accessibleNameRequired": false
+  },
+  "rules": [
+    "past-tense-confirmation",
+    "never-for-errors",
+    "no-actions-inside",
+    "never-the-only-record"
+  ],
+  "tokens": [
+    "color.surface.raised",
+    "color.text.primary",
+    "color.text.secondary",
+    "color.border.default",
+    "color.action.primary",
+    "radius.control"
+  ],
+  "compatibleWith": [
+    "button",
+    "banner",
+    "notification-stack"
+  ],
+  "avoidWhen": [
+    "errors",
+    "decisions",
+    "messages-that-must-stay"
+  ],
+  "guidance": {
+    "summary": "A brief message confirming that an action finished, such as Changes saved, which disappears on its own.",
+    "useWhen": [
+      "Confirming that an action the person just took succeeded, when the result is not visible otherwise.",
+      "The message is a few words and needs no response."
+    ],
+    "avoidWhen": [
+      {
+        "text": "An error the person has to fix.",
+        "instead": "banner"
+      },
+      {
+        "text": "A decision the person must make, or an action to confirm.",
+        "instead": "confirmation-dialog"
+      },
+      {
+        "text": "Messages that must stay until read, or several that arrive together.",
+        "instead": "notification-stack"
+      },
+      {
+        "text": "The result is already visible where the person is looking. Show nothing extra."
+      }
+    ],
+    "states": [
+      {
+        "id": "hidden",
+        "label": "Hidden",
+        "description": "No message; the live region waits, empty.",
+        "how": "Before any action."
+      },
+      {
+        "id": "visible",
+        "label": "Visible",
+        "description": "The message appears at the bottom of the screen, is announced without moving focus, and fades after about four seconds.",
+        "how": "An action that succeeded calls the toast with its message."
+      },
+      {
+        "id": "replaced",
+        "label": "Replaced",
+        "description": "A new message replaces the current one and restarts the timer; toasts never pile up.",
+        "how": "A second action within four seconds."
+      }
+    ],
+    "dos": [
+      {
+        "text": "Confirm the result in a few words, in the past tense: Changes saved, Invite sent.",
+        "why": "People glance at it; it has to be read in under two seconds."
+      },
+      {
+        "text": "Show it only once the action has actually succeeded.",
+        "why": "A toast that confirms something that then fails breaks trust."
+      },
+      {
+        "text": "Keep what the toast says available elsewhere on the page.",
+        "why": "It disappears on its own, so people who missed it must still be able to find the result."
+      }
+    ],
+    "donts": [
+      {
+        "text": "Don’t use a toast for errors or warnings.",
+        "why": "It vanishes before people can act, and an error belongs next to what caused it."
+      },
+      {
+        "text": "Don’t put links or buttons in a toast.",
+        "why": "It disappears on a timer, often before keyboard and screen reader users can reach it."
+      },
+      {
+        "text": "Don’t show a toast for every small change.",
+        "why": "Frequent toasts become noise and teach people to ignore them."
+      }
+    ],
+    "content": [
+      "Past tense, sentence case, no end punctuation: Project created.",
+      "Name the object when it helps: Invite sent to ana@example.com."
+    ],
+    "accessibility": {
+      "keyboard": [],
+      "notes": [
+        "The message is written into a role=\"status\" live region, so screen readers announce it politely without moving focus.",
+        "It stays about four seconds. Anything people need later must be on the page too, because they cannot pause or recall a toast."
+      ]
+    }
+  }
+}

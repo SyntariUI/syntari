@@ -25,6 +25,33 @@ export function renderReference(c,release,state){
  $('[data-style-file]').value=runtimeFile.replace('app.js','styles.css').replace(/\.js$/,'.css');
  renderGuide(activeGuide);
 }
+/**
+ * The component's guidance, from its manifest: when to use it, when not and what instead, its states, what to do and not do,
+ * how to write its words, and its keyboard. A component without guidance keeps the panel as it was.
+ */
+export function renderGuidance(manifest,nameOf=slug=>slug){
+ const box=$('[data-guidance]'),g=manifest?.guidance;
+ box.hidden=!g;
+ $('[data-accessibility-block]').hidden=Boolean(g);
+ if(!g){box.replaceChildren();return;}
+ const block=(title,body,attrs='')=>`<section class="sys-info-block sys-guide-block"${attrs}><h3>${esc(title)}</h3>${body}</section>`;
+ const list=items=>`<ul class="sys-guide-list">${items.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`;
+ const avoid=g.avoidWhen.map(item=>`<li>${esc(item.text)}${item.instead?` <a class="sys-guide-alt" href="/system/#${esc(item.instead)}">Use ${esc(nameOf(item.instead))}</a>`:''}</li>`).join('');
+ /* How a state comes about is code when it names a prop or a call, such as disabled: true; otherwise it is a sentence. */
+ const how=text=>/^[a-z][\w.]*: |\(\)/i.test(text)?`<code>${esc(text)}</code>`:`<span class="sys-guide-how"><span>How:</span> ${esc(text)}</span>`;
+ const states=g.states.map(state=>`<div><dt>${esc(state.label)}</dt><dd><p>${esc(state.description)}</p>${how(state.how)}</dd></div>`).join('');
+ const rule=(kind,label,item)=>`<li class="sys-guide-rule" data-kind="${kind}"><span class="sr-only">${label}: </span><p>${esc(item.text)}</p><small>${esc(item.why)}</small></li>`;
+ const keys=g.accessibility.keyboard.length?`<dl class="sys-guide-keys">${g.accessibility.keyboard.map(key=>`<div><dt>${key.keys.split(/ (and|or) /).map(part=>/^(and|or)$/.test(part)?` ${part} `:`<kbd>${esc(part)}</kbd>`).join('')}</dt><dd>${esc(key.action)}</dd></div>`).join('')}</dl>`:'<p class="sys-guide-note">Takes no focus and needs no keys.</p>';
+ box.innerHTML=[
+  block('When to use',list(g.useWhen),' data-guide="use"'),
+  block('When not to use',`<ul class="sys-guide-list sys-guide-avoid">${avoid}</ul>`,' data-guide="avoid"'),
+  block('States',`<dl class="sys-guide-states">${states}</dl>`,' data-guide="states"'),
+  block('Do',`<ul class="sys-guide-rules">${g.dos.map(item=>rule('do','Do',item)).join('')}</ul>`,' data-guide="do"'),
+  block('Don’t',`<ul class="sys-guide-rules">${g.donts.map(item=>rule('dont','Don’t',item)).join('')}</ul>`,' data-guide="dont"'),
+  g.content?.length?block('Writing',list(g.content),' data-guide="content"'):'',
+  block('Accessibility',`${keys}${list(g.accessibility.notes)}`,' data-guide="accessibility"')
+ ].join('');
+}
 export function manifestReference(manifest){
  $('[data-dependencies]').textContent=manifest.dependencies?.length?manifest.dependencies.map(d=>typeof d==='string'?d:JSON.stringify(d)).join(', '):'Shared Syntari runtime, included by the installer. No additional component dependencies declared.';
  const props=manifest.props?.properties || manifest.props || {};

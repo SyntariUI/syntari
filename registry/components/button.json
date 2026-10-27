@@ -24,13 +24,8 @@
       "danger"
     ],
     "size": [
-      "sm",
-      "md",
-      "lg"
-    ],
-    "loading": [
-      true,
-      false
+      "default",
+      "small"
     ],
     "disabled": [
       true,
@@ -40,10 +35,9 @@
   "states": [
     "default",
     "hover",
-    "focus",
+    "focus-visible",
     "pressed",
-    "disabled",
-    "loading"
+    "disabled"
   ],
   "anatomy": [
     "root",
@@ -125,6 +119,120 @@
     "boundary": [
       "A destructive action must pair danger hierarchy with explicit confirmation."
     ]
+  },
+  "guidance": {
+    "summary": "Starts an action on the current page, such as saving, sending, confirming, or opening a dialog. A button does something; a link goes somewhere.",
+    "useWhen": [
+      "A person triggers something that changes data, submits a form, or opens a dialog, drawer, or menu.",
+      "One action is the main way forward in a region, with alternatives beside it.",
+      "An action deletes or sends something that cannot be taken back, shown as danger and confirmed before it runs."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The action takes the person to another page or address. Use a link, so it can be opened in a new tab and its address copied."
+      },
+      {
+        "text": "The control is only an icon.",
+        "instead": "icon-button"
+      },
+      {
+        "text": "The action reports its progress while it runs, such as Saving… then Saved.",
+        "instead": "action-swap"
+      },
+      {
+        "text": "A person switches between views or values rather than starting an action.",
+        "instead": "segmented-control"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "Ready to press. Primary is filled, secondary is outlined, ghost has no surface until hovered, and danger is red for actions that destroy something.",
+        "how": "variant: primary, secondary, ghost, or danger"
+      },
+      {
+        "id": "hover",
+        "label": "Hover",
+        "description": "The surface shifts and lifts slightly under a pointer. It is never the only sign that the button can be pressed.",
+        "how": "A pointer over the button."
+      },
+      {
+        "id": "focus-visible",
+        "label": "Focus",
+        "description": "A focus ring shows which button the keyboard is on.",
+        "how": "Tab to the button."
+      },
+      {
+        "id": "pressed",
+        "label": "Pressed",
+        "description": "The button sinks slightly while it is held, so the press is felt before anything happens.",
+        "how": "Pointer down, or Enter or Space held."
+      },
+      {
+        "id": "disabled",
+        "label": "Disabled",
+        "description": "Visible but unavailable: it cannot be focused or pressed, so the reason must be shown nearby.",
+        "how": "disabled: true"
+      }
+    ],
+    "dos": [
+      {
+        "text": "Use one primary button per region, for the action most people take next.",
+        "why": "One filled button tells people where to go; two compete and slow the choice."
+      },
+      {
+        "text": "Start the label with a verb that names the result: Save changes, Send invite, Delete project.",
+        "why": "People know what will happen before they press, without reading around the button."
+      },
+      {
+        "text": "Set consequential on a button that deletes, sends, or pays, and confirm it in a Confirmation dialog.",
+        "why": "An action that cannot be undone deserves a second, explicit decision."
+      },
+      {
+        "text": "Put the primary button last in a row of buttons, with Cancel before it.",
+        "why": "The same order on every screen lets people act without searching."
+      }
+    ],
+    "donts": [
+      {
+        "text": "Don’t use a button to move to another page.",
+        "why": "Screen readers announce it as a button, and people cannot open it in a new tab or copy its address."
+      },
+      {
+        "text": "Don’t disable a button without saying why.",
+        "why": "A disabled button cannot be focused and gives no feedback, so people are left guessing what is missing."
+      },
+      {
+        "text": "Don’t write vague labels such as OK, Yes, Submit, or Click here.",
+        "why": "Read on their own, as screen readers often list them, they do not say what will happen."
+      },
+      {
+        "text": "Don’t use danger for actions that are merely important.",
+        "why": "When red marks everything, it stops warning about what cannot be undone."
+      }
+    ],
+    "content": [
+      "Sentence case, one to three words, no end punctuation.",
+      "Match the label to what the title promised: under Delete project, the button says Delete project, not Confirm."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves focus to the button."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Presses the button."
+        }
+      ],
+      "notes": [
+        "A native button element, so its role, focus, and keys come from the browser.",
+        "A button that only shows an icon needs an accessible name; use Icon button.",
+        "A disabled button leaves the tab order, so its reason must be written where people can read it."
+      ]
+    }
   },
   "props": {
     "label": {

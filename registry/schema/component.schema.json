@@ -677,6 +677,214 @@
         }
       },
       "additionalProperties": false
+    },
+    "guidance": {
+      "type": "object",
+      "description": "How to use the component, written for people and agents alike: when to use it, when not and what to use instead, its states, what to do and not do, and how to write its copy. System shows it, and agents read it from the registry.",
+      "required": [
+        "summary",
+        "useWhen",
+        "avoidWhen",
+        "states",
+        "dos",
+        "donts",
+        "accessibility"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 200,
+          "description": "One sentence: what the component is for."
+        },
+        "useWhen": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 240,
+            "description": "A situation the component is the right choice for."
+          },
+          "description": "When to use it, as situations a person can recognise."
+        },
+        "avoidWhen": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "description": "When not to use it, each with what to use instead when another component fits.",
+          "items": {
+            "type": "object",
+            "required": [
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "The situation, and what to do instead when no component fits."
+              },
+              "instead": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                "description": "The registry id of the component to use instead."
+              }
+            }
+          }
+        },
+        "states": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "description": "The states a person can see, what each means, and what brings it about.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "description",
+              "how"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "description": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "What the state looks like and means."
+              },
+              "how": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 160,
+                "description": "What brings it about: a prop, an attribute, or an interaction."
+              }
+            }
+          }
+        },
+        "dos": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "description": "Good practice, each with the reason.",
+          "items": {
+            "type": "object",
+            "required": [
+              "text",
+              "why"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "What to do."
+              },
+              "why": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "Why it matters to the person using the interface."
+              }
+            }
+          }
+        },
+        "donts": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "description": "Common mistakes, each with the reason.",
+          "items": {
+            "type": "object",
+            "required": [
+              "text",
+              "why"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "What not to do."
+              },
+              "why": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "What goes wrong for the person using the interface."
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 240,
+            "description": "A rule for the words in the component."
+          },
+          "description": "How to write its labels, titles, and messages."
+        },
+        "accessibility": {
+          "type": "object",
+          "required": [
+            "keyboard",
+            "notes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "keyboard": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "required": [
+                  "keys",
+                  "action"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "keys": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "action": {
+                    "type": "string",
+                    "maxLength": 160
+                  }
+                }
+              }
+            },
+            "notes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 240,
+                "description": "What assistive technology gets, and what the author must keep."
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {

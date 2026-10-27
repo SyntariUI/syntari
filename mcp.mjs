@@ -48,7 +48,7 @@ const tools = {
   },
   get_component: {
     title: 'Get a component contract',
-    description: 'The full manifest for one component: purpose, rules, accessibility, props, actions, a valid sample, and the install command.',
+    description: 'The full manifest for one component: purpose, guidance (when to use it, when not and what instead, its states, dos and don’ts), rules, accessibility, props, actions, a valid sample, and the install command.',
     inputSchema: object({ id: { ...id, description: 'Component id without the syntari. prefix, such as tool-approval.' } }, ['id']),
     async run({ id: componentId }) {
       const component = await getComponent(componentId);

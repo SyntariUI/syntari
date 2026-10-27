@@ -16,8 +16,8 @@ test('System preserves the live component while inspecting contracts, code and i
  expect(await page.locator('.sys-workspace').evaluate(el=>el.getBoundingClientRect().width/innerWidth)).toBeGreaterThan(.75);
  const initial=await preview.elementHandle();
  await page.getByRole('button',{name:'Inspect component'}).click();
- await expect(page.locator('[data-contract-status]')).toHaveText('Authored contract');
- await expect(page.locator('[data-rules]')).not.toBeEmpty();
+ await expect(page.locator('[data-contract-status]')).toHaveText('Screen IR contract');
+ await expect(page.locator('[data-guidance] [data-guide="use"]')).toBeVisible();
  await expect(page.locator('[data-info-panel]')).toBeVisible();
  await expect(page.locator('[data-inspector] .sys-reference-tabs')).toHaveCount(0);
  expect(await page.evaluate(el=>el===document.querySelector('[data-syntari-component]'),initial)).toBe(true);
@@ -144,4 +144,28 @@ test('System with no component named opens on the first one in its list',async({
  await expect(page).toHaveURL(`${origin}/system/#${slug}`);
  await expect(page.locator('[data-component-mount] [data-syntari-component]')).toBeVisible();
  expect(errors).toEqual([]);
+});
+
+test('a documented component says when to use it, when not and what instead, its states, and its dos and don’ts', async({page}) => {
+ await page.goto('http://127.0.0.1:4398/system/?panel=info#dialog');
+ const guide = page.locator('[data-guidance]');
+ await expect(guide.locator('[data-guide="use"] h3')).toHaveText('When to use');
+ await expect(page.locator('[data-description]')).toHaveText(/^A modal window for one short, focused task/);
+ await expect(page.locator('[data-contract-status]')).toHaveText('Documented');
+ await expect(guide.locator('[data-guide="states"] dt')).toHaveText(['Closed', 'Open', 'Invalid', 'Dismissed']);
+ await expect(guide.locator('[data-guide="do"] li')).toHaveCount(4);
+ /* A don't reads as one even out of its section, and its colour is never the only sign. */
+ for (const text of await guide.locator('[data-guide="dont"] li p').allTextContents()) expect(text).toMatch(/^Don’t /);
+ await expect(guide.locator('[data-guide="dont"] li').first()).toContainText('Don’t:');
+ await expect(guide.locator('[data-guide="accessibility"] kbd').first()).toHaveText('Tab');
+ await expect(page.locator('[data-accessibility-block]')).toBeHidden();
+ /* Each alternative opens that component's own guidance. */
+ await guide.getByRole('link', { name: 'Use Toast' }).click();
+ await expect(page.locator('[data-inspector-title]')).toHaveText('Toast');
+ await expect(guide.locator('[data-guide="accessibility"]')).toContainText('Takes no focus and needs no keys.');
+ /* A component without guidance keeps the panel it had. */
+ await page.goto('http://127.0.0.1:4398/system/?panel=info#banner');
+ await expect(page.locator('[data-rules]')).not.toBeEmpty();
+ await expect(page.locator('[data-guidance]')).toBeHidden();
+ await expect(page.locator('[data-accessibility-block]')).toBeVisible();
 });

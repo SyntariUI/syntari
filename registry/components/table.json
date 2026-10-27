@@ -48,7 +48,9 @@
     ]
   },
   "states": [
-    "default"
+    "default",
+    "sortable",
+    "sorted"
   ],
   "anatomy": [
     "root",
@@ -84,6 +86,113 @@
   "avoidWhen": [
     "each-record-needs-more-than-a-few-fields"
   ],
+  "guidance": {
+    "summary": "Shows records in rows and their attributes in columns, so people can scan, compare, and sort exact values.",
+    "useWhen": [
+      "People compare the same few attributes across many records, such as traffic sources and their visitors.",
+      "Values must be read exactly, not estimated from a shape.",
+      "People look for a particular record among many; make the table sortable past six rows."
+    ],
+    "avoidWhen": [
+      {
+        "text": "The point is a trend over time, not exact values.",
+        "instead": "line-chart"
+      },
+      {
+        "text": "The point is how a whole splits into parts.",
+        "instead": "breakdown"
+      },
+      {
+        "text": "Two or three options are compared on the same measures to pick one.",
+        "instead": "comparison-table"
+      },
+      {
+        "text": "People need to search, filter, select, edit, or page through many records.",
+        "instead": "data-table"
+      },
+      {
+        "text": "There are no rows yet.",
+        "instead": "empty-state"
+      }
+    ],
+    "states": [
+      {
+        "id": "default",
+        "label": "Default",
+        "description": "Rows in the order given, under column headers.",
+        "how": "columns and rows"
+      },
+      {
+        "id": "sortable",
+        "label": "Sortable",
+        "description": "Column headers become buttons with a sort mark.",
+        "how": "sortable: true"
+      },
+      {
+        "id": "sorted",
+        "label": "Sorted",
+        "description": "Pressing a header sorts by it: figures largest first, text A to Z. A second press reverses the order, and a third restores the original.",
+        "how": "Press a column header."
+      }
+    ],
+    "dos": [
+      {
+        "text": "Give every table a caption that says what its rows are.",
+        "why": "Screen reader users hear the caption first; it is how they know what the table is about."
+      },
+      {
+        "text": "Put units in the column header and keep each cell to its value.",
+        "why": "Short cells line up and can be compared at a glance."
+      },
+      {
+        "text": "Make the table sortable once it has more than six rows.",
+        "why": "Past a screenful, people look for the largest value or a particular record rather than reading in order."
+      },
+      {
+        "text": "When it is not sortable, order rows by what matters most, such as the largest value first.",
+        "why": "The first rows get most of the attention."
+      }
+    ],
+    "donts": [
+      {
+        "text": "Don’t use a table to lay out a page.",
+        "why": "Screen readers announce rows and columns that are not data."
+      },
+      {
+        "text": "Don’t put sentences or paragraphs in cells.",
+        "why": "Rows grow uneven and the columns stop being scannable; put the detail in a region or a detail view."
+      },
+      {
+        "text": "Don’t use colour alone to say a value is good or bad.",
+        "why": "Write the sign or a word too, such as +24% or Down 6%."
+      },
+      {
+        "text": "Don’t add a column that is the same in every row.",
+        "why": "It costs width and attention and says nothing; say it once in the caption."
+      }
+    ],
+    "content": [
+      "Column headers are short nouns: Source, People, Change.",
+      "Write a column’s numbers the same way all the way down: the same decimals and the same unit."
+    ],
+    "accessibility": {
+      "keyboard": [
+        {
+          "keys": "Tab",
+          "action": "Moves between sortable column headers."
+        },
+        {
+          "keys": "Enter or Space",
+          "action": "Sorts by the focused column."
+        }
+      ],
+      "notes": [
+        "Headers are th elements with scope=\"col\", so every cell is read with its column.",
+        "The caption names the table; it may be visually hidden, but it must be there.",
+        "A sorted column sets aria-sort, so the order is announced."
+      ]
+    }
+  },
   "props": {
     "caption": {
       "type": "string",
