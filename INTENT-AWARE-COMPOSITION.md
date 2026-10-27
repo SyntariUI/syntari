@@ -128,5 +128,6 @@ Layout is checked by measuring rendered boxes rather than comparing pixels, beca
 - **Selection in static IR.** `on-selection` is planned and drawn as the selected item in an aside; switching selection needs host state.
 - **Markup linting reads text.** It sees tags, classes, and nesting; not computed layout, conditional rendering, or components behind other names.
 - **Rendered review.** The adapter contract exists; no adapter ships, and responsive and contrast verdicts stay `not-checked` without one.
+- **Tables on a phone.** A four- or five-column queue scrolls sideways inside its own region on a 390-pixel screen (the page itself does not). A compact row layout for Table, like Value diff's, is the fix.
 - **Coverage.** Guidance with composition blocks covers twelve components; the other renderable components have none yet.
 - Next: run the model-composed benchmark; add composition guidance to the remaining renderable components; let `apply_operations` propose the structural moves the linter describes but does not automate (moving reference into a region); a selection model for master-detail screens.
